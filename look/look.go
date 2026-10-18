@@ -78,6 +78,10 @@ type ToolbarItem struct {
 	Group []ToolbarItem
 	// Nav places the item at the leading edge before the window title, where back and forward go.
 	Nav bool
+	// Sidebar places the item over the sidebar of a SetSidebar window, ending at the sidebar edge: on
+	// macOS in the title bar, level with the traffic lights (Finder, Mail), on Windows and Linux in a row
+	// at the top of the sidebar. Without SetSidebar it is an ordinary item.
+	Sidebar bool
 	// OnSearch makes the item a search field (NSSearchToolbarItem) with Title as the placeholder. It
 	// gets the text after a typing pause, on Return and on clearing.
 	OnSearch func(text string)
@@ -130,7 +134,7 @@ func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	s.SetLayout(l)
 	setSidebarChrome(s, sb)
 	b := barOf(w)
-	b.content = l.content
+	b.content, b.sidebar = l.content, sidebar
 	b.build()
 }
 

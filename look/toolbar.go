@@ -30,12 +30,16 @@ type toolbarBar struct {
 	w       *gowt.Window
 	items   []ToolbarItem
 	content *swt.Control // the SetSidebar content; nil leaves the bar unbuilt
+	sidebar Container    // the SetSidebar sidebar, which gets the Sidebar items in a row of its own
 	panel   *gowt.Panel
+	side    *gowt.Panel // the row of Sidebar items at the top of the sidebar
 	title   *gowt.LabelView
 	icons   []func(on, off string) []*swt.Image // set the images of one tool item in the given colours
-	images  []*swt.Image
-	bg      swt.RGB // content colour the bar was styled for
-	line    *swt.Color
+	// sideIcons are the icons of the side row, coloured for the sidebar background
+	sideIcons []func(on, off string) []*swt.Image
+	images    []*swt.Image
+	bg        swt.RGB // content colour the bar was styled for
+	line      *swt.Color
 }
 
 var bars = map[*swt.Shell]*toolbarBar{}
@@ -82,18 +86,36 @@ func (b *toolbarBar) build() {
 		disposeImages(b.images)
 		b.images = nil
 	}
+	if b.side != nil {
+		b.side.Unwrap().Dispose()
+		b.side, b.sideIcons = nil, nil
+	}
 	if b.content != nil && len(b.items) > 0 {
 		b.fill()
 	}
+	if b.sidebar != nil {
+		b.sidebar.AsComposite().Layout()
+	}
 	b.w.Unwrap().Layout()
+}
+
+// sideAdder is the sidebar as a gowt container the side row can be added to; nil if it is not one.
+func (b *toolbarBar) sideAdder() interface{ Add(...gowt.Option) } {
+	a, _ := b.sidebar.(interface{ Add(...gowt.Option) })
+	return a
 }
 
 // fill lays the items out as macOS does: Nav items, the window title, then the rest. The title takes
 // the free width unless a Space item does.
 func (b *toolbarBar) fill() {
-	var lead, trail []ToolbarItem
+	var lead, trail, over []ToolbarItem
 	spaced := false
+	side := b.sideAdder()
 	for _, it := range b.items {
+		if it.Sidebar && !it.Space && side != nil {
+			over = append(over, it)
+			continue
+		}
 		if it.Nav {
 			lead = append(lead, it)
 			continue
@@ -111,7 +133,7 @@ func (b *toolbarBar) fill() {
 	}))
 	b.panel = p
 	for _, it := range lead {
-		b.item(p, it)
+		b.item(p, it, &b.icons)
 	}
 	p.Add(gowt.Label(b.w.Unwrap().GetText(), gowt.Cell(gowt.GridCell{GrowX: !spaced, Align: gowt.AlignFill, VAlign: gowt.AlignCenter}), gowt.Ref(&b.title)))
 	size := 0
@@ -120,12 +142,22 @@ func (b *toolbarBar) fill() {
 	}
 	b.title.SetFont(gowt.Font{Size: size, Weight: gowt.Semibold})
 	for _, it := range trail {
-		b.item(p, it)
+		b.item(p, it, &b.icons)
+	}
+	if len(over) > 0 {
+		// The row goes first in the sidebar, its items at the right end, as over the macOS sidebar.
+		side.Add(gowt.Grid(len(over)+1, gowt.Padding(8), gowt.Gap(6), gowt.GrowX(), gowt.Ref(&b.side)))
+		b.side.Unwrap().MoveAbove(nil)
+		b.side.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
+		b.side.Add(gowt.Spacer())
+		for _, it := range over {
+			b.item(b.side, it, &b.sideIcons)
+		}
 	}
 	b.restyle(true)
 }
 
-func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem) {
+func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off string) []*swt.Image) {
 	switch {
 	case it.Space:
 		p.Add(gowt.Spacer())
@@ -142,13 +174,14 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem) {
 			segs = []ToolbarItem{it}
 		}
 		for _, g := range segs {
-			b.toolItem(tb, g)
+			toolItem(tb, g, icons)
 		}
 	}
 }
 
-// toolItem adds a flat button: the symbol in the bar's text colour, dimmed while Enabled is false.
-func (b *toolbarBar) toolItem(tb *gowt.ToolBarView, it ToolbarItem) {
+// toolItem adds a flat button whose symbol icons sets in the bar's text colour, dimmed while Enabled
+// is false.
+func toolItem(tb *gowt.ToolBarView, it ToolbarItem, icons *[]func(on, off string) []*swt.Image) {
 	shape, ok := barSymbols[it.Symbol]
 	text := ""
 	if !ok {
@@ -158,7 +191,7 @@ func (b *toolbarBar) toolItem(tb *gowt.ToolBarView, it ToolbarItem) {
 	ti.SetTooltip(it.Title)
 	if ok {
 		data := fmt.Sprintf(barSVG, shape)
-		b.icons = append(b.icons, func(on, off string) []*swt.Image {
+		*icons = append(*icons, func(on, off string) []*swt.Image {
 			d := tb.Unwrap().GetDisplay()
 			img := swt.NewImageDeviceImageDataProvider(d, svg.NewImageDataProvider([]byte(data), 16, 16, on))
 			dim := swt.NewImageDeviceImageDataProvider(d, svg.NewImageDataProvider([]byte(data), 16, 16, off))
@@ -192,6 +225,13 @@ func (b *toolbarBar) restyle(force bool) {
 	b.images = nil
 	for _, set := range b.icons {
 		b.images = append(b.images, set(hexRGB(fg), hexRGB(*blend(*bg, fg, 40)))...)
+	}
+	if b.side != nil {
+		sbg := b.side.Unwrap().GetBackground().GetRGB()
+		sfg := barForeground(*b.w.Unwrap().GetDisplay().GetSystemColor(swt.COLOR_WIDGET_FOREGROUND).GetRGB(), *sbg)
+		for _, set := range b.sideIcons {
+			b.images = append(b.images, set(hexRGB(sfg), hexRGB(*blend(*sbg, sfg, 40)))...)
+		}
 	}
 	disposeImages(old)
 	p.Redraw()

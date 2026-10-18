@@ -1,7 +1,8 @@
 // Command finderdemo shows the macOS 26 Finder and System Settings look: a floating Liquid Glass
-// sidebar (look.SetSidebar), a toolbar with a back/forward capsule, a button and a search field
-// (look.SetToolbar) and grouped sections (gowt.Section). Windows and Linux get a plain sidebar, the
-// same toolbar as a bar of flat buttons and a search field, and painted sections.
+// sidebar (look.SetSidebar), a toolbar with an item over the sidebar, a back/forward capsule, a
+// button and a search field (look.SetToolbar) and grouped sections (gowt.Section). Windows and Linux
+// get a plain sidebar with the sidebar item in its first row, the rest of the toolbar as a bar of flat
+// buttons and a search field, and painted sections.
 // GOWT_FINDERDEMO_SECS=n exits after n seconds.
 package main
 
@@ -57,6 +58,7 @@ func main() {
 			}
 		}
 		look.SetToolbar(w,
+			look.ToolbarItem{Title: "New", Symbol: "plus", Sidebar: true, OnClick: func() { log.Print("new") }},
 			look.ToolbarItem{Title: "Back/Forward", Nav: true, Group: []look.ToolbarItem{
 				{Title: "Back", Symbol: "chevron.backward", OnClick: func() { step(-1) }},
 				{Title: "Forward", Symbol: "chevron.forward", OnClick: func() { step(1) }},

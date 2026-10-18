@@ -171,11 +171,16 @@ func SetSidebarEdge(view *NSView, x float64) {
 func ReleaseSidebar(view *NSView) { delete(sidebarEdges, msg(uintptr(view.Id), "window")) }
 
 // spacerGap is the room between the sidebar edge and the end of the spacer; AppKit adds its item spacing.
-const spacerGap = 4
+// sidebarEndWidth: the spacer after the Sidebar items. AppKit gives it an item viewer at least 44
+// points wide, so the gap between the Sidebar items and the next item straddles the sidebar edge.
+const (
+	spacerGap       = 4
+	sidebarEndWidth = 4
+)
 
 // fitSpacer sizes the spacer of the toolbar of w so that it ends spacerGap points past the sidebar edge.
 // Its own left edge is measured once it is in the window, before that taken as the zoom button's right
-// edge plus 8 points.
+// edge plus 8 points. With Sidebar items the spacer after them ends there instead.
 func fitSpacer(w uintptr) {
 	initAssociated()
 	edge, ok := sidebarEdges[w]
@@ -192,12 +197,35 @@ func fitSpacer(w uintptr) {
 		r := v.ConvertRect_toView_(v.Bounds(), nil)
 		x0 = r.X + r.Width + 8
 	}
-	width := max(1, edge+spacerGap-x0)
+	width := edge + spacerGap - x0
+	if s.end != 0 {
+		if msg(s.spacer, "window") == w && msg(s.end, "window") == w {
+			// Both frames come from the same toolbar layout, also when the constraint changed since.
+			v := NewNSViewOverload1(int64(s.end))
+			r := v.ConvertRect_toView_(v.Bounds(), nil)
+			cur := NewNSViewOverload1(int64(s.spacer)).Bounds().Width
+			width = min(width, cur+edge+spacerGap-(r.X+r.Width))
+		} else {
+			width -= 40 * float64(s.overCount())
+		}
+	}
+	width = max(1, width)
 	if math.Abs(width-s.spacerWidth) < 0.5 {
 		return
 	}
 	s.spacerWidth = width
 	msgF64(s.width, sel("setConstant:"), width)
+}
+
+// overCount is the number of items over the sidebar.
+func (s *toolbarState) overCount() int {
+	n := 0
+	for _, it := range s.items {
+		if s.overSidebar(it) {
+			n++
+		}
+	}
+	return n
 }
 
 var (

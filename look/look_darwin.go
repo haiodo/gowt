@@ -72,7 +72,7 @@ func toolbarItems(items []ToolbarItem) []cocoa.ToolbarItem {
 	ci := make([]cocoa.ToolbarItem, len(items))
 	for i, it := range items {
 		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick,
-			Group: toolbarItems(it.Group), Nav: it.Nav, Search: it.OnSearch, Disabled: it.Enabled != nil && !it.Enabled.Peek()}
+			Group: toolbarItems(it.Group), Nav: it.Nav, Sidebar: it.Sidebar, Search: it.OnSearch, Disabled: it.Enabled != nil && !it.Enabled.Peek()}
 	}
 	return ci
 }

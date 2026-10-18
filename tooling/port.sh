@@ -440,6 +440,16 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'rowsPending' "$TB_GO")" = 3 ] && [ "$(grep -c 'this.syncRows()' "$TB_GO")" = 12 ] && [ "$(grep -c 'this.parent.syncRows()' "$TI_GO")" = 4 ] || { echo "port.sh: Table rowsPending rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Table/Tree.setHeaderVisible tiles the scroll view, which moves the clip view's top inset by the header height and
+# keeps its bounds origin, so a table shown with rows added before layout started a header height down. The scroll offset
+# from the top is restored after the tile (widgets_table_manual_darwin.go).
+if [ "$PLATFORM" = cocoa ]; then
+	for HV_GO in swt/widgets_table_darwin.go swt/widgets_tree_darwin.go; do
+		perl -0pi -e 's/(\) SetHeaderVisible\(show bool\)\s*\{\n\tthis\.CheckWidget\(\)\n)(?!\ty := headerScroll)/$1\ty := headerScroll(this.scrollView)\n/; s/(\.SetHeaderView\(cond\d+\)\n\tthis\.scrollView\.Tile\(\)\n)(?!\trestoreHeaderScroll)/$1\trestoreHeaderScroll(this.scrollView, this.View, y)\n/' "$HV_GO"
+		grep -qF 'y := headerScroll(this.scrollView)' "$HV_GO" && grep -qF 'restoreHeaderScroll(this.scrollView, this.View, y)' "$HV_GO" || { echo "port.sh: setHeaderVisible rewrite did not apply in $HV_GO" >&2; exit 1; }
+	done
+fi
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res

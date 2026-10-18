@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased
+## v0.9.0 (2026-10-18)
 
-Colours that follow the system theme, fonts relative to the system size and shared between widgets, one ownership rule for images, and the names the API review found spelled two ways.
+Tables, trees and lists that follow rx state by key, a `Boundary` that shows an error in place of the part of the screen that failed, colours that follow the system theme, fonts relative to the system size and shared between widgets, one ownership rule for images, and the names the API review found spelled two ways.
 
 ```go
 // v0.8

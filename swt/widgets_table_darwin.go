@@ -2146,6 +2146,7 @@ func (this *Table) SetHeaderForeground(colorLike ColorLike) {
 
 func (this *Table) SetHeaderVisible(show bool) {
 	this.CheckWidget()
+	y := headerScroll(this.scrollView)
 	var cond581 *cocoa.NSTableHeaderView
 	if show {
 		cond581 = this.headerView
@@ -2154,6 +2155,7 @@ func (this *Table) SetHeaderVisible(show bool) {
 	}
 	(castcocoaNSViewTococoaNSTableView(this.View)).SetHeaderView(cond581)
 	this.scrollView.Tile()
+	restoreHeaderScroll(this.scrollView, this.View, y)
 }
 
 func (this *Table) setImageOnWidget_(id int64, sel int64, arg0 int64) {

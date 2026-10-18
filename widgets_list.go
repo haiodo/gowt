@@ -125,11 +125,6 @@ func Table(opts ...Option) Option {
 		t := swt.NewTable(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
 		t.SetHeaderVisible(true)
 		t.SetLinesVisible(true)
-		topOnFirstSize(&t.Control, func() {
-			if t.GetItemCount() > 0 {
-				t.SetTopIndex(0)
-			}
-		})
 		return &TableView{base{&t.Control}, t}
 	})
 }
@@ -397,11 +392,6 @@ type TreeView struct {
 func Tree(opts ...Option) Option {
 	return leaf("Tree", sCheck|sMultiSelect|sNoBorder|sCellSelect, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTree(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
-		topOnFirstSize(&t.Control, func() {
-			if t.GetItemCount() > 0 {
-				t.SetTopItem(t.GetItem(0))
-			}
-		})
 		return &TreeView{base{&t.Control}, t}
 	})
 }

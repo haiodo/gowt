@@ -2626,6 +2626,7 @@ func (this *Tree) SetHeaderForeground(colorLike ColorLike) {
 
 func (this *Tree) SetHeaderVisible(show bool) {
 	this.CheckWidget()
+	y := headerScroll(this.scrollView)
 	var cond539 *cocoa.NSTableHeaderView
 	if show {
 		cond539 = this.headerView
@@ -2634,6 +2635,7 @@ func (this *Tree) SetHeaderVisible(show bool) {
 	}
 	(castcocoaNSViewTococoaNSOutlineView(this.View)).SetHeaderView(cond539)
 	this.scrollView.Tile()
+	restoreHeaderScroll(this.scrollView, this.View, y)
 }
 
 func (this *Tree) SetItemCount(count int32) {

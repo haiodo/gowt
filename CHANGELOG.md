@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.9.2 (2026-10-18)
 
 Fixes
 - Quitting from the macOS app menu (Cmd+Q) made `Run` return "gowt: Device is disposed": the Quit item disposes the display inside the event loop, and `Run` then asked the disposed display for its shells and disposed the clipboard on it. `Run` now ends without an error when the display is disposed under it, as on Windows logoff (WM_ENDSESSION) or after `Display.Close` in a handler.

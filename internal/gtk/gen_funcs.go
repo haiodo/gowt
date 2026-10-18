@@ -7474,6 +7474,12 @@ func OSG_dbus_proxy_call(proxy int64, method_name []int8, parameters int64, flag
 	r_OSG_dbus_proxy_call.get()(uintptr(proxy), sp(method_name), uintptr(parameters), flags, timeout_msec, uintptr(cancellable), uintptr(callback), sp(user_data))
 }
 
+var r_OSG_dbus_proxy_call_finish = lz[func(uintptr, uintptr, unsafe.Pointer) uintptr]{sym: "g_dbus_proxy_call_finish"}
+
+func OSG_dbus_proxy_call_finish(proxy int64, res int64, error []int64) int64 {
+	return int64(r_OSG_dbus_proxy_call_finish.get()(uintptr(proxy), uintptr(res), sp(error)))
+}
+
 var r_OSG_dbus_proxy_call_sync = lz[func(uintptr, unsafe.Pointer, uintptr, int32, int32, uintptr, unsafe.Pointer) uintptr]{sym: "g_dbus_proxy_call_sync"}
 
 func OSG_dbus_proxy_call_sync(proxy int64, method_name []int8, parameters int64, flags int32, timeout_msec int32, cancellable int64, error []int64) int64 {
@@ -7484,6 +7490,18 @@ var r_OSG_dbus_proxy_get_name_owner = lz[func(uintptr) uintptr]{sym: "g_dbus_pro
 
 func OSG_dbus_proxy_get_name_owner(proxy int64) int64 {
 	return int64(r_OSG_dbus_proxy_get_name_owner.get()(uintptr(proxy)))
+}
+
+var r_OSG_dbus_proxy_new_for_bus = lz[func(int32, int32, uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, uintptr, uintptr, uintptr)]{sym: "g_dbus_proxy_new_for_bus"}
+
+func OSG_dbus_proxy_new_for_bus(bus_type int32, flags int32, info int64, name []int8, object_path []int8, interface_name []int8, cancellable int64, callback int64, user_data int64) {
+	r_OSG_dbus_proxy_new_for_bus.get()(bus_type, flags, uintptr(info), sp(name), sp(object_path), sp(interface_name), uintptr(cancellable), uintptr(callback), uintptr(user_data))
+}
+
+var r_OSG_dbus_proxy_new_for_bus_finish = lz[func(uintptr, unsafe.Pointer) uintptr]{sym: "g_dbus_proxy_new_for_bus_finish"}
+
+func OSG_dbus_proxy_new_for_bus_finish(res int64, error []int64) int64 {
+	return int64(r_OSG_dbus_proxy_new_for_bus_finish.get()(uintptr(res), sp(error)))
 }
 
 var r_OSG_dbus_proxy_new_for_bus_sync = lz[func(int32, int32, uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, uintptr, unsafe.Pointer) uintptr]{sym: "g_dbus_proxy_new_for_bus_sync"}

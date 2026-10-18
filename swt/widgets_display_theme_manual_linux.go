@@ -13,15 +13,26 @@ const portalSettingsTimeoutMsec = 2000
 // reflects it and every change fires SWT.Settings. The portal accent-color goes to the @gowt_accent named color
 // (selection rules in the runtime CSS, only when the portal gave one). Without a portal nothing changes.
 func (this *Display) FollowSystemTheme() {
-	var gerr []int64 = make([]int64, 1)
-	proxy := gtk.OSG_dbus_proxy_new_for_bus_sync(gtk.OSG_BUS_TYPE_SESSION, gtk.OSG_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES, 0,
+	// Async: a portal that has to be activated, or fails to start, would otherwise block startup for seconds.
+	var ready *Callback
+	ready = NewCallbackFn(func(a []int64) int64 {
+		ready.Dispose()
+		var gerr []int64 = make([]int64, 1)
+		proxy := gtk.OSG_dbus_proxy_new_for_bus_finish(a[1], gerr)
+		if proxy == 0 {
+			DisplayExtractFreeGError(gerr[0])
+			return 0
+		}
+		this.followPortal(proxy)
+		return 0
+	}, 3)
+	gtk.OSG_dbus_proxy_new_for_bus(gtk.OSG_BUS_TYPE_SESSION, gtk.OSG_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES, 0,
 		gtk.ConverterJavaStringToCString("org.freedesktop.portal.Desktop"),
 		gtk.ConverterJavaStringToCString("/org/freedesktop/portal/desktop"),
-		gtk.ConverterJavaStringToCString("org.freedesktop.portal.Settings"), 0, gerr)
-	if proxy == 0 {
-		DisplayExtractFreeGError(gerr[0])
-		return
-	}
+		gtk.ConverterJavaStringToCString("org.freedesktop.portal.Settings"), 0, ready.GetAddress(), 0)
+}
+
+func (this *Display) followPortal(proxy int64) {
 	// The proxy and its callback live as long as the process; one display per process is the supported case.
 	cb := NewCallbackFn(func(a []int64) int64 {
 		if gtk.ConverterCCharPtrToJavaString(a[2], false) != "SettingChanged" {
@@ -44,34 +55,34 @@ func (this *Display) FollowSystemTheme() {
 	}, 5)
 	gtk.OSG_signal_connect(proxy, gtk.ConverterJavaStringToCString("g-signal"), cb.GetAddress(), 0)
 
-	if res := portalRead(proxy, "color-scheme"); res != 0 {
-		child := gtk.OSG_variant_get_child_value(res, 0)
-		this.applyColorScheme(portalUint32(child))
-		gtk.OSG_variant_unref(child)
-		gtk.OSG_variant_unref(res)
-	}
-	if res := portalRead(proxy, "accent-color"); res != 0 {
-		child := gtk.OSG_variant_get_child_value(res, 0)
-		this.applyAccent(portalDoubles(child))
-		gtk.OSG_variant_unref(child)
-		gtk.OSG_variant_unref(res)
-	}
+	portalRead(proxy, "color-scheme", "ReadOne", func(v int64) { this.applyColorScheme(portalUint32(v)) })
+	portalRead(proxy, "accent-color", "ReadOne", func(v int64) { this.applyAccent(portalDoubles(v)) })
 }
 
-// portalRead returns the (v) reply of the appearance namespace key, 0 when the portal lacks it.
-func portalRead(proxy int64, key string) int64 {
-	var gerr []int64 = make([]int64, 1)
-	for _, method := range []string{"ReadOne", "Read"} { // ReadOne is Settings v2; older portals only have Read
-		args := gtk.OSG_variant_newOverload2(gtk.ConverterJavaStringToCString("(ss)"),
-			gtk.ConverterJavaStringToCString("org.freedesktop.appearance"), gtk.ConverterJavaStringToCString(key))
-		res := gtk.OSG_dbus_proxy_call_sync(proxy, gtk.ConverterJavaStringToCString(method), args, gtk.OSG_DBUS_CALL_FLAGS_NONE, portalSettingsTimeoutMsec, 0, gerr)
-		if res != 0 {
-			return res
+// portalRead hands the value of the appearance namespace key to apply; nothing is applied when the portal lacks it.
+// ReadOne is Settings v2: on its error the key is read again with Read, which older portals have.
+func portalRead(proxy int64, key, method string, apply func(v int64)) {
+	var done *Callback
+	done = NewCallbackFn(func(a []int64) int64 {
+		done.Dispose()
+		var gerr []int64 = make([]int64, 1)
+		res := gtk.OSG_dbus_proxy_call_finish(proxy, a[1], gerr)
+		if res == 0 {
+			DisplayExtractFreeGError(gerr[0])
+			if method == "ReadOne" {
+				portalRead(proxy, key, "Read", apply)
+			}
+			return 0
 		}
-		DisplayExtractFreeGError(gerr[0])
-		gerr[0] = 0
-	}
-	return 0
+		child := gtk.OSG_variant_get_child_value(res, 0)
+		apply(child)
+		gtk.OSG_variant_unref(child)
+		gtk.OSG_variant_unref(res)
+		return 0
+	}, 3)
+	args := gtk.OSG_variant_newOverload2(gtk.ConverterJavaStringToCString("(ss)"),
+		gtk.ConverterJavaStringToCString("org.freedesktop.appearance"), gtk.ConverterJavaStringToCString(key))
+	gtk.OSG_dbus_proxy_call(proxy, gtk.ConverterJavaStringToCString(method), args, gtk.OSG_DBUS_CALL_FLAGS_NONE, portalSettingsTimeoutMsec, 0, done.GetAddress(), nil)
 }
 
 // accentProvider holds the one runtime CSS provider with the accent rules; it exists only once a portal accent was read.

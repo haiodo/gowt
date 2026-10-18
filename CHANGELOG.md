@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.9.1 (2026-10-18)
 
 Fixes
 - Dialogs and SWT-made texts showed message keys instead of words: the Yes and No buttons of a question read "SWT_Yes" and "SWT_No", likewise OK, Cancel, Abort, Retry, Ignore, the CTabFolder chevron tooltip and accessibility relation names. The English SWT messages are now built in.

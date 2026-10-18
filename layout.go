@@ -3,6 +3,7 @@ package gowt
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/haiodo/gowt/swt"
@@ -313,12 +314,33 @@ func (g *PagesView) Add(pages ...Option) {
 func (g *PagesView) into() *swt.Composite { return g.c }
 
 func (g *PagesView) added(w Widget) {
+	c := w.control()
 	if g.Current() == -1 {
-		g.stack.TopControl = w.control()
+		g.stack.TopControl = c
+	}
+	c.AddDisposeListener(disposeFunc(func() { g.gone(c) }))
+}
+
+// gone runs while page c is disposed and still a child. When c is the shown page, the page before it
+// takes its place, or the next one when c is the first, as in a CTabs.
+func (g *PagesView) gone(c *swt.Control) {
+	if g.stack.TopControl != c {
+		return
+	}
+	pages := g.c.GetChildren()
+	switch i := slices.Index(pages, c); {
+	case i > 0:
+		g.stack.TopControl = pages[i-1]
+	case i == 0 && len(pages) > 1:
+		g.stack.TopControl = pages[1]
+	default:
+		g.stack.TopControl = nil
 	}
 }
 
-// Show makes page i, counted from 0 in the order the pages were added, the visible one.
+// Show makes page i, counted from 0 in the order the pages were added, the visible one. Dispose on a
+// page removes it: the pages after it move down by one, and when it was shown the page before it is
+// shown, or the next one when it was the first.
 func (g *PagesView) Show(i int) {
 	pages := g.c.GetChildren()
 	if i < 0 || i >= len(pages) {

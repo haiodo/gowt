@@ -751,6 +751,7 @@ gowt const OpLink Op = 4
 gowt const OpMove Op = 2
 gowt const OpNone Op = 0
 gowt const Regular Weight = 400
+gowt const SecondaryText systemPaint = 0
 gowt const Semibold Weight = 600
 gowt const SortAscending SortDir = 1
 gowt const SortDescending SortDir = 2

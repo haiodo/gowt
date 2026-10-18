@@ -23,23 +23,10 @@ func cardFill() uintptr {
 // resolved for the app's current appearance. SWT paints controls in opaque colours, so the translucent
 // system fill is flattened here.
 func GroupedFillRGB() (r, g, b int32) {
-	appearance := class("NSAppearance")
-	old := msg(appearance, "currentAppearance")
-	msg(old, "retain")
-	msg(appearance, "setCurrentAppearance:", msg(msg(class("NSApplication"), "sharedApplication"), "effectiveAppearance"))
-	defer func() {
-		msg(appearance, "setCurrentAppearance:", old)
-		msg(old, "release")
-	}()
-	srgb := msg(class("NSColorSpace"), "sRGBColorSpace")
-	bg := NewNSColorOverload1(int64(msg(msg(class("NSColor"), "windowBackgroundColor"), "colorUsingColorSpace:", srgb)))
-	fill := NewNSColorOverload1(int64(msg(cardFill(), "colorUsingColorSpace:", srgb)))
-	if bg.Id == 0 || fill.Id == 0 {
-		return 242, 242, 242
+	if r, g, b, ok := overWindow(cardFill()); ok {
+		return r, g, b
 	}
-	a := fill.AlphaComponent()
-	mix := func(b, f float64) int32 { return int32(math.Round(255 * (b*(1-a) + f*a))) }
-	return mix(bg.RedComponent(), fill.RedComponent()), mix(bg.GreenComponent(), fill.GreenComponent()), mix(bg.BlueComponent(), fill.BlueComponent())
+	return 242, 242, 242
 }
 
 const tableStyleSourceList = 3

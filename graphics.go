@@ -10,13 +10,23 @@ import (
 // RGB is a color, 0-255 per channel.
 type RGB struct{ R, G, B uint8 }
 
-// Paint is a widget colour: an RGB, the same in both themes, or an Adaptive with one per theme.
-// Only this package implements it.
+// Paint is a widget colour: an RGB, the same in both themes, an Adaptive with one per theme, or
+// SecondaryText. Only this package implements it.
 type Paint interface{ in(dark bool) RGB }
 
 // Adaptive is a colour for each system theme. A widget given one through Foreground, Background or
 // their setters takes the other colour when the system switches between light and dark.
 type Adaptive struct{ Light, Dark RGB }
+
+// SecondaryText is the system colour of secondary text, such as the second line of an empty state:
+// macOS secondaryLabelColor, Windows COLOR_GRAYTEXT, GTK the insensitive label colour. A widget given
+// it takes the system's colour again when the system switches between light and dark.
+const SecondaryText systemPaint = 0
+
+// systemPaint is a colour the system defines, read when it is applied.
+type systemPaint uint8
+
+func (systemPaint) in(bool) RGB { return secondaryText() }
 
 func (c RGB) in(bool) RGB { return c }
 

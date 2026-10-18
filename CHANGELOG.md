@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+Added
+- `gowt.SecondaryText`, a `Paint` with the system colour of secondary text that follows the system theme like an `Adaptive`: macOS `secondaryLabelColor` (flattened over the window background, as SWT text colours are opaque), Windows `COLOR_GRAYTEXT`, GTK the insensitive label colour. SWT's `COLOR_WIDGET_DISABLED_FOREGROUND` is not used on macOS, where it is a selection background colour.
+
+Behaviour change
+- Disposing the shown page of `Pages` shows the page before it, or the next one when it was the first; it used to leave the `Pages` empty with `Current()` -1. The pages after a disposed one move down by one, as before.
+- Disposing a `Tab` page removes its tab from `Tabs` and `CTabs`; it used to leave an empty tab. A `CTabs` tab closed by its button now disposes its page and the bindings in it; the page used to stay hidden in the folder.
+
 ## v0.9.2 (2026-10-18)
 
 Fixes

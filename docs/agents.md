@@ -47,7 +47,7 @@ if err != nil {
 | a row that wraps | `gowt.Flow(children...)` |
 | children sharing the space equally, or one filling it | `gowt.Fill(children...)`, `Fill(gowt.Vertical(), ...)` |
 | edges attached to siblings | `gowt.Form(children...)` with `Anchor(gowt.FormCell{...})` |
-| one page at a time | `gowt.Pages(children...)`, `pages.Show(i)`, `pages.Current()` |
+| one page at a time | `gowt.Pages(children...)`, `pages.Show(i)`, `pages.Current()`; `page.Dispose()` removes one and shows a neighbour |
 | tabs | `gowt.Tabs(gowt.Tab("General", children...), gowt.Tab("Advanced", ...))` |
 | a titled frame | `gowt.Group("Options", children...)` |
 | a scrolled column | `gowt.Scroll(children...)` |
@@ -124,7 +124,7 @@ row.Dispose()                      // removes it; the parent is laid out again
 row.OnDispose(stop)                // runs when row is disposed or its window closes
 ```
 
-`Enabled()` and `Visible()` read the state back. A colour is an `RGB` or an `Adaptive{Light, Dark}`, which the widget switches with the system theme by itself; a background on a container also shows behind its labels and boxes. A `Font` with `Scale` and no `Size` is sized from the system font (`Font{Scale: 1.2, Weight: gowt.Semibold}` for a heading), and widgets with equal fonts share one native font. Widget-specific setters are methods too: `label.SetText`, `text.Text`, `button.SetChecked`, `progress.SetValue`. Tool items and menu items have their own `SetEnabled`.
+`Enabled()` and `Visible()` read the state back. A colour is an `RGB`, an `Adaptive{Light, Dark}`, which the widget switches with the system theme by itself, or `gowt.SecondaryText`, the system's dimmed text colour (a second line, a value next to its name), which follows the theme as well; a background on a container also shows behind its labels and boxes. A `Font` with `Scale` and no `Size` is sized from the system font (`Font{Scale: 1.2, Weight: gowt.Semibold}` for a heading), and widgets with equal fonts share one native font. Widget-specific setters are methods too: `label.SetText`, `text.Text`, `button.SetChecked`, `progress.SetValue`. Tool items and menu items have their own `SetEnabled`.
 
 A container has `Add(children...)` (create more children at its end, also after Show), `Relayout()` (lay the children out again after a text got longer) and `Clear()` (dispose every child, for content that is rebuilt). `table.Batch(f)` and `tree.Batch(f)` repaint once after many row changes in `f`.
 

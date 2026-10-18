@@ -31,11 +31,11 @@ A container is created with its layout and its children. Nest containers to buil
 | `HBox(opts...)` | left to right, one column per shown child; a `Spacer()` takes the free width | the same |
 | `Grid(columns, opts...)` | in `columns` columns, left to right, top to bottom | the same, and `Span(n)` |
 | `Flow(opts...)` | in a row at natural size, wrapping to the next row; `Vertical()` makes it a wrapping column | `Size` |
-| `Fill(opts...)` | in equal parts of the width, or of the height with `Vertical()`; one child fills it | - |
+| `Fill(opts...)` | in equal parts of the width, or of the height with `Vertical()`; one child fills it | none; `Grow`, `GrowX`, `GrowY` are accepted and change nothing |
 | `Form(opts...)` | by edges attached to the container or to siblings | `Anchor(FormCell{...})`, `Size` |
-| `Pages(opts...)` | one child at a time at full size; `Show(i)`, `Current()` | - |
+| `Pages(opts...)` | one child at a time at full size; `Show(i)`, `Current()` | the same as `Fill` |
 
-`Group(title, ...)`, a `Tab(title, ...)` page and the content of `Scroll(...)` stack their children like a `VBox`; for another arrangement put one `HBox`, `Grid`, ... inside. `Split` lays its children side by side with sashes, `Section` stacks them as rows of a card (see [widgets.md](widgets.md)).
+`Group(title, ...)`, a `Tab(title, ...)` page and the content of `Scroll(...)` stack their children like a `VBox`; for another arrangement put one `HBox`, `Grid`, ... inside. `Split` lays its children side by side with sashes, each pane filling its part as `SetWeights` sizes it, so a pane takes no placement options except `Grow`, `GrowX` and `GrowY`, which are accepted there and change nothing; the same holds for a `Tab` page. `Section` stacks them as rows of a card (see [widgets.md](widgets.md)).
 
 Each container takes `Gap(points)` (space between children; rows and columns of a Grid alike) and `Padding(points)` (space from its edge). Gap defaults to `Spacing.SM` everywhere. Padding defaults to `Spacing.PageMargin` for a Window and a Tab page, `Spacing.SM` for a Group and 0 elsewhere, so nested boxes stay flush with each other. `Gap(0)` puts children edge to edge.
 
@@ -65,7 +65,7 @@ A child without placement options has its natural size, top left of its cell. Th
 
 `Spacer()` is an empty cell that takes the free space along a VBox or HBox, or the free width of a Grid row, pushing the cells after it to the end. `Separator()` is a line across its cell; `Vertical()` turns it.
 
-A placement option the parent cannot use (`GrowX` in a `Flow`, `Anchor` in a `Grid`) is reported to `App.OnError` when the widget is created, with the option, the widget and the parent's layout in the message, and the widget keeps its natural size.
+A placement option the parent cannot use (`GrowX` in a `Flow`, `Anchor` in a `Grid`, `Size` on a `Split` pane) is reported to `App.OnError` when the widget is created, with the option, the widget and the parent's layout in the message, and the widget keeps its natural size.
 
 ### Spacing tokens
 

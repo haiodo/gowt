@@ -152,7 +152,8 @@ type SplitView struct {
 }
 
 // Split creates a sash form: its children side by side, or stacked with Vertical(), with draggable
-// sashes between them.
+// sashes between them. Every pane fills its part, sized by SetWeights; Grow on a pane is accepted
+// and changes nothing, Size, Span and the other placement options are reported to App.OnError.
 // Options: Vertical, children.
 func Split(opts ...Option) Option {
 	return &node{"Split", func(h host) Widget {

@@ -348,20 +348,22 @@ func (g *PagesView) AsComposite() *swt.Composite { return g.c }
 // layout, and add up: GrowX(), Span(2) give one cell that spans two columns and fills its width.
 // When several set the same field, the later one wins. An option the parent's layout cannot use is
 // reported to App.OnError naming the widget and the layout, and the widget keeps its natural size.
+// Grow, GrowX and GrowY are also accepted, and change nothing, in a Split, Fill, Pages, Tabs or
+// CTabs: those give every child its whole part anyway.
 
 // Grow fills the cell and takes the free width and height of a VBox, HBox or Grid.
 func Grow() Option {
-	return gridOpt("Grow", func(c *GridCell) { c.Align, c.VAlign, c.GrowX, c.GrowY = AlignFill, AlignFill, true, true })
+	return fillOpt("Grow", func(c *GridCell) { c.Align, c.VAlign, c.GrowX, c.GrowY = AlignFill, AlignFill, true, true })
 }
 
 // GrowX fills the width of the cell and takes the free width of an HBox or Grid row.
 func GrowX() Option {
-	return gridOpt("GrowX", func(c *GridCell) { c.Align, c.GrowX = AlignFill, true })
+	return fillOpt("GrowX", func(c *GridCell) { c.Align, c.GrowX = AlignFill, true })
 }
 
 // GrowY fills the height of the cell and takes the free height of a VBox or Grid column.
 func GrowY() Option {
-	return gridOpt("GrowY", func(c *GridCell) { c.VAlign, c.GrowY = AlignFill, true })
+	return fillOpt("GrowY", func(c *GridCell) { c.VAlign, c.GrowY = AlignFill, true })
 }
 
 // Span makes the child cover cols columns of the Grid.
@@ -384,8 +386,18 @@ func Cell(c GridCell) Option { return gridOpt("Cell", func(g *GridCell) { *g = c
 // Grid, Flow and Form.
 func Size(w, h int) Option {
 	return place(func(pl *placement) {
+		pl.size = true
 		pl.cell.Width, pl.cell.Height = w, h
 		pl.formc.Width, pl.formc.Height = w, h
+	})
+}
+
+func fillOpt(name string, f func(*GridCell)) Option {
+	return place(func(pl *placement) {
+		if pl.fill == "" {
+			pl.fill = name
+		}
+		f(&pl.cell)
 	})
 }
 
@@ -401,6 +413,8 @@ func gridOpt(name string, f func(*GridCell)) Option {
 // placement collects the placement options of one widget; finish turns it into layout data.
 type placement struct {
 	grid  string // the first option only a VBox, HBox or Grid can use, "" if none
+	fill  string // the first of Grow, GrowX, GrowY, "" if none
+	size  bool   // Size given
 	form  bool   // Anchor given
 	cell  GridCell
 	formc FormCell
@@ -409,11 +423,22 @@ type placement struct {
 // isGrid reports whether a layoutName is laid out by a GridLayout.
 func isGrid(layout string) bool { return layout == "Grid" || layout == "VBox" || layout == "HBox" }
 
+// fillsAll reports whether a layoutName gives every child its whole part, so that Grow is already true.
+func fillsAll(layout string) bool {
+	switch layout {
+	case "Split", "Fill", "Pages", "Tabs", "CTabs":
+		return true
+	}
+	return false
+}
+
 // data returns the layout data for widget in a parent laid out by layout, a layoutName.
 func (pl *placement) data(widget, layout string) (any, error) {
 	switch {
 	case pl.grid != "" && !isGrid(layout):
 		return nil, misplaced(pl.grid, "a VBox, HBox or Grid", widget, layout)
+	case pl.fill != "" && !isGrid(layout) && !fillsAll(layout):
+		return nil, misplaced(pl.fill, "a VBox, HBox or Grid", widget, layout)
 	case pl.form && layout != "Form":
 		return nil, misplaced("Anchor", "a Form", widget, layout)
 	}
@@ -428,6 +453,8 @@ func (pl *placement) data(widget, layout string) (any, error) {
 			return nil, fmt.Errorf("gowt: Anchor on %s: %w", widget, err)
 		}
 		return d, nil
+	case fillsAll(layout) && !pl.size:
+		return nil, nil
 	}
 	return nil, misplaced("Size", "a VBox, HBox, Grid, Flow or Form", widget, layout)
 }
@@ -441,7 +468,14 @@ func misplaced(opt, need, widget, layout string) error {
 
 // layoutName names the layout of c as the facade does ("Grid", "VBox", ...), "" for none.
 func layoutName(c *swt.Composite) string {
-	if c == nil || c.GetLayout() == nil {
+	if c == nil {
+		return ""
+	}
+	if c.GetLayout() == nil {
+		// A TabFolder places its pages itself.
+		if nameOf(&c.Control) == "Tabs" {
+			return "Tabs"
+		}
 		return ""
 	}
 	switch l := c.GetLayout().Impl().(type) {
@@ -460,6 +494,10 @@ func layoutName(c *swt.Composite) string {
 		return "Fill"
 	case *swt.StackLayout:
 		return "Pages"
+	case *swt.SashFormLayout:
+		return "Split"
+	case *swt.CTabFolderLayout:
+		return "CTabs"
 	default:
 		return strings.TrimPrefix(fmt.Sprintf("%T", l), "*swt.")
 	}

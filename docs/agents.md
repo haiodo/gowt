@@ -72,7 +72,7 @@ if err != nil {
 | empty space that pushes the next children to the end | `gowt.Spacer()` |
 | a horizontal or vertical line | `gowt.Separator()`, `gowt.Separator(gowt.Vertical())` |
 
-Options add up; when two set the same thing the later one wins. They work in a VBox, HBox and Grid; `Size` also works in `Flow` and `Form`, `Anchor(FormCell{...})` only in `Form`. An option the parent cannot use is reported to `App.OnError` with the option, the widget and the layout in the message; the widget keeps its natural size.
+Options add up; when two set the same thing the later one wins. They work in a VBox, HBox and Grid; `Size` also works in `Flow` and `Form`, `Anchor(FormCell{...})` only in `Form`. A child of `Split`, `Fill`, `Pages`, `Tabs` or `CTabs` fills its part: `Grow`, `GrowX` and `GrowY` are accepted there and change nothing, the other options are errors. An option the parent cannot use is reported to `App.OnError` with the option, the widget and the layout in the message; the widget keeps its natural size.
 
 ## Events and state
 

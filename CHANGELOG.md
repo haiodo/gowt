@@ -5,6 +5,10 @@
 Fixes
 - Quitting from the macOS app menu (Cmd+Q) made `Run` return "gowt: Device is disposed": the Quit item disposes the display inside the event loop, and `Run` then asked the disposed display for its shells and disposed the clipboard on it. `Run` now ends without an error when the display is disposed under it, as on Windows logoff (WM_ENDSESSION) or after `Display.Close` in a handler.
 - macOS: a tab added to a shown `Tabs` (`TabsView.Add`) kept a strip slot as wide as an empty title, so its title was cut to an overflow arrow and `Window.Relayout` did not help. SWT keeps every NSTabViewItem label empty and sizes the tab itself; the tab view measures a tab again only when its label changes, so `TabItem.SetText` and `SetImage` now change the label and back. `CTabs` and Linux were not affected.
+- macOS: the child of a titled `Group` was laid out up to two title heights taller than the box, so its bottom was cut off. The NSBox places its content view while the box is still 0x0 and corrects it only before the first display, after the Group had laid its children out; the Group now lays out again when its content view changes size.
+
+Behaviour change
+- `Grow`, `GrowX` and `GrowY` on a child of `Split`, `Fill`, `Pages`, `Tabs` or `CTabs` (a `Tab` page) are accepted and change nothing, since those give every child its whole part; they used to go to `App.OnError` ("Grow on Group needs a VBox, HBox or Grid parent, not SashFormLayout"). `Size`, `Span`, `Place`, `Indent`, `Cell` and `Anchor` there are still errors, and the message names `Split`, `Tabs` and `CTabs` instead of the SWT layout class.
 
 ## v0.9.1 (2026-10-18)
 

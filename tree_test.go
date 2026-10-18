@@ -156,6 +156,10 @@ func TestTree(t *testing.T) {
 		var wrong *TextView
 		put[*ButtonView](w, Button("b", Ref(&wrong)))
 		put[*Panel](w, Flow(Label("f", GrowX())))
+		// Panes and pages fill their part: Grow there is accepted and changes nothing, Size is not.
+		put[*SplitView](w, Split(Group("g", Grow()), Tabs(GrowY(), Tab("t", Grow())), CTabs(Tab("c", GrowX())), Label("s", Size(10, 10))))
+		put[*PagesView](w, Pages(Label("p", Grow())))
+		put[*Panel](w, Fill(Label("f", GrowX())))
 		put[*Panel](w, VBox(Tab("lost")))
 		put[*TabsView](w, Tabs(Label("stray")))
 		w.Add(GrowX())
@@ -167,6 +171,7 @@ func TestTree(t *testing.T) {
 			"gowt: Shortcut applies to Menu.Item, not to Label",
 			"gowt: Ref to a *gowt.TextView given to Button",
 			"gowt: GrowX on Label needs a VBox, HBox or Grid parent, not Flow",
+			"gowt: Size on Label needs a VBox, HBox, Grid, Flow or Form parent, not Split",
 			"gowt: Tab needs a Tabs or CTabs parent, not Panel",
 			"gowt: Tabs takes Tab children, not Label",
 			"gowt: Add on Window takes widgets; give options where the widget is created",

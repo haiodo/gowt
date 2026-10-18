@@ -132,6 +132,36 @@ func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	b := barOf(w)
 	b.content = l.content
 	b.build()
+	// Without gowt.Focused the window opens with the focus on its first list, as Finder does, not on a
+	// button of the sidebar.
+	s.SetDataKeyValue(focusDefaultKey, func() *swt.Control {
+		if c := firstList(content.AsComposite()); c != nil {
+			return c
+		}
+		return firstList(sb)
+	})
+}
+
+// focusDefaultKey holds the func that gowt.Window.Show asks for the control to focus when no widget is
+// Focused; gowt has the same key.
+const focusDefaultKey = "gowt.look.focus"
+
+// firstList returns the first visible List, Table or Tree under c, depth first, or nil.
+func firstList(c *swt.Composite) *swt.Control {
+	for _, ch := range c.GetChildren() {
+		if !ch.GetVisible() {
+			continue
+		}
+		switch v := ch.Impl().(type) {
+		case *swt.List, *swt.Table, *swt.Tree:
+			return ch
+		case interface{ AsComposite() *swt.Composite }:
+			if l := firstList(v.AsComposite()); l != nil {
+				return l
+			}
+		}
+	}
+	return nil
 }
 
 type sidebarLayout struct {

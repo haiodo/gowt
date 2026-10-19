@@ -9,7 +9,8 @@ import (
 )
 
 // focusRun builds a window with build, shows it and passes check the control that has the focus right
-// after Show and again after the window has had time to be activated.
+// after Show, when the window is already active, and again after it has had time to be activated. On
+// macOS the first window of the process becomes key only when the app has been activated, after Show.
 func focusRun(t *testing.T, build func(app *App, w *Window), check func(when string, focus *swt.Control)) {
 	t.Helper()
 	if os.Getenv("GOWT_GUI_TEST") == "" {
@@ -21,7 +22,9 @@ func focusRun(t *testing.T, build func(app *App, w *Window), check func(when str
 			w := app.Window("focus")
 			build(app, w)
 			w.Show()
-			check("after Show", app.display.GetFocusControl())
+			if app.display.GetActiveShell() == w.shell {
+				check("after Show", app.display.GetFocusControl())
+			}
 			app.After(200*time.Millisecond, func() {
 				check("after activation", app.display.GetFocusControl())
 				w.Close()
@@ -46,21 +49,35 @@ func focusName(c *swt.Control) string {
 func named(s string) Option { return Custom(func(c *swt.Control) { c.SetDataKeyValue("name", s) }) }
 
 func TestFocused(t *testing.T) {
+	var second *ButtonView
 	for _, tc := range []struct {
-		name string
-		opts []Option
-		want string
+		name      string
+		opts      []Option
+		want      string
+		focusable func() bool // nil: the widget always takes the focus
 	}{
-		{"text after a button", []Option{Button("first", named("first")), Text(named("text"), Focused())}, "text"},
-		{"push button after a button", []Option{Button("first", named("first")), Button("second", named("second"), Focused())}, "second"},
-		{"nested, last wins", []Option{Text(named("outer"), Focused()), HBox(Button("b"), Text(named("inner"), Focused()))}, "inner"},
+		{"text after a button", []Option{Button("first", named("first")), Text(named("text"), Focused())}, "text", nil},
+		// macOS without Full Keyboard Access gives no button the focus.
+		{"push button after a button", []Option{Button("first", named("first")),
+			Button("second", named("second"), Ref(&second), Focused())}, "second", func() bool { return second.Focus() }},
+		{"nested, last wins", []Option{Text(named("outer"), Focused()), HBox(Button("b"), Text(named("inner"), Focused()))}, "inner", nil},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
+			unfocusable := false
 			focusRun(t, func(app *App, w *Window) { w.Add(tc.opts...) }, func(when string, focus *swt.Control) {
-				if got := focusName(focus); got != tc.want {
-					t.Errorf("%s: focus on %s, want %s", when, got, tc.want)
+				got := focusName(focus)
+				if got == tc.want || unfocusable {
+					return
 				}
+				if tc.focusable != nil && !tc.focusable() {
+					unfocusable = true
+					return
+				}
+				t.Errorf("%s: focus on %s, want %s", when, got, tc.want)
 			})
+			if unfocusable {
+				t.Skipf("%s cannot take the focus here", tc.want)
+			}
 		})
 	}
 }

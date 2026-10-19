@@ -147,7 +147,10 @@ func TestSidebarFocus(t *testing.T) {
 						gowt.VBox(append([]gowt.Option{gowt.Ref(&content)}, tc.content...)...))
 					look.SetSidebar(w, sidebar, content, 200)
 					w.Show()
-					got = append(got, focusName(app))
+					// On macOS the first window of the process becomes key only after Show.
+					if app.Unwrap().GetActiveShell() == w.Unwrap() {
+						got = append(got, focusName(app))
+					}
 					app.After(200*time.Millisecond, func() { got = append(got, focusName(app)); w.Close() })
 				})
 			})

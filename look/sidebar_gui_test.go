@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/icons"
 	"github.com/haiodo/gowt/look"
 	"github.com/haiodo/gowt/swt"
 )
@@ -180,4 +181,75 @@ func focusName(app *gowt.App) string {
 		return s
 	}
 	return c.GetName()
+}
+
+// A Table without columns, header and grid lines is the row-with-icon list of a sidebar (a List row has
+// no image). Its rows must not be lower than a List's, show the image before the text, and take the arrow keys.
+func TestSidebarIconTable(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	var listH, tableH, rowH, imgX, textX, textW int32
+	var imgW int32
+	var sel []int
+	var err error
+	onMain(func() {
+		err = gowt.Run(func(app *gowt.App) {
+			w := app.Window("sidebar")
+			var sidebar, content *gowt.Panel
+			var list *gowt.ListView
+			var table *gowt.TableView
+			w.Add(
+				gowt.VBox(gowt.Ref(&sidebar), gowt.Padding(0), gowt.Gap(0),
+					gowt.List([]string{"a", "b", "c"}, gowt.NoBorder(), gowt.Size(0, 100), gowt.Ref(&list)),
+					gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Ref(&table), gowt.Init(func(tv *gowt.TableView) {
+						tv.ShowHeader(false)
+						tv.ShowLines(false)
+						for _, s := range []string{"a", "b", "c"} {
+							tv.Row(s).SetImageAt(0, icons.Get(app, "file"))
+						}
+					}))),
+				gowt.VBox(gowt.Ref(&content), gowt.Label("content")))
+			look.SetSidebar(w, sidebar, content, 240)
+			w.Show()
+			listH = list.Unwrap().GetItemHeight()
+			tableH = table.Unwrap().GetItemHeight()
+			item := table.Unwrap().GetItem(1)
+			rowH = item.GetBounds().Height
+			imgX, imgW = item.GetImageBounds(0).X, item.GetImageBounds(0).Width
+			textX, textW = item.GetTextBounds(0).X, item.GetTextBounds(0).Width
+			table.OnSelect(func(i int) { sel = append(sel, i) })
+			table.Select(0)
+			tbl := table.Unwrap()
+			tbl.SetFocus()
+			app.After(200*time.Millisecond, func() {
+				for _, k := range []int32{swt.ARROW_DOWN, swt.ARROW_DOWN, swt.ARROW_UP} {
+					ev := swt.NewEvent()
+					ev.Type, ev.KeyCode = swt.KeyDown, k
+					app.Unwrap().Post(ev)
+					ev.Type = swt.KeyUp
+					app.Unwrap().Post(ev)
+				}
+				app.After(500*time.Millisecond, func() {
+					sel = append(sel, table.Index())
+					w.Close()
+				})
+			})
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("item height list %d table %d, row bounds height %d, image x %d w %d, text x %d w %d, selection %v",
+		listH, tableH, rowH, imgX, imgW, textX, textW, sel)
+	// An icon can make a row taller than a text-only one (Windows: 19 against 15), never shorter.
+	if tableH < listH {
+		t.Errorf("table row height %d, list row height %d", tableH, listH)
+	}
+	if imgW > 0 && textX < imgX+imgW {
+		t.Errorf("text at x %d overlaps the image at x %d, width %d", textX, imgX, imgW)
+	}
+	if textW <= 0 {
+		t.Errorf("text bounds width %d", textW)
+	}
 }

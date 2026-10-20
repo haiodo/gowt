@@ -81,6 +81,8 @@ gowt.Button("Delete", gowt.OnClick(onDelete))
 gowt.Text(gowt.OnChange(func(s string) { query.Set(s) }), gowt.OnActivate(search))
 gowt.List(names, gowt.OnSelect(func(i int) { show(names[i]) }), gowt.OnActivate(open))
 gowt.Tree(gowt.OnSelect(func(n *gowt.Node) { show(n.Text()) }))
+// a List row has no icon: a row with an icon is a Table without columns
+gowt.Table(gowt.Init(func(t *gowt.TableView) { t.ShowHeader(false); t.ShowLines(false); t.Row(name).SetImageAt(0, img) }))
 gowt.Switch("Wi-Fi", gowt.Checked(true), gowt.OnChange(func(on bool) { wifi(on) }))
 gowt.Scale(0, 100, gowt.Value(30), gowt.OnChange(func(v int) { volume(v) }))
 

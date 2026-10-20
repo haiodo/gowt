@@ -428,6 +428,15 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.remeasureLabel()' "$TI_GO")" = 2 ] || { echo "port.sh: TabItem remeasureLabel rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Button.drawBezelWithFrame draws its own bezel, a rectangle filled with the background colour at full opacity,
+# whenever the button has a background, check boxes included. An alpha-0 background (package look gives one to the
+# controls on a sidebar or inspector glass) came out as a black bar over the box and its text; it now leaves the bezel to AppKit.
+if [ "$PLATFORM" = cocoa ]; then
+	BZ_GO=swt/widgets_button_darwin.go
+	perl -0pi -e 's/(func \(this \*Button\) drawBezelWithFrame_inView_\(id int64, sel int64, cellFrame cocoa\.NSRect, viewid int64\) \{\n\tif this\.background != \(nil\))( \{\n)/$1 \&\& this.background[3] != 0$2/' "$BZ_GO"
+	[ "$(grep -c 'this.background != (nil) && this.background\[3\] != 0 {' "$BZ_GO")" = 1 ] || { echo "port.sh: Button transparent bezel rewrite did not apply" >&2; exit 1; }
+fi
+
 # gtk TabFolder sizes the selected page's control from the notebook page's allocation. A page that GTK has not allocated
 # yet (added after show, or selected before the first allocation) reports 1x1, and the control stayed 1x1: an empty page.
 # swt/widgets_tabfolder_manual_linux.go sizes the control again when GTK allocates its page.

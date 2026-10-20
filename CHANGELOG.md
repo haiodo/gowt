@@ -6,6 +6,9 @@ New API
 - `look.SetInspector(w, content, inspector, width)`, a right-hand inspector pane, alone or next to a `look.SetSidebar` sidebar (sidebar | content | inspector), with `SetInspectorVisible`, `InspectorVisible`, `SetInspectorWidth`, `InspectorWidth` and `OnInspectorChange` as for the sidebar (requested by fusion-desktop). On macOS 26 it is edge-to-edge Liquid Glass alongside the content, flush with the window edges and running under the toolbar, which is how AppKit draws an `NSSplitViewController` inspector (WWDC25 session 310); older macOS shows a flush material, Windows and Linux a plain panel with a hairline divider. The user drags its left edge; the drag stops at 160 points and leaves the content 200, and never hides the inspector. The window minimum counts it. `cmd/finderdemo` has an Info inspector with a `sidebar.right` toolbar toggle and View > Hide Inspector (Ctrl+Cmd+I on macOS).
 - `look.SetToolbar` on Windows and Linux draws `sidebar.right`, and gives its bar to a `SetInspector` window without a sidebar too.
 
+Fixes
+- macOS: a check box or radio button in a `look.SetSidebar` sidebar (and now an inspector) was a black bar, its box and text hidden. The pane gives it an alpha-0 background, and SWT's `Button` drew its own bezel in the background colour at full opacity whenever a background was set; a transparent background now leaves the bezel to AppKit (`tooling/port.sh` rewrites `drawBezelWithFrame_inView_`). The look GUI test `TestPanesNoBlackFill` captures a window with every kind of control on both panes and fails on a black fill.
+
 ## v0.9.4 (2026-10-20)
 
 New API

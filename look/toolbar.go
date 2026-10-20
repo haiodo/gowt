@@ -13,13 +13,38 @@ import (
 // gowt has the same key.
 const titleHookKey = "gowt.look.title"
 
-// barSymbols are the SF Symbols the bar draws itself, as strokes in a 24-point box; an item
-// with another symbol shows its title.
+// barSymbols are the SF Symbols the bar draws itself, as strokes in a 24-point box (fill="currentColor"
+// where the symbol is solid); an item with another symbol shows its title as text.
 var barSymbols = map[string]string{
 	"chevron.backward":    `<path d="M15 6l-6 6 6 6"/>`,
 	"chevron.forward":     `<path d="M9 6l6 6-6 6"/>`,
 	"plus":                `<path d="M12 5v14M5 12h14"/>`,
 	"square.and.arrow.up": `<path d="M12 3v12M8 7l4-4 4 4M6 11v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8"/>`,
+
+	"square.and.arrow.down":      `<path d="M12 3v12M8 11l4 4 4-4M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/>`,
+	"terminal":                   `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 10l3 2-3 2M12 15h5"/>`,
+	"shippingbox":                `<path d="M12 3l8 4v10l-8 4-8-4V7zM4 7l8 4 8-4M12 11v10"/>`,
+	"folder":                     `<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>`,
+	"doc":                        `<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5"/>`,
+	"house":                      `<path d="M4 11l8-7 8 7M6 10v10h12V10M10 20v-6h4v6"/>`,
+	"sidebar.left":               `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>`,
+	"gearshape":                  `<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>`,
+	"magnifyingglass":            `<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>`,
+	"trash":                      `<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>`,
+	"arrow.clockwise":            `<path d="M20 12a8 8 0 1 1-2.34-5.66M17.7 2.5v4.5h-4.5"/>`,
+	"arrow.up":                   `<path d="M12 20V5M6 11l6-6 6 6"/>`,
+	"arrow.down":                 `<path d="M12 4v15M6 13l6 6 6-6"/>`,
+	"checkmark":                  `<path d="M5 12.5l4.5 4.5L19 7"/>`,
+	"xmark":                      `<path d="M6 6l12 12M18 6L6 18"/>`,
+	"minus":                      `<path d="M5 12h14"/>`,
+	"play.fill":                  `<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>`,
+	"stop.fill":                  `<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>`,
+	"pause.fill":                 `<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>`,
+	"info.circle":                `<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>`,
+	"ellipsis.circle":            `<circle cx="12" cy="12" r="9"/><path d="M8 12h.01M12 12h.01M16 12h.01"/>`,
+	"line.3.horizontal.decrease": `<path d="M4 7h16M7 12h10M10 17h4"/>`,
+	"list.bullet":                `<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>`,
+	"square.grid.2x2":            `<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>`,
 }
 
 const barSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">%s</svg>`

@@ -1,8 +1,10 @@
 package look
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/haiodo/gowt/svg"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -20,5 +22,30 @@ func TestBarForeground(t *testing.T) {
 	}
 	if got := *blend(black, white, 40); got != (swt.RGB{Red: 102, Green: 102, Blue: 102}) {
 		t.Errorf("blend 40%%: %v", got)
+	}
+}
+
+func TestBarSymbolsRender(t *testing.T) {
+	for name, shape := range barSymbols {
+		data := fmt.Sprintf(barSVG, shape)
+		for _, zoom := range []int32{100, 200} {
+			img := svg.NewImageDataProvider([]byte(data), 16, 16, "#000000").GetImageData(zoom)
+			if img == nil {
+				t.Errorf("%s: does not render at zoom %d", name, zoom)
+				continue
+			}
+			inked := false
+			for y := int32(0); y < img.Height && !inked; y++ {
+				for x := int32(0); x < img.Width; x++ {
+					if img.GetAlpha(x, y) > 0 {
+						inked = true
+						break
+					}
+				}
+			}
+			if !inked {
+				t.Errorf("%s: blank at zoom %d", name, zoom)
+			}
+		}
 	}
 }

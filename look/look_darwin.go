@@ -34,10 +34,14 @@ func clearBackground(c *swt.Composite, on bool) {
 		c.SetBackgroundMode(swt.NONE)
 		return
 	}
-	col := swt.NewColorDeviceRedGreenBlueAlpha(c.GetDisplay(), 0, 0, 0, 0)
-	c.SetBackgroundWithColor(col)
-	col.Dispose()
+	c.SetBackgroundWithColor(clearColor(c.GetDisplay()))
 	c.SetBackgroundMode(swt.INHERIT_FORCE)
+}
+
+// clearColor is never disposed: StyledText and SashForm keep the Color itself and fail on a disposed one
+// at the next paint or new sash. A cocoa Color holds no native resource.
+func clearColor(d *swt.Display) *swt.Color {
+	return swt.NewColorDeviceRedGreenBlueAlpha(d, 0, 0, 0, 0)
 }
 
 func setGlass(c *swt.Composite, on bool) {
@@ -54,8 +58,13 @@ func setGlass(c *swt.Composite, on bool) {
 		c.AddControlListener(swt.ControlListenerControlMovedAdapter(func(*swt.ControlEvent) { cocoa.SyncBackdrop(c.View) }))
 		c.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { cocoa.SyncBackdrop(c.View) }))
 	}
-	if on || had {
-		clearBackground(c, on)
+	switch {
+	case on:
+		clearTree(c)
+		clearAdded(c)
+	case had:
+		clearBackground(c, false)
+		delete(clearRoots, c)
 	}
 }
 
@@ -148,6 +157,7 @@ func setSidebarChrome(s *swt.Shell, sb *swt.Composite, sash *swt.Control) {
 	cocoa.InstallBackdrop(sb.View, cocoa.BackdropGlass, false)
 	cocoa.SetGlassCornerRadius(sb.View, sidebarRadius)
 	clearTree(sb)
+	clearAdded(sb)
 	clearControl(sash)
 	if !sidebarShells[s] {
 		sidebarShells[s] = true
@@ -189,32 +199,95 @@ func (d *sidebarHooks) WidgetDisposed(*swt.DisposeEvent) {
 // clearTree makes c and the controls under it paint no background of their own, so the sidebar glass
 // shows, and gives lists, tables and trees the source-list style. Each control gets its own alpha-0
 // background: SWT fills a control without one in the default window colour, and an alpha-0 background of
-// a parent does not count as one there. Controls added later are not covered.
+// a parent does not count as one there.
 func clearTree(c *swt.Composite) {
 	clearBackground(c, true)
 	for _, ch := range c.GetChildren() {
-		switch v := ch.Impl().(type) {
-		case *swt.List, *swt.Table, *swt.Tree:
+		clearChild(ch, true)
+	}
+}
+
+// clearChild clears one control under a cleared composite, and with deep the controls inside it. A control
+// with a background of its own (set by the app, or already cleared) keeps it; the controls inside it do not.
+func clearChild(ch *swt.Control, deep bool) {
+	own := !ch.GetBackgroundColor().Equals(ch.DefaultBackground())
+	var sub *swt.Composite
+	switch v := ch.Impl().(type) {
+	case *swt.List, *swt.Table, *swt.Tree:
+		if !own {
 			cocoa.SetSourceList(ch.View)
 			clearControl(ch)
-		case *swt.Label, *swt.Link:
+		}
+	case *swt.Label, *swt.Link, *swt.StyledText:
+		if !own {
 			clearControl(ch)
-		case *swt.Button:
-			if v.GetStyle()&(swt.CHECK|swt.RADIO) != 0 {
-				clearControl(ch)
-			}
-		case *swt.Group:
-			clearTree(&v.Composite)
-		case *swt.Composite:
-			clearTree(v)
+		}
+	case *swt.Button:
+		if !own && v.GetStyle()&(swt.CHECK|swt.RADIO) != 0 {
+			clearControl(ch)
+		}
+	case *swt.Group:
+		sub = &v.Composite
+	case *swt.ScrolledComposite:
+		sub = &v.Composite
+	case *swt.SashForm:
+		sub = &v.Composite
+	case *swt.Composite:
+		sub = v
+	}
+	if sub == nil {
+		return
+	}
+	if !own {
+		clearBackground(sub, true)
+	}
+	if deep {
+		for _, c := range sub.GetChildren() {
+			clearChild(c, true)
+		}
+	}
+}
+
+// clearRoots are the composites of SetGlass and SetSidebar. SWT sends a Skin event for every new widget on
+// the next event-loop turn, before it is drawn; a control created under a root then gets clearChild.
+var (
+	clearRoots   = map[*swt.Composite]bool{}
+	skinDisplays = map[*swt.Display]bool{}
+)
+
+func clearAdded(c *swt.Composite) {
+	if !clearRoots[c] {
+		clearRoots[c] = true
+		c.AddDisposeListener(clearRoot{c})
+	}
+	d := c.GetDisplay()
+	if !skinDisplays[d] {
+		skinDisplays[d] = true
+		d.AddListener(swt.Skin, clearRoot{})
+		d.DisposeExec(jrt.NewRunnable(func() { delete(skinDisplays, d) }))
+	}
+}
+
+type clearRoot struct{ c *swt.Composite }
+
+func (r clearRoot) WidgetDisposed(*swt.DisposeEvent) { delete(clearRoots, r.c) }
+
+func (clearRoot) HandleEvent(e *swt.Event) {
+	w, ok := e.Widget.Impl().(interface{ AsControl() *swt.Control })
+	if !ok {
+		return
+	}
+	ch := w.AsControl()
+	for p := ch.GetParent(); p != nil; p = p.GetParent() {
+		if clearRoots[p] {
+			clearChild(ch, false)
+			return
 		}
 	}
 }
 
 func clearControl(c *swt.Control) {
-	col := swt.NewColorDeviceRedGreenBlueAlpha(c.GetDisplay(), 0, 0, 0, 0)
-	c.SetBackgroundWithColor(col)
-	col.Dispose()
+	c.SetBackgroundWithColor(clearColor(c.GetDisplay()))
 }
 
 // debugSidebar prints, for every list, table and tree in the sidebar of s, the SWT background state

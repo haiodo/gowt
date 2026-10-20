@@ -428,6 +428,15 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.remeasureLabel()' "$TI_GO")" = 2 ] || { echo "port.sh: TabItem remeasureLabel rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Composite.drawBackground(GC, ...) fills with the GC background when no control up the tree has a visible background,
+# and GC fills ignore a colour's alpha: a StyledText with an alpha-0 background (look.SetGlass) painted its lines opaque black.
+# A fully transparent GC background fills nothing.
+if [ "$PLATFORM" = cocoa ]; then
+	DB_GO=swt/widgets_composite_darwin.go
+	perl -0pi -e 's/(\t\t\}\n\t\} else )\{\n\t\tgc\.FillRectangle\(x, y, width, height\)\n\t\}\n\}\n\nfunc \(this \*Composite\) drawBackground_/$1if bg := gc.GetGCData().Background; bg == nil || bg[3] != 0 {\n\t\tgc.FillRectangle(x, y, width, height)\n\t}\n}\n\nfunc (this *Composite) drawBackground_/' "$DB_GO"
+	[ "$(grep -c 'bg == nil || bg\[3\] != 0' "$DB_GO")" = 1 ] || { echo "port.sh: Composite.drawBackground rewrite did not apply" >&2; exit 1; }
+fi
+
 # gtk TabFolder sizes the selected page's control from the notebook page's allocation. A page that GTK has not allocated
 # yet (added after show, or selected before the first allocation) reports 1x1, and the control stayed 1x1: an empty page.
 # swt/widgets_tabfolder_manual_linux.go sizes the control again when GTK allocates its page.

@@ -213,17 +213,19 @@ func TestSidebarIconTable(t *testing.T) {
 				gowt.VBox(gowt.Ref(&content), gowt.Label("content")))
 			look.SetSidebar(w, sidebar, content, 240)
 			w.Show()
-			listH = list.Unwrap().GetItemHeight()
-			tableH = table.Unwrap().GetItemHeight()
-			item := table.Unwrap().GetItem(1)
-			rowH = item.GetBounds().Height
-			imgX, imgW = item.GetImageBounds(0).X, item.GetImageBounds(0).Width
-			textX, textW = item.GetTextBounds(0).X, item.GetTextBounds(0).Width
 			table.OnSelect(func(i int) { sel = append(sel, i) })
 			table.Select(0)
 			tbl := table.Unwrap()
 			tbl.SetFocus()
 			app.After(200*time.Millisecond, func() {
+				// GTK sizes the table's column on the allocation after Show; the minimum window size that
+				// SetSidebar sets defers that allocation to the event loop.
+				listH = list.Unwrap().GetItemHeight()
+				tableH = table.Unwrap().GetItemHeight()
+				item := table.Unwrap().GetItem(1)
+				rowH = item.GetBounds().Height
+				imgX, imgW = item.GetImageBounds(0).X, item.GetImageBounds(0).Width
+				textX, textW = item.GetTextBounds(0).X, item.GetTextBounds(0).Width
 				if blocked = postBlocked(app); blocked != "" {
 					w.Close()
 					return
@@ -266,7 +268,7 @@ func TestSidebarIconTable(t *testing.T) {
 
 // sidebarWindow opens a sidebar window of 900 by 600 points with a toolbar of items, or by default
 // one whose first item is over the sidebar, and runs check once it is on screen.
-func sidebarWindow(t *testing.T, items []look.ToolbarItem, check func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool)) {
+func sidebarWindow(t *testing.T, items []look.ToolbarItem, width int, check func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool)) {
 	t.Helper()
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
@@ -278,7 +280,7 @@ func sidebarWindow(t *testing.T, items []look.ToolbarItem, check func(app *gowt.
 			var sidebar, content *gowt.Panel
 			w.Add(gowt.VBox(gowt.Ref(&sidebar), gowt.List([]string{"a", "b"}, gowt.Grow())),
 				gowt.VBox(gowt.Ref(&content), gowt.Label("content")))
-			look.SetSidebar(w, sidebar, content, 220)
+			look.SetSidebar(w, sidebar, content, width)
 			if items == nil {
 				items = []look.ToolbarItem{{Title: "Sidebar", Symbol: "sidebar.left", Sidebar: true},
 					{Title: "Share", Symbol: "square.and.arrow.up"}}
@@ -310,7 +312,7 @@ func barLead(w *gowt.Window, sidebar, content *gowt.Panel) *swt.Control {
 }
 
 func TestSidebarHide(t *testing.T) {
-	sidebarWindow(t, nil, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+	sidebarWindow(t, nil, 220, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
 		var changes []string
 		look.OnSidebarChange(w, func(visible bool, width int) { changes = append(changes, fmt.Sprint(visible, width)) })
 		r := w.Unwrap().GetClientArea()
@@ -362,7 +364,7 @@ func sashOf(w *gowt.Window) *swt.Sash {
 // A drag delivered as the events a Sash sends: Selection with the new sash x between the mouse
 // down and up. The pointer does not move; TestSidebarPostedDrag moves it.
 func TestSidebarDragEvents(t *testing.T) {
-	sidebarWindow(t, nil, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+	sidebarWindow(t, nil, 220, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
 		var changes []string
 		look.OnSidebarChange(w, func(visible bool, width int) { changes = append(changes, fmt.Sprint(visible, width)) })
 		sash := sashOf(w)
@@ -411,7 +413,7 @@ func TestSidebarDragEvents(t *testing.T) {
 // A real drag of the sidebar edge by 60 points, through the system's input (postMouse).
 func TestSidebarPostedDrag(t *testing.T) {
 	skip := ""
-	sidebarWindow(t, nil, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+	sidebarWindow(t, nil, 220, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
 		if skip = postBlocked(app); skip != "" {
 			return
 		}
@@ -458,7 +460,7 @@ func TestSidebarItemsMinWidth(t *testing.T) {
 	for _, s := range []string{"Scan Node.js", "Scan Docker", "Open Profile..."} {
 		items = append(items, look.ToolbarItem{Title: s, Sidebar: true})
 	}
-	sidebarWindow(t, items, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+	sidebarWindow(t, items, 220, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
 		look.SetSidebarWidth(w, 500)
 		app.Flush()
 		look.SetSidebarWidth(w, 120)
@@ -481,6 +483,61 @@ func TestSidebarItemsMinWidth(t *testing.T) {
 		if !look.SidebarVisible(w) || look.SidebarWidth(w) != least || got != x0 {
 			t.Errorf("dragged 60 points below the narrowest %d: visible %v, width %d, sash at %d, want it to stay at %d",
 				least, look.SidebarVisible(w), look.SidebarWidth(w), got, x0)
+		}
+	})
+}
+
+// A width below the narrowest, given to SetSidebar, is laid out at the narrowest, so the first drag
+// moves the divider by no more than the pointer moved.
+func TestSidebarNarrowStart(t *testing.T) {
+	var items []look.ToolbarItem
+	for _, s := range []string{"Scan Node.js", "Scan Docker", "Open Profile..."} {
+		items = append(items, look.ToolbarItem{Title: s, Sidebar: true})
+	}
+	sidebarWindow(t, items, 100, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+		least := look.SidebarWidth(w)
+		if least <= 100 || sidebar.Unwrap().GetBounds().Width != int32(least) {
+			t.Errorf("SetSidebar width 100: SidebarWidth %d, sidebar laid out %d wide", least, sidebar.Unwrap().GetBounds().Width)
+		}
+		sash := sashOf(w)
+		send := func(typ int32, x int32) int32 {
+			e := swt.NewEvent()
+			e.X, e.Y, e.Button = x, sash.GetBounds().Y, 1
+			sash.NotifyListeners(typ, e)
+			return e.X
+		}
+		x0 := sash.GetBounds().X
+		send(swt.MouseDown, 0)
+		got := send(swt.Selection, x0+1)
+		send(swt.MouseUp, 0)
+		if got != x0+1 || look.SidebarWidth(w) != least+1 {
+			t.Errorf("drag by 1 from x %d: sash at %d, width %d, want %d", x0, got, look.SidebarWidth(w), least+1)
+		}
+	})
+}
+
+// The window cannot get narrower than the sidebar and 200 points of content, or the content alone
+// while the sidebar is hidden; a larger minimum the app set stays.
+func TestSidebarMinSize(t *testing.T) {
+	sidebarWindow(t, nil, 220, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+		s := w.Unwrap()
+		trim := s.GetSize().X - s.GetClientArea().Width
+		shown := content.Unwrap().GetBounds().X - s.GetClientArea().X + 200 + trim
+		if got := s.GetMinimumSize().X; got != shown {
+			t.Errorf("shown: minimum width %d, want %d", got, shown)
+		}
+		look.SetSidebarVisible(w, false)
+		if got := s.GetMinimumSize().X; got != 200+trim {
+			t.Errorf("hidden: minimum width %d, want %d", got, 200+trim)
+		}
+		w.SetMinSize(int(shown)+50, 300)
+		look.SetSidebarVisible(w, true)
+		if got := s.GetMinimumSize(); got.X != shown+50 || got.Y != 300 {
+			t.Errorf("app minimum %d x 300 under a sidebar: %d x %d", shown+50, got.X, got.Y)
+		}
+		look.SetSidebarWidth(w, 600)
+		if got := s.GetMinimumSize(); got.X != shown+380 || got.Y != 300 {
+			t.Errorf("sidebar 600 over the app minimum: %d x %d, want %d x 300", got.X, got.Y, shown+380)
 		}
 	})
 }

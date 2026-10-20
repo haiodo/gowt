@@ -4,6 +4,7 @@ package look
 
 import (
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
@@ -248,7 +249,10 @@ type sidebarLayout struct {
 	hidden   bool
 	dragging bool
 	from     int32 // the width when the drag began
-	onChange []func(visible bool, width int)
+	// appMin is the shell minimum size the app set; ownMin the one fitMinSize set last, once ownSet
+	appMin, ownMin [2]int32
+	ownSet         bool
+	onChange       []func(visible bool, width int)
 }
 
 // apply shows or hides the sidebar and lays the window out again. A focus inside a hidden sidebar
@@ -333,7 +337,8 @@ func (l *sidebarLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ boo
 	if l.hidden {
 		side, sb.Y = 0, 0
 	}
-	p := swt.NewPoint(side+ct.X, top+max(sb.Y+in, ct.Y+barHeight(c.GetShell())))
+	// A packed window starts at least as wide as fitMinSize lets it get.
+	p := swt.NewPoint(side+max(ct.X, minContentWidth), top+max(sb.Y+in, ct.Y+barHeight(c.GetShell())))
 	if wHint != swt.DEFAULT {
 		p.X = wHint
 	}
@@ -345,6 +350,8 @@ func (l *sidebarLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ boo
 
 func (l *sidebarLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	r := c.GetClientArea()
+	l.measure()
+	l.fitMin()
 	width := l.width
 	if l.hidden {
 		width = 0
@@ -356,9 +363,56 @@ func (l *sidebarLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	ct = barTop(c.GetShell(), ct)
 	l.content.SetBounds(ct[0], ct[1], ct[2], ct[3])
 	syncSidebar(c.GetShell(), l.sidebar, bg, l.hidden)
-	if e, ok := itemsMinEdge(c.GetShell()); ok && !l.hidden {
-		l.itemsMin = e - bg[0]
+	l.fitMinSize()
+}
+
+// fitMinSize keeps the window as wide as the sidebar and minContentWidth. A shell minimum other than
+// the one set here last came from the app (Window.SetMinSize): it stays the floor, height included.
+func (l *sidebarLayout) fitMinSize() {
+	s := l.w.Unwrap()
+	cur := s.GetMinimumSize()
+	near := func(a, b int32) bool { return a-b <= 1 && b-a <= 1 } // DPI rounding of the shell's own value
+	if !l.ownSet || !near(cur.X, l.ownMin[0]) || !near(cur.Y, l.ownMin[1]) {
+		l.appMin = [2]int32{cur.X, cur.Y}
 	}
+	cw := int32(minContentWidth)
+	if !l.hidden {
+		cw += sidebarInset() + l.width + sidebarDivider()
+	}
+	trim := s.GetSize().X - s.GetClientArea().Width
+	want := [2]int32{max(cw+trim, l.appMin[0]), l.appMin[1]}
+	l.ownMin, l.ownSet = want, true
+	if !near(cur.X, want[0]) || !near(cur.Y, want[1]) {
+		s.SetMinimumSize(want[0], want[1])
+	}
+}
+
+// measure takes the room of the Sidebar items from the macOS toolbar's last layout; it reports
+// whether there was a measurement.
+func (l *sidebarLayout) measure() bool {
+	s := l.w.Unwrap()
+	e, ok := itemsMinEdge(s)
+	if ok && !l.hidden {
+		l.itemsMin = e - s.GetClientArea().X - sidebarInset()
+	}
+	return ok
+}
+
+// fitMin raises a sidebar narrower than minWidth to it, so the divider is drawn where a drag starts;
+// OnSidebarChange hears of it after the layout pass, not inside it.
+func (l *sidebarLayout) fitMin() bool {
+	m := l.minWidth()
+	if l.width >= m {
+		return false
+	}
+	l.width = m
+	s := l.w.Unwrap()
+	s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
+		if !s.IsDisposed() {
+			l.notify()
+		}
+	}))
+	return true
 }
 
 // sashGrip is the width of the sash where the sidebar leaves no gap for it (div 0): it lies over the

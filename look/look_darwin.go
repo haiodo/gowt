@@ -258,6 +258,21 @@ func itemsMinEdge(s *swt.Shell) (int32, bool) {
 	return int32(math.Ceil(e)), ok
 }
 
+// The toolbar lays its items out after the window layout ran, so a sidebar narrower than its Sidebar
+// items is raised to them from here, before the user can drag it.
+func init() {
+	cocoa.SidebarToolbarLaidOut = func(win uintptr) {
+		for s := range sidebarShells {
+			if s.IsDisposed() || uintptr(s.View.Window().Id) != win || s.GetLayout() == nil {
+				continue
+			}
+			if l, ok := s.GetLayout().Impl().(*sidebarLayout); ok && l.measure() && l.fitMin() {
+				s.Layout()
+			}
+		}
+	}
+}
+
 // lastMinEdge keeps GOWT_SIDEBAR_DEBUG from printing the same measurement on every layout.
 var lastMinEdge = map[*swt.Shell]float64{}
 

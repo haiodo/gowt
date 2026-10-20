@@ -341,6 +341,10 @@ var (
 	msgF64Ret   func(self, sel uintptr, v float64) uintptr
 )
 
+// SidebarToolbarLaidOut, when set, runs with the NSWindow after its toolbar laid the sidebar
+// spacers out, which is when SidebarItemsMinEdge has a new measurement.
+var SidebarToolbarLaidOut func(window uintptr)
+
 // newSpacer returns the view of the spacer item, retained, and its width constraint. Its layout refits
 // the width, since the toolbar places the item after the window layout ran; the refit is queued on the
 // run loop, because a constraint changed inside the toolbar's layout pass asks for another pass.
@@ -352,8 +356,12 @@ func newSpacer() (view, width uintptr) {
 			msg(self, "performSelectorOnMainThread:withObject:waitUntilDone:", sel("gowtFit"), 0, 0)
 		})
 		fit := purego.NewCallback(func(self, _ uintptr) {
+			defer enterCallback()()
 			if w := msg(self, "window"); w != 0 {
 				fitSpacer(w)
+				if SidebarToolbarLaidOut != nil {
+					SidebarToolbarLaidOut(w)
+				}
 			}
 		})
 		spacerClass = allocClass(class("NSView"), "GowtToolbarSpacer", 0)

@@ -4513,7 +4513,7 @@ func GTKGtk_cell_renderer_set_fixed_size(cell int64, width int32, height int32) 
 var r_GTKGtk_cell_renderer_text_new = lz[func() uintptr]{sym: "gtk_cell_renderer_text_new"}
 
 func GTKGtk_cell_renderer_text_new() int64 {
-	return int64(r_GTKGtk_cell_renderer_text_new.get()())
+	return wrapGTKGtk_cell_renderer_text_new(int64(r_GTKGtk_cell_renderer_text_new.get()()))
 }
 
 var r_GTKGtk_cell_renderer_toggle_new = lz[func() uintptr]{sym: "gtk_cell_renderer_toggle_new"}

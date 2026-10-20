@@ -407,6 +407,8 @@ func (this *Table) vtDrawCell(view int64, check bool) {
 		}
 	}
 	frame := tv.FrameOfCellAtColumn(col, row)
+	// SWT clips cell text; Finder and AppKit lists end it with an ellipsis.
+	cell.SetLineBreakMode(int64(cocoa.OSNSLineBreakByTruncatingTail))
 	vtDrawContext(v, frame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 
@@ -442,6 +444,7 @@ func (this *List) vtDrawCell(view int64) {
 		cell.SetHighlighted(false)
 		cocoa.Msg(cell.Id, "setTextColor:", cocoa.Msg(cocoa.OSObjc_getClass("NSColor"), "controlAccentColor"))
 	}
+	cell.SetLineBreakMode(int64(cocoa.OSNSLineBreakByTruncatingTail))
 	vtDrawContext(cocoa.NewNSViewOverload1(view), cellFrame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 
@@ -618,6 +621,7 @@ func (this *Tree) vtDrawCell(view int64, check bool) {
 	cell.SetHighlighted(ov.IsRowSelected(row))
 	this.outlineView_willDisplayCell_forTableColumn_item_(ov.Id, 0, ov.Id, cell.Id, column, itemID)
 	frame := ov.FrameOfCellAtColumn(col, row)
+	cell.SetLineBreakMode(int64(cocoa.OSNSLineBreakByTruncatingTail))
 	vtDrawContext(v, frame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 

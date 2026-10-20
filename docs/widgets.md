@@ -78,7 +78,7 @@ app.OnThemeChange(func(bool) { files.RowAt(0).SetImageAt(0, icons.Get(app, "file
 
 All images of one Table or Tree, in every row and column, get the size of the first image it was given; this is SWT's model on every platform (macOS `Table.imageBounds`, Windows one image list per table, GTK one fixed cell size). On macOS a larger or smaller image is scaled into that box; on Linux `GetImageBounds` reports it (a 28x20 badge in column 1 after a 16x16 icon in column 0 gets 16-point-wide bounds). Images of different widths, such as count badges next to icons, therefore go onto transparent canvases of one size.
 
-`Column.SetWidth` changes that column only: SWT turns AppKit's column autoresizing off. On macOS a Table or Tree in a `look.SetSidebar` sidebar has the source-list style, which pads both row ends (31 points on macOS 26); its client area (`Unwrap().GetClientArea()`) leaves the padding out, so columns that add up to the client width fit the visible width.
+`Column.SetWidth` changes that column only: SWT turns AppKit's column autoresizing off, and the sidebar look restores the widths AppKit changes when it switches the style. On macOS a Table or Tree in a `look.SetSidebar` sidebar has the source-list style, which pads both row ends (31 points on macOS 26); its client area (`Unwrap().GetClientArea()`) leaves the padding out, so columns that add up to the client width fit the visible width.
 
 ## Any control
 

@@ -48,10 +48,20 @@ func SetSourceList(view *NSView) {
 		msg(v, selector, arg)
 		msg(v, "setDelegate:", d)
 	}
+	// Columns that fill the table exactly are fitted again by setStyle: (_sizeTableColumnsToFitWidth:), whatever
+	// the column autoresizing style: the padding comes off a column with the autoresizing mask. SWT's widths stay.
+	tv := NewNSTableViewOverload1(int64(v))
+	cols := tv.TableColumns()
+	widths := make([]float64, cols.Count())
+	for i := range widths {
+		widths[i] = NewNSTableColumnOverload1(cols.ObjectAtIndex(int64(i)).Id).Width()
+	}
 	quiet("setStyle:", tableStyleSourceList)
+	for i, w := range widths {
+		NewNSTableColumnOverload1(cols.ObjectAtIndex(int64(i)).Id).SetWidth(w)
+	}
 	// The source-list style sizes rows from the sidebar icon size setting, apart from rowHeight, which SWT
 	// reads as the item height. A custom size style keeps rowHeight in charge, raised to the measured height.
-	tv := NewNSTableViewOverload1(int64(v))
 	tv.Tile()
 	h := tv.RowHeight()
 	if tv.NumberOfRows() > 0 {

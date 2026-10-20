@@ -29,6 +29,39 @@ func GroupedFillRGB() (r, g, b int32) {
 	return 242, 242, 242
 }
 
+// RoundCorners clips view and its subviews to a continuous-curve rounded rectangle through its layer, so
+// the corners show what lies behind the view; false where the view has no layer.
+func RoundCorners(view *NSView, r float64) bool {
+	v := uintptr(view.Id)
+	msg(v, "setWantsLayer:", 1)
+	l := msg(v, "layer")
+	if l == 0 {
+		return false
+	}
+	if msgF64 == nil {
+		purego.RegisterFunc(&msgF64, objcMsgSend)
+	}
+	msgF64(l, sel("setCornerRadius:"), r)
+	msg(l, "setMasksToBounds:", 1)
+	if respondsTo(l, "setCornerCurve:") {
+		msg(l, "setCornerCurve:", nsString("continuous")) // kCACornerCurveContinuous
+	}
+	return true
+}
+
+// ClearFirstResponder makes the window of view its own first responder, so no control has the focus.
+func ClearFirstResponder(view *NSView) {
+	if w := msg(uintptr(view.Id), "window"); w != 0 {
+		msg(w, "makeFirstResponder:", 0)
+	}
+}
+
+// WindowIsFirstResponder reports whether the window of view is its own first responder.
+func WindowIsFirstResponder(view *NSView) bool {
+	w := msg(uintptr(view.Id), "window")
+	return w != 0 && msg(w, "firstResponder") == w
+}
+
 const tableStyleSourceList = 3
 
 // SetSourceList gives a table or outline view the sidebar look: the source-list style (macOS 11), no

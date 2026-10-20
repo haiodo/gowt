@@ -428,6 +428,15 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.remeasureLabel()' "$TI_GO")" = 2 ] || { echo "port.sh: TabItem remeasureLabel rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Button.drawBezelWithFrame draws its own bezel, a rectangle filled with the background colour at full opacity,
+# whenever the button has a background, check boxes included. An alpha-0 background (package look gives one to the
+# controls on a sidebar or inspector glass) came out as a black bar over the box and its text; it now leaves the bezel to AppKit.
+if [ "$PLATFORM" = cocoa ]; then
+	BZ_GO=swt/widgets_button_darwin.go
+	perl -0pi -e 's/(func \(this \*Button\) drawBezelWithFrame_inView_\(id int64, sel int64, cellFrame cocoa\.NSRect, viewid int64\)\s*\{\n\tif this\.background != \(nil\))( \{\n)/$1 \&\& this.background[3] != 0$2/' "$BZ_GO"
+	[ "$(grep -c 'this.background != (nil) && this.background\[3\] != 0 {' "$BZ_GO")" = 1 ] || { echo "port.sh: Button transparent bezel rewrite did not apply" >&2; exit 1; }
+fi
+
 # cocoa Composite.drawBackground(GC, ...) fills with the GC background when no control up the tree has a visible background,
 # and GC fills ignore a colour's alpha: a StyledText with an alpha-0 background (look.SetGlass) painted its lines opaque black.
 # A fully transparent GC background fills nothing.

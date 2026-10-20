@@ -2,7 +2,9 @@ package gowt
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -237,6 +239,54 @@ func (s *ScrollView) Content() *Panel { return s.body }
 func (s *ScrollView) Fit() {
 	size := s.body.c.ComputeSize(swt.DEFAULT, swt.DEFAULT)
 	s.s.SetMinSizeWidthHeight(size.X, size.Y)
+}
+
+// Origin returns the point of the content shown at the top left corner: 0, 0 before any scroll.
+func (s *ScrollView) Origin() (x, y int) {
+	o := s.s.GetOrigin()
+	return int(o.X), int(o.Y)
+}
+
+// SetOrigin scrolls so that the content's point x, y is at the top left corner, as far as the
+// content reaches.
+func (s *ScrollView) SetOrigin(x, y int) { s.s.SetOriginXY(int32(x), int32(y)) }
+
+// scrollFrame caps OnScroll at 60 calls a second; a 120 Hz display gets one every second frame.
+const scrollFrame = time.Second / 60
+
+// OnScroll runs f with the new Origin after any scroll: the mouse wheel, a trackpad gesture and its
+// momentum, the scroll bars, SetOrigin, a resize that moves the content. Scrolls that come faster than
+// a frame are coalesced into one call; the last call reports where the scroll stopped.
+func (s *ScrollView) OnScroll(f func(x, y int)) {
+	lx, ly := s.Origin()
+	var last time.Time
+	pending := false
+	fire := jrt.NewRunnable(func() {
+		pending = false
+		if s.s.IsDisposed() {
+			return
+		}
+		x, y := s.Origin()
+		if x == lx && y == ly {
+			return
+		}
+		lx, ly, last = x, y, time.Now()
+		f(x, y)
+	})
+	// Every scroll of a ScrolledComposite ends in moving its content; the scroll bars' Selection
+	// misses SetOrigin and the clamp after a resize.
+	s.body.c.AddControlListener(swt.ControlListenerControlMovedAdapter(func(*swt.ControlEvent) {
+		if pending {
+			return
+		}
+		pending = true
+		d := s.s.GetDisplay()
+		if wait := scrollFrame - time.Since(last); wait > 0 {
+			d.TimerExec(int32((wait+time.Millisecond-1)/time.Millisecond), fire)
+		} else {
+			d.AsyncExec(fire)
+		}
+	}))
 }
 
 // Unwrap returns the underlying swt.ScrolledComposite for the full API.

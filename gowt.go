@@ -645,7 +645,12 @@ func (t *TextView) Text() string { return t.t.GetText() }
 func (t *TextView) SetText(s string) { t.t.SetText(s) }
 
 // SetHint sets the placeholder shown while the field is empty.
-func (t *TextView) SetHint(s string) { t.t.SetMessage(s) }
+func (t *TextView) SetHint(s string) {
+	t.t.SetMessage(s)
+	if t.t.GetStyle()&swt.MULTI != 0 {
+		multiHint(t.t)
+	}
+}
 
 // Unwrap returns the underlying swt.Text for the full API.
 func (t *TextView) Unwrap() *swt.Text { return t.t }

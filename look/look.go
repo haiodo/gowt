@@ -134,11 +134,21 @@ func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	SetFullSizeContent(w, true)
 	sb := sidebar.AsComposite()
 	s := w.Unwrap()
-	if old := sidebarOf(w); old != nil {
-		old.sash.Dispose()
-	}
 	l := &sidebarLayout{Layout: swt.NewLayout(), w: w, sidebar: sb, content: &content.AsComposite().Control, width: int32(width)}
 	l.SetImpl_(l)
+	// The shell minimum is read once: on macOS 26 it read back 20 points taller than it was set, so a
+	// value read after each set grew.
+	if old := sidebarOf(w); old != nil {
+		old.sash.Dispose()
+		l.appMin = old.appMin
+	} else {
+		m := s.GetMinimumSize()
+		l.appMin = [2]int32{m.X, m.Y}
+	}
+	s.SetDataKeyValue(minSizeHookKey, func(width, height int) {
+		l.appMin = [2]int32{int32(width), int32(height)}
+		l.fitMinSize()
+	})
 	l.sash = swt.NewSash(s, swt.VERTICAL|swt.SMOOTH)
 	l.sash.MoveAbove(nil)
 	for _, t := range []int32{swt.Selection, swt.MouseDown, swt.MouseUp} {
@@ -158,6 +168,10 @@ func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 		return firstList(sb)
 	})
 }
+
+// minSizeHookKey holds the func that gowt.Window.SetMinSize calls instead of setting the shell
+// minimum; gowt has the same key.
+const minSizeHookKey = "gowt.look.minSize"
 
 // focusDefaultKey holds the func that gowt.Window.Show asks for the control to focus when no widget is
 // Focused; gowt has the same key.
@@ -249,10 +263,10 @@ type sidebarLayout struct {
 	hidden   bool
 	dragging bool
 	from     int32 // the width when the drag began
-	// appMin is the shell minimum size the app set; ownMin the one fitMinSize set last, once ownSet
-	appMin, ownMin [2]int32
-	ownSet         bool
-	onChange       []func(visible bool, width int)
+	// appMin is the minimum size the app set, lastMin the one fitMinSize set last, once minSet
+	appMin, lastMin [2]int32
+	minSet          bool
+	onChange        []func(visible bool, width int)
 }
 
 // apply shows or hides the sidebar and lays the window out again. A focus inside a hidden sidebar
@@ -366,25 +380,21 @@ func (l *sidebarLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	l.fitMinSize()
 }
 
-// fitMinSize keeps the window as wide as the sidebar and minContentWidth. A shell minimum other than
-// the one set here last came from the app (Window.SetMinSize): it stays the floor, height included.
+// fitMinSize keeps the window as wide as the sidebar and minContentWidth, and never below the minimum
+// the app gave Window.SetMinSize, height included.
 func (l *sidebarLayout) fitMinSize() {
 	s := l.w.Unwrap()
-	cur := s.GetMinimumSize()
-	near := func(a, b int32) bool { return a-b <= 1 && b-a <= 1 } // DPI rounding of the shell's own value
-	if !l.ownSet || !near(cur.X, l.ownMin[0]) || !near(cur.Y, l.ownMin[1]) {
-		l.appMin = [2]int32{cur.X, cur.Y}
-	}
 	cw := int32(minContentWidth)
 	if !l.hidden {
 		cw += sidebarInset() + l.width + sidebarDivider()
 	}
 	trim := s.GetSize().X - s.GetClientArea().Width
 	want := [2]int32{max(cw+trim, l.appMin[0]), l.appMin[1]}
-	l.ownMin, l.ownSet = want, true
-	if !near(cur.X, want[0]) || !near(cur.Y, want[1]) {
-		s.SetMinimumSize(want[0], want[1])
+	if l.minSet && want == l.lastMin {
+		return
 	}
+	l.lastMin, l.minSet = want, true
+	s.SetMinimumSize(want[0], want[1])
 }
 
 // measure takes the room of the Sidebar items from the macOS toolbar's last layout; it reports

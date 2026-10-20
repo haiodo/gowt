@@ -83,6 +83,9 @@ func main() {
 				gowt.Pages(gowt.Grow(), gowt.Ref(&views), appearance(), general(), dock())))
 
 		look.SetSidebar(w, sidebar, content, 220)
+		// The sections need more than the 200 points of content SetSidebar keeps; with a wider sidebar
+		// the content gets narrower again, since the minimum is the whole window's.
+		w.SetMinSize(640, 400)
 		var keys []gowt.Option
 		if runtime.GOOS == "darwin" {
 			keys = append(keys, gowt.Shortcut("Ctrl+Cmd+S")) // elsewhere Cmd is Ctrl, and Ctrl+S is Save

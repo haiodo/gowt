@@ -531,13 +531,25 @@ func TestSidebarMinSize(t *testing.T) {
 			t.Errorf("hidden: minimum width %d, want %d", got, 200+trim)
 		}
 		w.SetMinSize(int(shown)+50, 300)
+		// macOS 26 reads the minimum height back 20 points taller than it was set; it must not grow.
+		h := s.GetMinimumSize().Y
+		if got := s.GetMinimumSize(); got.X != shown+50 || h < 300 {
+			t.Errorf("app minimum %d x 300 with the sidebar hidden: %d x %d", shown+50, got.X, got.Y)
+		}
 		look.SetSidebarVisible(w, true)
-		if got := s.GetMinimumSize(); got.X != shown+50 || got.Y != 300 {
-			t.Errorf("app minimum %d x 300 under a sidebar: %d x %d", shown+50, got.X, got.Y)
+		if got := s.GetMinimumSize(); got.X != shown+50 || got.Y != h {
+			t.Errorf("app minimum %d x 300 under a sidebar: %d x %d, height was %d", shown+50, got.X, got.Y, h)
 		}
 		look.SetSidebarWidth(w, 600)
-		if got := s.GetMinimumSize(); got.X != shown+380 || got.Y != 300 {
-			t.Errorf("sidebar 600 over the app minimum: %d x %d, want %d x 300", got.X, got.Y, shown+380)
+		for range 3 {
+			s.Layout()
+		}
+		if got := s.GetMinimumSize(); got.X != shown+380 || got.Y != h {
+			t.Errorf("sidebar 600 over the app minimum: %d x %d, want %d x %d", got.X, got.Y, shown+380, h)
+		}
+		look.SetSidebarVisible(w, false)
+		if got := s.GetMinimumSize(); got.X != shown+50 || got.Y != h {
+			t.Errorf("hidden again: %d x %d, want the app minimum %d x %d", got.X, got.Y, shown+50, h)
 		}
 	})
 }

@@ -542,8 +542,19 @@ func (w *Window) SetSize(width, height int) {
 	w.shell.SetSize(int32(width), int32(height))
 }
 
-// SetMinSize keeps the user from resizing the window below width x height points.
-func (w *Window) SetMinSize(width, height int) { w.shell.SetMinimumSize(int32(width), int32(height)) }
+// SetMinSize keeps the user from resizing the window below width x height points. A window laid out
+// by look.SetSidebar takes the larger of this and the room its sidebar and content need.
+func (w *Window) SetMinSize(width, height int) {
+	if f, ok := w.shell.GetDataKey(minSizeHookKey).(func(int, int)); ok {
+		f(width, height)
+		return
+	}
+	w.shell.SetMinimumSize(int32(width), int32(height))
+}
+
+// minSizeHookKey holds a func(width, height int) that SetMinSize calls instead of setting the shell
+// minimum: look.SetSidebar keeps it in step with the sidebar. look has the same key.
+const minSizeHookKey = "gowt.look.minSize"
 
 // Close closes the window as the user would, running OnClose.
 func (w *Window) Close() { w.shell.Close() }

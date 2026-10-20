@@ -23,7 +23,7 @@ func TestPanesNoBlackFill(t *testing.T) {
 	var controls []*swt.Control
 	probe := gowt.Custom(func(c *swt.Control) { controls = append(controls, c) })
 	path := filepath.Join(t.TempDir(), "panes.png")
-	if dir := os.Getenv("GOWT_PIXELS_DIR"); dir != "" {
+	if dir := os.Getenv("GOWT_PIXELS_DIR"); dir != "" { // relative to the package directory, where go test runs
 		path = filepath.Join(dir, "panes.png")
 	}
 	rects := map[string][4]int32{} // window points, from the window's top left corner
@@ -82,12 +82,12 @@ func TestPanesNoBlackFill(t *testing.T) {
 	}
 	scale := float64(img.Bounds().Dx()) / float64(width)
 	for name, r := range rects {
-		if got := blackShare(img, r, scale); got > 0.3 {
+		if got := blackShare(img, r, scale); got > 0.01 {
 			t.Errorf("%s at %v: %.0f%% of its pixels are black", name, r, got*100)
 		}
 	}
-	if len(rects) != 11 {
-		t.Errorf("probed %d controls, want 11", len(rects))
+	if len(rects) != 12 {
+		t.Errorf("probed %d controls, want 12", len(rects))
 	}
 }
 

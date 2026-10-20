@@ -71,8 +71,12 @@ func installCard(c *swt.Composite) {
 		r := c.GetClientArea()
 		g := e.Gc
 		g.SetAntialias(swt.ON)
-		g.SetBackground(c.GetParent().GetBackground())
-		g.FillRectangle(0, 0, r.Width, r.Height)
+		// GC fills ignore alpha: a transparent parent (look's glass panes) gave black corners. The corners
+		// then stay in the card colour, square; rounding them there would need a clip of the view itself.
+		if p := c.GetParent().GetBackground(); p.GetAlpha() != 0 {
+			g.SetBackground(p)
+			g.FillRectangle(0, 0, r.Width, r.Height)
+		}
 		g.SetBackground(c.GetBackground())
 		g.FillRoundRectangle(0, 0, r.Width, r.Height, 2*sectionRadius, 2*sectionRadius)
 	}))

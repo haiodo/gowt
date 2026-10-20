@@ -11,20 +11,25 @@ import (
 	"github.com/haiodo/gowt/internal/shot"
 )
 
-// hintShot captures a window holding one multi-line Text built from opts, after edit has run on it.
+// hintShot captures a window holding one read-only multi-line Text built from opts, after edit has run
+// on it. Read-only: a blinking caret would differ between two shots. GOWT_TEST_SHOTS=<dir> keeps the PNGs.
 func hintShot(t *testing.T, name string, edit func(*TextView), opts ...Option) image.Image {
 	t.Helper()
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
 	}
-	path := filepath.Join(t.TempDir(), name+".png")
+	dir := os.Getenv("GOWT_TEST_SHOTS")
+	if dir == "" {
+		dir = t.TempDir()
+	}
+	path := filepath.Join(dir, name+".png")
 	var err error
 	onMain(func() {
 		err = Run(func(app *App) {
 			var text *TextView
 			w := app.Window("hint")
 			w.SetSize(320, 120)
-			w.Add(Text(append(opts, Multiline(), Border(), Grow(), Ref(&text))...))
+			w.Add(Text(append(opts, Multiline(), ReadOnly(), Border(), Grow(), Ref(&text))...))
 			w.Show()
 			if edit != nil {
 				edit(text)
@@ -70,22 +75,25 @@ func pixelDiff(a, b image.Image) int {
 	return n
 }
 
-// A blinking caret differs by a thin bar at most; the hint is far more pixels than that.
-const caretPixels = 200
+// Two shots of the same field differ by a few pixels at most; a hint by far more.
+const (
+	samePixels = 20
+	hintPixels = 200
+)
 
 func TestMultilineHint(t *testing.T) {
 	const hint = "Write a message to the whole team"
 	plain := hintShot(t, "plain", nil)
 	hinted := hintShot(t, "hinted", nil, Hint(hint))
-	if d := pixelDiff(plain, hinted); d <= caretPixels {
+	if d := pixelDiff(plain, hinted); d <= hintPixels {
 		t.Errorf("hint not drawn: %d pixels differ from a field without it", d)
 	}
 	filled := hintShot(t, "filled", nil, Value("x"))
-	if d := pixelDiff(filled, hintShot(t, "hintedFilled", nil, Hint(hint), Value("x"))); d > caretPixels {
+	if d := pixelDiff(filled, hintShot(t, "hintedFilled", nil, Hint(hint), Value("x"))); d > samePixels {
 		t.Errorf("hint drawn over text: %d pixels differ", d)
 	}
 	cleared := hintShot(t, "cleared", func(v *TextView) { v.SetText("x"); v.SetText("") }, Hint(hint))
-	if d := pixelDiff(hinted, cleared); d > caretPixels {
+	if d := pixelDiff(hinted, cleared); d > samePixels {
 		t.Errorf("hint not back after the text was cleared: %d pixels differ", d)
 	}
 }

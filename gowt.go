@@ -648,7 +648,7 @@ func (t *TextView) SetText(s string) { t.t.SetText(s) }
 func (t *TextView) SetHint(s string) {
 	t.t.SetMessage(s)
 	if t.t.GetStyle()&swt.MULTI != 0 {
-		multiHint(t.t, s)
+		multiHint(t.t)
 	}
 }
 

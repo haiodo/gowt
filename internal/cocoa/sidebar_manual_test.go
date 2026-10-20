@@ -223,4 +223,9 @@ func TestToolbarSidebarOrder(t *testing.T) {
 	if got := order(&toolbarState{items: items}); got != want {
 		t.Errorf("without sidebar: %s, want %s", got, want)
 	}
+	// A hidden sidebar drops the spacers; the Sidebar items stay first, after the traffic lights.
+	want = "gowt.item.1 gowt.item.0 NSToolbarFlexibleSpaceItem gowt.item.3"
+	if got := order(&toolbarState{items: items, sidebar: true, collapsed: true}); got != want {
+		t.Errorf("sidebar hidden: %s, want %s", got, want)
+	}
 }

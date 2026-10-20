@@ -143,10 +143,11 @@ func sidebarInset() int32 {
 
 // setSidebarChrome puts the glass straight behind the sidebar rather than through setGlass, whose
 // listeners would pin it to the sidebar frame: the glass also runs under the title bar strip.
-func setSidebarChrome(s *swt.Shell, sb *swt.Composite) {
+func setSidebarChrome(s *swt.Shell, sb *swt.Composite, sash *swt.Control) {
 	cocoa.InstallBackdrop(sb.View, cocoa.BackdropGlass, false)
 	cocoa.SetGlassCornerRadius(sb.View, sidebarRadius)
 	clearTree(sb)
+	clearControl(sash)
 	if !sidebarShells[s] {
 		sidebarShells[s] = true
 		s.AddDisposeListener(&sidebarHooks{s})
@@ -242,14 +243,12 @@ func debugSidebar(s *swt.Shell) {
 	walk(&s.Composite)
 }
 
-func parentControl(c *swt.Control) *swt.Control {
-	if p := c.GetParent(); p != nil {
-		return &p.Control
-	}
-	return nil
-}
+// sidebarDivider is 0: the sash lies over the sidebar edge, transparent (setSidebarChrome).
+func sidebarDivider() int32 { return 0 }
 
-func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32) {
+// syncSidebar gets bg with width 0 for a hidden sidebar, which leaves no glass.
+func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32, hidden bool) {
 	cocoa.SetBackdropFrame(sb.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
+	cocoa.SetSidebarHidden(s.View, hidden)
 	cocoa.SetSidebarEdge(s.View, float64(bg[0]+bg[2]))
 }

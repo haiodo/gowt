@@ -45,6 +45,7 @@ const (
 type toolbarState struct {
 	items       []ToolbarItem
 	sidebar     bool    // the window has SetSidebarEdge: the spacer item goes first
+	collapsed   bool    // the sidebar is hidden (SetSidebarHidden): the spacers are out of the toolbar
 	spacer      uintptr // the spacer's view and width constraint, owned by the toolbar item
 	width       uintptr
 	spacerWidth float64
@@ -67,7 +68,10 @@ func (s *toolbarState) overSidebar(it ToolbarItem) bool { return s.sidebar && it
 
 // ids lists the items in toolbar order. With a sidebar that is the spacer, the Sidebar items, a second
 // spacer they end before, then the rest: all navigational up to the title, so AppKit keeps the order.
-func (s *toolbarState) ids() uintptr {
+func (s *toolbarState) ids() uintptr { return s.idList(!s.collapsed) }
+
+// idList is ids without the two spacers when spacers is false, for a hidden sidebar.
+func (s *toolbarState) idList(spacers bool) uintptr {
 	arr := msg(class("NSMutableArray"), "arrayWithCapacity:", uintptr(len(s.items)+2))
 	add := func(i int, it ToolbarItem) {
 		id := itemIDPrefix + strconv.Itoa(i)
@@ -80,7 +84,9 @@ func (s *toolbarState) ids() uintptr {
 		msg(arr, "addObject:", nsString(id))
 	}
 	if s.sidebar {
-		msg(arr, "addObject:", nsString(sidebarSpacerID))
+		if spacers {
+			msg(arr, "addObject:", nsString(sidebarSpacerID))
+		}
 		over := false
 		for i, it := range s.items {
 			if s.overSidebar(it) {
@@ -88,7 +94,7 @@ func (s *toolbarState) ids() uintptr {
 				over = true
 			}
 		}
-		if over {
+		if over && spacers {
 			msg(arr, "addObject:", nsString(sidebarEndID))
 		}
 	}
@@ -372,6 +378,13 @@ func registerToolbarClass() {
 		}
 		return 0
 	})
+	// The spacers stay allowed while the sidebar is hidden, so SetSidebarHidden can insert them again.
+	allowed := purego.NewCallback(func(self, _, tb uintptr) uintptr {
+		if s := toolbarDelegates[self]; s != nil {
+			return s.idList(true)
+		}
+		return 0
+	})
 	forID := purego.NewCallback(func(self, _, tb, id, _ uintptr) uintptr {
 		if s := toolbarDelegates[self]; s != nil {
 			return s.item(self, goString(id))
@@ -428,7 +441,7 @@ func registerToolbarClass() {
 	})
 	toolbarClass = newClass("GowtToolbarDelegate", []string{"NSToolbarDelegate"}, map[string]objcMethod{
 		"toolbarDefaultItemIdentifiers:":                           {ids, "@@:@"},
-		"toolbarAllowedItemIdentifiers:":                           {ids, "@@:@"},
+		"toolbarAllowedItemIdentifiers:":                           {allowed, "@@:@"},
 		"toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:": {forID, "@@:@@c"},
 		"gowtClick:":                {click, "v@:@"},
 		"gowtSearch:":               {search, "v@:@"},
@@ -457,7 +470,7 @@ func InstallToolbar(view *NSView, items []ToolbarItem) bool {
 	registerToolbarClass()
 	d := msg(msg(toolbarClass, "alloc"), "init")
 	_, sidebar := sidebarEdges[w]
-	toolbarDelegates[d] = &toolbarState{items: append([]ToolbarItem(nil), items...), sidebar: sidebar}
+	toolbarDelegates[d] = &toolbarState{items: append([]ToolbarItem(nil), items...), sidebar: sidebar, collapsed: sidebarHidden[w]}
 	setAssociated(w, toolbarKey(), d, 1)
 	msg(d, "release")
 	toolbarSeq++

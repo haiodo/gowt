@@ -58,6 +58,7 @@ gowt.Label("Open a .cpuprofile, or drop one on this window", gowt.Foreground(gow
 | `look.SetDarkContent(app, true)` | Windows dark content, see above |
 | `look.SetToolbar(w, items...)` | native unified toolbar (NSToolbar) with SF Symbol items; Liquid Glass items on macOS 26. Returns false where it cannot exist (Windows, Linux). There a window laid out by `SetSidebar` gets the same items as a bar of gowt widgets at the top of the content column (see below); other windows get nothing, build a `gowt.ToolBar` instead |
 | `look.SetSidebar(w, sidebar, content, width)` | Finder / System Settings window: sidebar left, content right. macOS 26: floating Liquid Glass sidebar under the traffic lights, toolbar items and title past it. Windows, Linux: two plain panels. See below |
+| `look.SetSidebarVisible(w, on)`, `SidebarVisible(w)`, `SetSidebarWidth(w, n)`, `SidebarWidth(w)`, `OnSidebarChange(w, f)` | hide, show and resize the sidebar of a `SetSidebar` window; the user resizes it by dragging its edge. See [Hiding and resizing the sidebar](#hiding-and-resizing-the-sidebar) |
 | `look.SetGlassGroup(parent, spacing)` | glass surfaces of the children of `parent` share one NSGlassEffectContainerView and merge when closer than `spacing`; call before their `SetGlass`. macOS 26, else nothing |
 | `look.Classic()` | before `Run`: ask macOS 26 for the pre-Liquid-Glass look |
 
@@ -112,6 +113,42 @@ w.SetTitle("Appearance") // the page title next to back/forward
 - Windows and Linux: `SetToolbar` with `SetSidebar` (in either order) puts the items in a bar at the top of the content column, built from ordinary gowt widgets: Nav items, the window title in semibold, then the other items; the title takes the free width unless a `Space` item does. Push items and `Group` segments are flat `ToolBar` buttons with the native hover and pressed states; `Symbol` draws a 16-point stroke icon (own drawings in a 24-point box, not the SF Symbols glyphs) for `chevron.backward`, `chevron.forward`, `plus`, `square.and.arrow.up`, `square.and.arrow.down`, `terminal`, `shippingbox`, `folder`, `doc`, `house`, `sidebar.left`, `gearshape`, `magnifyingglass`, `trash`, `arrow.clockwise`, `arrow.up`, `arrow.down`, `checkmark`, `xmark`, `minus`, `play.fill`, `stop.fill`, `pause.fill`, `info.circle`, `ellipsis.circle`, `line.3.horizontal.decrease`, `list.bullet` and `square.grid.2x2` (`barSymbols` in `look/toolbar.go`); any other symbol shows `Title` as text. `Title` is the tooltip. `Enabled` dims the icon. `OnSearch` is a 240-point search `Text` with `Title` as the placeholder, called on every change. The bar takes the background of the content panel (again on a layout and after a theme change) with a hairline below it, and its text and icons use the system text colour, or near black or near white where that would not read on the content colour. `Window.SetTitle` updates the bar title.
 - `gowt.Section(rows...)` is a rounded card; each child is a row, with a separator line before it. The card is the section's SWT background, inherited by its rows and labels, with the corners painted in the parent's colour: on macOS `quaternarySystemFillColor` over the window colour, flattened to an opaque colour (SWT fills the background of every label and panel on the card, and translucent fills would add up); on Windows and Linux 6% from the window colour toward the text colour. It is taken again when the system theme changes. Labels, check boxes and panels in a row take the card colour; a `Text` keeps its own white field, so show a read-only value with a `Label`. A heading is a `Label` above the section (`l.SetFont(gowt.Font{Weight: gowt.Semibold})`).
 - Initial focus: SWT's `Shell.Open`, and on macOS `windowDidBecomeKey`, give the focus to the first control that takes it. With Full Keyboard Access on (System Settings > Keyboard > Keyboard navigation, `AppleKeyboardUIMode` 3) buttons and tool items take it too, so a sidebar that starts with a button opens with the focus ring on that button; a plain Cocoa window does the same, Finder does not because its content view is the first responder. `SetSidebar` therefore makes `Window.Show` focus the first visible List, Table or Tree of the content, then of the sidebar; a list or tree without a border draws no ring. `gowt.Focused()` on a widget overrides that choice. With no visible list and no `Focused`, SWT's choice stays. `Show` hands the widget to SWT as the saved focus before `Open`, so `Open` and every later activation restore it, and focuses it again after `Open`, which on Windows and Linux skips a push button.
+
+### Hiding and resizing the sidebar
+
+```go
+toggle := func() { look.SetSidebarVisible(w, !look.SidebarVisible(w)) }
+look.SetToolbar(w,
+	look.ToolbarItem{Title: "Hide Sidebar", Symbol: "sidebar.left", Sidebar: true, OnClick: toggle},
+	look.ToolbarItem{Title: "Back/Forward", Nav: true, Group: backForward})
+
+var keys []gowt.Option
+if runtime.GOOS == "darwin" {
+	keys = append(keys, gowt.Shortcut("Ctrl+Cmd+S")) // elsewhere Cmd means Ctrl, and Ctrl+S is Save
+}
+hide := w.MenuBar().Submenu("&View").Item("Hide Sidebar", toggle, keys...)
+look.OnSidebarChange(w, func(visible bool, width int) {
+	if visible {
+		hide.SetText("Hide Sidebar")
+	} else {
+		hide.SetText("Show Sidebar")
+	}
+	prefs.Save(visible, width) // the app's own storage
+})
+look.SetSidebarWidth(w, prefs.Width)      // restored before Show
+look.SetSidebarVisible(w, prefs.Visible)
+```
+
+- `SetSidebarVisible(w, false)` hides the sidebar and gives the content the whole width; `SidebarVisible` reads the state. A focus inside the sidebar moves to the first List, Table or Tree of the content, or to the content.
+- The user drags the edge between sidebar and content, an SWT `Sash` with the system resize cursor. The width follows the pointer, at least 120 points, and leaves the content at least 200; dragged below 120 points the sidebar hides, and dragging back in the same press shows it again. A hidden sidebar has no edge to drag: the toggle shows it again.
+- `SidebarWidth` is the width in points, kept while the sidebar is hidden, which is the width it comes back at. `SetSidebarWidth` takes at least 120 (the width given to `SetSidebar` is used as it is).
+- `OnSidebarChange(w, f)` runs after `SetSidebarVisible` or `SetSidebarWidth` changed something, and once when a drag of the edge ends with another width or visibility; not on every pointer move.
+- `"sidebar.left"` is the SF Symbol of the toggle on macOS; the Windows and Linux bar draws its own icon for it.
+- gowt adds no menu. macOS apps put View > Hide Sidebar / Show Sidebar with Ctrl+Cmd+S in the menu bar, as above; Windows and Linux have no standard key for it.
+- macOS 26, hidden: the glass is gone, and the two spacers that kept the toolbar past the sidebar are taken out of the toolbar (`removeItemAtIndex:`, put back with `insertItemWithItemIdentifier:atIndex:`), so the `Sidebar` items follow the traffic lights, then the navigational items and the title, as in Finder. The other toolbar items stay, so a search field keeps its text. The sash is transparent and 6 points wide, centred on the glass edge, so it covers 3 points of the content's left edge.
+- Windows and Linux, hidden: the sidebar panel with its row of `Sidebar` items is hidden, and copies of those items show at the start of the bar, before the Nav items. A sash needs a 4-pixel gap of its own between sidebar and content, where it shows the window colour; over the content it would paint over its edge.
+
+Checked on the Linux stand (GTK 3, Adwaita) and on Windows 11 arm64 (UTM): `look` GUI tests `TestSidebarHide`, `TestSidebarDragEvents` (the Selection events a sash sends) and `TestSidebarPostedDrag` (a real pointer drag: xdotool on Linux, `Display.Post` on Windows), and `GOWT_SNAP` snapshots of finderdemo with and without `GOWT_FINDERDEMO_HIDE=1`. Not run on macOS yet; the cursor shape was not looked at on any OS.
 
 Footprint on macOS: start the demo, then `footprint -p finderdemo` (the `IOAccelerator` and `IOSurface` lines are GPU memory) or `vmmap --summary $(pgrep finderdemo)`.
 

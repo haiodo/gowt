@@ -91,6 +91,36 @@ func TestToolbarSpacerItem(t *testing.T) {
 	})
 }
 
+// setStyle: fits the columns into the table width whatever the column autoresizing style: in the
+// fusion-desktop sidebar (gowt-issues 4) a 44-point column became 13 points wide.
+func TestSourceListKeepsColumnWidths(t *testing.T) {
+	onMain(func() {
+		sv := NewNSScrollViewOverload1(int64(msg(msg(class("NSScrollView"), "alloc"), "init")))
+		defer sv.Release()
+		sv.SetFrame(NSRect{Width: 260, Height: 300})
+		tv := NewNSTableViewOverload1(int64(msg(msg(msg(class("NSTableView"), "alloc"), "init"), "autorelease")))
+		tv.SetColumnAutoresizingStyle(int64(OSNSTableViewNoColumnAutoresizing))
+		tv.SetHeaderView(nil)
+		msg(uintptr(tv.Id), "setStyle:", uintptr(OSNSTableViewStylePlain))
+		tv.SetIntercellSpacing(NSSize{Width: 1, Height: 1})
+		want := []float64{185, 43, 29} // with the spacing exactly as wide as the clip view, as the Resize listener sets them
+		for _, w := range want {
+			c := NewNSTableColumnOverload1(int64(msg(msg(msg(class("NSTableColumn"), "alloc"), "initWithIdentifier:", nsString("c")), "autorelease")))
+			c.SetWidth(w)
+			tv.AddTableColumn(c)
+		}
+		msg(uintptr(sv.Id), "setDocumentView:", uintptr(tv.Id))
+		tv.Tile()
+		SetSourceList(&tv.NSView)
+		cols := tv.TableColumns()
+		for i, w := range want {
+			if got := NewNSTableColumnOverload1(cols.ObjectAtIndex(int64(i)).Id).Width(); got != w {
+				t.Errorf("column %d: %.1f wide, want %.1f", i, got, w)
+			}
+		}
+	})
+}
+
 func TestSourceListHooks(t *testing.T) {
 	onMain(func() {
 		tv := msg(msg(class("NSTableView"), "alloc"), "init")

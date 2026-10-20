@@ -9,6 +9,11 @@ Behaviour change
 Fixes
 - macOS: the selected row of a Table in a `look.SetSidebar` sidebar filled any icon with the accent colour since v0.9.4, so a colour image (an avatar) turned into an accent-coloured shape and an opaque one into a solid square. Only the glyph of the first column, the row symbol before the text, is tinted now: a template image, or one grey on a transparent background, as the `icons.Get` and `icons.FromSVG` images in the theme colours are. Images in later columns, a number badge or a "#" glyph, keep their colours. An icon coloured with `icons.Color` keeps its colour.
 - macOS: a `StyledText` with a transparent (alpha-0) background painted its lines opaque black when nothing above it had a visible background, since SWT's GC fill ignores the alpha of a colour. `Composite.DrawBackground` now fills nothing for an alpha-0 GC background, so a `StyledText` on glass is transparent.
+- macOS: a Table or Tree in a `look.SetSidebar` sidebar keeps the column widths the app set (fusion-desktop gowt-issues 4). When the columns filled the table exactly, switching to the source-list style made AppKit fit them again (`_sizeTableColumnsToFitWidth:`, whatever the column autoresizing style) and take the style's 31 points of padding off the first column with the autoresizing mask: a 44-point badge column became 13 points wide, and the badge showed half. The widths are now restored after the switch.
+- macOS: the client area of a Table or Tree in a `look.SetSidebar` sidebar leaves out that padding, measured as 31 points in a macOS 26 window (10 before the first column, 6 inside it, 15 after the last). Columns sized to `GetClientArea` ran that far past the visible width, and the last column was cut.
+
+Docs
+- docs/widgets.md: all images of a Table or Tree get the size of the first one, on every platform (SWT's model); images of different widths go onto canvases of one size.
 
 ## v0.9.4 (2026-10-20)
 

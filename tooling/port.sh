@@ -468,6 +468,16 @@ if [ "$PLATFORM" = cocoa ]; then
 	done
 fi
 
+# cocoa Table/Tree.getClientArea_ is the clip view's size. The source-list style that look.SetSidebar gives a table pads
+# both row ends, so columns sized to the client area ran past the visible width: the padding is left out (stylePadding,
+# widgets_table_manual_darwin.go).
+if [ "$PLATFORM" = cocoa ]; then
+	for CA_GO in swt/widgets_table_darwin.go swt/widgets_tree_darwin.go; do
+		perl -0pi -e 's/(\) getClientArea_\(\) \*Rectangle \{\n\tthis\.CheckWidget\(\)\n\tvar rect \*Rectangle = this\.Composite\.getClientArea_\(\)\n)(?!\trect\.Width)/$1\trect.Width = max(0, rect.Width-stylePadding(this.View))\n/' "$CA_GO"
+		grep -qF 'rect.Width = max(0, rect.Width-stylePadding(this.View))' "$CA_GO" || { echo "port.sh: getClientArea_ rewrite did not apply in $CA_GO" >&2; exit 1; }
+	done
+fi
+
 # Class.getResourceAsStream/ResourceBundle.getBundle data, embedded by the package (go:embed).
 EX_SRC="$SWT_REPO/examples/org.eclipse.swt.examples/src"
 mkdir -p examples/controlexample/res

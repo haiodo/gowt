@@ -91,6 +91,32 @@ func TestViewTableTintedLeadingColumnOnly(t *testing.T) {
 	}
 }
 
+// No Display and no window: a cell with an attributed string, as willDisplayCell sets for a bold font, clips by its paragraph style.
+func TestViewTableTruncateAttributed(t *testing.T) {
+	done := make(chan struct{})
+	vtMainq <- func() {
+		defer close(done)
+		pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
+		defer cocoa.Msg(pool, "drain")
+		style := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSMutableParagraphStyle"), "alloc"), "init")
+		cocoa.Msg(style, "setLineBreakMode:", int64(cocoa.OSNSLineBreakByClipping))
+		name := cocoa.Msg(cocoa.OSNSParagraphStyleAttributeName_.Id, "self")
+		dict := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSDictionary"), "dictionaryWithObject:forKey:", style, name), "self")
+		attr := cocoa.Msg(cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAttributedString"), "alloc"), "initWithString:attributes:", cocoa.NSStringID("a long text"), dict), "autorelease")
+		cell := cocoa.Msg(cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSTextFieldCell"), "alloc"), "init"), "autorelease")
+		cocoa.Msg(cell, "setAttributedStringValue:", attr)
+		vtTruncate(cell)
+		got := cocoa.Msg(cocoa.Msg(cell, "attributedStringValue"), "attribute:atIndex:effectiveRange:", name, 0, 0)
+		if mode := cocoa.Msg(got, "lineBreakMode"); mode != int64(cocoa.OSNSLineBreakByTruncatingTail) {
+			t.Errorf("paragraph style line break mode %d, want truncating tail", mode)
+		}
+		if mode := cocoa.Msg(cell, "lineBreakMode"); mode != int64(cocoa.OSNSLineBreakByTruncatingTail) {
+			t.Errorf("cell line break mode %d, want truncating tail", mode)
+		}
+	}
+	<-done
+}
+
 // No Display and no window: only registers the runtime classes and creates one view.
 func TestViewTableClasses(t *testing.T) {
 	cell, check := vtClasses()

@@ -149,6 +149,29 @@ func setSidebarChrome(s *swt.Shell, sb *swt.Composite, sash *swt.Control) {
 	cocoa.SetGlassCornerRadius(sb.View, sidebarRadius)
 	clearTree(sb)
 	clearControl(sash)
+	hookPanes(s)
+}
+
+// setInspectorChrome puts edge-to-edge glass behind the inspector, which AppKit 26 gives an
+// NSSplitViewController inspector ("inspectors use an edge-to-edge glass that sits alongside the
+// content", WWDC25 session 310); like the sidebar glass it also runs under the title bar strip.
+func setInspectorChrome(s *swt.Shell, ib *swt.Composite, sash *swt.Control) {
+	cocoa.InstallBackdrop(ib.View, cocoa.BackdropGlass, false)
+	cocoa.SetGlassCornerRadius(ib.View, 0)
+	clearTree(ib)
+	clearControl(sash)
+	hookPanes(s)
+}
+
+// inspectorInset is 0: the inspector is flush with the window edges, see setInspectorChrome.
+func inspectorInset() int32 { return 0 }
+
+func syncInspector(ib *swt.Composite, bg [4]int32) {
+	cocoa.SetBackdropFrame(ib.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
+}
+
+// hookPanes refreshes the window of a sidebar or inspector when it is shown, and now if it already is.
+func hookPanes(s *swt.Shell) {
 	if !sidebarShells[s] {
 		sidebarShells[s] = true
 		s.AddDisposeListener(&sidebarHooks{s})
@@ -266,7 +289,7 @@ func init() {
 			if s.IsDisposed() || uintptr(s.View.Window().Id) != win || s.GetLayout() == nil {
 				continue
 			}
-			if l, ok := s.GetLayout().Impl().(*sidebarLayout); ok && l.measure() && l.fitMin() {
+			if l, ok := s.GetLayout().Impl().(*paneLayout); ok && l.measure() && l.fitMin() {
 				s.Layout()
 			}
 		}

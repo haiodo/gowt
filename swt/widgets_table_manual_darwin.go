@@ -1,6 +1,10 @@
 package swt
 
-import "github.com/haiodo/gowt/internal/cocoa"
+import (
+	"math"
+
+	"github.com/haiodo/gowt/internal/cocoa"
+)
 
 // syncRows tells NSTableView the row count that createItem left pending while redraw was off (tooling/port.sh).
 // It is UpdateRowCount without the setRedraw pair: setRedraw_ calls it, and the pair would run setRedraw_'s tail twice.
@@ -34,4 +38,22 @@ func clipInsetTop(clip *cocoa.NSClipView) float64 {
 	var ins cocoa.NSRect // NSEdgeInsets has the layout of four doubles: top, left, bottom, right
 	cocoa.OSObjc_msgSend_stretOverload9(&ins, clip.Id, cocoa.OSSel_registerName("contentInsets"))
 	return ins.X
+}
+
+// stylePadding is the width the table style adds to the columns: 0 for SWT's plain style, 31 for the sidebar source list
+// (macOS 26). getClientArea_ leaves it out (tooling/port.sh), so columns sized to the client area fit the visible width.
+func stylePadding(view *cocoa.NSView) int32 {
+	tv := castcocoaNSViewTococoaNSTableView(view)
+	cols := tv.TableColumns()
+	n := cols.Count()
+	if n == 0 {
+		return 0
+	}
+	sum := float64(n) * tv.IntercellSpacing().Width
+	for i := range n {
+		sum += cocoa.NewNSTableColumnOverload1(cols.ObjectAtIndex(i).Id).Width()
+	}
+	// The left padding is the first column's x; the right one, past the last column, measured equal to it.
+	first, last := tv.RectOfColumn(0), tv.RectOfColumn(n-1)
+	return int32(math.Round(last.X + last.Width + first.X - sum))
 }

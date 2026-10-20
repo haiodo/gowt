@@ -64,7 +64,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Canvas | `Canvas(onPaint)` | see [graphics.md](graphics.md); `OnMouseDown`, `OnMouseUp`, `OnMouseMove` (`Mouse`: X, Y, Button, Count) |
 | StyledText | `StyledText(Scrollbars())` | `Text`, `SetText`, `Selection`, `Caret`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `Replace`, `SetStyle(start, length, TextStyle)`, `Styles`, `OnStyle(func(line string) []StyleSpan)`, `OnChange`, `OnSelect`, `OnCaret`. Offsets are runes; each call converts to UTF-16 (O(n)). Example: [`examples/styledtext`](../examples/styledtext) |
 
-A List row has text only (`swt.List` has no item images). A row with an icon is a Table without columns, header and grid lines; in a `look.SetSidebar` sidebar it gets the List look ([theme-look.md](theme-look.md)), on macOS the selected row's text and icon in the accent colour. `icons.Get` tints the icon for the theme at call time, so set the icons again in `App.OnThemeChange`. See `examples/sidebartable`:
+A List row has text only (`swt.List` has no item images). A row with an icon is a Table without columns, header and grid lines; in a `look.SetSidebar` sidebar it gets the List look ([theme-look.md](theme-look.md)), on macOS the selected row's text in the accent colour, and the first column's icon too when it is a glyph such as an `icons.Get` icon (a colour image, and the images of later columns, keep their colours). `icons.Get` tints the icon for the theme at call time, so set the icons again in `App.OnThemeChange`. See `examples/sidebartable`:
 
 ```go
 var files *gowt.TableView
@@ -75,6 +75,10 @@ w.Add(gowt.Table(gowt.NoBorder(), gowt.Ref(&files), gowt.Init(func(t *gowt.Table
 })))
 app.OnThemeChange(func(bool) { files.RowAt(0).SetImageAt(0, icons.Get(app, "file")) })
 ```
+
+All images of one Table or Tree, in every row and column, get the size of the first image it was given; this is SWT's model on every platform (macOS `Table.imageBounds`, Windows one image list per table, GTK one fixed cell size). On macOS a larger or smaller image is scaled into that box; on Linux `GetImageBounds` reports it (a 28x20 badge in column 1 after a 16x16 icon in column 0 gets 16-point-wide bounds). Images of different widths, such as count badges next to icons, therefore go onto transparent canvases of one size.
+
+`Column.SetWidth` changes that column only: SWT turns AppKit's column autoresizing off, and the sidebar look restores the widths AppKit changes when it switches the style. On macOS a Table or Tree in a `look.SetSidebar` sidebar has the source-list style, which pads both row ends (31 points on macOS 26); its client area (`Unwrap().GetClientArea()`) leaves the padding out, so columns that add up to the client width fit the visible width.
 
 ## Any control
 

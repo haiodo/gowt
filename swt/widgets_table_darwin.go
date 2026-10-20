@@ -1215,6 +1215,7 @@ func (this *Table) GetCheckColumnWidth() int32 {
 func (this *Table) getClientArea_() *Rectangle {
 	this.CheckWidget()
 	var rect *Rectangle = this.Composite.getClientArea_()
+	rect.Width = max(0, rect.Width-stylePadding(this.View))
 	return rect
 }
 

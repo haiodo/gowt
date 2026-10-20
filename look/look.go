@@ -55,8 +55,9 @@ var insetShells = map[*gowt.Window]bool{}
 func refreshInset(w *gowt.Window) { w.SetTopInset(topInset(w.Unwrap())) }
 
 // SetGlass puts a Liquid Glass surface behind the container's content, with rounded corners; the
-// container and its children stop painting their own background. It needs macOS 26; older macOS
-// shows a blurred material, other systems nothing.
+// container and the controls under it, also those created later, stop painting their own background
+// as in a SetSidebar sidebar, and lists, tables and trees get the source-list style. It needs
+// macOS 26; older macOS shows a blurred material, other systems nothing.
 func SetGlass(c Container, on bool) { setGlass(c.AsComposite(), on) }
 
 // GlassButton gives a push button (not Check, Radio, Toggle or Arrow) the Liquid Glass bezel on macOS 26 and newer; elsewhere the

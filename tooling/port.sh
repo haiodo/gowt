@@ -437,6 +437,15 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.background != (nil) && this.background\[3\] != 0 {' "$BZ_GO")" = 1 ] || { echo "port.sh: Button transparent bezel rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Composite.drawBackground(GC, ...) fills with the GC background when no control up the tree has a visible background,
+# and GC fills ignore a colour's alpha: a StyledText with an alpha-0 background (look.SetGlass) painted its lines opaque black.
+# A fully transparent GC background fills nothing.
+if [ "$PLATFORM" = cocoa ]; then
+	DB_GO=swt/widgets_composite_darwin.go
+	perl -0pi -e 's/(\t\t\}\n\t\} else )\{\n\t\tgc\.FillRectangle\(x, y, width, height\)\n\t\}\n\}\n\nfunc \(this \*Composite\) drawBackground_/$1if bg := gc.GetGCData().Background; bg == nil || bg[3] != 0 {\n\t\tgc.FillRectangle(x, y, width, height)\n\t}\n}\n\nfunc (this *Composite) drawBackground_/' "$DB_GO"
+	[ "$(grep -c 'bg == nil || bg\[3\] != 0' "$DB_GO")" = 1 ] || { echo "port.sh: Composite.drawBackground rewrite did not apply" >&2; exit 1; }
+fi
+
 # gtk TabFolder sizes the selected page's control from the notebook page's allocation. A page that GTK has not allocated
 # yet (added after show, or selected before the first allocation) reports 1x1, and the control stayed 1x1: an empty page.
 # swt/widgets_tabfolder_manual_linux.go sizes the control again when GTK allocates its page.
@@ -465,6 +474,16 @@ if [ "$PLATFORM" = cocoa ]; then
 	for HV_GO in swt/widgets_table_darwin.go swt/widgets_tree_darwin.go; do
 		perl -0pi -e 's/(\) SetHeaderVisible\(show bool\)\s*\{\n\tthis\.CheckWidget\(\)\n)(?!\ty := headerScroll)/$1\ty := headerScroll(this.scrollView)\n/; s/(\.SetHeaderView\(cond\d+\)\n\tthis\.scrollView\.Tile\(\)\n)(?!\trestoreHeaderScroll)/$1\trestoreHeaderScroll(this.scrollView, this.View, y)\n/' "$HV_GO"
 		grep -qF 'y := headerScroll(this.scrollView)' "$HV_GO" && grep -qF 'restoreHeaderScroll(this.scrollView, this.View, y)' "$HV_GO" || { echo "port.sh: setHeaderVisible rewrite did not apply in $HV_GO" >&2; exit 1; }
+	done
+fi
+
+# cocoa Table/Tree.getClientArea_ is the clip view's size. The source-list style that look.SetSidebar gives a table pads
+# both row ends, so columns sized to the client area ran past the visible width: the padding is left out (stylePadding,
+# widgets_table_manual_darwin.go).
+if [ "$PLATFORM" = cocoa ]; then
+	for CA_GO in swt/widgets_table_darwin.go swt/widgets_tree_darwin.go; do
+		perl -0pi -e 's/(\) getClientArea_\(\) \*Rectangle \{\n\tthis\.CheckWidget\(\)\n\tvar rect \*Rectangle = this\.Composite\.getClientArea_\(\)\n)(?!\trect\.Width)/$1\trect.Width = max(0, rect.Width-stylePadding(this.View))\n/' "$CA_GO"
+		grep -qF 'rect.Width = max(0, rect.Width-stylePadding(this.View))' "$CA_GO" || { echo "port.sh: getClientArea_ rewrite did not apply in $CA_GO" >&2; exit 1; }
 	done
 fi
 

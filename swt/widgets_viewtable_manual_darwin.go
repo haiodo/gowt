@@ -403,7 +403,7 @@ func (this *Table) vtDrawCell(view int64, check bool) {
 		accent := cocoa.Msg(cocoa.OSObjc_getClass("NSColor"), "controlAccentColor")
 		cocoa.Msg(cell.Id, "setTextColor:", accent)
 		if img := cell.Image(); img != nil {
-			cell.SetImage(vtTinted(img, accent))
+			cell.SetImage(vtTinted(img, col, accent))
 		}
 	}
 	frame := tv.FrameOfCellAtColumn(col, row)
@@ -448,8 +448,12 @@ func (this *List) vtDrawCell(view int64) {
 const vtStyleSourceList = 3 // NSTableViewStyleSourceList
 
 // vtTinted returns img in color, autoreleased: one bitmap per representation of img keeps it sharp
-// at every scale. Only a glyph is tinted (vtGlyph); any other image comes back as it is.
-func vtTinted(img *cocoa.NSImage, color int64) *cocoa.NSImage {
+// at every scale. Only the glyph of the leading column (col 0) is tinted, as Finder tints the row symbol
+// only; a badge in a later column and any image that is not a glyph (vtGlyph) come back as they are.
+func vtTinted(img *cocoa.NSImage, col int64, color int64) *cocoa.NSImage {
+	if col != 0 {
+		return img
+	}
 	template := cocoa.Msg(img.Id, "isTemplate")&0xff != 0
 	size := img.Size()
 	rect := cocoa.NSRect{Width: size.Width, Height: size.Height}

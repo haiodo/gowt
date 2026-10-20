@@ -7,7 +7,7 @@ Behaviour change
 - macOS: controls created inside a `look.SetGlass` panel or a `look.SetSidebar` sidebar after the call are cleared too, on the next event-loop turn; they used to paint the window colour. A control with a background of its own, set by the app, keeps it in both, also when it existed before the call.
 
 Fixes
-- macOS: the selected row of a Table in a `look.SetSidebar` sidebar filled any icon with the accent colour since v0.9.4, so a colour image (an avatar) turned into an accent-coloured shape and an opaque one into a solid square. Only a glyph is tinted now: a template image, or one grey on a transparent background, as the `icons.Get` and `icons.FromSVG` images in the theme colours are. An icon coloured with `icons.Color` keeps its colour.
+- macOS: the selected row of a Table in a `look.SetSidebar` sidebar filled any icon with the accent colour since v0.9.4, so a colour image (an avatar) turned into an accent-coloured shape and an opaque one into a solid square. Only the glyph of the first column, the row symbol before the text, is tinted now: a template image, or one grey on a transparent background, as the `icons.Get` and `icons.FromSVG` images in the theme colours are. Images in later columns, a number badge or a "#" glyph, keep their colours. An icon coloured with `icons.Color` keeps its colour.
 - macOS: a `StyledText` with a transparent (alpha-0) background painted its lines opaque black when nothing above it had a visible background, since SWT's GC fill ignores the alpha of a colour. `Composite.DrawBackground` now fills nothing for an alpha-0 GC background, so a `StyledText` on glass is transparent.
 
 ## v0.9.4 (2026-10-20)

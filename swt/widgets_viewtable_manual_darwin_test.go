@@ -40,7 +40,7 @@ func TestViewTableTinted(t *testing.T) {
 	src := vtHalfImage(30.0/255, 30.0/255, 30.0/255, 1)
 	defer src.Release()
 
-	out := vtTinted(src, cocoa.NSColorColorWithDeviceRed(0, 0, 1, 1).Id)
+	out := vtTinted(src, 0, cocoa.NSColorColorWithDeviceRed(0, 0, 1, 1).Id)
 	if out.Id == src.Id {
 		t.Fatal("a grey glyph came back untinted")
 	}
@@ -69,10 +69,21 @@ func TestViewTableTintedKeepsColour(t *testing.T) {
 		"blue with alpha": vtHalfImage(0x2F/255.0, 0x6F/255.0, 0xEF/255.0, 1),
 		"opaque grey":     vtHalfImage(0.5, 0.5, 0.5, 2),
 	} {
-		if out := vtTinted(src, cocoa.NSColorColorWithDeviceRed(0, 0, 1, 1).Id); out.Id != src.Id {
+		if out := vtTinted(src, 0, cocoa.NSColorColorWithDeviceRed(0, 0, 1, 1).Id); out.Id != src.Id {
 			t.Errorf("%s: tinted, want the image as it is", name)
 		}
 		src.Release()
+	}
+}
+
+// No Display and no window: the grey glyph of TestViewTableTinted in the second column keeps its pixels.
+func TestViewTableTintedLeadingColumnOnly(t *testing.T) {
+	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
+	defer cocoa.Msg(pool, "drain")
+	src := vtHalfImage(30.0/255, 30.0/255, 30.0/255, 1)
+	defer src.Release()
+	if out := vtTinted(src, 1, cocoa.NSColorColorWithDeviceRed(0, 0, 1, 1).Id); out.Id != src.Id {
+		t.Fatal("a glyph in column 1 was tinted, want only column 0")
 	}
 }
 

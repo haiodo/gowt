@@ -12,6 +12,7 @@ Same Go program, three native back ends. What differs:
 | Web view | WKWebView | WebView2 Runtime (preinstalled on Windows 11) | WebKitGTK 4.1 |
 | Glass, backdrop | Liquid Glass (macOS 26), translucent material | Mica/Acrylic (Windows 11), untested on real hardware | none |
 | System tray | `App.Tray` returns nil where the system has none; not checked per OS | same | same |
+| App icon badge | `App.SetBadge`: the Dock tile badge | overlay on each window's taskbar button; not checked on real Windows | count of the launcher entry (`com.canonical.Unity.LauncherEntry`: Ubuntu Dock, dash-to-dock, KDE Plasma), whole numbers only; the D-Bus signal checked in Docker, no dock there |
 | Dark mode | whole UI | title bar; content with `look.SetDarkContent` | from the portal; not verified live |
 | Menu bar | application menu bar | window menu bar | window menu bar |
 

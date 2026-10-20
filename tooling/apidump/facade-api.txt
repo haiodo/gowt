@@ -14,6 +14,7 @@ gowt App.OnError(f func(error))
 gowt App.OnThemeChange(f func(dark bool))
 gowt App.Quit()
 gowt App.ScreenSize() (width int, height int)
+gowt App.SetBadge(text string)
 gowt App.Sync(f func())
 gowt App.SystemFont() Font
 gowt App.Tray(tooltip string, onClick func()) *TrayIcon

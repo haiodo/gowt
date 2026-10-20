@@ -34,6 +34,7 @@ type App struct {
 	paints  map[*swt.Control]*painted // controls given an Adaptive colour
 	// controls whose preferred size changed in this event-loop turn; see sizing
 	relayouts []*swt.Control
+	badge     string
 }
 
 // SetAppName sets the name the system shows for the process (macOS menu bar and Dock, Linux
@@ -473,6 +474,7 @@ func (w *Window) SetTopInset(points int) {
 func (a *App) Window(title string, opts ...Option) *Window {
 	s := swt.NewShellDisplayStyle(a.display, swt.SHELL_TRIM)
 	s.SetText(title)
+	a.badgeWindow(s)
 	gap, pad := spacingOf(opts, Spacing.PageMargin)
 	s.SetLayout(newBox(false, gap, pad))
 	w := &Window{panel: newPanel(&s.Composite), shell: s}

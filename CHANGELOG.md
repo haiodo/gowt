@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+New API
+- `App.SetBadge(text)` shows a count on the application icon, `""` removes it (fusion-desktop gowt-issues 8). macOS: the badge of the app's Dock tile. Windows: the overlay of the taskbar button of every window, also of windows created later with `App.Window`. Linux: the `com.canonical.Unity.LauncherEntry` count that Ubuntu Dock, dash-to-dock and KDE Plasma draw, whole numbers only, for the desktop file named after the app name (`SetAppName`, the executable name by default). SWT's own `TaskBar` stays as in SWT for Java: on macOS `GetItemShell(shell)` returns nil and only `GetItemShell(nil)`, the application item, exists; on Linux `Display.GetSystemTaskBar` returns nil.
+
 Behaviour change
 - macOS: `look.SetGlass` clears the whole content of the panel, as `look.SetSidebar` does: labels, links, check boxes, radio buttons, `StyledText` and the containers inside it, `Group`, `Scroll` and `Split` among them, show the glass through, and lists, tables and trees get the source-list style. It cleared only the panel itself, so a `Scroll` inside showed a white rectangle over the glass.
 - macOS: controls created inside a `look.SetGlass` panel or a `look.SetSidebar` sidebar after the call are cleared too, on the next event-loop turn; they used to paint the window colour. A control with a background of its own, set by the app, keeps it in both, also when it existed before the call.

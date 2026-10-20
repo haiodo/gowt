@@ -3,12 +3,13 @@
 // button and a search field (look.SetToolbar) and grouped sections (gowt.Section). Windows and Linux
 // get a plain sidebar with the sidebar item in its first row, the rest of the toolbar as a bar of flat
 // buttons and a search field, and painted sections.
-// GOWT_FINDERDEMO_SECS=n exits after n seconds.
+// GOWT_FINDERDEMO_SECS=n exits after n seconds; GOWT_FINDERDEMO_HIDE=1 starts with the sidebar hidden.
 package main
 
 import (
 	"log"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -57,7 +58,9 @@ func main() {
 				}
 			}
 		}
+		toggle := func() { look.SetSidebarVisible(w, !look.SidebarVisible(w)) }
 		look.SetToolbar(w,
+			look.ToolbarItem{Title: "Hide Sidebar", Symbol: "sidebar.left", Sidebar: true, OnClick: toggle},
 			look.ToolbarItem{Title: "New", Symbol: "plus", Sidebar: true, OnClick: func() { log.Print("new") }},
 			look.ToolbarItem{Title: "Back/Forward", Nav: true, Group: []look.ToolbarItem{
 				{Title: "Back", Symbol: "chevron.backward", OnClick: func() { step(-1) }},
@@ -79,6 +82,22 @@ func main() {
 				gowt.Pages(gowt.Grow(), gowt.Ref(&views), appearance(), general(), dock())))
 
 		look.SetSidebar(w, sidebar, content, 220)
+		var keys []gowt.Option
+		if runtime.GOOS == "darwin" {
+			keys = append(keys, gowt.Shortcut("Ctrl+Cmd+S")) // elsewhere Cmd is Ctrl, and Ctrl+S is Save
+		}
+		hide := w.MenuBar().Submenu("&View").Item("Hide Sidebar", toggle, keys...)
+		look.OnSidebarChange(w, func(visible bool, width int) {
+			if visible {
+				hide.SetText("Hide Sidebar")
+			} else {
+				hide.SetText("Show Sidebar")
+			}
+			log.Printf("sidebar visible %v, width %d", visible, width)
+		})
+		if os.Getenv("GOWT_FINDERDEMO_HIDE") == "1" {
+			look.SetSidebarVisible(w, false)
+		}
 		show(0)
 		if s, _ := strconv.Atoi(os.Getenv("GOWT_FINDERDEMO_SECS")); s > 0 {
 			app.After(time.Duration(s)*time.Second, app.Quit)

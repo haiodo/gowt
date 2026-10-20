@@ -98,6 +98,10 @@ func setGlassGroup(*swt.Composite, float64) {}
 
 func sidebarInset() int32 { return 0 }
 
-func setSidebarChrome(*swt.Shell, *swt.Composite) {}
+func setSidebarChrome(*swt.Shell, *swt.Composite, *swt.Control) {}
 
-func syncSidebar(*swt.Shell, *swt.Composite, [4]int32) {}
+func syncSidebar(*swt.Shell, *swt.Composite, [4]int32, bool) {}
+
+// sidebarDivider leaves a gap for the sash: an SWT sash here paints its own background and would cover
+// the content edge.
+func sidebarDivider() int32 { return 4 }

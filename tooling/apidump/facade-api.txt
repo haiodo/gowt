@@ -955,6 +955,7 @@ gowt/look const BackdropTranslucent Backdrop = 1
 gowt/look func Classic()
 gowt/look func DragsWindow(c Container)
 gowt/look func GlassButton() github.com/haiodo/gowt.Option
+gowt/look func OnSidebarChange(w *github.com/haiodo/gowt.Window, f func(visible bool, width int))
 gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)
 gowt/look func SetFullSizeContent(w *github.com/haiodo/gowt.Window, on bool)
@@ -962,7 +963,11 @@ gowt/look func SetGlass(c Container, on bool)
 gowt/look func SetGlassGroup(c Container, spacing float64)
 gowt/look func SetRoundedCorners(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetSidebar(w *github.com/haiodo/gowt.Window, sidebar Container, content Container, width int)
+gowt/look func SetSidebarVisible(w *github.com/haiodo/gowt.Window, on bool)
+gowt/look func SetSidebarWidth(w *github.com/haiodo/gowt.Window, width int)
 gowt/look func SetToolbar(w *github.com/haiodo/gowt.Window, items ...ToolbarItem) bool
+gowt/look func SidebarVisible(w *github.com/haiodo/gowt.Window) bool
+gowt/look func SidebarWidth(w *github.com/haiodo/gowt.Window) int
 gowt/look type Backdrop int
 gowt/look type Container
 gowt/look type ToolbarItem struct

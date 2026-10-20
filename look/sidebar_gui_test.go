@@ -3,6 +3,7 @@ package look_test
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"runtime"
 	"testing"
 	"time"
@@ -180,4 +181,198 @@ func focusName(app *gowt.App) string {
 		return s
 	}
 	return c.GetName()
+}
+
+// sidebarWindow opens a sidebar window of 900 by 600 points with a toolbar whose first item is over
+// the sidebar, and runs check once it is on screen.
+func sidebarWindow(t *testing.T, check func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool)) {
+	t.Helper()
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	var err error
+	onMain(func() {
+		err = gowt.Run(func(app *gowt.App) {
+			w := app.Window("sidebar")
+			var sidebar, content *gowt.Panel
+			w.Add(gowt.VBox(gowt.Ref(&sidebar), gowt.List([]string{"a", "b"}, gowt.Grow())),
+				gowt.VBox(gowt.Ref(&content), gowt.Label("content")))
+			look.SetSidebar(w, sidebar, content, 220)
+			native := look.SetToolbar(w, look.ToolbarItem{Title: "Sidebar", Symbol: "sidebar.left", Sidebar: true},
+				look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up"})
+			w.SetSize(900, 600)
+			w.Show()
+			app.After(300*time.Millisecond, func() {
+				defer w.Close()
+				check(app, w, sidebar, content, native)
+			})
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+// barLead is the first control of the toolbar bar above the content, nil with a native toolbar.
+func barLead(w *gowt.Window, sidebar, content *gowt.Panel) *swt.Control {
+	for _, c := range w.Unwrap().GetChildren() {
+		p, ok := c.Impl().(*swt.Composite)
+		if !ok || p == sidebar.Unwrap() || p == content.Unwrap() || len(p.GetChildren()) == 0 {
+			continue
+		}
+		return p.GetChildren()[0]
+	}
+	return nil
+}
+
+func TestSidebarHide(t *testing.T) {
+	sidebarWindow(t, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+		var changes []string
+		look.OnSidebarChange(w, func(visible bool, width int) { changes = append(changes, fmt.Sprint(visible, width)) })
+		r := w.Unwrap().GetClientArea()
+		shownX := content.Unwrap().GetBounds().X
+		if !look.SidebarVisible(w) || look.SidebarWidth(w) != 220 || shownX < 220 {
+			t.Errorf("start: visible %v, width %d, content x %d", look.SidebarVisible(w), look.SidebarWidth(w), shownX)
+		}
+		lead := barLead(w, sidebar, content)
+		if !native && (lead == nil || lead.GetVisible()) {
+			t.Errorf("bar starts with a visible Sidebar item copy: %v", lead)
+		}
+
+		look.SetSidebarVisible(w, false)
+		app.Flush()
+		b := content.Unwrap().GetBounds()
+		if look.SidebarVisible(w) || sidebar.Unwrap().GetVisible() || b.X != r.X || b.Width != r.Width {
+			t.Errorf("hidden: visible %v, sidebar shown %v, content %v in client area %v",
+				look.SidebarVisible(w), sidebar.Unwrap().GetVisible(), b, r)
+		}
+		if !native && (lead == nil || !lead.GetVisible()) {
+			t.Error("hidden: the Sidebar item did not move to the bar")
+		}
+		look.SetSidebarVisible(w, false) // no change, no callback
+
+		look.SetSidebarVisible(w, true)
+		look.SetSidebarWidth(w, 50)
+		app.Flush()
+		if look.SidebarWidth(w) != 120 || content.Unwrap().GetBounds().X != shownX-100 {
+			t.Errorf("width 50: got %d, content x %d, want 120 and %d", look.SidebarWidth(w), content.Unwrap().GetBounds().X, shownX-100)
+		}
+		if want := "[false 220 true 220 true 120]"; fmt.Sprint(changes) != want {
+			t.Errorf("changes %v, want %s", changes, want)
+		}
+	})
+}
+
+func sashOf(w *gowt.Window) *swt.Sash {
+	for _, c := range w.Unwrap().GetChildren() {
+		if s, ok := c.Impl().(*swt.Sash); ok {
+			return s
+		}
+	}
+	return nil
+}
+
+// A drag delivered as the events a Sash sends: Selection with the new sash x between the mouse
+// down and up. The pointer does not move; TestSidebarPostedDrag moves it.
+func TestSidebarDragEvents(t *testing.T) {
+	sidebarWindow(t, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+		var changes []string
+		look.OnSidebarChange(w, func(visible bool, width int) { changes = append(changes, fmt.Sprint(visible, width)) })
+		sash := sashOf(w)
+		if sash == nil {
+			t.Error("no sash")
+			return
+		}
+		x0 := sash.GetBounds().X
+		send := func(typ int32, x int32) int32 {
+			e := swt.NewEvent()
+			e.X, e.Y, e.Button = x, sash.GetBounds().Y, 1
+			sash.NotifyListeners(typ, e)
+			return e.X
+		}
+		send(swt.MouseDown, 0)
+		if got := send(swt.Selection, x0+80); got != x0+80 || look.SidebarWidth(w) != 300 {
+			t.Errorf("drag by 80: sash at %d, width %d", got, look.SidebarWidth(w))
+		}
+		if len(changes) != 0 {
+			t.Errorf("changes during the drag: %v", changes)
+		}
+		send(swt.Selection, 20)
+		if look.SidebarVisible(w) || !sash.GetVisible() {
+			t.Errorf("dragged to 20: visible %v, sash shown %v", look.SidebarVisible(w), sash.GetVisible())
+		}
+		send(swt.MouseUp, 0)
+		app.Flush()
+		if sash.GetVisible() {
+			t.Error("the sash of a hidden sidebar stays after the drag")
+		}
+		if want := "[false 300]"; fmt.Sprint(changes) != want {
+			t.Errorf("changes %v, want %s", changes, want)
+		}
+		r := w.Unwrap().GetClientArea()
+		send(swt.MouseDown, 0)
+		send(swt.Selection, r.Width)
+		send(swt.MouseUp, 0)
+		if !look.SidebarVisible(w) || look.SidebarWidth(w) > int(r.Width)-200 {
+			t.Errorf("dragged to the right edge: visible %v, width %d of %d", look.SidebarVisible(w), look.SidebarWidth(w), r.Width)
+		}
+		send(swt.MouseDown, 0)
+		send(swt.Selection, 20)
+		send(swt.Selection, x0+80)
+		send(swt.MouseUp, 0)
+		if !look.SidebarVisible(w) || look.SidebarWidth(w) != 300 {
+			t.Errorf("hidden and dragged back in one press: visible %v, width %d", look.SidebarVisible(w), look.SidebarWidth(w))
+		}
+	})
+}
+
+// A real drag of the sidebar edge by 60 points. Linux uses xdotool: Display.Post there queues GDK
+// button events the X server never sees, so a GTK sash gets no motion.
+func TestSidebarPostedDrag(t *testing.T) {
+	xdotool, _ := exec.LookPath("xdotool")
+	skip := ""
+	sidebarWindow(t, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+		sash := sashOf(w)
+		b := sash.GetBounds()
+		p := w.Unwrap().ToDisplay(b.X+b.Width/2, b.Y+b.Height/2)
+		d := app.Unwrap()
+		post := func(typ int32, x int32) bool {
+			ok := true
+			if runtime.GOOS == "linux" {
+				args := map[int32][]string{swt.MouseMove: {"mousemove", fmt.Sprint(x), fmt.Sprint(p.Y)},
+					swt.MouseDown: {"mousedown", "1"}, swt.MouseUp: {"mouseup", "1"}}[typ]
+				ok = xdotool != "" && exec.Command(xdotool, args...).Run() == nil
+			} else {
+				e := swt.NewEvent()
+				e.Type, e.X, e.Y, e.Button = typ, x, p.Y, 1
+				ok = d.Post(e)
+			}
+			for range 5 {
+				for d.ReadAndDispatch() {
+				}
+				time.Sleep(20 * time.Millisecond)
+			}
+			return ok
+		}
+		var changes []string
+		look.OnSidebarChange(w, func(visible bool, width int) { changes = append(changes, fmt.Sprint(visible, width)) })
+		ok := post(swt.MouseMove, p.X) && post(swt.MouseDown, p.X)
+		for i := int32(1); ok && i <= 6; i++ {
+			ok = post(swt.MouseMove, p.X+10*i)
+		}
+		ok = ok && post(swt.MouseUp, p.X+60)
+		if !ok {
+			skip = "the mouse events could not be posted (Linux needs xdotool)"
+			return
+		}
+		if got := look.SidebarWidth(w); got != 280 {
+			t.Errorf("drag by 60: width %d, want 280", got)
+		}
+		if want := "[true 280]"; fmt.Sprint(changes) != want {
+			t.Errorf("changes %v, want %s", changes, want)
+		}
+	})
+	if skip != "" {
+		t.Skip(skip)
+	}
 }

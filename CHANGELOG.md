@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+New API
+- The sidebar of a `look.SetSidebar` window can be hidden and resized: `look.SetSidebarVisible`, `SidebarVisible`, `SetSidebarWidth`, `SidebarWidth` and `OnSidebarChange` (njpt issue 19). The user drags the edge between sidebar and content (a sash with the resize cursor); dragged narrower than 120 points the sidebar hides, and the content keeps at least 200 points. Hidden, the content takes the whole width, and the `Sidebar` toolbar items move to the start of the toolbar: on macOS after the traffic lights, followed by the navigational items and the title, as in Finder; on Windows and Linux to the start of the bar, while the row in the sidebar hides with it. `OnSidebarChange` reports changes from the calls and once at the end of a drag.
+- `"sidebar.left"` symbol in the Windows and Linux toolbar bar, for the toolbar button that toggles the sidebar (macOS has the SF Symbol).
+
+Behaviour change
+- Windows and Linux: a `look.SetSidebar` window leaves a 4-pixel gap between sidebar and content, where the sash lies.
+
 ## v0.9.3 (2026-10-19)
 
 New API

@@ -19,6 +19,7 @@ var barSymbols = map[string]string{
 	"chevron.backward":    `<path d="M15 6l-6 6 6 6"/>`,
 	"chevron.forward":     `<path d="M9 6l6 6-6 6"/>`,
 	"plus":                `<path d="M12 5v14M5 12h14"/>`,
+	"sidebar.left":        `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>`,
 	"square.and.arrow.up": `<path d="M12 3v12M8 7l4-4 4 4M6 11v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8"/>`,
 }
 
@@ -33,8 +34,10 @@ type toolbarBar struct {
 	sidebar Container    // the SetSidebar sidebar, which gets the Sidebar items in a row of its own
 	panel   *gowt.Panel
 	side    *gowt.Panel // the row of Sidebar items at the top of the sidebar
-	title   *gowt.LabelView
-	icons   []func(on, off string) []*swt.Image // set the images of one tool item in the given colours
+	// lead holds copies of the Sidebar items at the start of the bar, shown while the sidebar is hidden
+	lead  []gowt.Widget
+	title *gowt.LabelView
+	icons []func(on, off string) []*swt.Image // set the images of one tool item in the given colours
 	// sideIcons are the icons of the side row, coloured for the sidebar background
 	sideIcons []func(on, off string) []*swt.Image
 	images    []*swt.Image
@@ -82,7 +85,7 @@ func (b *toolbarBar) HandleEvent(e *swt.Event) {
 func (b *toolbarBar) build() {
 	if b.panel != nil {
 		b.panel.Unwrap().Dispose()
-		b.panel, b.title, b.icons = nil, nil, nil
+		b.panel, b.title, b.icons, b.lead = nil, nil, nil, nil
 		disposeImages(b.images)
 		b.images = nil
 	}
@@ -124,7 +127,7 @@ func (b *toolbarBar) fill() {
 		spaced = spaced || it.Space
 	}
 	var p *gowt.Panel
-	b.w.Add(gowt.Grid(len(lead)+1+len(trail), gowt.Padding(8), gowt.Gap(6), gowt.Ref(&p)))
+	b.w.Add(gowt.Grid(len(over)+len(lead)+1+len(trail), gowt.Padding(8), gowt.Gap(6), gowt.Ref(&p)))
 	p.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
 	p.Unwrap().AddPaintListener(painter(func(e *swt.PaintEvent) {
 		r := p.Unwrap().GetClientArea()
@@ -132,6 +135,13 @@ func (b *toolbarBar) fill() {
 		e.Gc.DrawLine(0, r.Height-1, r.Width, r.Height-1)
 	}))
 	b.panel = p
+	shown := b.sidebar.AsComposite().GetVisible()
+	for _, it := range over {
+		if c := b.item(p, it, &b.icons); c != nil {
+			c.SetVisible(!shown)
+			b.lead = append(b.lead, c)
+		}
+	}
 	for _, it := range lead {
 		b.item(p, it, &b.icons)
 	}
@@ -157,15 +167,18 @@ func (b *toolbarBar) fill() {
 	b.restyle(true)
 }
 
-func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off string) []*swt.Image) {
+// item adds it to p and returns its widget, nil for a Space.
+func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off string) []*swt.Image) gowt.Widget {
 	switch {
 	case it.Space:
 		p.Add(gowt.Spacer())
+		return nil
 	case it.OnSearch != nil:
 		var t *gowt.TextView
 		p.Add(gowt.Text(gowt.Search(), gowt.Size(240, 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)))
 		t.SetHint(it.Title)
 		t.OnChange(it.OnSearch)
+		return t
 	default:
 		var tb *gowt.ToolBarView
 		p.Add(gowt.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&tb)))
@@ -176,6 +189,15 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		for _, g := range segs {
 			toolItem(tb, g, icons)
 		}
+		return tb
+	}
+}
+
+// sidebarShown moves the Sidebar items to the start of the bar while the sidebar is hidden; the row in
+// the sidebar hides with it.
+func (b *toolbarBar) sidebarShown(on bool) {
+	for _, c := range b.lead {
+		c.SetVisible(!on)
 	}
 }
 

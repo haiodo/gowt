@@ -168,7 +168,53 @@ func SetSidebarEdge(view *NSView, x float64) {
 }
 
 // ReleaseSidebar forgets the sidebar edge of the window of view; call it when the window is disposed.
-func ReleaseSidebar(view *NSView) { delete(sidebarEdges, msg(uintptr(view.Id), "window")) }
+func ReleaseSidebar(view *NSView) {
+	w := msg(uintptr(view.Id), "window")
+	delete(sidebarEdges, w)
+	delete(sidebarHidden, w)
+}
+
+// sidebarHidden holds the windows whose sidebar is hidden.
+var sidebarHidden = map[uintptr]bool{}
+
+// SetSidebarHidden takes the sidebar spacers out of the toolbar or puts them back; without them
+// the items and title follow the traffic lights, as in Finder. Search text and the rest stay.
+func SetSidebarHidden(view *NSView, hidden bool) {
+	initAssociated()
+	w := msg(uintptr(view.Id), "window")
+	if w == 0 {
+		return
+	}
+	if hidden {
+		sidebarHidden[w] = true
+	} else {
+		delete(sidebarHidden, w)
+	}
+	s := toolbarDelegates[getAssociated(w, toolbarKey())]
+	tb := msg(w, "toolbar")
+	if s == nil || tb == 0 || !s.sidebar || s.collapsed == hidden {
+		return
+	}
+	s.collapsed = hidden
+	if hidden {
+		items := msg(tb, "items")
+		for i := int(msg(items, "count")) - 1; i >= 0; i-- {
+			id := goString(msg(msg(items, "objectAtIndex:", uintptr(i)), "itemIdentifier"))
+			if id == sidebarSpacerID || id == sidebarEndID {
+				msg(tb, "removeItemAtIndex:", uintptr(i))
+			}
+		}
+		s.spacer, s.width, s.end = 0, 0, 0
+		return
+	}
+	// The spacer goes in first: the end spacer's index in ids counts it.
+	all := s.ids()
+	for _, id := range []string{sidebarSpacerID, sidebarEndID} {
+		if i := msg(all, "indexOfObject:", nsString(id)); i < msg(all, "count") {
+			msg(tb, "insertItemWithItemIdentifier:atIndex:", nsString(id), i)
+		}
+	}
+}
 
 // spacerGap is the room between the sidebar edge and the end of the spacer; AppKit adds its item spacing.
 // sidebarEndWidth: the spacer after the Sidebar items. AppKit gives it an item viewer at least 44

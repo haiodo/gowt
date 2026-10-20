@@ -1,6 +1,7 @@
 package swt
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/haiodo/gowt/internal/cocoa"
@@ -35,6 +36,7 @@ func vtHalfImage(r, g, b, width float64) *cocoa.NSImage {
 
 // No Display and no window: a dark grey glyph on the left half is tinted blue.
 func TestViewTableTinted(t *testing.T) {
+	runtime.LockOSThread() // the pool and the graphics state stack belong to one thread; it exits with the test
 	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
 	defer cocoa.Msg(pool, "drain")
 	src := vtHalfImage(30.0/255, 30.0/255, 30.0/255, 1)
@@ -63,6 +65,7 @@ func TestViewTableTinted(t *testing.T) {
 
 // No Display and no window: a colour image with alpha (an avatar) and an opaque grey one are not glyphs.
 func TestViewTableTintedKeepsColour(t *testing.T) {
+	runtime.LockOSThread() // the pool and the graphics state stack belong to one thread; it exits with the test
 	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
 	defer cocoa.Msg(pool, "drain")
 	for name, src := range map[string]*cocoa.NSImage{
@@ -78,6 +81,7 @@ func TestViewTableTintedKeepsColour(t *testing.T) {
 
 // No Display and no window: the grey glyph of TestViewTableTinted in the second column keeps its pixels.
 func TestViewTableTintedLeadingColumnOnly(t *testing.T) {
+	runtime.LockOSThread() // the pool and the graphics state stack belong to one thread; it exits with the test
 	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
 	defer cocoa.Msg(pool, "drain")
 	src := vtHalfImage(30.0/255, 30.0/255, 30.0/255, 1)

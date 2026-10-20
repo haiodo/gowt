@@ -158,8 +158,8 @@ func inspector(ref **gowt.Panel, title **gowt.LabelView) gowt.Option {
 			gowt.Label("Kind", dim), gowt.Label("Preference pane"),
 			gowt.Label("Modified", dim), gowt.Label("Today, 09:41")),
 		heading("Sharing"),
-		gowt.Switch("Shared with others", gowt.Checked(false)),
-		gowt.Switch("Locked", gowt.Checked(true)))
+		gowt.Switch("Shared with others", gowt.GrowX(), gowt.Checked(false)),
+		gowt.Switch("Locked", gowt.GrowX(), gowt.Checked(true)))
 }
 
 func page(children ...gowt.Option) gowt.Option {

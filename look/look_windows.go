@@ -105,3 +105,6 @@ func syncSidebar(*swt.Shell, *swt.Composite, [4]int32, bool) {}
 // sidebarDivider leaves a gap for the sash: an SWT sash here paints its own background and would cover
 // the content edge.
 func sidebarDivider() int32 { return 4 }
+
+// itemsMinEdge has no native toolbar to measure; the side row of Sidebar items is measured instead.
+func itemsMinEdge(*swt.Shell) (int32, bool) { return 0, false }

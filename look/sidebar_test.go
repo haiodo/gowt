@@ -53,18 +53,20 @@ func TestSidebarWidthAt(t *testing.T) {
 
 func TestDragWidth(t *testing.T) {
 	for _, c := range []struct {
-		want, most, width int32
-		shown             bool
+		want, least, most, width int32
+		shown                    bool
 	}{
-		{300, 600, 300, true},
-		{minSidebarWidth, 600, minSidebarWidth, true},
-		{minSidebarWidth - 1, 600, 0, false},
-		{-20, 600, 0, false},
-		{900, 600, 600, true},
-		{300, 50, minSidebarWidth, true}, // a narrow window still keeps the minimum
+		{300, 120, 600, 300, true},
+		{120, 120, 600, 120, true},
+		{119, 120, 600, 0, false},
+		{-20, 120, 600, 0, false},
+		{900, 120, 600, 600, true},
+		{300, 120, 50, 120, true}, // a narrow window still keeps the minimum
+		{170, 180, 600, 0, false}, // Sidebar items that need 180 points
+		{180, 180, 600, 180, true},
 	} {
-		if w, ok := dragWidth(c.want, c.most); w != c.width || ok != c.shown {
-			t.Errorf("dragWidth(%d, %d) = %d, %v; want %d, %v", c.want, c.most, w, ok, c.width, c.shown)
+		if w, ok := dragWidth(c.want, c.least, c.most); w != c.width || ok != c.shown {
+			t.Errorf("dragWidth(%d, %d, %d) = %d, %v; want %d, %v", c.want, c.least, c.most, w, ok, c.width, c.shown)
 		}
 	}
 }

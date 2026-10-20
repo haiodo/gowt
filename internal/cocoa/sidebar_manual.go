@@ -263,6 +263,31 @@ func fitSpacer(w uintptr) {
 	msgF64(s.width, sel("setConstant:"), width)
 }
 
+// minViewerWidth is the narrowest item viewer AppKit puts a toolbar item view in, even a 1-point
+// spacer: measured on macOS 26 (docs/theme-look.md), AppKit does not report it.
+const minViewerWidth = 44
+
+// SidebarItemsMinEdge is the sidebar edge, in window points, below which the Sidebar items of the
+// toolbar of the window of view no longer end before it: the first spacer at its narrowest viewer.
+// ok is false without Sidebar items or before the toolbar has placed both spacers.
+func SidebarItemsMinEdge(view *NSView) (edge float64, ok bool) {
+	initAssociated()
+	w := msg(uintptr(view.Id), "window")
+	if w == 0 {
+		return 0, false
+	}
+	s := toolbarDelegates[getAssociated(w, toolbarKey())]
+	if s == nil || s.spacer == 0 || s.end == 0 || msg(s.spacer, "window") != w || msg(s.end, "window") != w {
+		return 0, false
+	}
+	// Both frames come from one toolbar layout; the end is fitted to edge+spacerGap, and the items
+	// move left with the spacer only while its viewer is wider than minViewerWidth.
+	v := NewNSViewOverload1(int64(s.end))
+	r := v.ConvertRect_toView_(v.Bounds(), nil)
+	cur := NewNSViewOverload1(int64(s.spacer)).Bounds().Width
+	return r.X + r.Width - max(cur, minViewerWidth) + minViewerWidth - spacerGap, true
+}
+
 // overCount is the number of items over the sidebar.
 func (s *toolbarState) overCount() int {
 	n := 0

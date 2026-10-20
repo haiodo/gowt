@@ -2,6 +2,7 @@ package look
 
 import (
 	"fmt"
+	"math"
 	"os"
 
 	"github.com/haiodo/gowt/internal/cocoa"
@@ -245,6 +246,12 @@ func debugSidebar(s *swt.Shell) {
 
 // sidebarDivider is 0: the sash lies over the sidebar edge, transparent (setSidebarChrome).
 func sidebarDivider() int32 { return 0 }
+
+// itemsMinEdge is the sidebar edge x the Sidebar toolbar items need, from the toolbar's last layout.
+func itemsMinEdge(s *swt.Shell) (int32, bool) {
+	e, ok := cocoa.SidebarItemsMinEdge(s.View)
+	return int32(math.Ceil(e)), ok
+}
 
 // syncSidebar gets bg with width 0 for a hidden sidebar, which leaves no glass.
 func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32, hidden bool) {

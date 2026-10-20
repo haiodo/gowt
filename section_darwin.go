@@ -11,3 +11,7 @@ func cardColor(*swt.Display) *swt.Color {
 	r, g, b := cocoa.GroupedFillRGB()
 	return swt.NewColorRedGreenBlue(r, g, b)
 }
+
+// roundCard clips the card, rows included, to its rounded rectangle, so on a glass pane the corners show
+// the glass rather than a fill in the parent's colour.
+func roundCard(c *swt.Composite) bool { return cocoa.RoundCorners(c.View, sectionRadius) }

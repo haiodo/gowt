@@ -38,6 +38,13 @@ func clearBackground(c *swt.Composite, on bool) {
 	c.SetBackgroundMode(swt.INHERIT_FORCE)
 }
 
+// clearPanel clears a composite on glass with INHERIT_DEFAULT, not FORCE: under FORCE a Text field
+// inherited the alpha-0 background and lost its field; text, combo and spinner fields keep theirs.
+func clearPanel(c *swt.Composite) {
+	c.SetBackgroundWithColor(clearColor(c.GetDisplay()))
+	c.SetBackgroundMode(swt.INHERIT_DEFAULT)
+}
+
 // clearColor is never disposed: StyledText and SashForm keep the Color itself and fail on a disposed one
 // at the next paint or new sash. A cocoa Color holds no native resource.
 func clearColor(d *swt.Display) *swt.Color {
@@ -225,7 +232,7 @@ func (d *sidebarHooks) WidgetDisposed(*swt.DisposeEvent) {
 // background: SWT fills a control without one in the default window colour, and an alpha-0 background of
 // a parent does not count as one there.
 func clearTree(c *swt.Composite) {
-	clearBackground(c, true)
+	clearPanel(c)
 	for _, ch := range c.GetChildren() {
 		clearChild(ch, true)
 	}
@@ -263,7 +270,7 @@ func clearChild(ch *swt.Control, deep bool) {
 		return
 	}
 	if !own {
-		clearBackground(sub, true)
+		clearPanel(sub)
 	}
 	if deep {
 		for _, c := range sub.GetChildren() {
@@ -379,3 +386,16 @@ func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32, hidden bool) {
 	cocoa.SetSidebarHidden(s.View, hidden)
 	cocoa.SetSidebarEdge(s.View, float64(bg[0]+bg[2]))
 }
+
+// focusSink is an empty view that takes the focus of a sidebar or inspector window without a list: a
+// macOS window opens with no focus ring, where SWT would focus its first control, a popup or a button.
+// An empty composite becomes first responder only with a key listener; Tab moves on from it.
+func focusSink(s *swt.Shell) *swt.Control {
+	c := swt.NewCompositeParentStyle(s, swt.NONE)
+	c.AddListener(swt.KeyDown, noKeys{})
+	return &c.Control
+}
+
+type noKeys struct{}
+
+func (noKeys) HandleEvent(*swt.Event) {}

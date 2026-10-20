@@ -112,3 +112,6 @@ func sidebarDivider() int32 { return 4 }
 
 // itemsMinEdge has no native toolbar to measure; the side row of Sidebar items is measured instead.
 func itemsMinEdge(*swt.Shell) (int32, bool) { return 0, false }
+
+// focusSink is nil: SWT keeps its choice, the first control.
+func focusSink(*swt.Shell) *swt.Control { return nil }

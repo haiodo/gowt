@@ -61,6 +61,12 @@ func TestPanesNoBlackFill(t *testing.T) {
 				for _, c := range controls {
 					o, size := c.ToDisplay(0, 0), c.GetSize()
 					rects[c.String()] = [4]int32{o.X - s.X, o.Y - s.Y, size.X, size.Y}
+					switch c.Impl().(type) {
+					case *swt.Text, *swt.Combo: // fields keep their native background on glass
+						if a := c.GetBackground().GetAlpha(); a != 255 {
+							t.Errorf("%s has background alpha %d, want its own field", c, a)
+						}
+					}
 				}
 				if err := shot.WindowPNG(w.Unwrap().View.Id, path); err != nil {
 					t.Error(err)

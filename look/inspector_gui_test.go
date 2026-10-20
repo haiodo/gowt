@@ -3,6 +3,7 @@ package look_test
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"testing"
 	"time"
 
@@ -232,4 +233,47 @@ func TestInspectorWithSidebar(t *testing.T) {
 			t.Errorf("the inspector drag changed the sidebar: %v, was %v", sb2, sb)
 		}
 	})
+}
+
+// Without a list in the content, macOS focuses an empty view, so no popup or button opens with a focus
+// ring; elsewhere SWT keeps its choice. A content list and Focused win as in a sidebar window.
+func TestInspectorFocus(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	sink := "popup"
+	if runtime.GOOS == "darwin" {
+		sink = "Composite"
+	}
+	for _, tc := range []struct {
+		name    string
+		content []gowt.Option
+		want    string
+	}{
+		{"no list", []gowt.Option{gowt.Combo([]string{"Auto"}, gowt.ReadOnly(), name("popup")), gowt.Button("go", name("button"))}, sink},
+		{"content table", []gowt.Option{gowt.Button("go"), gowt.Table(name("content table"))}, "content table"},
+		{"focused", []gowt.Option{gowt.Combo([]string{"Auto"}, gowt.ReadOnly()), gowt.Text(name("text"), gowt.Focused())}, "text"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got := "not checked"
+			var err error
+			onMain(func() {
+				err = gowt.Run(func(app *gowt.App) {
+					w := app.Window("inspector")
+					var content, insp *gowt.Panel
+					w.Add(gowt.VBox(append([]gowt.Option{gowt.Ref(&content)}, tc.content...)...),
+						gowt.VBox(gowt.Ref(&insp), gowt.Button("inspect")))
+					look.SetInspector(w, content, insp, 240)
+					w.Show()
+					app.After(200*time.Millisecond, func() { got = focusName(app); w.Close() })
+				})
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got != tc.want {
+				t.Errorf("focus %s, want %s", got, tc.want)
+			}
+		})
+	}
 }

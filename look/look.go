@@ -197,9 +197,11 @@ func panesOf(w *gowt.Window, content Container) *paneLayout {
 			return c
 		}
 		if l.side != nil {
-			return firstList(l.side.c)
+			if c := firstList(l.side.c); c != nil {
+				return c
+			}
 		}
-		return nil
+		return focusSink(s)
 	})
 	return l
 }

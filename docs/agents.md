@@ -136,7 +136,7 @@ A container has `Add(children...)` (create more children at its end, also after 
 
 `w.SetSize(800, 600)` fixes the start size in points, `w.SetMinSize(400, 300)` the smallest one the user can drag to, and `app.ScreenSize()` gives the area a window can take on the primary monitor.
 
-`gowt.Text(gowt.Focused())` gives that widget the keyboard focus when the window is first shown; without it SWT focuses the first control, and on macOS with Full Keyboard Access on a button there gets the focus ring. With several `Focused` in a window the last one created wins. A `Focused` widget added to a window on screen takes the focus on the next event-loop turn, or when its window is next activated. A window laid out by `look.SetSidebar` without `Focused` focuses its first List, Table or Tree, in the content first.
+`gowt.Text(gowt.Focused())` gives that widget the keyboard focus when the window is first shown; without it SWT focuses the first control, and on macOS with Full Keyboard Access on a button there gets the focus ring. With several `Focused` in a window the last one created wins. A `Focused` widget added to a window on screen takes the focus on the next event-loop turn, or when its window is next activated. A window laid out by `look.SetSidebar` or `look.SetInspector` without `Focused` focuses its first List, Table or Tree, in the content first, then in the sidebar.
 
 ## Tables, trees, tool bars
 

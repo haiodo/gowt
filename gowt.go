@@ -543,7 +543,7 @@ func (w *Window) SetSize(width, height int) {
 }
 
 // SetMinSize keeps the user from resizing the window below width x height points. A window laid out
-// by look.SetSidebar takes the larger of this and the room its sidebar and content need.
+// by look.SetSidebar or look.SetInspector takes the larger of this and the room its panes and content need.
 func (w *Window) SetMinSize(width, height int) {
 	if f, ok := w.shell.GetDataKey(minSizeHookKey).(func(int, int)); ok {
 		f(width, height)

@@ -368,6 +368,30 @@ func vtDrawContext(view *cocoa.NSView, frame cocoa.NSRect, draw func()) {
 	ctx.RestoreGraphicsState()
 }
 
+// vtTruncate ends a text wider than the cell with an ellipsis. A cell with an attributed string (a font with
+// synthetic traits, set in willDisplayCell) draws by the line break mode of its paragraph style, so that one is changed too.
+func vtTruncate(cell int64) {
+	const tail = int64(cocoa.OSNSLineBreakByTruncatingTail)
+	cocoa.Msg(cell, "setLineBreakMode:", tail)
+	attr := cocoa.Msg(cell, "attributedStringValue")
+	n := cocoa.Msg(attr, "length")
+	if n == 0 {
+		return
+	}
+	name := cocoa.Msg(cocoa.OSNSParagraphStyleAttributeName_.Id, "self")
+	style := cocoa.Msg(attr, "attribute:atIndex:effectiveRange:", name, 0, 0)
+	if style == 0 || cocoa.Msg(style, "lineBreakMode") == tail {
+		return
+	}
+	mstyle := cocoa.Msg(style, "mutableCopy")
+	defer cocoa.Msg(mstyle, "release")
+	cocoa.Msg(mstyle, "setLineBreakMode:", tail)
+	mattr := cocoa.Msg(attr, "mutableCopy")
+	defer cocoa.Msg(mattr, "release")
+	cocoa.Msg(mattr, "addAttribute:value:range:", name, mstyle, 0, n)
+	cocoa.Msg(cell, "setAttributedStringValue:", mattr)
+}
+
 func (this *Table) vtDrawCell(view int64, check bool) {
 	if this.IsDisposed() {
 		return
@@ -407,8 +431,8 @@ func (this *Table) vtDrawCell(view int64, check bool) {
 		}
 	}
 	frame := tv.FrameOfCellAtColumn(col, row)
-	// SWT clips cell text; Finder and AppKit lists end it with an ellipsis.
-	cell.SetLineBreakMode(int64(cocoa.OSNSLineBreakByTruncatingTail))
+	// SWT clips cell text, also in the paragraph style of a bold or italic font; Finder ends it with an ellipsis.
+	vtTruncate(cell.Id)
 	vtDrawContext(v, frame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 
@@ -444,7 +468,7 @@ func (this *List) vtDrawCell(view int64) {
 		cell.SetHighlighted(false)
 		cocoa.Msg(cell.Id, "setTextColor:", cocoa.Msg(cocoa.OSObjc_getClass("NSColor"), "controlAccentColor"))
 	}
-	cell.SetLineBreakMode(int64(cocoa.OSNSLineBreakByTruncatingTail))
+	vtTruncate(cell.Id)
 	vtDrawContext(cocoa.NewNSViewOverload1(view), cellFrame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 
@@ -621,7 +645,7 @@ func (this *Tree) vtDrawCell(view int64, check bool) {
 	cell.SetHighlighted(ov.IsRowSelected(row))
 	this.outlineView_willDisplayCell_forTableColumn_item_(ov.Id, 0, ov.Id, cell.Id, column, itemID)
 	frame := ov.FrameOfCellAtColumn(col, row)
-	cell.SetLineBreakMode(int64(cocoa.OSNSLineBreakByTruncatingTail))
+	vtTruncate(cell.Id)
 	vtDrawContext(v, frame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
 

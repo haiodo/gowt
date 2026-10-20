@@ -4,6 +4,7 @@ package look
 
 import (
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
@@ -126,18 +127,28 @@ func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite()
 // SetToolbar items as a bar above the content. A background on w itself paints over the macOS
 // sidebar glass; colour the content instead.
 //
-// The user resizes the sidebar by dragging its edge; dragged narrower than 120 points it hides. Read
-// and change that with SidebarVisible, SetSidebarVisible, SidebarWidth and SetSidebarWidth, and keep it
-// between runs with OnSidebarChange.
+// The user resizes the sidebar by dragging its edge, which stops at 120 points or at the room its
+// Sidebar toolbar items need. Read and change that with SidebarVisible, SetSidebarVisible,
+// SidebarWidth and SetSidebarWidth, and keep it between runs with OnSidebarChange.
 func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	SetFullSizeContent(w, true)
 	sb := sidebar.AsComposite()
 	s := w.Unwrap()
-	if old := sidebarOf(w); old != nil {
-		old.sash.Dispose()
-	}
 	l := &sidebarLayout{Layout: swt.NewLayout(), w: w, sidebar: sb, content: &content.AsComposite().Control, width: int32(width)}
 	l.SetImpl_(l)
+	// The shell minimum is read once: on macOS 26 it read back 20 points taller than it was set, so a
+	// value read after each set grew.
+	if old := sidebarOf(w); old != nil {
+		old.sash.Dispose()
+		l.appMin = old.appMin
+	} else {
+		m := s.GetMinimumSize()
+		l.appMin = [2]int32{m.X, m.Y}
+	}
+	s.SetDataKeyValue(minSizeHookKey, func(width, height int) {
+		l.appMin = [2]int32{int32(width), int32(height)}
+		l.fitMinSize()
+	})
 	l.sash = swt.NewSash(s, swt.VERTICAL|swt.SMOOTH)
 	l.sash.MoveAbove(nil)
 	for _, t := range []int32{swt.Selection, swt.MouseDown, swt.MouseUp} {
@@ -157,6 +168,10 @@ func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 		return firstList(sb)
 	})
 }
+
+// minSizeHookKey holds the func that gowt.Window.SetMinSize calls instead of setting the shell
+// minimum; gowt has the same key.
+const minSizeHookKey = "gowt.look.minSize"
 
 // focusDefaultKey holds the func that gowt.Window.Show asks for the control to focus when no widget is
 // Focused; gowt has the same key.
@@ -196,10 +211,11 @@ func SidebarVisible(w *gowt.Window) bool {
 	return l != nil && !l.hidden
 }
 
-// SetSidebarWidth sets the sidebar width in points, at least 120; a hidden sidebar comes back at it.
+// SetSidebarWidth sets the sidebar width in points; a hidden sidebar comes back at it. The width is at
+// least 120 and at least the room of the Sidebar toolbar items, as far as the window knows it yet.
 func SetSidebarWidth(w *gowt.Window, width int) {
-	if l := sidebarOf(w); l != nil && l.width != max(int32(width), minSidebarWidth) {
-		l.width = max(int32(width), minSidebarWidth)
+	if l := sidebarOf(w); l != nil && l.width != max(int32(width), l.minWidth()) {
+		l.width = max(int32(width), l.minWidth())
 		l.apply()
 		l.notify()
 	}
@@ -221,8 +237,8 @@ func OnSidebarChange(w *gowt.Window, f func(visible bool, width int)) {
 	}
 }
 
-// minSidebarWidth is the narrowest sidebar a drag leaves; a drag below it hides the sidebar.
-// minContentWidth is the content a drag of the sidebar edge leaves at least.
+// minSidebarWidth is where a drag of the sidebar edge stops without Sidebar toolbar items;
+// minContentWidth is the content such a drag leaves at least.
 const (
 	minSidebarWidth = 120
 	minContentWidth = 200
@@ -243,11 +259,14 @@ type sidebarLayout struct {
 	content  *swt.Control
 	sash     *swt.Sash // the draggable edge between sidebar and content
 	width    int32
+	itemsMin int32 // the width the Sidebar items of the macOS toolbar need, from its last layout
 	hidden   bool
 	dragging bool
-	// from is the visible state and width when the drag began
-	from     [2]int32
-	onChange []func(visible bool, width int)
+	from     int32 // the width when the drag began
+	// appMin is the minimum size the app set, lastMin the one fitMinSize set last, once minSet
+	appMin, lastMin [2]int32
+	minSet          bool
+	onChange        []func(visible bool, width int)
 }
 
 // apply shows or hides the sidebar and lays the window out again. A focus inside a hidden sidebar
@@ -285,34 +304,34 @@ func (l *sidebarLayout) notify() {
 	}
 }
 
-func (l *sidebarLayout) state() [2]int32 {
-	if l.hidden {
-		return [2]int32{0, l.width}
+// minWidth is the narrowest sidebar: minSidebarWidth, or the room its Sidebar toolbar items need where
+// that is more (the macOS toolbar group up to its inset from the edge, the Windows and Linux row).
+func (l *sidebarLayout) minWidth() int32 {
+	m := max(int32(minSidebarWidth), l.itemsMin)
+	if b := bars[l.w.Unwrap()]; b != nil && b.side != nil {
+		m = max(m, b.side.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X)
 	}
-	return [2]int32{1, l.width}
+	return m
 }
 
-// HandleEvent follows a drag of the sash: it resizes the sidebar while the mouse moves, hides it
-// below minSidebarWidth, and tells OnSidebarChange once the button is released.
+// HandleEvent follows a drag of the sash: it resizes the sidebar while the mouse moves, stopping at
+// minWidth, and tells OnSidebarChange once the button is released. A drag never hides the sidebar: a
+// divider that jumps away under the pointer confuses more than one that stops.
 func (l *sidebarLayout) HandleEvent(e *swt.Event) {
 	switch e.Type {
 	case swt.MouseDown:
-		l.dragging, l.from = true, l.state()
+		l.dragging, l.from = true, l.width
 	case swt.MouseUp:
 		l.dragging = false
-		l.w.Unwrap().Layout()
-		if l.state() != l.from {
+		if l.width != l.from {
 			l.notify()
 		}
 	case swt.Selection:
 		r := l.w.Unwrap().GetClientArea()
 		in, div := sidebarInset(), sidebarDivider()
-		width, ok := dragWidth(sidebarWidthAt(e.X-r.X, in, div), r.Width-in-div-minContentWidth)
-		if ok != !l.hidden || (ok && width != l.width) {
-			l.hidden = !ok
-			if ok {
-				l.width = width
-			}
+		width := dragWidth(sidebarWidthAt(e.X-r.X, in, div), l.minWidth(), r.Width-in-div-minContentWidth)
+		if width != l.width && !l.hidden {
+			l.width = width
 			l.apply()
 			if !l.dragging { // arrow keys on the focused sash
 				l.notify()
@@ -332,7 +351,8 @@ func (l *sidebarLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ boo
 	if l.hidden {
 		side, sb.Y = 0, 0
 	}
-	p := swt.NewPoint(side+ct.X, top+max(sb.Y+in, ct.Y+barHeight(c.GetShell())))
+	// A packed window starts at least as wide as fitMinSize lets it get.
+	p := swt.NewPoint(side+max(ct.X, minContentWidth), top+max(sb.Y+in, ct.Y+barHeight(c.GetShell())))
 	if wHint != swt.DEFAULT {
 		p.X = wHint
 	}
@@ -344,6 +364,8 @@ func (l *sidebarLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ boo
 
 func (l *sidebarLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	r := c.GetClientArea()
+	l.measure()
+	l.fitMin()
 	width := l.width
 	if l.hidden {
 		width = 0
@@ -351,11 +373,56 @@ func (l *sidebarLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	bg, sb, ct, sh := sidebarFrames(r.X, r.Y, r.Width, r.Height, width, sidebarInset(), int32(topInset(c.GetShell())), sidebarDivider())
 	l.sidebar.SetBounds(sb[0], sb[1], sb[2], sb[3])
 	l.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
-	// A hidden sidebar has no edge to drag, except during the drag that hid it.
-	l.sash.SetVisible(!l.hidden || l.dragging)
+	l.sash.SetVisible(!l.hidden)
 	ct = barTop(c.GetShell(), ct)
 	l.content.SetBounds(ct[0], ct[1], ct[2], ct[3])
 	syncSidebar(c.GetShell(), l.sidebar, bg, l.hidden)
+	l.fitMinSize()
+}
+
+// fitMinSize keeps the window as wide as the sidebar and minContentWidth, and never below the minimum
+// the app gave Window.SetMinSize, height included.
+func (l *sidebarLayout) fitMinSize() {
+	s := l.w.Unwrap()
+	cw := int32(minContentWidth)
+	if !l.hidden {
+		cw += sidebarInset() + l.width + sidebarDivider()
+	}
+	trim := s.GetSize().X - s.GetClientArea().Width
+	want := [2]int32{max(cw+trim, l.appMin[0]), l.appMin[1]}
+	if l.minSet && want == l.lastMin {
+		return
+	}
+	l.lastMin, l.minSet = want, true
+	s.SetMinimumSize(want[0], want[1])
+}
+
+// measure takes the room of the Sidebar items from the macOS toolbar's last layout; it reports
+// whether there was a measurement.
+func (l *sidebarLayout) measure() bool {
+	s := l.w.Unwrap()
+	e, ok := itemsMinEdge(s)
+	if ok && !l.hidden {
+		l.itemsMin = e - s.GetClientArea().X - sidebarInset()
+	}
+	return ok
+}
+
+// fitMin raises a sidebar narrower than minWidth to it, so the divider is drawn where a drag starts;
+// OnSidebarChange hears of it after the layout pass, not inside it.
+func (l *sidebarLayout) fitMin() bool {
+	m := l.minWidth()
+	if l.width >= m {
+		return false
+	}
+	l.width = m
+	s := l.w.Unwrap()
+	s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
+		if !s.IsDisposed() {
+			l.notify()
+		}
+	}))
+	return true
 }
 
 // sashGrip is the width of the sash where the sidebar leaves no gap for it (div 0): it lies over the
@@ -392,11 +459,5 @@ func sidebarWidthAt(x, in, div int32) int32 {
 	return x - in - div + div/2 + sw/2
 }
 
-// dragWidth is the width a drag to want gives, kept from minSidebarWidth to most (or minSidebarWidth,
-// if most is smaller); false hides the sidebar, for a want below minSidebarWidth.
-func dragWidth(want, most int32) (int32, bool) {
-	if want < minSidebarWidth {
-		return 0, false
-	}
-	return max(min(want, most), minSidebarWidth), true
-}
+// dragWidth is the width a drag to want gives, kept from least to most (or least, if most is smaller).
+func dragWidth(want, least, most int32) int32 { return max(min(want, most), least) }

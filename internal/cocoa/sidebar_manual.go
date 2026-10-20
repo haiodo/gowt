@@ -263,6 +263,67 @@ func fitSpacer(w uintptr) {
 	msgF64(s.width, sel("setConstant:"), width)
 }
 
+// minViewerWidth is the narrowest item viewer AppKit puts a toolbar item view in, even a 1-point
+// spacer: measured on macOS 26 (docs/theme-look.md), AppKit does not report it.
+const minViewerWidth = 44
+
+// SidebarItemsMinEdge is the sidebar edge, in window points, below which the Sidebar items of the
+// toolbar of the window of view no longer end before it: the first spacer at its narrowest viewer.
+// ok is false without Sidebar items or before the toolbar has placed both spacers.
+func SidebarItemsMinEdge(view *NSView) (edge float64, ok bool) {
+	initAssociated()
+	w := msg(uintptr(view.Id), "window")
+	if w == 0 {
+		return 0, false
+	}
+	s := toolbarDelegates[getAssociated(w, toolbarKey())]
+	if s == nil || s.spacer == 0 || s.end == 0 || msg(s.spacer, "window") != w || msg(s.end, "window") != w {
+		return 0, false
+	}
+	// Both frames come from one toolbar layout; the end is fitted to edge+spacerGap, and the items
+	// move left with the spacer only while its viewer is wider than minViewerWidth.
+	v := NewNSViewOverload1(int64(s.end))
+	r := v.ConvertRect_toView_(v.Bounds(), nil)
+	cur := NewNSViewOverload1(int64(s.spacer)).Bounds().Width
+	return r.X + r.Width - max(cur, minViewerWidth) + minViewerWidth - spacerGap, true
+}
+
+// DescribeSidebarToolbar lists, in window points, the zoom button's right edge and the frames of the
+// two sidebar spacers and of their superviews (the item viewers), for GOWT_SIDEBAR_DEBUG.
+func DescribeSidebarToolbar(view *NSView) string {
+	initAssociated()
+	w := msg(uintptr(view.Id), "window")
+	if w == 0 {
+		return "no window\n"
+	}
+	frame := func(v uintptr) string {
+		if v == 0 || msg(v, "window") != w {
+			return "not in the window"
+		}
+		nv := NewNSViewOverload1(int64(v))
+		r := nv.ConvertRect_toView_(nv.Bounds(), nil)
+		return fmt.Sprintf("x %.1f width %.1f right %.1f", r.X, r.Width, r.X+r.Width)
+	}
+	out := ""
+	if b := msg(w, "standardWindowButton:", 2); b != 0 {
+		out += "zoom button " + frame(b) + "\n"
+	}
+	s := toolbarDelegates[getAssociated(w, toolbarKey())]
+	if s == nil {
+		return out + "no toolbar\n"
+	}
+	for _, v := range []struct {
+		name string
+		v    uintptr
+	}{{"spacer", s.spacer}, {"end spacer", s.end}} {
+		out += v.name + " " + frame(v.v) + "\n"
+		if v.v != 0 {
+			out += v.name + " superview " + goString(msg(msg(v.v, "superview"), "className")) + " " + frame(msg(v.v, "superview")) + "\n"
+		}
+	}
+	return out
+}
+
 // overCount is the number of items over the sidebar.
 func (s *toolbarState) overCount() int {
 	n := 0
@@ -280,6 +341,10 @@ var (
 	msgF64Ret   func(self, sel uintptr, v float64) uintptr
 )
 
+// SidebarToolbarLaidOut, when set, runs with the NSWindow after its toolbar laid the sidebar
+// spacers out, which is when SidebarItemsMinEdge has a new measurement.
+var SidebarToolbarLaidOut func(window uintptr)
+
 // newSpacer returns the view of the spacer item, retained, and its width constraint. Its layout refits
 // the width, since the toolbar places the item after the window layout ran; the refit is queued on the
 // run loop, because a constraint changed inside the toolbar's layout pass asks for another pass.
@@ -291,8 +356,12 @@ func newSpacer() (view, width uintptr) {
 			msg(self, "performSelectorOnMainThread:withObject:waitUntilDone:", sel("gowtFit"), 0, 0)
 		})
 		fit := purego.NewCallback(func(self, _ uintptr) {
+			defer enterCallback()()
 			if w := msg(self, "window"); w != 0 {
 				fitSpacer(w)
+				if SidebarToolbarLaidOut != nil {
+					SidebarToolbarLaidOut(w)
+				}
 			}
 		})
 		spacerClass = allocClass(class("NSView"), "GowtToolbarSpacer", 0)

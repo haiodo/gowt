@@ -3,7 +3,8 @@
 // button and a search field (look.SetToolbar) and grouped sections (gowt.Section). Windows and Linux
 // get a plain sidebar with the sidebar item in its first row, the rest of the toolbar as a bar of flat
 // buttons and a search field, and painted sections.
-// GOWT_FINDERDEMO_SECS=n exits after n seconds; GOWT_FINDERDEMO_HIDE=1 starts with the sidebar hidden.
+// GOWT_FINDERDEMO_SECS=n exits after n seconds; GOWT_FINDERDEMO_HIDE=1 starts with the sidebar hidden,
+// GOWT_FINDERDEMO_NARROW=1 at the narrowest window.
 package main
 
 import (
@@ -82,6 +83,9 @@ func main() {
 				gowt.Pages(gowt.Grow(), gowt.Ref(&views), appearance(), general(), dock())))
 
 		look.SetSidebar(w, sidebar, content, 220)
+		// The sections need more than the 200 points of content SetSidebar keeps; with a wider sidebar
+		// the content gets narrower again, since the minimum is the whole window's.
+		w.SetMinSize(640, 400)
 		var keys []gowt.Option
 		if runtime.GOOS == "darwin" {
 			keys = append(keys, gowt.Shortcut("Ctrl+Cmd+S")) // elsewhere Cmd is Ctrl, and Ctrl+S is Save
@@ -97,6 +101,9 @@ func main() {
 		})
 		if os.Getenv("GOWT_FINDERDEMO_HIDE") == "1" {
 			look.SetSidebarVisible(w, false)
+		}
+		if os.Getenv("GOWT_FINDERDEMO_NARROW") == "1" {
+			w.SetSize(100, 620) // the sidebar's minimum window size widens it
 		}
 		show(0)
 		if s, _ := strconv.Atoi(os.Getenv("GOWT_FINDERDEMO_SECS")); s > 0 {

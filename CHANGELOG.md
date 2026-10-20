@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.9.5 (2026-10-21)
 
 New API
 - `ScrollView.OnScroll(func(x, y int))` reports the new origin after any scroll (fusion-desktop gowt-issues 7): the mouse wheel, a trackpad gesture and its momentum, the scroll bars, `SetOrigin`, and a resize that moves the content. It listens to the move of the content, where every scroll of SWT's `ScrolledComposite` ends; the scroll bars' `Selection` misses `SetOrigin` and the resize. Scrolls faster than a frame are coalesced to at most one call per 1/60 s, the last one with the origin where the scroll stopped, and a scroll back to the reported origin calls nothing. `ScrollView.Origin()` and `SetOrigin(x, y)` read and set the origin without `Unwrap`.
@@ -12,7 +12,6 @@ Behaviour change
 - macOS: `look.SetGlass` clears the whole content of the panel, as `look.SetSidebar` does: labels, links, check boxes, radio buttons, `StyledText` and the containers inside it, `Group`, `Scroll` and `Split` among them, show the glass through, and lists, tables and trees get the source-list style. It cleared only the panel itself, so a `Scroll` inside showed a white rectangle over the glass.
 - macOS: controls created inside a `look.SetGlass` panel or a `look.SetSidebar` sidebar after the call are cleared too, on the next event-loop turn; they used to paint the window colour. A control with a background of its own, set by the app, keeps it in both, also when it existed before the call.
 - macOS: a `look.SetSidebar` or `look.SetInspector` window with no List, Table or Tree and no `gowt.Focused` opens with no focused control, the window its own first responder, so no popup or button shows a focus ring until Tab or a click; SWT focused the first control, also on each later activation. Windows and Linux keep SWT's choice.
-
 - macOS and Linux: a Table or Tree cell text wider than its column ends with an ellipsis, as in Finder, instead of being cut at the column edge in the middle of a letter (fusion-desktop gowt-issues 5). SWT clips on both; Windows already truncates with an ellipsis. A Table cell with a bold or italic font follows (macOS); a Linux owner-drawn cell still clips.
 
 Fixes

@@ -2020,6 +2020,9 @@ func (this *Shell) windowSendEvent_(id int64, sel int64, event int64) {
 		this.display.tooltipTarget = target
 		break
 	case cocoa.OSNSKeyDown:
+		if this.tabFromWindow(nsEvent) {
+			return
+		}
 		if this.display.escAsAcceleratorPresent && int32(nsEvent.KeyCode()) == 53 {
 			if this.escMenuItem == (nil) || this.escMenuItem.GetAccelerator() != int32(ESC) {
 				this.UpdateEscMenuItem()

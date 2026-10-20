@@ -446,6 +446,15 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'bg == nil || bg\[3\] != 0' "$DB_GO")" = 1 ] || { echo "port.sh: Composite.drawBackground rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Shell.windowSendEvent passes Tab on while the window itself is the first responder (package look leaves a
+# window without a list so), and nothing moved the focus: SWT traverses from a focused control only.
+# swt/widgets_shell_manual_darwin.go sends it to the first or last tab group.
+if [ "$PLATFORM" = cocoa ]; then
+	TW_GO=swt/widgets_shell_darwin.go
+	perl -0pi -e 's/(\tcase cocoa\.OSNSKeyDown:\n)(\t\tif this\.display\.escAsAcceleratorPresent )/$1\t\tif this.tabFromWindow(nsEvent) {\n\t\t\treturn\n\t\t}\n$2/' "$TW_GO"
+	[ "$(grep -c 'this.tabFromWindow(nsEvent)' "$TW_GO")" = 1 ] || { echo "port.sh: Shell tabFromWindow rewrite did not apply" >&2; exit 1; }
+fi
+
 # gtk TabFolder sizes the selected page's control from the notebook page's allocation. A page that GTK has not allocated
 # yet (added after show, or selected before the first allocation) reports 1x1, and the control stayed 1x1: an empty page.
 # swt/widgets_tabfolder_manual_linux.go sizes the control again when GTK allocates its page.

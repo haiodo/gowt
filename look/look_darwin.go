@@ -186,6 +186,7 @@ func inspectorInset() int32 { return 0 }
 
 func syncInspector(ib *swt.Composite, bg [4]int32) {
 	cocoa.SetBackdropFrame(ib.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
+	cocoa.SetEdgeLine(ib.View)
 }
 
 // hookPanes refreshes the window of a sidebar or inspector when it is shown, and now if it already is.

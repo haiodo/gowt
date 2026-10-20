@@ -201,7 +201,8 @@ func panesOf(w *gowt.Window, content Container) *paneLayout {
 				return c
 			}
 		}
-		return focusSink(s)
+		startUnfocused(s)
+		return nil
 	})
 	return l
 }

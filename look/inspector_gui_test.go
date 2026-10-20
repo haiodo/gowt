@@ -235,15 +235,15 @@ func TestInspectorWithSidebar(t *testing.T) {
 	})
 }
 
-// Without a list in the content, macOS focuses an empty view, so no popup or button opens with a focus
-// ring; elsewhere SWT keeps its choice. A content list and Focused win as in a sidebar window.
+// Without a list in the content, a macOS window is its own first responder: no control has the focus.
+// Elsewhere SWT keeps its choice. A content list and Focused win as in a sidebar window.
 func TestInspectorFocus(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
 	}
 	sink := "popup"
 	if runtime.GOOS == "darwin" {
-		sink = "Composite"
+		sink = "nothing"
 	}
 	for _, tc := range []struct {
 		name    string

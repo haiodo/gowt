@@ -387,15 +387,34 @@ func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32, hidden bool) {
 	cocoa.SetSidebarEdge(s.View, float64(bg[0]+bg[2]))
 }
 
-// focusSink is an empty view that takes the focus of a sidebar or inspector window without a list: a
-// macOS window opens with no focus ring, where SWT would focus its first control, a popup or a button.
-// An empty composite becomes first responder only with a key listener; Tab moves on from it.
-func focusSink(s *swt.Shell) *swt.Control {
-	c := swt.NewCompositeParentStyle(s, swt.NONE)
-	c.AddListener(swt.KeyDown, noKeys{})
-	return &c.Control
+// startUnfocused leaves a sidebar or inspector window without a list with no focused control, the window
+// itself first responder, as a macOS window without initialFirstResponder opens. SWT focuses its first
+// control on Open and on each activation without a saved focus (Shell.Open and windowDidBecomeKey
+// traverse), so the window takes the first responder back after each activation that found no control
+// focused when the window was last left. Shell.SetFocus cannot do it: it focuses the first child.
+func startUnfocused(s *swt.Shell) {
+	h := &unfocused{s: s, on: true}
+	s.AddListener(swt.Activate, h)
+	s.AddListener(swt.Deactivate, h)
 }
 
-type noKeys struct{}
+type unfocused struct {
+	s  *swt.Shell
+	on bool
+}
 
-func (noKeys) HandleEvent(*swt.Event) {}
+func (u *unfocused) HandleEvent(e *swt.Event) {
+	if e.Type == swt.Deactivate {
+		u.on = cocoa.WindowIsFirstResponder(u.s.View)
+		return
+	}
+	if !u.on {
+		return
+	}
+	// Activate comes before SWT restores the focus; this runs after it.
+	u.s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
+		if !u.s.IsDisposed() {
+			cocoa.ClearFirstResponder(u.s.View)
+		}
+	}))
+}

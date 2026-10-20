@@ -49,6 +49,19 @@ func RoundCorners(view *NSView, r float64) bool {
 	return true
 }
 
+// ClearFirstResponder makes the window of view its own first responder, so no control has the focus.
+func ClearFirstResponder(view *NSView) {
+	if w := msg(uintptr(view.Id), "window"); w != 0 {
+		msg(w, "makeFirstResponder:", 0)
+	}
+}
+
+// WindowIsFirstResponder reports whether the window of view is its own first responder.
+func WindowIsFirstResponder(view *NSView) bool {
+	w := msg(uintptr(view.Id), "window")
+	return w != 0 && msg(w, "firstResponder") == w
+}
+
 const tableStyleSourceList = 3
 
 // SetSourceList gives a table or outline view the sidebar look: the source-list style (macOS 11), no

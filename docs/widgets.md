@@ -58,7 +58,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Tabs, CTabs | `Tabs(tabs...)`, `CTabs(tabs...)` | children are `Tab(title, children...)` pages (`Ref` gives the page `*Panel`; `TabsView.Add` appends; `Dispose` on the page removes the tab, and a closed CTabs tab disposes its page); `Select`, `Index`, `OnSelect`; CTabs adds `OnClose(func(index int) bool)` (false keeps the tab) |
 | Pages | `Pages(pages...)` | one page at a time, no tabs: every child is a page (the first is shown), `Add` appends, `Show(i)`, `Current()`; `Dispose` on a page removes it and shows a neighbour |
 | Split | `Split(panes...)` | children are the panes, any widgets in order; each pane fills its part, `SetWeights(...)` sets the relative sizes. A pane takes no placement options: `Grow`, `GrowX`, `GrowY` are accepted and change nothing, `Size`, `Span`, `Place` and the rest go to `App.OnError` |
-| Scroll | `Scroll(children...)` | children stack in the scrolling area as in a VBox and fit; `ScrollView.Add` adds more and fits again |
+| Scroll | `Scroll(children...)` | children stack in the scrolling area as in a VBox and fit; `ScrollView.Add` adds more and fits again; `Origin`, `SetOrigin(x, y)`; `OnScroll(func(x, y int))` after any scroll (wheel, trackpad and its momentum, scroll bars, `SetOrigin`), at most once a frame |
 | ToolBar | `ToolBar()` | `Item(text, onClick)` returns a `*ToolItem` (call it after the `Add` that creates the tool bar); `Separator()` |
 | CoolBar, Sash | `CoolBar(bands...)`, `Sash()` | each child of the cool bar becomes a band; `Sash.OnMove` |
 | Canvas | `Canvas(onPaint)` | see [graphics.md](graphics.md); `OnMouseDown`, `OnMouseUp`, `OnMouseMove` (`Mouse`: X, Y, Button, Count) |

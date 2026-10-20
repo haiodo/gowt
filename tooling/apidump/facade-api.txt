@@ -391,10 +391,13 @@ gowt ScrollView.Enabled() bool
 gowt ScrollView.Fit()
 gowt ScrollView.Focus() bool
 gowt ScrollView.OnDispose(f func())
+gowt ScrollView.OnScroll(f func(x int, y int))
+gowt ScrollView.Origin() (x int, y int)
 gowt ScrollView.SetBackground(c Paint)
 gowt ScrollView.SetEnabled(v bool)
 gowt ScrollView.SetFont(f Font)
 gowt ScrollView.SetForeground(c Paint)
+gowt ScrollView.SetOrigin(x int, y int)
 gowt ScrollView.SetTooltip(s string)
 gowt ScrollView.SetVisible(v bool)
 gowt ScrollView.Unwrap() *github.com/haiodo/gowt/swt.ScrolledComposite

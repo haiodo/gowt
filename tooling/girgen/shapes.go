@@ -18,6 +18,7 @@ type Shapes struct {
 	BitBool map[string]bool      // structs whose bitfields SWT reads as bool, not int32
 	Need    []string             // structs only the glue uses, no call site names them
 	Skip    map[string]bool
+	Wrap    map[string]bool // functions whose result the glue's wrap<Name> passes through
 	Str     map[string]string // NUL-terminated []int8 values the name rules do not derive
 	Const   map[string]string // plain constants GIR does not carry (X11 headers, macros)
 }
@@ -28,7 +29,7 @@ type ExplicitFn struct {
 }
 
 func loadShapes(path string) (*Shapes, error) {
-	s := &Shapes{Arg: map[string]map[int]string{}, Ret: map[string]string{}, Func: map[string]ExplicitFn{}, Skip: map[string]bool{}, Extra: map[string][]GoParam{}, Wide: map[string]bool{}, BitBool: map[string]bool{}, Str: map[string]string{}, Const: map[string]string{}}
+	s := &Shapes{Arg: map[string]map[int]string{}, Ret: map[string]string{}, Func: map[string]ExplicitFn{}, Skip: map[string]bool{}, Wrap: map[string]bool{}, Extra: map[string][]GoParam{}, Wide: map[string]bool{}, BitBool: map[string]bool{}, Str: map[string]string{}, Const: map[string]string{}}
 	f, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -73,6 +74,8 @@ func loadShapes(path string) (*Shapes, error) {
 			for _, n := range fs[1:] {
 				s.BitBool[n] = true
 			}
+		case "wrap":
+			s.Wrap[fs[1]] = true
 		case "need":
 			s.Need = append(s.Need, fs[1:]...)
 		case "func":
@@ -121,6 +124,9 @@ func (s *Shapes) merge(o *Shapes) {
 	}
 	for k := range o.Skip {
 		s.Skip[k] = true
+	}
+	for k := range o.Wrap {
+		s.Wrap[k] = true
 	}
 	for k, v := range o.Str {
 		s.Str[k] = v

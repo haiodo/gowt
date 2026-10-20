@@ -1,6 +1,7 @@
 package swt
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/haiodo/gowt/internal/cocoa"
@@ -35,6 +36,7 @@ func vtHalfImage(r, g, b, width float64) *cocoa.NSImage {
 
 // No Display and no window: a dark grey glyph on the left half is tinted blue.
 func TestViewTableTinted(t *testing.T) {
+	runtime.LockOSThread() // the pool and the graphics state stack belong to one thread; it exits with the test
 	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
 	defer cocoa.Msg(pool, "drain")
 	src := vtHalfImage(30.0/255, 30.0/255, 30.0/255, 1)
@@ -63,6 +65,7 @@ func TestViewTableTinted(t *testing.T) {
 
 // No Display and no window: a colour image with alpha (an avatar) and an opaque grey one are not glyphs.
 func TestViewTableTintedKeepsColour(t *testing.T) {
+	runtime.LockOSThread() // the pool and the graphics state stack belong to one thread; it exits with the test
 	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
 	defer cocoa.Msg(pool, "drain")
 	for name, src := range map[string]*cocoa.NSImage{
@@ -78,6 +81,7 @@ func TestViewTableTintedKeepsColour(t *testing.T) {
 
 // No Display and no window: the grey glyph of TestViewTableTinted in the second column keeps its pixels.
 func TestViewTableTintedLeadingColumnOnly(t *testing.T) {
+	runtime.LockOSThread() // the pool and the graphics state stack belong to one thread; it exits with the test
 	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
 	defer cocoa.Msg(pool, "drain")
 	src := vtHalfImage(30.0/255, 30.0/255, 30.0/255, 1)
@@ -85,6 +89,32 @@ func TestViewTableTintedLeadingColumnOnly(t *testing.T) {
 	if out := vtTinted(src, 1, cocoa.NSColorColorWithDeviceRed(0, 0, 1, 1).Id); out.Id != src.Id {
 		t.Fatal("a glyph in column 1 was tinted, want only column 0")
 	}
+}
+
+// No Display and no window: a cell with an attributed string, as willDisplayCell sets for a bold font, clips by its paragraph style.
+func TestViewTableTruncateAttributed(t *testing.T) {
+	done := make(chan struct{})
+	vtMainq <- func() {
+		defer close(done)
+		pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
+		defer cocoa.Msg(pool, "drain")
+		style := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSMutableParagraphStyle"), "alloc"), "init")
+		cocoa.Msg(style, "setLineBreakMode:", int64(cocoa.OSNSLineBreakByClipping))
+		name := cocoa.Msg(cocoa.OSNSParagraphStyleAttributeName_.Id, "self")
+		dict := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSDictionary"), "dictionaryWithObject:forKey:", style, name), "self")
+		attr := cocoa.Msg(cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAttributedString"), "alloc"), "initWithString:attributes:", cocoa.NSStringID("a long text"), dict), "autorelease")
+		cell := cocoa.Msg(cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSTextFieldCell"), "alloc"), "init"), "autorelease")
+		cocoa.Msg(cell, "setAttributedStringValue:", attr)
+		vtTruncate(cell)
+		got := cocoa.Msg(cocoa.Msg(cell, "attributedStringValue"), "attribute:atIndex:effectiveRange:", name, 0, 0)
+		if mode := cocoa.Msg(got, "lineBreakMode"); mode != int64(cocoa.OSNSLineBreakByTruncatingTail) {
+			t.Errorf("paragraph style line break mode %d, want truncating tail", mode)
+		}
+		if mode := cocoa.Msg(cell, "lineBreakMode"); mode != int64(cocoa.OSNSLineBreakByTruncatingTail) {
+			t.Errorf("cell line break mode %d, want truncating tail", mode)
+		}
+	}
+	<-done
 }
 
 // No Display and no window: only registers the runtime classes and creates one view.

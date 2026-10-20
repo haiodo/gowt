@@ -38,6 +38,13 @@ func clearBackground(c *swt.Composite, on bool) {
 	c.SetBackgroundMode(swt.INHERIT_FORCE)
 }
 
+// clearPanel clears a composite on glass with INHERIT_DEFAULT, not FORCE: under FORCE a Text field
+// inherited the alpha-0 background and lost its field; text, combo and spinner fields keep theirs.
+func clearPanel(c *swt.Composite) {
+	c.SetBackgroundWithColor(clearColor(c.GetDisplay()))
+	c.SetBackgroundMode(swt.INHERIT_DEFAULT)
+}
+
 // clearColor is never disposed: StyledText and SashForm keep the Color itself and fail on a disposed one
 // at the next paint or new sash. A cocoa Color holds no native resource.
 func clearColor(d *swt.Display) *swt.Color {
@@ -159,6 +166,30 @@ func setSidebarChrome(s *swt.Shell, sb *swt.Composite, sash *swt.Control) {
 	clearTree(sb)
 	clearAdded(sb)
 	clearControl(sash)
+	hookPanes(s)
+}
+
+// setInspectorChrome puts edge-to-edge glass behind the inspector, which AppKit 26 gives an
+// NSSplitViewController inspector ("inspectors use an edge-to-edge glass that sits alongside the
+// content", WWDC25 session 310); like the sidebar glass it also runs under the title bar strip.
+func setInspectorChrome(s *swt.Shell, ib *swt.Composite, sash *swt.Control) {
+	cocoa.InstallBackdrop(ib.View, cocoa.BackdropGlass, false)
+	cocoa.SetGlassCornerRadius(ib.View, 0)
+	clearTree(ib)
+	clearAdded(ib)
+	clearControl(sash)
+	hookPanes(s)
+}
+
+// inspectorInset is 0: the inspector is flush with the window edges, see setInspectorChrome.
+func inspectorInset() int32 { return 0 }
+
+func syncInspector(ib *swt.Composite, bg [4]int32) {
+	cocoa.SetBackdropFrame(ib.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
+}
+
+// hookPanes refreshes the window of a sidebar or inspector when it is shown, and now if it already is.
+func hookPanes(s *swt.Shell) {
 	if !sidebarShells[s] {
 		sidebarShells[s] = true
 		s.AddDisposeListener(&sidebarHooks{s})
@@ -201,7 +232,7 @@ func (d *sidebarHooks) WidgetDisposed(*swt.DisposeEvent) {
 // background: SWT fills a control without one in the default window colour, and an alpha-0 background of
 // a parent does not count as one there.
 func clearTree(c *swt.Composite) {
-	clearBackground(c, true)
+	clearPanel(c)
 	for _, ch := range c.GetChildren() {
 		clearChild(ch, true)
 	}
@@ -239,7 +270,7 @@ func clearChild(ch *swt.Control, deep bool) {
 		return
 	}
 	if !own {
-		clearBackground(sub, true)
+		clearPanel(sub)
 	}
 	if deep {
 		for _, c := range sub.GetChildren() {
@@ -248,7 +279,7 @@ func clearChild(ch *swt.Control, deep bool) {
 	}
 }
 
-// clearRoots are the composites of SetGlass and SetSidebar. SWT sends a Skin event for every new widget on
+// clearRoots are the composites of SetGlass, SetSidebar and SetInspector. SWT sends a Skin event for every new widget on
 // the next event-loop turn, before it is drawn; a control created under a root then gets clearChild.
 var (
 	clearRoots   = map[*swt.Composite]bool{}
@@ -339,7 +370,7 @@ func init() {
 			if s.IsDisposed() || uintptr(s.View.Window().Id) != win || s.GetLayout() == nil {
 				continue
 			}
-			if l, ok := s.GetLayout().Impl().(*sidebarLayout); ok && l.measure() && l.fitMin() {
+			if l, ok := s.GetLayout().Impl().(*paneLayout); ok && l.measure() && l.fitMin() {
 				s.Layout()
 			}
 		}
@@ -354,4 +385,36 @@ func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32, hidden bool) {
 	cocoa.SetBackdropFrame(sb.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
 	cocoa.SetSidebarHidden(s.View, hidden)
 	cocoa.SetSidebarEdge(s.View, float64(bg[0]+bg[2]))
+}
+
+// startUnfocused leaves a sidebar or inspector window without a list with no focused control, the window
+// itself first responder, as a macOS window without initialFirstResponder opens. SWT focuses its first
+// control on Open and on each activation without a saved focus (Shell.Open and windowDidBecomeKey
+// traverse), so the window takes the first responder back after each activation that found no control
+// focused when the window was last left. Shell.SetFocus cannot do it: it focuses the first child.
+func startUnfocused(s *swt.Shell) {
+	h := &unfocused{s: s, on: true}
+	s.AddListener(swt.Activate, h)
+	s.AddListener(swt.Deactivate, h)
+}
+
+type unfocused struct {
+	s  *swt.Shell
+	on bool
+}
+
+func (u *unfocused) HandleEvent(e *swt.Event) {
+	if e.Type == swt.Deactivate {
+		u.on = cocoa.WindowIsFirstResponder(u.s.View)
+		return
+	}
+	if !u.on {
+		return
+	}
+	// Activate comes before SWT restores the focus; this runs after it.
+	u.s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
+		if !u.s.IsDisposed() {
+			cocoa.ClearFirstResponder(u.s.View)
+		}
+	}))
 }

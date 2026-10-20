@@ -94,10 +94,10 @@ type ToolbarItem struct {
 
 // SetToolbar puts a native unified toolbar (NSToolbar) on the window, replacing an earlier one; with
 // no items it removes the toolbar. On macOS 26 the items are Liquid Glass. It reports whether the
-// native toolbar exists. Where it does not (Windows, Linux), a window laid out by SetSidebar, before
-// or after this call, gets the items as a bar of gowt widgets at the top of its content column: flat
-// icon buttons, the window title, a search field, in the content's colour. A window without
-// SetSidebar gets nothing there; build your own gowt.ToolBar in that case. Use it together with
+// native toolbar exists. Where it does not (Windows, Linux), a window laid out by SetSidebar or
+// SetInspector, before or after this call, gets the items as a bar of gowt widgets at the top of its
+// content column: flat icon buttons, the window title, a search field, in the content's colour. A
+// window without either gets nothing there; build your own gowt.ToolBar in that case. Use it together with
 // SetFullSizeContent only if the content leaves room for the bar.
 func SetToolbar(w *gowt.Window, items ...ToolbarItem) bool {
 	ok := setToolbar(w.Unwrap(), items)
@@ -120,7 +120,8 @@ func SetToolbar(w *gowt.Window, items ...ToolbarItem) bool {
 func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite(), spacing) }
 
 // SetSidebar lays w out the way Finder and System Settings are: sidebar on the left, width points wide,
-// content filling the rest. It replaces the window layout, so w must hold just these two. On macOS 26
+// content filling the rest. It replaces the window layout, so w must hold just these two, or these and
+// the inspector of SetInspector, called before or after with the same content. On macOS 26
 // the sidebar floats: Liquid Glass with rounded corners, inset from the window edges and running under
 // the traffic lights; the window gets full-size content, sidebar children and content start below the
 // title bar and toolbar, and the items and title of SetToolbar start past the sidebar. Older macOS
@@ -132,42 +133,78 @@ func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite()
 // Sidebar toolbar items need. Read and change that with SidebarVisible, SetSidebarVisible,
 // SidebarWidth and SetSidebarWidth, and keep it between runs with OnSidebarChange.
 func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
-	SetFullSizeContent(w, true)
+	l := panesOf(w, content)
 	sb := sidebar.AsComposite()
+	if l.side != nil {
+		l.side.sash.Dispose()
+	}
+	l.side = l.newPane(sb, width, false)
+	setSidebarChrome(w.Unwrap(), sb, &l.side.sash.Control)
+	b := barOf(w)
+	b.sidebar = sidebar
+	b.build()
+}
+
+// SetInspector puts an inspector on the right of w, width points wide, the trailing counterpart of
+// SetSidebar: content fills the rest, or the room between a SetSidebar sidebar and the inspector. It
+// replaces the window layout, so w must hold just the content, the inspector and a SetSidebar
+// sidebar. On macOS 26 the inspector is edge-to-edge Liquid Glass alongside the content, as AppKit
+// draws an NSSplitViewController inspector: flush with the top, right and bottom window edges and
+// running under the toolbar, its children starting below it. Older macOS shows a flush material;
+// Windows and Linux a plain panel. Without a sidebar there, the window also gets full-size content,
+// and on Windows and Linux the SetToolbar items as a bar above the content.
+//
+// The user resizes the inspector by dragging its left edge, which stops at 160 points and leaves the
+// content at least 200. Read and change that with InspectorVisible, SetInspectorVisible,
+// InspectorWidth and SetInspectorWidth, and keep it between runs with OnInspectorChange.
+func SetInspector(w *gowt.Window, content, inspector Container, width int) {
+	l := panesOf(w, content)
+	ib := inspector.AsComposite()
+	if l.insp != nil {
+		l.insp.sash.Dispose()
+	}
+	l.insp = l.newPane(ib, width, true)
+	setInspectorChrome(w.Unwrap(), ib, &l.insp.sash.Control)
+	barOf(w).build()
+}
+
+// panesOf returns the layout of a SetSidebar or SetInspector window, making it the layout of w with
+// content as its content if w has none yet.
+func panesOf(w *gowt.Window, content Container) *paneLayout {
 	s := w.Unwrap()
-	l := &sidebarLayout{Layout: swt.NewLayout(), w: w, sidebar: sb, content: &content.AsComposite().Control, width: int32(width)}
+	ct := &content.AsComposite().Control
+	defer func() { barOf(w).content = ct }()
+	if l := layoutOf(w); l != nil {
+		l.content = ct
+		return l
+	}
+	SetFullSizeContent(w, true)
+	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct}
 	l.SetImpl_(l)
 	// The shell minimum is read once: on macOS 26 it read back 20 points taller than it was set, so a
 	// value read after each set grew.
-	if old := sidebarOf(w); old != nil {
-		old.sash.Dispose()
-		l.appMin = old.appMin
-	} else {
-		m := s.GetMinimumSize()
-		l.appMin = [2]int32{m.X, m.Y}
-	}
+	m := s.GetMinimumSize()
+	l.appMin = [2]int32{m.X, m.Y}
 	s.SetDataKeyValue(minSizeHookKey, func(width, height int) {
 		l.appMin = [2]int32{int32(width), int32(height)}
 		l.fitMinSize()
 	})
-	l.sash = swt.NewSash(s, swt.VERTICAL|swt.SMOOTH)
-	l.sash.MoveAbove(nil)
-	for _, t := range []int32{swt.Selection, swt.MouseDown, swt.MouseUp} {
-		l.sash.AddListener(t, l)
-	}
 	s.SetLayout(l)
-	setSidebarChrome(s, sb, &l.sash.Control)
-	b := barOf(w)
-	b.content, b.sidebar = l.content, sidebar
-	b.build()
 	// Without gowt.Focused the window opens with the focus on its first list, as Finder does, not on a
 	// button of the sidebar.
 	s.SetDataKeyValue(focusDefaultKey, func() *swt.Control {
-		if c := firstList(content.AsComposite()); c != nil {
+		if c := firstList(l.content.Impl().(interface{ AsComposite() *swt.Composite }).AsComposite()); c != nil {
 			return c
 		}
-		return firstList(sb)
+		if l.side != nil {
+			if c := firstList(l.side.c); c != nil {
+				return c
+			}
+		}
+		startUnfocused(s)
+		return nil
 	})
+	return l
 }
 
 // minSizeHookKey holds the func that gowt.Window.SetMinSize calls instead of setting the shell
@@ -198,96 +235,181 @@ func firstList(c *swt.Composite) *swt.Control {
 
 // SetSidebarVisible shows or hides the sidebar of a SetSidebar window; hidden, the content takes the
 // whole width and the Sidebar toolbar items move to the start of the toolbar.
-func SetSidebarVisible(w *gowt.Window, on bool) {
-	if l := sidebarOf(w); l != nil && l.hidden == on {
-		l.hidden = !on
-		l.apply()
-		l.notify()
-	}
-}
+func SetSidebarVisible(w *gowt.Window, on bool) { sidebarOf(w).setVisible(on) }
 
 // SidebarVisible reports whether the sidebar of a SetSidebar window is shown; false without one.
-func SidebarVisible(w *gowt.Window) bool {
-	l := sidebarOf(w)
-	return l != nil && !l.hidden
-}
+func SidebarVisible(w *gowt.Window) bool { return sidebarOf(w).visible() }
 
 // SetSidebarWidth sets the sidebar width in points; a hidden sidebar comes back at it. The width is at
 // least 120 and at least the room of the Sidebar toolbar items, as far as the window knows it yet.
-func SetSidebarWidth(w *gowt.Window, width int) {
-	if l := sidebarOf(w); l != nil && l.width != max(int32(width), l.minWidth()) {
-		l.width = max(int32(width), l.minWidth())
-		l.apply()
-		l.notify()
-	}
-}
+func SetSidebarWidth(w *gowt.Window, width int) { sidebarOf(w).setWidth(width) }
 
 // SidebarWidth is the sidebar width in points, also while it is hidden; 0 without SetSidebar.
-func SidebarWidth(w *gowt.Window) int {
-	if l := sidebarOf(w); l != nil {
-		return int(l.width)
-	}
-	return 0
-}
+func SidebarWidth(w *gowt.Window) int { return sidebarOf(w).widthOrZero() }
 
 // OnSidebarChange runs f after the sidebar of a SetSidebar window was shown, hidden or resized: by
 // SetSidebarVisible, SetSidebarWidth and arrow keys on its edge, and once at the end of a drag.
-func OnSidebarChange(w *gowt.Window, f func(visible bool, width int)) {
-	if l := sidebarOf(w); l != nil {
-		l.onChange = append(l.onChange, f)
-	}
-}
+func OnSidebarChange(w *gowt.Window, f func(visible bool, width int)) { sidebarOf(w).addChange(f) }
 
-// minSidebarWidth is where a drag of the sidebar edge stops without Sidebar toolbar items;
-// minContentWidth is the content such a drag leaves at least.
+// SetInspectorVisible shows or hides the inspector of a SetInspector window; hidden, the content takes
+// its width.
+func SetInspectorVisible(w *gowt.Window, on bool) { inspectorOf(w).setVisible(on) }
+
+// InspectorVisible reports whether the inspector of a SetInspector window is shown; false without one.
+func InspectorVisible(w *gowt.Window) bool { return inspectorOf(w).visible() }
+
+// SetInspectorWidth sets the inspector width in points, at least 160; a hidden inspector comes back
+// at it.
+func SetInspectorWidth(w *gowt.Window, width int) { inspectorOf(w).setWidth(width) }
+
+// InspectorWidth is the inspector width in points, also while it is hidden; 0 without SetInspector.
+func InspectorWidth(w *gowt.Window) int { return inspectorOf(w).widthOrZero() }
+
+// OnInspectorChange runs f after the inspector of a SetInspector window was shown, hidden or
+// resized: by SetInspectorVisible, SetInspectorWidth and arrow keys on its edge, and once at the end of a drag.
+func OnInspectorChange(w *gowt.Window, f func(visible bool, width int)) { inspectorOf(w).addChange(f) }
+
+// minSidebarWidth is where a drag of the sidebar edge stops without Sidebar toolbar items,
+// minInspectorWidth where a drag of the inspector edge stops; minContentWidth is the content such a
+// drag leaves at least.
 const (
-	minSidebarWidth = 120
-	minContentWidth = 200
+	minSidebarWidth   = 120
+	minInspectorWidth = 160
+	minContentWidth   = 200
 )
 
-func sidebarOf(w *gowt.Window) *sidebarLayout {
+func layoutOf(w *gowt.Window) *paneLayout {
 	if lo := w.Unwrap().GetLayout(); lo != nil {
-		l, _ := lo.Impl().(*sidebarLayout)
+		l, _ := lo.Impl().(*paneLayout)
 		return l
 	}
 	return nil
 }
 
-type sidebarLayout struct {
+func sidebarOf(w *gowt.Window) *pane {
+	if l := layoutOf(w); l != nil {
+		return l.side
+	}
+	return nil
+}
+
+func inspectorOf(w *gowt.Window) *pane {
+	if l := layoutOf(w); l != nil {
+		return l.insp
+	}
+	return nil
+}
+
+// paneLayout lays out a SetSidebar or SetInspector window: sidebar, content, inspector.
+type paneLayout struct {
 	*swt.Layout
-	w        *gowt.Window
-	sidebar  *swt.Composite
-	content  *swt.Control
-	sash     *swt.Sash // the draggable edge between sidebar and content
-	width    int32
-	itemsMin int32 // the width the Sidebar items of the macOS toolbar need, from its last layout
-	hidden   bool
-	dragging bool
-	from     int32 // the width when the drag began
+	w          *gowt.Window
+	side, insp *pane // nil without SetSidebar, SetInspector
+	content    *swt.Control
+	itemsMin   int32 // the width the Sidebar items of the macOS toolbar need, from its last layout
 	// appMin is the minimum size the app set, lastMin the one fitMinSize set last, once minSet
 	appMin, lastMin [2]int32
 	minSet          bool
-	onChange        []func(visible bool, width int)
 }
 
-// apply shows or hides the sidebar and lays the window out again. A focus inside a hidden sidebar
-// moves to the content, as Finder does.
-func (l *sidebarLayout) apply() {
-	s := l.w.Unwrap()
-	focusIn := false
-	for c := s.GetDisplay().GetFocusControl(); c != nil && l.hidden; c = parentControl(c) {
-		focusIn = focusIn || c == &l.sidebar.Control
+// pane is the sidebar or the inspector: its composite, the sash on its inner edge and its state. The
+// methods take a nil pane, which a window without that pane has.
+type pane struct {
+	l        *paneLayout
+	c        *swt.Composite
+	sash     *swt.Sash // the draggable edge between the pane and the content
+	trailing bool      // the inspector
+	width    int32
+	hidden   bool
+	dragging bool
+	from     int32 // the width when the drag began
+	onChange []func(visible bool, width int)
+}
+
+func (l *paneLayout) newPane(c *swt.Composite, width int, trailing bool) *pane {
+	p := &pane{l: l, c: c, width: int32(width), trailing: trailing}
+	p.sash = swt.NewSash(l.w.Unwrap(), swt.VERTICAL|swt.SMOOTH)
+	p.sash.MoveAbove(nil)
+	for _, t := range []int32{swt.Selection, swt.MouseDown, swt.MouseUp} {
+		p.sash.AddListener(t, p)
 	}
-	l.sidebar.SetVisible(!l.hidden)
-	if b := bars[s]; b != nil {
-		b.sidebarShown(!l.hidden)
+	return p
+}
+
+func (p *pane) setVisible(on bool) {
+	if p != nil && p.hidden == on {
+		p.hidden = !on
+		p.apply()
+		p.notify()
+	}
+}
+
+func (p *pane) visible() bool { return p != nil && !p.hidden }
+
+func (p *pane) setWidth(width int) {
+	if p != nil && p.width != max(int32(width), p.minWidth()) {
+		p.width = max(int32(width), p.minWidth())
+		p.apply()
+		p.notify()
+	}
+}
+
+func (p *pane) widthOrZero() int {
+	if p == nil {
+		return 0
+	}
+	return int(p.width)
+}
+
+func (p *pane) addChange(f func(visible bool, width int)) {
+	if p != nil {
+		p.onChange = append(p.onChange, f)
+	}
+}
+
+// inset is the gap between the pane and the window edges.
+func (p *pane) inset() int32 {
+	if p.trailing {
+		return inspectorInset()
+	}
+	return sidebarInset()
+}
+
+// room is the width the pane takes from the content: 0 for none or a hidden one.
+func (p *pane) room() int32 {
+	if p == nil || p.hidden {
+		return 0
+	}
+	return p.inset() + p.width + sidebarDivider()
+}
+
+// shown is the width the pane is laid out at, 0 while hidden.
+func (p *pane) shown() int32 {
+	if p.hidden {
+		return 0
+	}
+	return p.width
+}
+
+// apply shows or hides the pane and lays the window out again. A focus inside a hidden pane moves to
+// the content, as Finder does.
+func (p *pane) apply() {
+	s := p.l.w.Unwrap()
+	focusIn := false
+	for c := s.GetDisplay().GetFocusControl(); c != nil && p.hidden; c = parentControl(c) {
+		focusIn = focusIn || c == &p.c.Control
+	}
+	p.c.SetVisible(!p.hidden)
+	if b := bars[s]; b != nil && !p.trailing {
+		b.sidebarShown(!p.hidden)
 	}
 	s.Layout()
 	if focusIn {
-		if c := firstList(l.content.Impl().(interface{ AsComposite() *swt.Composite }).AsComposite()); c != nil {
+		ct := p.l.content
+		if c := firstList(ct.Impl().(interface{ AsComposite() *swt.Composite }).AsComposite()); c != nil {
 			c.SetFocus()
 		} else {
-			l.content.SetFocus()
+			ct.SetFocus()
 		}
 	}
 }
@@ -299,96 +421,117 @@ func parentControl(c *swt.Control) *swt.Control {
 	return nil
 }
 
-func (l *sidebarLayout) notify() {
-	for _, f := range l.onChange {
-		f(!l.hidden, int(l.width))
+func (p *pane) notify() {
+	for _, f := range p.onChange {
+		f(!p.hidden, int(p.width))
 	}
 }
 
-// minWidth is the narrowest sidebar: minSidebarWidth, or the room its Sidebar toolbar items need where
-// that is more (the macOS toolbar group up to its inset from the edge, the Windows and Linux row).
-func (l *sidebarLayout) minWidth() int32 {
-	m := max(int32(minSidebarWidth), l.itemsMin)
-	if b := bars[l.w.Unwrap()]; b != nil && b.side != nil {
+// minWidth is the narrowest pane. For the sidebar that is minSidebarWidth, or the room its Sidebar
+// toolbar items need where that is more (the macOS toolbar group up to its inset from the edge, the
+// Windows and Linux row).
+func (p *pane) minWidth() int32 {
+	if p.trailing {
+		return minInspectorWidth
+	}
+	m := max(int32(minSidebarWidth), p.l.itemsMin)
+	if b := bars[p.l.w.Unwrap()]; b != nil && b.side != nil {
 		m = max(m, b.side.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X)
 	}
 	return m
 }
 
-// HandleEvent follows a drag of the sash: it resizes the sidebar while the mouse moves, stopping at
-// minWidth, and tells OnSidebarChange once the button is released. A drag never hides the sidebar: a
-// divider that jumps away under the pointer confuses more than one that stops.
-func (l *sidebarLayout) HandleEvent(e *swt.Event) {
+// HandleEvent follows a drag of the sash: it resizes the pane while the mouse moves, stopping at
+// minWidth and at minContentWidth of content, and tells the change callbacks once the button is
+// released. A drag never hides the pane: a divider that jumps away under the pointer confuses more
+// than one that stops.
+func (p *pane) HandleEvent(e *swt.Event) {
 	switch e.Type {
 	case swt.MouseDown:
-		l.dragging, l.from = true, l.width
+		p.dragging, p.from = true, p.width
 	case swt.MouseUp:
-		l.dragging = false
-		if l.width != l.from {
-			l.notify()
+		p.dragging = false
+		if p.width != p.from {
+			p.notify()
 		}
 	case swt.Selection:
-		r := l.w.Unwrap().GetClientArea()
-		in, div := sidebarInset(), sidebarDivider()
-		width := dragWidth(sidebarWidthAt(e.X-r.X, in, div), l.minWidth(), r.Width-in-div-minContentWidth)
-		if width != l.width && !l.hidden {
-			l.width = width
-			l.apply()
-			if !l.dragging { // arrow keys on the focused sash
-				l.notify()
+		r := p.l.w.Unwrap().GetClientArea()
+		div := sidebarDivider()
+		var want, most int32
+		if p.trailing {
+			want = inspectorWidthAt(e.X, r.X+r.Width, p.inset(), div)
+			most = r.Width - p.l.side.room() - p.inset() - div - minContentWidth
+		} else {
+			want = sidebarWidthAt(e.X-r.X, p.inset(), div)
+			most = r.Width - p.inset() - div - minContentWidth - p.l.insp.room()
+		}
+		width := dragWidth(want, p.minWidth(), most)
+		if width != p.width && !p.hidden {
+			p.width = width
+			p.apply()
+			if !p.dragging { // arrow keys on the focused sash
+				p.notify()
 			}
 		}
-		// The sash moves itself to e.X, e.Y; the layout has already put it where the sidebar ends.
-		b := l.sash.GetBounds()
+		// The sash moves itself to e.X, e.Y; the layout has already put it where the pane ends.
+		b := p.sash.GetBounds()
 		e.X, e.Y = b.X, b.Y
 	}
 }
 
-func (l *sidebarLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) *swt.Point {
-	in, top := sidebarInset(), int32(topInset(c.GetShell()))
-	sb := l.sidebar.ComputeSize(swt.DEFAULT, swt.DEFAULT)
+func (l *paneLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) *swt.Point {
+	top := int32(topInset(c.GetShell()))
 	ct := l.content.ComputeSize(swt.DEFAULT, swt.DEFAULT)
-	side := in + l.width + sidebarDivider()
-	if l.hidden {
-		side, sb.Y = 0, 0
+	h := ct.Y + barHeight(c.GetShell())
+	for _, p := range []*pane{l.side, l.insp} {
+		if p != nil && !p.hidden {
+			h = max(h, p.c.ComputeSize(swt.DEFAULT, swt.DEFAULT).Y+p.inset())
+		}
 	}
 	// A packed window starts at least as wide as fitMinSize lets it get.
-	p := swt.NewPoint(side+max(ct.X, minContentWidth), top+max(sb.Y+in, ct.Y+barHeight(c.GetShell())))
+	pt := swt.NewPoint(l.side.room()+max(ct.X, minContentWidth)+l.insp.room(), top+h)
 	if wHint != swt.DEFAULT {
-		p.X = wHint
+		pt.X = wHint
 	}
 	if hHint != swt.DEFAULT {
-		p.Y = hHint
+		pt.Y = hHint
 	}
-	return p
+	return pt
 }
 
-func (l *sidebarLayout) LayoutFn_(c *swt.Composite, _ bool) {
+func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	r := c.GetClientArea()
+	s := c.GetShell()
 	l.measure()
 	l.fitMin()
-	width := l.width
-	if l.hidden {
-		width = 0
+	top := int32(topInset(s))
+	ct := [4]int32{r.X, r.Y + top, r.Width, max(r.Height-top, 0)}
+	if p := l.side; p != nil {
+		bg, sb, rest, sh := sidebarFrames(r.X, r.Y, r.Width, r.Height, p.shown(), p.inset(), top, sidebarDivider())
+		p.c.SetBounds(sb[0], sb[1], sb[2], sb[3])
+		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
+		p.sash.SetVisible(!p.hidden)
+		syncSidebar(s, p.c, bg, p.hidden)
+		ct = rest
 	}
-	bg, sb, ct, sh := sidebarFrames(r.X, r.Y, r.Width, r.Height, width, sidebarInset(), int32(topInset(c.GetShell())), sidebarDivider())
-	l.sidebar.SetBounds(sb[0], sb[1], sb[2], sb[3])
-	l.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
-	l.sash.SetVisible(!l.hidden)
-	ct = barTop(c.GetShell(), ct)
+	if p := l.insp; p != nil {
+		bg, ib, rest, sh := inspectorFrames(ct[0], r.Y, ct[2], r.Height, p.shown(), p.inset(), top, sidebarDivider())
+		p.c.SetBounds(ib[0], ib[1], ib[2], ib[3])
+		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
+		p.sash.SetVisible(!p.hidden)
+		syncInspector(p.c, bg)
+		ct = rest
+	}
+	ct = barTop(s, ct)
 	l.content.SetBounds(ct[0], ct[1], ct[2], ct[3])
-	syncSidebar(c.GetShell(), l.sidebar, bg, l.hidden)
 	l.fitMinSize()
 }
 
-// fitMinSize keeps the window as wide as the sidebar and minContentWidth, and never below the minimum
+// fitMinSize keeps the window as wide as its panes and minContentWidth, and never below the minimum
 // the app gave Window.SetMinSize, height included.
-func (l *sidebarLayout) fitMinSize() {
+func (l *paneLayout) fitMinSize() {
 	s := l.w.Unwrap()
-	cw := int32(minContentWidth)
-	if !l.hidden {
-		cw += sidebarInset() + l.width + sidebarDivider()
-	}
+	cw := l.side.room() + minContentWidth + l.insp.room()
 	trim := s.GetSize().X - s.GetClientArea().Width
 	want := [2]int32{max(cw+trim, l.appMin[0]), l.appMin[1]}
 	if l.minSet && want == l.lastMin {
@@ -400,34 +543,37 @@ func (l *sidebarLayout) fitMinSize() {
 
 // measure takes the room of the Sidebar items from the macOS toolbar's last layout; it reports
 // whether there was a measurement.
-func (l *sidebarLayout) measure() bool {
+func (l *paneLayout) measure() bool {
 	s := l.w.Unwrap()
 	e, ok := itemsMinEdge(s)
-	if ok && !l.hidden {
+	if ok && l.side != nil && !l.side.hidden {
 		l.itemsMin = e - s.GetClientArea().X - sidebarInset()
 	}
 	return ok
 }
 
-// fitMin raises a sidebar narrower than minWidth to it, so the divider is drawn where a drag starts;
-// OnSidebarChange hears of it after the layout pass, not inside it.
-func (l *sidebarLayout) fitMin() bool {
-	m := l.minWidth()
-	if l.width >= m {
-		return false
-	}
-	l.width = m
-	s := l.w.Unwrap()
-	s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
-		if !s.IsDisposed() {
-			l.notify()
+// fitMin raises a pane narrower than its minWidth to it, so the divider is drawn where a drag starts;
+// the change callbacks hear of it after the layout pass, not inside it.
+func (l *paneLayout) fitMin() bool {
+	raised := false
+	for _, p := range []*pane{l.side, l.insp} {
+		if p == nil || p.width >= p.minWidth() {
+			continue
 		}
-	}))
-	return true
+		p.width = p.minWidth()
+		raised = true
+		s := l.w.Unwrap()
+		s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
+			if !s.IsDisposed() {
+				p.notify()
+			}
+		}))
+	}
+	return raised
 }
 
-// sashGrip is the width of the sash where the sidebar leaves no gap for it (div 0): it lies over the
-// sidebar edge, half on each side.
+// sashGrip is the width of the sash where the pane leaves no gap for it (div 0): it lies over the
+// sidebar edge, half on each side, and just inside the inspector edge, clear of the content's scroll bar.
 const sashGrip = 6
 
 // sidebarFrames splits the client area (x, y, w, h): the sidebar background inset by in on three
@@ -459,6 +605,31 @@ func sidebarWidthAt(x, in, div int32) int32 {
 	}
 	return x - in - div + div/2 + sw/2
 }
+
+// inspectorFrames splits the span x, x+w of the client area rows y, y+h, the mirror of sidebarFrames:
+// the inspector background inset by in on three sides at the right end, the inspector composite on it
+// below the top strip, the content left of it and a gap of div points, and the sash in that gap or
+// just inside the inspector edge. Width 0 is a hidden inspector: the content ends at x+w.
+func inspectorFrames(x, y, w, h, width, in, top, div int32) (bg, ib, ct, sh [4]int32) {
+	ix := x + w - in - width
+	bg = [4]int32{ix, y + in, width, max(h-2*in, 0)}
+	ib = [4]int32{ix, y + top, width, max(h-top-in, 0)}
+	cw := w
+	if width > 0 {
+		cw = w - in - width - div
+	}
+	ct = [4]int32{x, y + top, max(cw, 0), max(h-top, 0)}
+	sw := div
+	if div == 0 {
+		sw = sashGrip
+	}
+	sh = [4]int32{min(ix-div, x+w-sw), y + top, sw, max(h-top, 0)}
+	return bg, ib, ct, sh
+}
+
+// inspectorWidthAt is the inspector width that puts the sash at x, the inverse of inspectorFrames,
+// with right the right edge of the span (x+w there) in the same coordinates as x.
+func inspectorWidthAt(x, right, in, div int32) int32 { return right - in - div - x }
 
 // dragWidth is the width a drag to want gives, kept from least to most (or least, if most is smaller).
 func dragWidth(want, least, most int32) int32 { return max(min(want, most), least) }

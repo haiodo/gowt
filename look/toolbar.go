@@ -28,6 +28,7 @@ var barSymbols = map[string]string{
 	"doc":                        `<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5"/>`,
 	"house":                      `<path d="M4 11l8-7 8 7M6 10v10h12V10M10 20v-6h4v6"/>`,
 	"sidebar.left":               `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>`,
+	"sidebar.right":              `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/>`,
 	"gearshape":                  `<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>`,
 	"magnifyingglass":            `<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>`,
 	"trash":                      `<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>`,
@@ -50,11 +51,11 @@ var barSymbols = map[string]string{
 const barSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">%s</svg>`
 
 // toolbarBar is the toolbar of a window that has no native one: a strip of gowt widgets at the top of
-// the SetSidebar content column, in the content's colour.
+// the SetSidebar or SetInspector content column, in the content's colour.
 type toolbarBar struct {
 	w       *gowt.Window
 	items   []ToolbarItem
-	content *swt.Control // the SetSidebar content; nil leaves the bar unbuilt
+	content *swt.Control // the SetSidebar or SetInspector content; nil leaves the bar unbuilt
 	sidebar Container    // the SetSidebar sidebar, which gets the Sidebar items in a row of its own
 	panel   *gowt.Panel
 	side    *gowt.Panel // the row of Sidebar items at the top of the sidebar
@@ -159,7 +160,7 @@ func (b *toolbarBar) fill() {
 		e.Gc.DrawLine(0, r.Height-1, r.Width, r.Height-1)
 	}))
 	b.panel = p
-	shown := b.sidebar.AsComposite().GetVisible()
+	shown := b.sidebar != nil && b.sidebar.AsComposite().GetVisible()
 	for _, it := range over {
 		if c := b.item(p, it, &b.icons); c != nil {
 			c.SetVisible(!shown)

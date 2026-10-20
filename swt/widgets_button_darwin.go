@@ -243,7 +243,7 @@ func (this *Button) dragDetectXYFilterConsume_(x int32, y int32, filter bool, co
 }
 
 func (this *Button) drawBezelWithFrame_inView_(id int64, sel int64, cellFrame cocoa.NSRect, viewid int64) {
-	if this.background != (nil) {
+	if this.background != (nil) && this.background[3] != 0 {
 		var button *cocoa.NSButton = castcocoaNSViewTococoaNSButton(this.View)
 		var isHighlighted bool
 		if (this.style & TOGGLE) == 0 {

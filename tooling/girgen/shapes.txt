@@ -104,3 +104,6 @@ arg GDKGdk_pixbuf_save_to_bufferv 4 []int64
 arg GDKGdk_pixbuf_save_to_bufferv 5 []int64
 arg GDKGdk_x11_display_utf8_to_compound_text 2 []int64
 arg GDKGdk_text_property_to_utf8_list_for_display 5 []int64
+
+# GtkCellRendererText: the glue sets ellipsize (glue_cellrenderer.go), as the cocoa cells truncate their tail
+wrap GTKGtk_cell_renderer_text_new

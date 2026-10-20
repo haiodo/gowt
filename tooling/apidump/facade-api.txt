@@ -14,6 +14,7 @@ gowt App.OnError(f func(error))
 gowt App.OnThemeChange(f func(dark bool))
 gowt App.Quit()
 gowt App.ScreenSize() (width int, height int)
+gowt App.SetBadge(text string)
 gowt App.Sync(f func())
 gowt App.SystemFont() Font
 gowt App.Tray(tooltip string, onClick func()) *TrayIcon
@@ -958,12 +959,18 @@ gowt/look const BackdropTranslucent Backdrop = 1
 gowt/look func Classic()
 gowt/look func DragsWindow(c Container)
 gowt/look func GlassButton() github.com/haiodo/gowt.Option
+gowt/look func InspectorVisible(w *github.com/haiodo/gowt.Window) bool
+gowt/look func InspectorWidth(w *github.com/haiodo/gowt.Window) int
+gowt/look func OnInspectorChange(w *github.com/haiodo/gowt.Window, f func(visible bool, width int))
 gowt/look func OnSidebarChange(w *github.com/haiodo/gowt.Window, f func(visible bool, width int))
 gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)
 gowt/look func SetFullSizeContent(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetGlass(c Container, on bool)
 gowt/look func SetGlassGroup(c Container, spacing float64)
+gowt/look func SetInspector(w *github.com/haiodo/gowt.Window, content Container, inspector Container, width int)
+gowt/look func SetInspectorVisible(w *github.com/haiodo/gowt.Window, on bool)
+gowt/look func SetInspectorWidth(w *github.com/haiodo/gowt.Window, width int)
 gowt/look func SetRoundedCorners(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetSidebar(w *github.com/haiodo/gowt.Window, sidebar Container, content Container, width int)
 gowt/look func SetSidebarVisible(w *github.com/haiodo/gowt.Window, on bool)

@@ -72,6 +72,10 @@ func (g *gen) emitFunc(w *strings.Builder, name, csym string, sig Sig) {
 	}
 	call := fmt.Sprintf("r_%s.get()(%s)", name, strings.Join(args, ", "))
 	fmt.Fprintf(w, "func %s(%s)%s {\n", name, strings.Join(params, ", "), ret)
+	if g.shapes.Wrap[name] {
+		fmt.Fprintf(w, "\treturn wrap%s(%s(%s))\n}\n\n", name, sig.Ret, call)
+		return
+	}
 	switch {
 	case sig.Ret == "":
 		fmt.Fprintf(w, "\t%s\n", call)

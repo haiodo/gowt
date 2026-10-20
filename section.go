@@ -61,21 +61,26 @@ func (s *SectionView) Unwrap() *swt.Composite { return s.c }
 // AsComposite returns the underlying composite, as Panel does, for the look package.
 func (s *SectionView) AsComposite() *swt.Composite { return s.c }
 
-// installCard gives c the card colour, inherited by rows and labels, paints the corners outside the
-// rounded rectangle in the parent's colour, and takes the colour again when the system theme changes.
+// installCard gives c the card colour, inherited by rows and labels, rounds its corners, and takes the
+// colour again when the system theme changes. Where the view cannot be clipped (roundCard), the corners
+// outside the rounded rectangle are painted in the parent's colour.
 func installCard(c *swt.Composite) {
 	d := c.GetDisplay()
 	c.SetBackgroundWithColor(cardColor(d))
 	c.SetBackgroundMode(swt.INHERIT_DEFAULT)
-	c.AddPaintListener(painter(func(e *swt.PaintEvent) {
-		r := c.GetClientArea()
-		g := e.Gc
-		g.SetAntialias(swt.ON)
-		g.SetBackground(c.GetParent().GetBackground())
-		g.FillRectangle(0, 0, r.Width, r.Height)
-		g.SetBackground(c.GetBackground())
-		g.FillRoundRectangle(0, 0, r.Width, r.Height, 2*sectionRadius, 2*sectionRadius)
-	}))
+	if !roundCard(c) {
+		c.AddPaintListener(painter(func(e *swt.PaintEvent) {
+			r := c.GetClientArea()
+			g := e.Gc
+			g.SetAntialias(swt.ON)
+			if p := c.GetParent().GetBackground(); p.GetAlpha() != 0 { // GC fills ignore alpha: black corners
+				g.SetBackground(p)
+				g.FillRectangle(0, 0, r.Width, r.Height)
+			}
+			g.SetBackground(c.GetBackground())
+			g.FillRoundRectangle(0, 0, r.Width, r.Height, 2*sectionRadius, 2*sectionRadius)
+		}))
+	}
 	t := &cardTheme{c}
 	d.AddListener(swt.Settings, t)
 	c.AddListener(swt.Dispose, t)

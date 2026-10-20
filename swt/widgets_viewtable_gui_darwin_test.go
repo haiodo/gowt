@@ -141,3 +141,44 @@ func TestViewTableCheckAccessTooltip(t *testing.T) {
 	}
 	<-done
 }
+
+// GUI test (needs GOWT_GUI_TEST=1): the cells of a Table, Tree and List end a long text with an ellipsis, not clipped.
+func TestViewTableCellEllipsis(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" || !viewTableEnabled {
+		t.Skip("set GOWT_GUI_TEST=1 and unset GOWT_VIEW_TABLE=0")
+	}
+	done := make(chan struct{})
+	vtMainq <- func() {
+		defer close(done)
+		d := NewDisplay()
+		defer d.Dispose()
+		shell := NewShell()
+		shell.SetSize(600, 300)
+		long := "a rather long cell text that does not fit"
+		table := NewTable(shell, NONE)
+		table.SetBounds(0, 0, 180, 120)
+		NewTableColumn(table, NONE).SetWidth(30)
+		NewTableItem(table, NONE).SetTexts([]string{long})
+		tree := NewTree(shell, NONE)
+		tree.SetBounds(200, 0, 180, 120)
+		NewTreeColumn(tree, NONE).SetWidth(30)
+		NewTreeItem(tree, NONE).SetTexts([]string{long})
+		list := NewList(shell, V_SCROLL)
+		list.SetBounds(400, 0, 180, 120)
+		list.SetItems([]string{long})
+		shell.Open()
+		for end := time.Now().Add(time.Second); time.Now().Before(end); {
+			if !d.ReadAndDispatch() {
+				time.Sleep(10 * time.Millisecond)
+			}
+		}
+		for name, cell := range map[string]int64{
+			"table": table.dataCell.Id, "tree": tree.dataCell.Id, "list": list.column.DataCell().Id,
+		} {
+			if got := cocoa.Msg(cell, "lineBreakMode"); got != int64(cocoa.OSNSLineBreakByTruncatingTail) {
+				t.Errorf("%s: line break mode %d, want truncating tail", name, got)
+			}
+		}
+	}
+	<-done
+}

@@ -183,6 +183,7 @@ func (d *sidebarHooks) HandleEvent(*swt.Event) { refreshSidebar(d.s) }
 func (d *sidebarHooks) WidgetDisposed(*swt.DisposeEvent) {
 	cocoa.ReleaseSidebar(d.s.View)
 	delete(sidebarShells, d.s)
+	delete(lastMinEdge, d.s)
 }
 
 // clearTree makes c and the controls under it paint no background of their own, so the sidebar glass
@@ -250,8 +251,15 @@ func sidebarDivider() int32 { return 0 }
 // itemsMinEdge is the sidebar edge x the Sidebar toolbar items need, from the toolbar's last layout.
 func itemsMinEdge(s *swt.Shell) (int32, bool) {
 	e, ok := cocoa.SidebarItemsMinEdge(s.View)
+	if ok && os.Getenv("GOWT_SIDEBAR_DEBUG") == "1" && e != lastMinEdge[s] {
+		lastMinEdge[s] = e
+		fmt.Fprintf(os.Stderr, "sidebar debug: Sidebar items need the edge at %.1f\n%s", e, cocoa.DescribeSidebarToolbar(s.View))
+	}
 	return int32(math.Ceil(e)), ok
 }
+
+// lastMinEdge keeps GOWT_SIDEBAR_DEBUG from printing the same measurement on every layout.
+var lastMinEdge = map[*swt.Shell]float64{}
 
 // syncSidebar gets bg with width 0 for a hidden sidebar, which leaves no glass.
 func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32, hidden bool) {

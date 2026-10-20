@@ -288,6 +288,42 @@ func SidebarItemsMinEdge(view *NSView) (edge float64, ok bool) {
 	return r.X + r.Width - max(cur, minViewerWidth) + minViewerWidth - spacerGap, true
 }
 
+// DescribeSidebarToolbar lists, in window points, the zoom button's right edge and the frames of the
+// two sidebar spacers and of their superviews (the item viewers), for GOWT_SIDEBAR_DEBUG.
+func DescribeSidebarToolbar(view *NSView) string {
+	initAssociated()
+	w := msg(uintptr(view.Id), "window")
+	if w == 0 {
+		return "no window\n"
+	}
+	frame := func(v uintptr) string {
+		if v == 0 || msg(v, "window") != w {
+			return "not in the window"
+		}
+		nv := NewNSViewOverload1(int64(v))
+		r := nv.ConvertRect_toView_(nv.Bounds(), nil)
+		return fmt.Sprintf("x %.1f width %.1f right %.1f", r.X, r.Width, r.X+r.Width)
+	}
+	out := ""
+	if b := msg(w, "standardWindowButton:", 2); b != 0 {
+		out += "zoom button " + frame(b) + "\n"
+	}
+	s := toolbarDelegates[getAssociated(w, toolbarKey())]
+	if s == nil {
+		return out + "no toolbar\n"
+	}
+	for _, v := range []struct {
+		name string
+		v    uintptr
+	}{{"spacer", s.spacer}, {"end spacer", s.end}} {
+		out += v.name + " " + frame(v.v) + "\n"
+		if v.v != 0 {
+			out += v.name + " superview " + goString(msg(msg(v.v, "superview"), "className")) + " " + frame(msg(v.v, "superview")) + "\n"
+		}
+	}
+	return out
+}
+
 // overCount is the number of items over the sidebar.
 func (s *toolbarState) overCount() int {
 	n := 0

@@ -126,8 +126,8 @@ func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite()
 // SetToolbar items as a bar above the content. A background on w itself paints over the macOS
 // sidebar glass; colour the content instead.
 //
-// The user resizes the sidebar by dragging its edge; dragged narrower than 120 points, or than its
-// Sidebar toolbar items need, it hides. Read and change that with SidebarVisible, SetSidebarVisible,
+// The user resizes the sidebar by dragging its edge, which stops at 120 points or at the room its
+// Sidebar toolbar items need. Read and change that with SidebarVisible, SetSidebarVisible,
 // SidebarWidth and SetSidebarWidth, and keep it between runs with OnSidebarChange.
 func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	SetFullSizeContent(w, true)
@@ -222,9 +222,8 @@ func OnSidebarChange(w *gowt.Window, f func(visible bool, width int)) {
 	}
 }
 
-// minSidebarWidth is the narrowest sidebar a drag leaves without Sidebar toolbar items; a drag below
-// it hides the sidebar.
-// minContentWidth is the content a drag of the sidebar edge leaves at least.
+// minSidebarWidth is where a drag of the sidebar edge stops without Sidebar toolbar items;
+// minContentWidth is the content such a drag leaves at least.
 const (
 	minSidebarWidth = 120
 	minContentWidth = 200
@@ -248,8 +247,7 @@ type sidebarLayout struct {
 	itemsMin int32 // the width the Sidebar items of the macOS toolbar need, from its last layout
 	hidden   bool
 	dragging bool
-	// from is the visible state and width when the drag began
-	from     [2]int32
+	from     int32 // the width when the drag began
 	onChange []func(visible bool, width int)
 }
 
@@ -288,13 +286,6 @@ func (l *sidebarLayout) notify() {
 	}
 }
 
-func (l *sidebarLayout) state() [2]int32 {
-	if l.hidden {
-		return [2]int32{0, l.width}
-	}
-	return [2]int32{1, l.width}
-}
-
 // minWidth is the narrowest sidebar: minSidebarWidth, or the room its Sidebar toolbar items need where
 // that is more (the macOS toolbar group up to its inset from the edge, the Windows and Linux row).
 func (l *sidebarLayout) minWidth() int32 {
@@ -305,27 +296,24 @@ func (l *sidebarLayout) minWidth() int32 {
 	return m
 }
 
-// HandleEvent follows a drag of the sash: it resizes the sidebar while the mouse moves, hides it
-// below minWidth, and tells OnSidebarChange once the button is released.
+// HandleEvent follows a drag of the sash: it resizes the sidebar while the mouse moves, stopping at
+// minWidth, and tells OnSidebarChange once the button is released. A drag never hides the sidebar: a
+// divider that jumps away under the pointer confuses more than one that stops.
 func (l *sidebarLayout) HandleEvent(e *swt.Event) {
 	switch e.Type {
 	case swt.MouseDown:
-		l.dragging, l.from = true, l.state()
+		l.dragging, l.from = true, l.width
 	case swt.MouseUp:
 		l.dragging = false
-		l.w.Unwrap().Layout()
-		if l.state() != l.from {
+		if l.width != l.from {
 			l.notify()
 		}
 	case swt.Selection:
 		r := l.w.Unwrap().GetClientArea()
 		in, div := sidebarInset(), sidebarDivider()
-		width, ok := dragWidth(sidebarWidthAt(e.X-r.X, in, div), l.minWidth(), r.Width-in-div-minContentWidth)
-		if ok != !l.hidden || (ok && width != l.width) {
-			l.hidden = !ok
-			if ok {
-				l.width = width
-			}
+		width := dragWidth(sidebarWidthAt(e.X-r.X, in, div), l.minWidth(), r.Width-in-div-minContentWidth)
+		if width != l.width && !l.hidden {
+			l.width = width
 			l.apply()
 			if !l.dragging { // arrow keys on the focused sash
 				l.notify()
@@ -364,8 +352,7 @@ func (l *sidebarLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	bg, sb, ct, sh := sidebarFrames(r.X, r.Y, r.Width, r.Height, width, sidebarInset(), int32(topInset(c.GetShell())), sidebarDivider())
 	l.sidebar.SetBounds(sb[0], sb[1], sb[2], sb[3])
 	l.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
-	// A hidden sidebar has no edge to drag, except during the drag that hid it.
-	l.sash.SetVisible(!l.hidden || l.dragging)
+	l.sash.SetVisible(!l.hidden)
 	ct = barTop(c.GetShell(), ct)
 	l.content.SetBounds(ct[0], ct[1], ct[2], ct[3])
 	syncSidebar(c.GetShell(), l.sidebar, bg, l.hidden)
@@ -408,11 +395,5 @@ func sidebarWidthAt(x, in, div int32) int32 {
 	return x - in - div + div/2 + sw/2
 }
 
-// dragWidth is the width a drag to want gives, kept from least to most (or least, if most is smaller);
-// false hides the sidebar, for a want below least.
-func dragWidth(want, least, most int32) (int32, bool) {
-	if want < least {
-		return 0, false
-	}
-	return max(min(want, most), least), true
-}
+// dragWidth is the width a drag to want gives, kept from least to most (or least, if most is smaller).
+func dragWidth(want, least, most int32) int32 { return max(min(want, most), least) }

@@ -3,7 +3,6 @@ package look_test
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"runtime"
 	"testing"
 	"time"
@@ -193,7 +192,7 @@ func TestSidebarIconTable(t *testing.T) {
 	var listH, tableH, rowH, imgX, textX, textW int32
 	var imgW int32
 	var sel []int
-	var active bool
+	var blocked string
 	var err error
 	onMain(func() {
 		err = gowt.Run(func(app *gowt.App) {
@@ -225,9 +224,7 @@ func TestSidebarIconTable(t *testing.T) {
 			tbl := table.Unwrap()
 			tbl.SetFocus()
 			app.After(200*time.Millisecond, func() {
-				// Posted keys go to the key window of the system; on macOS another app may hold it.
-				active = app.Unwrap().GetActiveShell() == w.Unwrap()
-				if !active {
+				if blocked = postBlocked(app); blocked != "" {
 					w.Close()
 					return
 				}
@@ -260,8 +257,8 @@ func TestSidebarIconTable(t *testing.T) {
 	if textW <= 0 {
 		t.Errorf("text bounds width %d", textW)
 	}
-	if !active {
-		t.Log("the window was not the active one: arrow keys not checked")
+	if blocked != "" {
+		t.Log("arrow keys not checked: " + blocked)
 	} else if len(sel) == 0 || sel[len(sel)-1] != 1 {
 		t.Errorf("down, down, up from row 0: selection %v, want it to end at 1", sel)
 	}
@@ -341,10 +338,13 @@ func TestSidebarHide(t *testing.T) {
 		look.SetSidebarVisible(w, true)
 		look.SetSidebarWidth(w, 50)
 		app.Flush()
-		if look.SidebarWidth(w) != 120 || content.Unwrap().GetBounds().X != shownX-100 {
-			t.Errorf("width 50: got %d, content x %d, want 120 and %d", look.SidebarWidth(w), content.Unwrap().GetBounds().X, shownX-100)
+		// The narrowest sidebar is 120 points or the room of the sidebar.left item, which on macOS is more.
+		least := int32(look.SidebarWidth(w))
+		t.Logf("narrowest sidebar with one Sidebar item: %d", least)
+		if least < 120 || least >= 220 || content.Unwrap().GetBounds().X != shownX-(220-least) {
+			t.Errorf("width 50: got %d, content x %d, want 120 to 219 and x %d", least, content.Unwrap().GetBounds().X, shownX-(220-least))
 		}
-		if want := "[false 220 true 220 true 120]"; fmt.Sprint(changes) != want {
+		if want := fmt.Sprintf("[false 220 true 220 true %d]", least); fmt.Sprint(changes) != want {
 			t.Errorf("changes %v, want %s", changes, want)
 		}
 	})
@@ -385,15 +385,13 @@ func TestSidebarDragEvents(t *testing.T) {
 			t.Errorf("changes during the drag: %v", changes)
 		}
 		send(swt.Selection, 20)
-		if look.SidebarVisible(w) || !sash.GetVisible() {
-			t.Errorf("dragged to 20: visible %v, sash shown %v", look.SidebarVisible(w), sash.GetVisible())
+		least := look.SidebarWidth(w)
+		if !look.SidebarVisible(w) || least < 120 || least >= 300 {
+			t.Errorf("dragged to 20: visible %v, width %d; want the drag to stop at the narrowest width", look.SidebarVisible(w), least)
 		}
 		send(swt.MouseUp, 0)
 		app.Flush()
-		if sash.GetVisible() {
-			t.Error("the sash of a hidden sidebar stays after the drag")
-		}
-		if want := "[false 300]"; fmt.Sprint(changes) != want {
+		if want := fmt.Sprintf("[true %d]", least); fmt.Sprint(changes) != want {
 			t.Errorf("changes %v, want %s", changes, want)
 		}
 		r := w.Unwrap().GetClientArea()
@@ -403,25 +401,18 @@ func TestSidebarDragEvents(t *testing.T) {
 		if !look.SidebarVisible(w) || look.SidebarWidth(w) > int(r.Width)-200 {
 			t.Errorf("dragged to the right edge: visible %v, width %d of %d", look.SidebarVisible(w), look.SidebarWidth(w), r.Width)
 		}
-		send(swt.MouseDown, 0)
-		send(swt.Selection, 20)
-		send(swt.Selection, x0+80)
-		send(swt.MouseUp, 0)
-		if !look.SidebarVisible(w) || look.SidebarWidth(w) != 300 {
-			t.Errorf("hidden and dragged back in one press: visible %v, width %d", look.SidebarVisible(w), look.SidebarWidth(w))
+		look.SetSidebarVisible(w, false)
+		if sash.GetVisible() {
+			t.Error("a hidden sidebar keeps its sash")
 		}
 	})
 }
 
-// A real drag of the sidebar edge by 60 points. Linux uses xdotool: Display.Post there queues GDK
-// button events the X server never sees, so a GTK sash gets no motion.
+// A real drag of the sidebar edge by 60 points, through the system's input (postMouse).
 func TestSidebarPostedDrag(t *testing.T) {
-	xdotool, _ := exec.LookPath("xdotool")
 	skip := ""
 	sidebarWindow(t, nil, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
-		// On macOS Display.Post sends real CGEvents to whatever window is under the pointer.
-		if runtime.GOOS == "darwin" && app.Unwrap().GetActiveShell() != w.Unwrap() {
-			skip = "the window is not the active one"
+		if skip = postBlocked(app); skip != "" {
 			return
 		}
 		sash := sashOf(w)
@@ -429,16 +420,7 @@ func TestSidebarPostedDrag(t *testing.T) {
 		p := w.Unwrap().ToDisplay(b.X+b.Width/2, b.Y+b.Height/2)
 		d := app.Unwrap()
 		post := func(typ int32, x int32) bool {
-			ok := true
-			if runtime.GOOS == "linux" {
-				args := map[int32][]string{swt.MouseMove: {"mousemove", fmt.Sprint(x), fmt.Sprint(p.Y)},
-					swt.MouseDown: {"mousedown", "1"}, swt.MouseUp: {"mouseup", "1"}}[typ]
-				ok = xdotool != "" && exec.Command(xdotool, args...).Run() == nil
-			} else {
-				e := swt.NewEvent()
-				e.Type, e.X, e.Y, e.Button = typ, x, p.Y, 1
-				ok = d.Post(e)
-			}
+			ok := postMouse(app, typ, x, p.Y)
 			for range 5 {
 				for d.ReadAndDispatch() {
 				}
@@ -454,7 +436,7 @@ func TestSidebarPostedDrag(t *testing.T) {
 		}
 		ok = ok && post(swt.MouseUp, p.X+60)
 		if !ok {
-			skip = "the mouse events could not be posted (Linux needs xdotool)"
+			skip = "the mouse events could not be posted"
 			return
 		}
 		if got := look.SidebarWidth(w); got != 280 {
@@ -469,8 +451,8 @@ func TestSidebarPostedDrag(t *testing.T) {
 	}
 }
 
-// Sidebar items wider than 120 points set the narrowest sidebar: SetSidebarWidth stops there, and a
-// drag below it hides the sidebar instead of letting the items cross into the content.
+// Sidebar items wider than 120 points set the narrowest sidebar: SetSidebarWidth and a drag stop
+// there, so the items never cross into the content, and the drag does not hide the sidebar.
 func TestSidebarItemsMinWidth(t *testing.T) {
 	var items []look.ToolbarItem
 	for _, s := range []string{"Scan Node.js", "Scan Docker", "Open Profile..."} {
@@ -486,17 +468,19 @@ func TestSidebarItemsMinWidth(t *testing.T) {
 			t.Errorf("SetSidebarWidth(120) gave %d, too narrow for three text items", least)
 		}
 		sash := sashOf(w)
-		send := func(typ int32, x int32) {
+		send := func(typ int32, x int32) int32 {
 			e := swt.NewEvent()
 			e.X, e.Y, e.Button = x, sash.GetBounds().Y, 1
 			sash.NotifyListeners(typ, e)
+			return e.X
 		}
 		x0 := sash.GetBounds().X
 		send(swt.MouseDown, 0)
-		send(swt.Selection, x0-10)
+		got := send(swt.Selection, x0-60)
 		send(swt.MouseUp, 0)
-		if look.SidebarVisible(w) {
-			t.Errorf("dragged 10 points below the narrowest %d: still shown at %d", least, look.SidebarWidth(w))
+		if !look.SidebarVisible(w) || look.SidebarWidth(w) != least || got != x0 {
+			t.Errorf("dragged 60 points below the narrowest %d: visible %v, width %d, sash at %d, want it to stay at %d",
+				least, look.SidebarVisible(w), look.SidebarWidth(w), got, x0)
 		}
 	})
 }

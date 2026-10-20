@@ -64,14 +64,16 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Canvas | `Canvas(onPaint)` | see [graphics.md](graphics.md); `OnMouseDown`, `OnMouseUp`, `OnMouseMove` (`Mouse`: X, Y, Button, Count) |
 | StyledText | `StyledText(Scrollbars())` | `Text`, `SetText`, `Selection`, `Caret`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `Replace`, `SetStyle(start, length, TextStyle)`, `Styles`, `OnStyle(func(line string) []StyleSpan)`, `OnChange`, `OnSelect`, `OnCaret`. Offsets are runes; each call converts to UTF-16 (O(n)). Example: [`examples/styledtext`](../examples/styledtext) |
 
-A List row has text only (`swt.List` has no item images). A row with an icon is a Table without columns, header and grid lines; in a `look.SetSidebar` sidebar it gets the List look ([theme-look.md](theme-look.md)). See `examples/sidebartable`:
+A List row has text only (`swt.List` has no item images). A row with an icon is a Table without columns, header and grid lines; in a `look.SetSidebar` sidebar it gets the List look ([theme-look.md](theme-look.md)), on macOS the selected row's text and icon in the accent colour. `icons.Get` tints the icon for the theme at call time, so set the icons again in `App.OnThemeChange`. See `examples/sidebartable`:
 
 ```go
-gowt.Table(gowt.NoBorder(), gowt.Init(func(t *gowt.TableView) {
+var files *gowt.TableView
+w.Add(gowt.Table(gowt.NoBorder(), gowt.Ref(&files), gowt.Init(func(t *gowt.TableView) {
 	t.ShowHeader(false)
 	t.ShowLines(false)
 	t.Row("a.cpuprofile").SetImageAt(0, icons.Get(app, "file"))
-}))
+})))
+app.OnThemeChange(func(bool) { files.RowAt(0).SetImageAt(0, icons.Get(app, "file")) })
 ```
 
 ## Any control

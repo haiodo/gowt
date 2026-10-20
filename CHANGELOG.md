@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+Fixes
+- macOS: the client area of a Table or Tree in a `look.SetSidebar` sidebar leaves out the padding of the source-list style, 31 points on macOS 26. Columns sized to `GetClientArea` ran that far past the visible width, and the last column was cut (fusion-desktop gowt-issues 4). `Column.SetWidth` itself never changed the other columns: SWT turns AppKit's column autoresizing off, and gowt keeps it off.
+
+Docs
+- docs/widgets.md: all images of a Table or Tree get the size of the first one, on every platform (SWT's model); images of different widths go onto canvases of one size.
+
 ## v0.9.4 (2026-10-20)
 
 New API

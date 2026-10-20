@@ -295,7 +295,7 @@ func (this *Composite) DrawBackground(gcLike GCLike, x int32, y int32, width int
 		if data.FlippedContext != (nil) {
 			cocoa.NSGraphicsContextStatic_restoreGraphicsState()
 		}
-	} else {
+	} else if bg := gc.GetGCData().Background; bg == nil || bg[3] != 0 {
 		gc.FillRectangle(x, y, width, height)
 	}
 }

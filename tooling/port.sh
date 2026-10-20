@@ -433,7 +433,7 @@ fi
 # controls on a sidebar or inspector glass) came out as a black bar over the box and its text; it now leaves the bezel to AppKit.
 if [ "$PLATFORM" = cocoa ]; then
 	BZ_GO=swt/widgets_button_darwin.go
-	perl -0pi -e 's/(func \(this \*Button\) drawBezelWithFrame_inView_\(id int64, sel int64, cellFrame cocoa\.NSRect, viewid int64\) \{\n\tif this\.background != \(nil\))( \{\n)/$1 \&\& this.background[3] != 0$2/' "$BZ_GO"
+	perl -0pi -e 's/(func \(this \*Button\) drawBezelWithFrame_inView_\(id int64, sel int64, cellFrame cocoa\.NSRect, viewid int64\)\s*\{\n\tif this\.background != \(nil\))( \{\n)/$1 \&\& this.background[3] != 0$2/' "$BZ_GO"
 	[ "$(grep -c 'this.background != (nil) && this.background\[3\] != 0 {' "$BZ_GO")" = 1 ] || { echo "port.sh: Button transparent bezel rewrite did not apply" >&2; exit 1; }
 fi
 

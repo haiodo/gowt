@@ -49,6 +49,33 @@ func RoundCorners(view *NSView, r float64) bool {
 	return true
 }
 
+// ClipBackdrop puts the backdrop of view in a container that clips to the backdrop frame: a 30-point
+// gradient left of the inspector glass, most likely its shadow, darkened the toolbar band beside it. The
+// container stands for the backdrop afterwards, so SetBackdropFrame moves it and the glass follows.
+func ClipBackdrop(view *NSView) {
+	initAssociated()
+	v := uintptr(view.Id)
+	bd := getAssociated(v, backdropKey())
+	host := msg(bd, "superview")
+	if bd == 0 || host == 0 {
+		return
+	}
+	box := msg(msg(class("NSView"), "alloc"), "init")
+	msg(box, "setWantsLayer:", 1)
+	msg(msg(box, "layer"), "setMasksToBounds:", 1)
+	r := NewNSViewOverload1(int64(bd)).Frame()
+	msgRectOnly(box, sel("setFrame:"), r)
+	msg(host, "addSubview:positioned:relativeTo:", box, 1, bd) // NSWindowAbove, then bd leaves that slot
+	msg(bd, "retain")
+	msg(bd, "removeFromSuperview")
+	msgRectOnly(bd, sel("setFrame:"), NSRect{Width: r.Width, Height: r.Height})
+	msg(bd, "setAutoresizingMask:", viewWidthHeightSizable)
+	msg(box, "addSubview:", bd)
+	msg(bd, "release")
+	setAssociated(v, backdropKey(), box, 1)
+	msg(box, "release")
+}
+
 // SetEdgeLine draws a separator line down the leading edge of the backdrop of view, its full height: the
 // divider of a full-height NSSplitViewController inspector runs through the title bar too (Apple developer
 // forums thread 818282). The line lies between the glass and view, so it takes no clicks; it hides while

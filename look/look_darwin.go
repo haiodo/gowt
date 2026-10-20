@@ -175,6 +175,7 @@ func setSidebarChrome(s *swt.Shell, sb *swt.Composite, sash *swt.Control) {
 func setInspectorChrome(s *swt.Shell, ib *swt.Composite, sash *swt.Control) {
 	cocoa.InstallBackdrop(ib.View, cocoa.BackdropGlass, false)
 	cocoa.SetGlassCornerRadius(ib.View, 0)
+	cocoa.ClipBackdrop(ib.View)
 	clearTree(ib)
 	clearAdded(ib)
 	clearControl(sash)

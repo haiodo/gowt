@@ -14,6 +14,7 @@ func TestTabFromWindow(t *testing.T) {
 		t.Skip("set GOWT_GUI_TEST=1")
 	}
 	done := make(chan struct{})
+	skip := ""
 	vtMainq <- func() {
 		defer close(done)
 		d := NewDisplay()
@@ -25,6 +26,11 @@ func TestTabFromWindow(t *testing.T) {
 		shell.SetSize(300, 100)
 		shell.Open()
 		for d.ReadAndDispatch() {
+		}
+		// SWT gives the focus only to a control of the active window (Control.forceFocus).
+		if d.GetActiveShell() != shell {
+			skip = "the test window is not the active window: run from a frontmost app"
+			return
 		}
 		clear := func() { shell.View.Window().MakeFirstResponder(nil) }
 		clear()
@@ -43,4 +49,7 @@ func TestTabFromWindow(t *testing.T) {
 		}
 	}
 	<-done
+	if skip != "" {
+		t.Skip(skip)
+	}
 }

@@ -8,4 +8,16 @@ func (this *Display) FollowSystemTheme() {
 	cocoa.ObserveEffectiveAppearance(func() { this.runSettings = true })
 	cocoa.SyncCurrentAppearance()
 	this.InitColors0() // colors cached in Display init were resolved before the appearance was synced
+	// RunSettings marks only each shell's own view for display; in a look.SetSidebar window (glass
+	// beside the views) the content composite kept its old default background after a switch.
+	this.AddListener(Settings, &ListenerFunc{fn: func(*Event) {
+		for _, s := range this.GetShells() {
+			if s.window == nil {
+				continue
+			}
+			if v := s.window.ContentView(); v != nil {
+				cocoa.NeedsDisplayTree(v)
+			}
+		}
+	}})
 }

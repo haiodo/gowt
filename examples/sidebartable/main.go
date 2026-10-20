@@ -22,7 +22,7 @@ func main() {
 		var table *gowt.TableView
 		w.Add(
 			gowt.VBox(gowt.Ref(&sidebar), gowt.Padding(0), gowt.Gap(0),
-				gowt.List(names, gowt.NoBorder(), gowt.GrowX(), gowt.Size(0, 110), gowt.Ref(&list),
+				gowt.List(names, gowt.NoBorder(), gowt.GrowX(), gowt.Size(0, 110), gowt.Ref(&list), gowt.Selected(1),
 					gowt.OnSelect(func(i int) { log.Print("list ", i) })),
 				gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Ref(&table),
 					gowt.OnSelect(func(i int) { log.Print("table ", i) }),
@@ -32,11 +32,18 @@ func main() {
 						for _, n := range names {
 							t.Row(n).SetImageAt(0, icons.Get(app, "file"))
 						}
+						t.Select(1) // both selections side by side, for comparing them
 					}))),
 			gowt.VBox(gowt.Ref(&content), gowt.Label("content")))
 		gowt.PopupMenu(list).Item("Close", func() { log.Print("close list") })
 		gowt.PopupMenu(table).Item("Close", func() { log.Print("close table") })
 		look.SetSidebar(w, sidebar, content, 240)
+		// icons.Get tints for the theme at call time: a switch needs the icon again.
+		app.OnThemeChange(func(bool) {
+			for i := range names {
+				table.RowAt(i).SetImageAt(0, icons.Get(app, "file"))
+			}
+		})
 		w.Show()
 	})
 	if err != nil {

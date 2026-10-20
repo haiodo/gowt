@@ -10,6 +10,9 @@ Behaviour change
 
 Fixes
 - `look.SetToolbar` on Windows and Linux draws 24 more SF Symbols as icons, among them `terminal`, `shippingbox`, `folder`, `sidebar.left` (for the button that toggles the sidebar), `gearshape`, `magnifyingglass` and `trash`; it knew only 4 and showed the item title as text for any other. The supported set is listed in docs/theme-look.md.
+- macOS: after a light/dark switch the content of a `look.SetSidebar` window kept the old window colour, so its labels could become invisible; every shell's view tree is now redrawn after the switch.
+- macOS: the selected row of a Table in a `look.SetSidebar` sidebar draws its text and icon in the accent colour, as a List row does; it drew plain text. The icon is filled with the colour, so a multi-colour icon shows as a silhouette there.
+- `examples/sidebartable` and the snippet in docs/widgets.md set the `icons.Get` icons again in `App.OnThemeChange`; they stayed dark on a dark sidebar.
 
 ## v0.9.3 (2026-10-19)
 

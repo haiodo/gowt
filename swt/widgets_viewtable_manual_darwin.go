@@ -393,8 +393,18 @@ func (this *Table) vtDrawCell(view int64, check bool) {
 		return
 	}
 	cell.SetObjectValue(cocoa.NewidOverload1(value))
-	cell.SetHighlighted(tv.IsRowSelected(row))
+	selected := tv.IsRowSelected(row)
+	cell.SetHighlighted(selected)
 	this.tableView_willDisplayCell_forTableColumn_row_(tv.Id, 0, tv.Id, cell.Id, column, row)
+	// A source list draws the selected row's text and icon in the accent colour, as List.vtDrawCell.
+	// A font with synthetic traits keeps the colour of its attributed string.
+	if selected && cocoa.Msg(tv.Id, "style") == vtStyleSourceList {
+		accent := cocoa.Msg(cocoa.OSObjc_getClass("NSColor"), "controlAccentColor")
+		cocoa.Msg(cell.Id, "setTextColor:", accent)
+		if img := cell.Image(); img != nil {
+			cell.SetImage(vtTinted(img, accent))
+		}
+	}
 	frame := tv.FrameOfCellAtColumn(col, row)
 	vtDrawContext(v, frame, func() { cell.DrawInteriorWithFrame(frame, this.View) })
 }
@@ -435,6 +445,37 @@ func (this *List) vtDrawCell(view int64) {
 }
 
 const vtStyleSourceList = 3 // NSTableViewStyleSourceList
+
+// vtTinted returns img in color, autoreleased: one bitmap per representation of img keeps it sharp
+// at every scale. A multi-colour icon becomes a silhouette.
+func vtTinted(img *cocoa.NSImage, color int64) *cocoa.NSImage {
+	size := img.Size()
+	rect := cocoa.NSRect{Width: size.Width, Height: size.Height}
+	out := castcocoaNSObjectTococoaNSImage(cocoa.NewNSImage().Alloc()).InitWithSize(size)
+	reps := img.Representations()
+	for i := int64(0); i < reps.Count(); i++ {
+		src := cocoa.NewNSImageRepOverload1(reps.ObjectAtIndex(i).Id)
+		w, h := src.PixelsWide(), src.PixelsHigh()
+		if w <= 0 || h <= 0 { // a vector representation: one pixel per point
+			w, h = int64(math.Ceil(size.Width)), int64(math.Ceil(size.Height))
+		}
+		rep := castcocoaNSObjectTococoaNSBitmapImageRep(cocoa.NewNSBitmapImageRep().Alloc())
+		rep = rep.InitWithBitmapDataPlanes(0, w, h, 8, 4, true, false, cocoa.OSNSDeviceRGBColorSpace_, 0, w*4, 32)
+		rep.SetSize(size)
+		cocoa.NSGraphicsContextStatic_saveGraphicsState()
+		ctx := cocoa.NSGraphicsContextGraphicsContextWithBitmapImageRep(rep)
+		cocoa.NSGraphicsContextSetCurrentContext(ctx)
+		src.DrawInRect(rect)
+		ctx.SetCompositingOperation(int64(cocoa.OSNSCompositingOperationSourceAtop))
+		cocoa.NewNSColorOverload1(color).SetFill()
+		cocoa.NSBezierPathFillRect(rect)
+		cocoa.NSGraphicsContextStatic_restoreGraphicsState()
+		out.AddRepresentation(upcastcocoaNSBitmapImageRepTococoaNSImageRep(rep))
+		rep.Release()
+	}
+	cocoa.Msg(out.Id, "autorelease")
+	return out
+}
 
 func (this *Table) vtCheckMouseDown(view int64, event int64) {
 	tv := castcocoaNSViewTococoaNSTableView(this.View)

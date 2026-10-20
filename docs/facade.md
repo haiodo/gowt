@@ -31,7 +31,7 @@ Window, Panel, base widgets, options), `layout.go`, `widgets_common.go`, `widget
 | Containers | `Group`, `Tabs` (TabFolder) and `CTabs` (CTabFolder, `OnClose` veto) with `Tab(title, ...)` children (`Closable()` on a CTabs tab), `Pages` (a composite with a StackLayout, children are pages: `Show(i)`, `Current()`), `Split` (SashForm), `Scroll` (ScrolledComposite: children in its content, fitted), `Sash` (bare), `ToolBar`+`ToolItem`, `CoolBar` (children are bands), `Section` (children are rows) |
 | Ranges | `Scale`, `Slider`, `Spinner`, `Progress`, `DateTime` (`time.Time`), `Link` (`OnClick(func(href string))`) |
 | Graphics | `Canvas(onPaint func(*GC))`, `GC` (colors, line width, font, Line/Rect/Oval/Fill*, Text, TextSize, Image), `Image`, `RGB` |
-| Menus | `Window.MenuBar()`, `PopupMenu(widget)`, `Menu.Item/Submenu/Separator/Show/OnShow`, `MenuItem`, `Shortcut(keys)` (accelerator plus the "\t" hint), `Window.OnKey(keys, f)` (a display filter for the window); `App.Tray` (nil without a system tray) |
+| Menus | `Window.MenuBar()`, `PopupMenu(widget)`, `Menu.Item/Submenu/Separator/Show/OnShow`, `MenuItem`, `Shortcut(keys)` (accelerator plus the "\t" hint), `Window.OnKey(keys, f)` (a display filter for the window); `App.Tray` (nil without a system tray), `App.SetBadge` (count on the app icon) |
 | Dialogs | `Window.MessageBox(Message)`, `Confirm`, `FileDialog(FileDialog)`, `DirDialog`, `ColorDialog`, `FontDialog`: value-type descriptions in, plain values out |
 | Layouts | `Flow` (RowLayout, wrapping; `Vertical()`) + `Size`; `Form` + `Anchor(FormCell{Left, Right, Top, Bottom Edge})`; `Fill` (FillLayout; `Vertical()`) |
 
@@ -120,7 +120,7 @@ The root keeps what every app needs; the platform look and the icon set live in 
 
 | Package | Contents | Files |
 |---|---|---|
-| `gowt` | `Run`, `SetAppName`, `App` (threads, `Tray`, images, `Dark`/`OnThemeChange`), `Window`, `Panel` and every widget, options, layouts, dialogs, menus, `GC`/`Image`/`RGB`/`Font` | `gowt.go clipboard.go dialogs.go dnd.go graphics.go layout.go menu.go theme.go theme_darwin.go theme_other.go widgets_*.go manifest_windows.go` + 2 tests |
+| `gowt` | `Run`, `SetAppName`, `App` (threads, `Tray`, `SetBadge`, images, `Dark`/`OnThemeChange`), `Window`, `Panel` and every widget, options, layouts, dialogs, menus, `GC`/`Image`/`RGB`/`Font` | `gowt.go badge.go badge_linux.go badge_other.go clipboard.go dialogs.go dnd.go graphics.go layout.go menu.go theme.go theme_darwin.go theme_other.go widgets_*.go manifest_windows.go` + 2 tests |
 | `gowt/look` | window material, macOS 26 glass, Windows corners and dark content | `look.go look_darwin.go look_windows.go look_other.go` |
 | `gowt/icons` | named icons (`icons/lucide` stays below it) | the seven `icons*.go` files, names unchanged |
 

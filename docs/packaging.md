@@ -71,6 +71,6 @@ Categories=Utility;
 StartupWMClass=myapp
 ```
 
-`gowt.SetAppName("myapp")` sets the name the window manager sees as the WM class; `StartupWMClass` must match it for the menu entry and the window to group together. Icons go to `~/.local/share/icons/hicolor/<size>/apps/myapp.png`. This was not tried on a real desktop; the stand is Xvfb with openbox.
+`gowt.SetAppName("myapp")` sets the name the window manager sees as the WM class; `StartupWMClass` must match it for the menu entry and the window to group together. The same name names the launcher entry that `app.SetBadge` updates (`application://myapp.desktop`), so the badge count shows only when the desktop file is `myapp.desktop`; without `SetAppName` the name is the executable's file name. gowt does not use `GApplication`, so there is no application id other than this name. Icons go to `~/.local/share/icons/hicolor/<size>/apps/myapp.png`. This was not tried on a real desktop; the stand is Xvfb with openbox.
 - **Wayland.** The port uses GTK 3 over X11 or XWayland.
 - **glibc.** A Linux build is a dynamically linked ELF that needs `libc.so.6` and a glibc dynamic loader (`readelf -d` on the Docker stand's build shows `libc.so.6` as the only `NEEDED` entry). GTK itself is loaded with `dlopen` at start, so it is not a link-time dependency. A musl system such as Alpine was not checked.

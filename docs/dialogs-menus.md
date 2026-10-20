@@ -52,3 +52,5 @@ view.Item("Word wrap", nil, gowt.Check()).SetChecked(true)
 `w.ToolBar()` with `Item(text, onClick)` and `Separator()`; items have `SetImage`, `SetTooltip`, `SetEnabled`, `SetChecked`.
 
 `app.Tray(tooltip, onClick)` adds a tray icon and returns nil where the system has no tray, so check for nil. Use `SetImage`, `SetTooltip`, `Remove`.
+
+`app.SetBadge("3")` shows a count on the application icon, as a mail app shows unread messages, and `app.SetBadge("")` removes it. macOS draws it on the app's Dock tile. Windows draws it as an overlay on the taskbar button of every window, also of windows created later with `app.Window`. Linux sends it as the count of the launcher entry, which Ubuntu Dock, dash-to-dock and KDE Plasma draw; they show whole numbers only, so other text hides the count. The dock finds the app by its desktop file, which must be named after the app name, see [packaging.md](packaging.md#linux). SWT's `app.Unwrap().GetSystemTaskBar()` differs per platform, as in SWT for Java: macOS has only the application item, `GetItemShell(nil)`, and returns nil for a window; Windows shows only window items, `GetItemShell(shell)`; on Linux the TaskBar is nil.

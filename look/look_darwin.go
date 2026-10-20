@@ -34,10 +34,14 @@ func clearBackground(c *swt.Composite, on bool) {
 		c.SetBackgroundMode(swt.NONE)
 		return
 	}
-	col := swt.NewColorDeviceRedGreenBlueAlpha(c.GetDisplay(), 0, 0, 0, 0)
-	c.SetBackgroundWithColor(col)
-	col.Dispose()
+	c.SetBackgroundWithColor(clearColor(c.GetDisplay()))
 	c.SetBackgroundMode(swt.INHERIT_FORCE)
+}
+
+// clearColor is never disposed: StyledText and SashForm keep the Color itself and fail on a disposed one
+// at the next paint or new sash. A cocoa Color holds no native resource.
+func clearColor(d *swt.Display) *swt.Color {
+	return swt.NewColorDeviceRedGreenBlueAlpha(d, 0, 0, 0, 0)
 }
 
 func setGlass(c *swt.Composite, on bool) {
@@ -283,9 +287,7 @@ func (clearRoot) HandleEvent(e *swt.Event) {
 }
 
 func clearControl(c *swt.Control) {
-	col := swt.NewColorDeviceRedGreenBlueAlpha(c.GetDisplay(), 0, 0, 0, 0)
-	c.SetBackgroundWithColor(col)
-	col.Dispose()
+	c.SetBackgroundWithColor(clearColor(c.GetDisplay()))
 }
 
 // debugSidebar prints, for every list, table and tree in the sidebar of s, the SWT background state

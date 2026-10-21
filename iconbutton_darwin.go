@@ -1,0 +1,12 @@
+package gowt
+
+import (
+	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/swt"
+)
+
+func setButtonBorderless(b *swt.Button) { cocoa.SetButtonBorderless(b.View) }
+
+func setButtonCircle(b *swt.Button) { cocoa.SetButtonCircle(b.View) }
+
+func setAccessibleLabel(c *swt.Control, s string) { cocoa.SetAccessibilityLabel(c.View, s) }

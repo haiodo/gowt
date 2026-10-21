@@ -204,15 +204,6 @@ func ContentTopInset(view *NSView) int {
 	return max(0, int(math.Ceil(cv.Height-(r.Y+r.Height))))
 }
 
-// SetGlassButton gives an NSButton the macOS 26 glass bezel; older systems keep the current one.
-func SetGlassButton(view *NSView) {
-	v := uintptr(view.Id)
-	if !GlassAvailable() || !respondsTo(v, "setBezelStyle:") {
-		return
-	}
-	msg(v, "setBezelStyle:", bezelStyleGlass)
-}
-
 // SetGlassCornerRadius rounds the glass view InstallBackdrop added for view; no-op without one.
 func SetGlassCornerRadius(view *NSView, r float64) {
 	initAssociated()

@@ -437,6 +437,21 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.background != (nil) && this.background\[3\] != 0 {' "$BZ_GO")" = 1 ] || { echo "port.sh: Button transparent bezel rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Button.setBounds and setFont put the push bezel back on every layout, which erased the glass and circular bezels that
+# look.GlassButton and gowt.Circle set. They now touch only the two push bezels (Button.ownBezel, widgets_button_manual_darwin.go).
+if [ "$PLATFORM" = cocoa ]; then
+	perl -0pi -e 's/(if \(this\.style \& \(PUSH \| TOGGLE\)\) != 0 \&\& \(this\.style \& \(FLAT \| WRAP\)\) == 0)( \{\n\t\t(?:var heightThreshold|var cond171))/$1 \&\& this.ownBezel()$2/g' "$BZ_GO"
+	[ "$(grep -c 'this.ownBezel()' "$BZ_GO")" = 2 ] || { echo "port.sh: Button ownBezel rewrite did not apply" >&2; exit 1; }
+fi
+
+# macOS 26 draws the glass bezel of an NSButton only when its class does not override drawRect: and its cell is a plain
+# NSButtonCell. The Display class setup also registers SWTGlassButton (widgets_button_manual_darwin.go) for cocoa.SetGlassButton.
+if [ "$PLATFORM" = cocoa ]; then
+	DS_GO=swt/widgets_display_darwin.go
+	perl -0pi -e 's/(\tclassName = "SWTButton"\n)/\tthis.registerGlassButtonClass(proc2, proc3, hitTestProc, setNeedsDisplayInRectProc, setFrameOriginProc, setFrameSizeProc)\n$1/' "$DS_GO"
+	[ "$(grep -c 'this.registerGlassButtonClass(' "$DS_GO")" = 1 ] || { echo "port.sh: SWTGlassButton registration did not apply" >&2; exit 1; }
+fi
+
 # cocoa Composite.drawBackground(GC, ...) fills with the GC background when no control up the tree has a visible background,
 # and GC fills ignore a colour's alpha: a StyledText with an alpha-0 background (look.SetGlass) painted its lines opaque black.
 # A fully transparent GC background fills nothing.

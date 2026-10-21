@@ -15,7 +15,9 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Border()`, `Flat()`, `Wrap()` | frame; flat tool bar; Label and StyledText text wrapped into lines, tool bar items wrapped into rows |
 | `Vertical()` | Scale, Slider, Progress, Sash, Split orientation |
 | `MultiSelect()` | List, Table, Tree |
+| `Borderless()`, `Circle()` | push Button: no frame (an icon beside a field); round. `Circle()` with `look.GlassButton()` is a glass circle on macOS 26, the paperclip of the iPad composer. Give a round button a square `Size`. Windows keeps the rectangle |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
+| `AccessibleLabel(s)` | any widget: the name a screen reader says for a control with no text, an icon-only Button. macOS `accessibilityLabel`, Linux the ATK name, Windows nothing (`Accessible` is a stub) |
 | `Gap(n)`, `Padding(n)` | containers: space between children and from the edge, see [windows-layouts.md](windows-layouts.md) |
 | `Ref(&x)`, `Init(f)` | store the created widget in `x`; run `f` on it once it and its children exist |
 | `OnClick(f)` | Button `func()`, Link `func(href string)` |

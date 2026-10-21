@@ -1876,6 +1876,7 @@ func (this *Display) InitClasses() {
 	this.AddFrameMethods(cls, setFrameOriginProc, setFrameSizeProc)
 	this.AddAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc)
 	cocoa.OSObjc_registerClassPair(cls)
+	this.registerGlassButtonClass(proc2, proc3, hitTestProc, setNeedsDisplayInRectProc, setFrameOriginProc, setFrameSizeProc)
 	className = "SWTButton"
 	cls = cocoa.OSObjc_allocateClassPair(cocoa.OSClass_NSButton, className, int64(0))
 	cocoa.OSClass_addIvar(cls, DisplaySWT_OBJECT, int64(DisplaySize), int8(DisplayAlign), DisplayTypes)

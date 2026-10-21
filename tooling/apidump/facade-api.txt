@@ -760,6 +760,7 @@ gowt const Semibold Weight = 600
 gowt const SortAscending SortDir = 1
 gowt const SortDescending SortDir = 2
 gowt const SortNone SortDir = 0
+gowt func AccessibleLabel(s string) Option
 gowt func Anchor(c FormCell) Option
 gowt func AsCalendar() Option
 gowt func AsTime() Option
@@ -770,6 +771,7 @@ gowt func BindText(r github.com/haiodo/gowt/rx.Reader[string]) Option
 gowt func BindVisible(r github.com/haiodo/gowt/rx.Reader[bool]) Option
 gowt func Bind[T string | bool | int](s *github.com/haiodo/gowt/rx.State[T]) Option
 gowt func Border() Option
+gowt func Borderless() Option
 gowt func Bottom() Option
 gowt func Boundary(opts ...Option) Option
 gowt func Button(text string, opts ...Option) Option
@@ -780,6 +782,7 @@ gowt func CellSelect() Option
 gowt func Center() Option
 gowt func Check() Option
 gowt func Checked(on bool) Option
+gowt func Circle() Option
 gowt func Closable() Option
 gowt func Combo(items []string, opts ...Option) Option
 gowt func CoolBar(opts ...Option) Option

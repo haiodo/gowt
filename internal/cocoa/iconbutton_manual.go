@@ -3,6 +3,12 @@
 // Hand-written: round and borderless NSButtons, accessibility label.
 package cocoa
 
+import (
+	"math"
+
+	"github.com/ebitengine/purego"
+)
+
 const (
 	bezelStyleCircular = 7
 	borderShapeCircle  = 3 // NSControlBorderShapeCircle, macOS 26
@@ -28,6 +34,26 @@ func SetButtonCircle(view *NSView) {
 	if respondsTo(v, "setBorderShape:") {
 		msg(v, "setBorderShape:", borderShapeCircle)
 	}
+	ClipGlassCircle(view)
+}
+
+// ClipGlassCircle clips a glass circle button to its circle. On macOS 26.5 the glass view draws a
+// square, a little darker than the background, over the whole frame behind the circle; macOS 27 does
+// not. Call it again after the button is resized.
+func ClipGlassCircle(view *NSView) {
+	v := uintptr(view.Id)
+	if msg(v, "bezelStyle") != bezelStyleGlass || ButtonBorderShape(view) != borderShapeCircle {
+		return
+	}
+	initAssociated()
+	if msgF64 == nil {
+		purego.RegisterFunc(&msgF64, objcMsgSend)
+	}
+	f := view.Frame()
+	msg(v, "setWantsLayer:", 1)
+	l := msg(v, "layer")
+	msgF64(l, sel("setCornerRadius:"), math.Min(f.Width, f.Height)/2)
+	msg(l, "setMasksToBounds:", 1)
 }
 
 // ButtonBezelStyle returns the NSBezelStyle of the button.

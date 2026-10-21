@@ -120,11 +120,12 @@ func gridLayout(l *swt.GridLayout, gap, pad int) *swt.GridLayout {
 // each layout pass, so that Add, Dispose and SetVisible need not count columns.
 type boxLayout struct {
 	*swt.GridLayout
-	row bool
+	row     bool
+	laidOut func() // after each layout pass; a ScrollView's content hides its rows off screen here
 }
 
 func newBox(row bool, gap, pad int) *boxLayout {
-	l := &boxLayout{gridLayout(swt.NewGridLayout(), gap, pad), row}
+	l := &boxLayout{GridLayout: gridLayout(swt.NewGridLayout(), gap, pad), row: row}
 	l.SetImpl_(l)
 	return l
 }
@@ -137,6 +138,9 @@ func (l *boxLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, flush boo
 func (l *boxLayout) LayoutFn_(c *swt.Composite, flush bool) {
 	l.columns(c)
 	l.GridLayout.LayoutFn(c, flush)
+	if l.laidOut != nil {
+		l.laidOut()
+	}
 }
 
 func (l *boxLayout) columns(c *swt.Composite) {

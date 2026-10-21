@@ -388,6 +388,13 @@ CE_OLD='scrollComposite.SetMinSize(this.tabFolder.ComputeSize(r.Width, swt.DEFAU
 grep -qF "$CE_OLD" "$CE_GO" || grep -qF 'ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false)' "$CE_GO" || { echo "port.sh: ControlExample resize listener not found in $CE_GO" >&2; exit 1; }
 CE_OLD="$CE_OLD" perl -0pi -e 's/\Q$ENV{CE_OLD}\E/scrollComposite.SetMinSize(this.tabFolder.ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false))/' "$CE_GO"
 
+# StyledText.reset (setText) places the caret, which lays out the caret's line at the wrap width. A WRAP StyledText not
+# sized yet wraps at 1 pixel, a glyph per line: that layout was half the cost of creating a chat row with a StyledText.
+# handleResize places the caret again once the width is known, so reset leaves it to handleResize while there is no width.
+ST_GO=swt/custom_styledtext.go
+perl -0pi -e 's/(\tthis\.ResetCacheFirstLineCount\(0, 0\)\n)\tthis\.SetCaretLocations\(\)\n/$1\tif !this.wordWrap || this.clientAreaWidth > 0 {\n\t\tthis.SetCaretLocations()\n\t}\n/' "$ST_GO"
+[ "$(grep -c 'if !this.wordWrap || this.clientAreaWidth > 0 {' "$ST_GO")" = 1 ] || { echo "port.sh: StyledText.reset caret rewrite did not apply" >&2; exit 1; }
+
 # Group.computeTrim (cocoa) re-measures the NSBox natively on each layout; swt/widgets_group_manual_darwin.go caches the
 # frame-minus-content offset by title text and font. The Java body cannot be split out via manual.txt, so the block is rewritten.
 if [ "$PLATFORM" = cocoa ]; then

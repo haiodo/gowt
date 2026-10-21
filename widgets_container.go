@@ -212,20 +212,23 @@ func Scroll(opts ...Option) Option {
 		s.SetExpandHorizontal(true)
 		s.SetExpandVertical(true)
 		w := &ScrollView{base{&s.Control}, s, &Panel{newPanel(body)}}
+		w.watchRows()
 		finish(w, sBorder, opts)
 		w.Fit()
 		return w
 	}}
 }
 
-// Add creates children at the end of the content and calls Fit.
+// Add creates children at the end of the content, lays them out and fits the scrollable size as Fit
+// does; the children already there keep their measured sizes.
 func (s *ScrollView) Add(children ...Option) {
+	old := s.body.c.GetChildren()
 	add(s, children)
 	if s.body.c.IsDisposed() {
 		return
 	}
-	s.body.c.Layout()
-	s.Fit()
+	layoutAdded(s.body.c, old)
+	s.fit(false)
 }
 
 func (s *ScrollView) into() *swt.Composite { return s.body.c }
@@ -236,8 +239,11 @@ func (s *ScrollView) Content() *Panel { return s.body }
 
 // Fit sets the scrollable size to the content's natural size; Scroll and Add call it, call it again
 // after the content changes otherwise.
-func (s *ScrollView) Fit() {
-	size := s.body.c.ComputeSize(swt.DEFAULT, swt.DEFAULT)
+func (s *ScrollView) Fit() { s.fit(true) }
+
+// fit without flush reuses the sizes the content's layouts cached.
+func (s *ScrollView) fit(flush bool) {
+	size := s.body.c.ComputeSizeWHintHHintChanged(swt.DEFAULT, swt.DEFAULT, flush)
 	s.s.SetMinSizeWidthHeight(size.X, size.Y)
 }
 

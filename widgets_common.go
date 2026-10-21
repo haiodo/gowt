@@ -1,6 +1,7 @@
 package gowt
 
 import (
+	"fmt"
 	"slices"
 
 	"github.com/haiodo/gowt/internal/jrt"
@@ -66,6 +67,7 @@ func (w *base) SetVisible(v bool) {
 			}
 		}
 	}
+	flushUp(&p.Control)
 	p.LayoutOverload1(true)
 }
 
@@ -105,8 +107,15 @@ func sizing(c *swt.Control, set func()) {
 	before := preferred(c)
 	set()
 	after := preferred(c)
+	if after.X != before.X || after.Y != before.Y {
+		a.relayout(c)
+	}
+}
+
+// relayout queues the layout of c's parents for the next event-loop turn, once for each control.
+func (a *App) relayout(c *swt.Control) {
 	// Linear: a turn changes few controls; thousands of them in one turn would want a set.
-	if after.X == before.X && after.Y == before.Y || slices.Contains(a.relayouts, c) {
+	if slices.Contains(a.relayouts, c) {
 		return
 	}
 	a.relayouts = append(a.relayouts, c)
@@ -216,6 +225,7 @@ func (w *base) Dispose() {
 	p := w.ctl.GetParent()
 	w.ctl.Dispose()
 	if p != nil && !p.IsDisposed() {
+		flushUp(&p.Control)
 		p.LayoutOverload1(true)
 	}
 }
@@ -247,6 +257,48 @@ func Indeterminate() Option { return style{id: sIndeterminate, set: swt.INDETERM
 
 // Flat gives a ToolBar the flat look.
 func Flat() Option { return style{id: sFlat, set: swt.FLAT} }
+
+// Borderless draws a push Button without its frame (macOS: no bezel, GTK: "flat"); Windows keeps it.
+func Borderless() Option {
+	return hook(func(w Widget) error {
+		b, ok := pushButton(w)
+		if !ok {
+			return fmt.Errorf("gowt: Borderless applies to a push Button, not to %s", nameOf(w.control()))
+		}
+		setButtonBorderless(b)
+		return nil
+	})
+}
+
+// Circle makes a push Button round: give it a square Size. With look.GlassButton on macOS 26 it is a
+// glass circle, in either order. GTK: "circular". Windows keeps the rectangle.
+func Circle() Option {
+	return hook(func(w Widget) error {
+		b, ok := pushButton(w)
+		if !ok {
+			return fmt.Errorf("gowt: Circle applies to a push Button, not to %s", nameOf(w.control()))
+		}
+		setButtonCircle(b)
+		return nil
+	})
+}
+
+// AccessibleLabel names a widget for screen readers, which an icon-only Button has no text for.
+// macOS: accessibilityLabel; GTK: the ATK name; Windows has no accessibility in the toolkit.
+func AccessibleLabel(s string) Option {
+	return hook(func(w Widget) error {
+		setAccessibleLabel(w.control(), s)
+		return nil
+	})
+}
+
+func pushButton(w Widget) (*swt.Button, bool) {
+	b, ok := w.(*ButtonView)
+	if !ok || b.b.GetStyle()&(swt.CHECK|swt.RADIO|swt.TOGGLE|swt.ARROW) != 0 {
+		return nil, false
+	}
+	return b.b, true
+}
 
 // Wrap breaks long text of a Label or StyledText into lines, and lets a ToolBar wrap its items to further rows.
 func Wrap() Option { return style{id: sWrap, set: swt.WRAP} }

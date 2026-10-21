@@ -388,6 +388,22 @@ CE_OLD='scrollComposite.SetMinSize(this.tabFolder.ComputeSize(r.Width, swt.DEFAU
 grep -qF "$CE_OLD" "$CE_GO" || grep -qF 'ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false)' "$CE_GO" || { echo "port.sh: ControlExample resize listener not found in $CE_GO" >&2; exit 1; }
 CE_OLD="$CE_OLD" perl -0pi -e 's/\Q$ENV{CE_OLD}\E/scrollComposite.SetMinSize(this.tabFolder.ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false))/' "$CE_GO"
 
+# StyledText.reset (setText) places the caret, which lays out the caret's line at the wrap width. A WRAP StyledText not
+# sized yet wraps at 1 pixel, a glyph per line: that layout was half the cost of creating a chat row with a StyledText.
+# handleResize places the caret again once the width is known, so reset leaves it to handleResize while there is no width.
+ST_GO=swt/custom_styledtext.go
+perl -0pi -e 's/(\tthis\.ResetCacheFirstLineCount\(0, 0\)\n)\tthis\.SetCaretLocations\(\)\n/$1\tif !this.wordWrap || this.clientAreaWidth > 0 {\n\t\tthis.SetCaretLocations()\n\t}\n/' "$ST_GO"
+[ "$(grep -c 'if !this.wordWrap || this.clientAreaWidth > 0 {' "$ST_GO")" = 1 ] || { echo "port.sh: StyledText.reset caret rewrite did not apply" >&2; exit 1; }
+
+# gowt's ScrollView hides the rows far off screen natively (NSView.hidden, SWT state untouched). forceFocus asks
+# canBecomeKeyView, which is NO in a hidden subtree, and print draws through the view: both show such views first
+# (swt/widgets_reveal_manual_darwin.go), so Tab, setFocus and print work as without the hiding.
+if [ "$PLATFORM" = cocoa ]; then
+	RV_GO=swt/widgets_control_darwin.go
+	perl -0pi -e 's/(\tvar focusView \*cocoa\.NSView = this\.impl\.focusView_\(\)\n)(?!\trevealForFocus)(\tif !focusView\.CanBecomeKeyView\(\) \{\n)/$1\trevealForFocus(this)\n$2/; s/(\t\}\n)(?!\tdefer revealForPrint)(\tthis\.View\.DisplayRectIgnoringOpacity\(this\.View\.Bounds\(\), gc\.Handle\)\n\treturn true\n)/$1\tdefer revealForPrint(this)()\n$2/' "$RV_GO"
+	[ "$(grep -c 'revealForFocus(this)' "$RV_GO")" = 1 ] && [ "$(grep -c 'defer revealForPrint(this)()' "$RV_GO")" = 1 ] || { echo "port.sh: Control reveal rewrite did not apply" >&2; exit 1; }
+fi
+
 # Group.computeTrim (cocoa) re-measures the NSBox natively on each layout; swt/widgets_group_manual_darwin.go caches the
 # frame-minus-content offset by title text and font. The Java body cannot be split out via manual.txt, so the block is rewritten.
 if [ "$PLATFORM" = cocoa ]; then
@@ -435,6 +451,21 @@ if [ "$PLATFORM" = cocoa ]; then
 	BZ_GO=swt/widgets_button_darwin.go
 	perl -0pi -e 's/(func \(this \*Button\) drawBezelWithFrame_inView_\(id int64, sel int64, cellFrame cocoa\.NSRect, viewid int64\)\s*\{\n\tif this\.background != \(nil\))( \{\n)/$1 \&\& this.background[3] != 0$2/' "$BZ_GO"
 	[ "$(grep -c 'this.background != (nil) && this.background\[3\] != 0 {' "$BZ_GO")" = 1 ] || { echo "port.sh: Button transparent bezel rewrite did not apply" >&2; exit 1; }
+fi
+
+# cocoa Button.setBounds and setFont put the push bezel back on every layout, which erased the glass and circular bezels that
+# look.GlassButton and gowt.Circle set. They now touch only the two push bezels (Button.ownBezel, widgets_button_manual_darwin.go).
+if [ "$PLATFORM" = cocoa ]; then
+	perl -0pi -e 's/(if \(this\.style \& \(PUSH \| TOGGLE\)\) != 0 \&\& \(this\.style \& \(FLAT \| WRAP\)\) == 0)( \{\n\t\t(?:var heightThreshold|var cond171))/$1 \&\& this.ownBezel()$2/g' "$BZ_GO"
+	[ "$(grep -c 'this.ownBezel()' "$BZ_GO")" = 2 ] || { echo "port.sh: Button ownBezel rewrite did not apply" >&2; exit 1; }
+fi
+
+# macOS 26 draws the glass bezel of an NSButton only when its class does not override drawRect: and its cell is a plain
+# NSButtonCell. The Display class setup also registers SWTGlassButton (widgets_button_manual_darwin.go) for cocoa.SetGlassButton.
+if [ "$PLATFORM" = cocoa ]; then
+	DS_GO=swt/widgets_display_darwin.go
+	perl -0pi -e 's/(\tclassName = "SWTButton"\n)/\tthis.registerGlassButtonClass(proc2, proc3, hitTestProc, setNeedsDisplayInRectProc, setFrameOriginProc, setFrameSizeProc)\n$1/' "$DS_GO"
+	[ "$(grep -c 'this.registerGlassButtonClass(' "$DS_GO")" = 1 ] || { echo "port.sh: SWTGlassButton registration did not apply" >&2; exit 1; }
 fi
 
 # cocoa Composite.drawBackground(GC, ...) fills with the GC background when no control up the tree has a visible background,

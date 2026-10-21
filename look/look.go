@@ -60,6 +60,17 @@ func refreshInset(w *gowt.Window) { w.SetTopInset(topInset(w.Unwrap())) }
 // macOS 26; older macOS shows a blurred material, other systems nothing.
 func SetGlass(c Container, on bool) { setGlass(c.AsComposite(), on) }
 
+// Capsule is the radius for SetGlassRadius that rounds the corners fully: half the shorter side,
+// followed on every resize.
+const Capsule = -1
+
+// SetGlassRadius sets the corner radius in points of the glass SetGlass puts behind c, 12 by default;
+// Capsule makes the shorter side a half circle. It can come before SetGlass and stays when the glass
+// is turned off and on. For a field that grows over several lines use a fixed radius of half the
+// one-line height, as the iPad composer does: Capsule would turn a tall field into an oval. Other
+// systems have no glass: nothing happens.
+func SetGlassRadius(c Container, r float64) { setGlassRadius(c.AsComposite(), r) }
+
 // GlassButton gives a push button (not Check, Radio, Toggle or Arrow) the Liquid Glass bezel on macOS 26 and newer; elsewhere the
 // button is unchanged.
 func GlassButton() gowt.Option { return gowt.Custom(glassButton) }

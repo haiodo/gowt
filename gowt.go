@@ -323,12 +323,55 @@ func (p *panel) Unwrap() *swt.Composite { return p.c }
 // Window, Group, Split and CoolBar, so one function can take any of them.
 func (p *panel) AsComposite() *swt.Composite { return p.c }
 
-// Add creates children at the end of p, in order, and lays p out again when it is on screen.
-// It is the way to fill a container after its creation, for content that changes; see Clear.
+// Add creates children at the end of p, in order, and lays p out again when it is on screen,
+// measuring only the new children. It is the way to fill a container after its creation, for
+// content that changes; see Clear.
 func (p *panel) Add(children ...Option) {
+	old := p.c.GetChildren()
 	add(p, children)
-	if !p.c.IsDisposed() && p.c.IsVisible() {
-		p.c.LayoutOverload2(true, true)
+	if p.c.IsDisposed() {
+		return
+	}
+	flushUp(&p.c.Control)
+	if p.c.IsVisible() {
+		layoutAdded(p.c, old)
+	}
+}
+
+// layoutAdded lays c out after Add: only the children missing from old are measured, the others
+// keep the sizes their layouts cached, so adding to a long list costs the new rows only.
+func layoutAdded(c *swt.Composite, old []*swt.Control) {
+	// A setter's size change is laid out on the next turn: drop its stale cached size now.
+	if a := appOf(&c.Control); a != nil {
+		for _, k := range a.relayouts {
+			if k != nil && !k.IsDisposed() {
+				flushUp(k)
+			}
+		}
+	}
+	had := make(map[*swt.Control]bool, len(old))
+	for _, k := range old {
+		had[k] = true
+	}
+	var added []*swt.Control
+	for _, k := range c.GetChildren() {
+		if !had[k] {
+			added = append(added, k)
+		}
+	}
+	c.LayoutOverload4(added, swt.NONE)
+}
+
+// flushUp drops the sizes the layouts of c's ancestors cached for c and for each other, after a change
+// of c's content; their next layout, partial ones included, measures c again.
+func flushUp(c *swt.Control) {
+	sh := &c.GetShell().Control
+	for c != sh {
+		p := c.GetParent()
+		if l := p.GetLayout(); l != nil {
+			l.FlushCache(c)
+		}
+		c = &p.Control
 	}
 }
 
@@ -339,13 +382,17 @@ func (p *panel) added(Widget)         {}
 // through Unwrap, such as swt.Label.SetText. The facade setters that change a size (SetText, SetImage,
 // SetFont, SetTitle of a Group, SetItems of a Combo) lay out by themselves. p keeps its own size: to
 // let it grow too, Relayout the Window.
-func (p *panel) Relayout() { p.c.LayoutOverload2(true, true) }
+func (p *panel) Relayout() {
+	flushUp(&p.c.Control)
+	p.c.LayoutOverload2(true, true)
+}
 
 // Clear disposes every child and lays p out again, ready for new content.
 func (p *panel) Clear() {
 	for _, ch := range p.c.GetChildren() {
 		ch.Dispose()
 	}
+	flushUp(&p.c.Control)
 	p.c.Layout()
 }
 
@@ -430,7 +477,7 @@ func Switch(text string, opts ...Option) Option {
 func Text(opts ...Option) Option {
 	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewText(p, resolve(swt.NONE, opts))
-		return &TextView{base{&t.Control}, t}
+		return &TextView{base: base{&t.Control}, t: t}
 	})
 }
 
@@ -635,7 +682,9 @@ func (s *SwitchView) OnChange(f func(on bool)) {
 // TextView is an edit field.
 type TextView struct {
 	base
-	t *swt.Text
+	t     *swt.Text
+	inset [2]int
+	grow  *autoGrow
 }
 
 // Text returns the current content.

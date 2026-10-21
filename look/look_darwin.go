@@ -56,14 +56,17 @@ func setGlass(c *swt.Composite, on bool) {
 	if on {
 		k = cocoa.BackdropGlass
 	}
-	had := cocoa.InstallBackdrop(c.View, k, false)
+	had := cocoa.InstallPanelBackdrop(c.View, k)
 	if on {
-		cocoa.SetGlassCornerRadius(c.View, 12)
+		applyGlassRadius(c)
 		cocoa.SyncBackdrop(c.View)
 	}
 	if on && !had {
 		c.AddControlListener(swt.ControlListenerControlMovedAdapter(func(*swt.ControlEvent) { cocoa.SyncBackdrop(c.View) }))
-		c.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { cocoa.SyncBackdrop(c.View) }))
+		c.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) {
+			applyGlassRadius(c)
+			cocoa.SyncBackdrop(c.View)
+		}))
 	}
 	switch {
 	case on:
@@ -73,6 +76,27 @@ func setGlass(c *swt.Composite, on bool) {
 		clearBackground(c, false)
 		delete(clearRoots, c)
 	}
+}
+
+const glassRadiusKey = "gowt.look.glassRadius"
+
+func setGlassRadius(c *swt.Composite, r float64) {
+	c.SetDataKeyValue(glassRadiusKey, r)
+	applyGlassRadius(c)
+}
+
+// applyGlassRadius sets the radius asked by SetGlassRadius, 12 without one, on the glass of c; a
+// capsule is half the shorter side of c now. It does nothing while c has no glass.
+func applyGlassRadius(c *swt.Composite) {
+	r, ok := c.GetDataKey(glassRadiusKey).(float64)
+	if !ok {
+		r = 12
+	}
+	if r < 0 {
+		f := c.View.Frame()
+		r = math.Min(f.Width, f.Height) / 2
+	}
+	cocoa.SetGlassCornerRadius(c.View, r)
 }
 
 func glassButton(c *swt.Control) {
@@ -255,6 +279,13 @@ func clearChild(ch *swt.Control, deep bool) {
 		if !own {
 			clearControl(ch)
 		}
+	case *swt.Text:
+		// A single-line Text keeps its native field, as in the sidebar; a multi-line one is the
+		// text of an input row and shows the glass.
+		if !own && v.GetStyle()&swt.MULTI != 0 {
+			clearControl(ch)
+			cocoa.ClearTextViewBackground(ch.View)
+		}
 	case *swt.Button:
 		if !own && v.GetStyle()&(swt.CHECK|swt.RADIO) != 0 {
 			clearControl(ch)
@@ -311,6 +342,9 @@ func (clearRoot) HandleEvent(e *swt.Event) {
 		return
 	}
 	ch := w.AsControl()
+	if p := ch.GetParent(); p != nil {
+		cocoa.KeepPanelBackdropBelow(p.View)
+	}
 	for p := ch.GetParent(); p != nil; p = p.GetParent() {
 		if clearRoots[p] {
 			clearChild(ch, false)

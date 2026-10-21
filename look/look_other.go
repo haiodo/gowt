@@ -16,6 +16,8 @@ func setFullSizeContent(*swt.Shell, bool) {}
 
 func setGlass(*swt.Composite, bool) {}
 
+func setGlassRadius(*swt.Composite, float64) {}
+
 func glassButton(*swt.Control) {}
 
 func setDarkContent(*swt.Display, bool) {}

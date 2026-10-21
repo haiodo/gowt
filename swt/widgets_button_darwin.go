@@ -640,7 +640,7 @@ func (this *Button) setBackgroundImageImage_(image *cocoa.NSImage) {
 }
 
 func (this *Button) setBoundsXYWidthHeightMoveResize_(x int32, y int32, width int32, height int32, move bool, resize bool) {
-	if (this.style&(PUSH|TOGGLE)) != 0 && (this.style&(FLAT|WRAP)) == 0 {
+	if (this.style&(PUSH|TOGGLE)) != 0 && (this.style&(FLAT|WRAP)) == 0 && this.ownBezel() {
 		var heightThreshold int32 = ButtonREGULAR_BUTTON_HEIGHT
 		var cell *cocoa.NSCell = (castcocoaNSViewTococoaNSControl(this.View)).Cell()
 		if cell != (nil) && cell.ControlSize() == int64(cocoa.OSNSControlSizeSmall) {
@@ -666,7 +666,7 @@ func (this *Button) setFontFont_(nsFont *cocoa.NSFont) {
 	if this.text != "" {
 		(castcocoaNSViewTococoaNSButton(this.View)).SetAttributedTitle(this.CreateAttributedTitle())
 	}
-	if (this.style&(PUSH|TOGGLE)) != 0 && (this.style&(FLAT|WRAP)) == 0 {
+	if (this.style&(PUSH|TOGGLE)) != 0 && (this.style&(FLAT|WRAP)) == 0 && this.ownBezel() {
 		var cond171 int32
 		if this.font != (nil) {
 			cond171 = cocoa.OSNSBezelStyleFlexiblePush

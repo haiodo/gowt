@@ -56,7 +56,7 @@ func setGlass(c *swt.Composite, on bool) {
 	if on {
 		k = cocoa.BackdropGlass
 	}
-	had := cocoa.InstallBackdrop(c.View, k, false)
+	had := cocoa.InstallPanelBackdrop(c.View, k)
 	if on {
 		applyGlassRadius(c)
 		cocoa.SyncBackdrop(c.View)
@@ -342,6 +342,9 @@ func (clearRoot) HandleEvent(e *swt.Event) {
 		return
 	}
 	ch := w.AsControl()
+	if p := ch.GetParent(); p != nil {
+		cocoa.KeepPanelBackdropBelow(p.View)
+	}
 	for p := ch.GetParent(); p != nil; p = p.GetParent() {
 		if clearRoots[p] {
 			clearChild(ch, false)

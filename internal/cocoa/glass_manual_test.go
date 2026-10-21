@@ -35,3 +35,29 @@ func TestInstallBackdropReplaces(t *testing.T) {
 		}
 	})
 }
+
+func TestPanelBackdropIsLowestChild(t *testing.T) {
+	if !GlassAvailable() {
+		t.Skip("no NSGlassEffectView")
+	}
+	onMain(func() {
+		v := msg(msg(class("NSView"), "alloc"), "init")
+		host := msg(msg(class("NSView"), "alloc"), "init")
+		msg(host, "addSubview:", v)
+		view := NewNSViewOverload1(int64(v))
+		InstallPanelBackdrop(view, BackdropGlass)
+		if n := msg(msg(host, "subviews"), "count"); n != 1 {
+			t.Errorf("the glass must not be a sibling, host has %d subviews", n)
+		}
+		bd := msg(msg(v, "subviews"), "objectAtIndex:", 0)
+		child := msg(msg(class("NSView"), "alloc"), "init")
+		msg(v, "addSubview:positioned:relativeTo:", child, windowBelowArg, 0)
+		KeepPanelBackdropBelow(view)
+		if msg(msg(v, "subviews"), "objectAtIndex:", 0) != bd {
+			t.Error("the glass must stay below a child added later")
+		}
+		if !InstallPanelBackdrop(view, BackdropNone) || msg(msg(v, "subviews"), "count") != 1 {
+			t.Error("None must remove the glass")
+		}
+	})
+}

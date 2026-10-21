@@ -7,7 +7,7 @@ import (
 )
 
 // SetHeight changes the height the layout gives the control, in points, as Size did at creation; 0
-// goes back to the natural height. The parents are laid out on the next event-loop turn or at App.Flush,
+// goes back to the natural height and removes a MaxHeight. The parents are laid out on the next event-loop turn or at App.Flush,
 // as after SetFont. It needs a parent laid out
 // by a VBox, HBox, Grid, Flow or Form, like Size.
 func (w *base) SetHeight(h int) {
@@ -17,10 +17,12 @@ func (w *base) SetHeight(h int) {
 		reportOn(c, fmt.Errorf("gowt: SetHeight on %s needs a parent laid out by a VBox, HBox, Grid, Flow or Form", nameOf(c)))
 		return
 	}
+	delete(capped, c)
 	*hint = int32(h)
 	if h <= 0 {
 		*hint = swt.DEFAULT
 	}
+	setMinHeight(c, h)
 	if a := appOf(c); a != nil {
 		a.relayout(c)
 	}

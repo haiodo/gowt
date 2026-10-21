@@ -142,10 +142,12 @@ func (a *App) runRelayouts() {
 		if c == nil || c.IsDisposed() {
 			continue
 		}
+		refitMax(c)
 		sh := c.GetShell()
 		group := []*swt.Control{c}
 		for j, d := range list[i+1:] {
 			if d != nil && !d.IsDisposed() && d.GetShell() == sh {
+				refitMax(d)
 				group = append(group, d)
 				list[i+1+j] = nil
 			}

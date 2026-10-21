@@ -480,14 +480,8 @@ func (this *Tree) computeSizeInPixelsWHintHHintChanged_(wHint int32, hHint int32
 	}
 	gtk.GTKGtk_widget_realize(this.Handle)
 	var size *Point = this.impl.computeNativeSize_(this.Handle, wHint, hHint, changed)
-	if hHint == DEFAULT && size.Y == this.GetHeaderHeight() {
-		var itemHeight int32 = this.GetItemHeight()
-		size.Y = this.GetItemCount()*itemHeight + this.GetHeaderHeight()
-		for _, item := range this.items {
-			if item != (nil) && item.isExpanded {
-				size.Y += gtk.GTKGtk_tree_model_iter_n_children(this.modelHandle, item.Handle) * itemHeight
-			}
-		}
+	if hHint == DEFAULT {
+		size.Y = max(size.Y, this.visibleRowCount(0)*this.GetItemHeight()+this.GetHeaderHeight())
 	}
 	if wHint == DEFAULT && size.X == 0 && this.columnCount == 0 {
 		var col int64 = gtk.GTKGtk_tree_view_get_column(this.Handle, 0)

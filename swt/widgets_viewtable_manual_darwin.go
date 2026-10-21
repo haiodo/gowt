@@ -611,8 +611,17 @@ func (this *Tree) vtDrawCell(view int64, check bool) {
 		return
 	}
 	cell.SetObjectValue(cocoa.NewidOverload1(value))
-	cell.SetHighlighted(ov.IsRowSelected(row))
+	selected := ov.IsRowSelected(row)
+	cell.SetHighlighted(selected)
 	this.outlineView_willDisplayCell_forTableColumn_item_(ov.Id, 0, ov.Id, cell.Id, column, itemID)
+	// A source list selects as Table.vtDrawCell draws it: accent text and, for a template image, accent icon.
+	if selected && cocoa.Msg(ov.Id, "style") == vtStyleSourceList {
+		accent := cocoa.Msg(cocoa.OSObjc_getClass("NSColor"), "controlAccentColor")
+		cocoa.Msg(cell.Id, "setTextColor:", accent)
+		if img := cell.Image(); img != nil {
+			cell.SetImage(vtTinted(img, col, accent))
+		}
+	}
 	frame := ov.FrameOfCellAtColumn(col, row)
 	vtTruncate(cell.Id)
 	vtDrawContext(v, frame, func() { cell.DrawInteriorWithFrame(frame, this.View) })

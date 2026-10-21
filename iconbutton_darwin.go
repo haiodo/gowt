@@ -7,6 +7,9 @@ import (
 
 func setButtonBorderless(b *swt.Button) { cocoa.SetButtonBorderless(b.View) }
 
-func setButtonCircle(b *swt.Button) { cocoa.SetButtonCircle(b.View) }
+func setButtonCircle(b *swt.Button) {
+	cocoa.SetButtonCircle(b.View)
+	b.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { cocoa.ClipGlassCircle(b.View) }))
+}
 
 func setAccessibleLabel(c *swt.Control, s string) { cocoa.SetAccessibilityLabel(c.View, s) }

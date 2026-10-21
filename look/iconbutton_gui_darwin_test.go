@@ -18,7 +18,7 @@ func TestGlassButtonKeepsBezel(t *testing.T) {
 	}
 	var plain, a, b *gowt.ButtonView
 	var clicks, plainClicks int
-	var bezel, shape [3]int
+	var bezel, shape, clipped [3]int
 	var err error
 	onMain(func() {
 		err = gowt.Run(func(app *gowt.App) {
@@ -33,6 +33,7 @@ func TestGlassButtonKeepsBezel(t *testing.T) {
 				for i, btn := range []*gowt.ButtonView{plain, a, b} {
 					bezel[i] = cocoa.ButtonBezelStyle(btn.Unwrap().View)
 					shape[i] = cocoa.ButtonBorderShape(btn.Unwrap().View)
+					clipped[i] = int(cocoa.Msg(cocoa.Msg(int64(btn.Unwrap().View.Id), "layer"), "masksToBounds") & 0xff)
 				}
 				cocoa.Msg(int64(plain.Unwrap().View.Id), "performClick:", 0)
 				cocoa.Msg(int64(a.Unwrap().View.Id), "performClick:", 0)
@@ -53,6 +54,9 @@ func TestGlassButtonKeepsBezel(t *testing.T) {
 		if i > 0 && (bezel[i] != 16 || shape[i] != 3) {
 			t.Errorf("%s: bezel %d, shape %d, want 16 and 3", name, bezel[i], shape[i])
 		}
+	}
+	if clipped[1] != 1 || clipped[2] != 1 {
+		t.Errorf("glass circles not clipped to their circle: %v (a square shows behind them on macOS 26.5)", clipped)
 	}
 	if bezel[0] == 16 {
 		t.Errorf("a button without GlassButton has the glass bezel")

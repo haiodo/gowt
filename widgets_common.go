@@ -67,6 +67,7 @@ func (w *base) SetVisible(v bool) {
 			}
 		}
 	}
+	flushUp(&p.Control)
 	p.LayoutOverload1(true)
 }
 
@@ -224,6 +225,7 @@ func (w *base) Dispose() {
 	p := w.ctl.GetParent()
 	w.ctl.Dispose()
 	if p != nil && !p.IsDisposed() {
+		flushUp(&p.Control)
 		p.LayoutOverload1(true)
 	}
 }

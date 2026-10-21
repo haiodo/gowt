@@ -47,7 +47,7 @@ gowt.Grid(2, gowt.GrowX(), gowt.Gap(gowt.Spacing.LG),
 	gowt.Spacer(), gowt.Button("Save", gowt.OnClick(onSave)))
 ```
 
-A container's content can change after `Show`: `Add(children...)` creates children at its end, `Relayout()` lays the children out again (after a change made through `Unwrap()`; the facade setters that change a size, such as `SetText`, lay out by themselves), `Clear()` disposes every child so that the content can be built again, and `child.Dispose()` removes one child and lays the parent out again.
+A container's content can change after `Show`: `Add(children...)` creates children at its end and measures only them (the children already there keep their sizes, so adding to a long feed costs the new rows), `Relayout()` lays the children out again (after a change made through `Unwrap()`; the facade setters that change a size, such as `SetText`, lay out by themselves), `Clear()` disposes every child so that the content can be built again, and `child.Dispose()` removes one child and lays the parent out again.
 
 ## Placement
 

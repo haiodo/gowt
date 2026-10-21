@@ -5990,7 +5990,9 @@ func (this *StyledText) Reset() {
 		horizontalBar.SetSelection(0)
 	}
 	this.ResetCacheFirstLineCount(0, 0)
-	this.SetCaretLocations()
+	if !this.wordWrap || this.clientAreaWidth > 0 {
+		this.SetCaretLocations()
+	}
 	this.Canvas.redraw_()
 }
 

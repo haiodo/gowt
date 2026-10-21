@@ -34,17 +34,24 @@ func vtHalfImage(r, g, b, width float64) *cocoa.NSImage {
 	return src
 }
 
-// No Display and no window: a dark grey glyph on the left half is tinted blue.
+// vtTemplateImage is vtHalfImage marked as a template image, as icons.Get makes it on macOS.
+func vtTemplateImage(r, g, b, width float64) *cocoa.NSImage {
+	img := vtHalfImage(r, g, b, width)
+	cocoa.Msg(img.Id, "setTemplate:", 1)
+	return img
+}
+
+// No Display and no window: a template image with a dark grey glyph on the left half is tinted blue.
 func TestViewTableTinted(t *testing.T) {
 	runtime.LockOSThread() // the pool and the graphics state stack belong to one thread; it exits with the test
 	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
 	defer cocoa.Msg(pool, "drain")
-	src := vtHalfImage(30.0/255, 30.0/255, 30.0/255, 1)
+	src := vtTemplateImage(30.0/255, 30.0/255, 30.0/255, 1)
 	defer src.Release()
 
 	out := vtTinted(src, 0, cocoa.NSColorColorWithDeviceRed(0, 0, 1, 1).Id)
 	if out.Id == src.Id {
-		t.Fatal("a grey glyph came back untinted")
+		t.Fatal("a template image came back untinted")
 	}
 	reps := out.Representations()
 	if reps.Count() != 1 {
@@ -63,13 +70,15 @@ func TestViewTableTinted(t *testing.T) {
 	}
 }
 
-// No Display and no window: a colour image with alpha (an avatar) and an opaque grey one are not glyphs.
-func TestViewTableTintedKeepsColour(t *testing.T) {
+// No Display and no window: an image that is not a template keeps its pixels, whatever they are: a colour
+// avatar, a grey glyph with alpha, an opaque grey one.
+func TestViewTableTintedKeepsNonTemplate(t *testing.T) {
 	runtime.LockOSThread() // the pool and the graphics state stack belong to one thread; it exits with the test
 	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
 	defer cocoa.Msg(pool, "drain")
 	for name, src := range map[string]*cocoa.NSImage{
 		"blue with alpha": vtHalfImage(0x2F/255.0, 0x6F/255.0, 0xEF/255.0, 1),
+		"grey glyph":      vtHalfImage(30.0/255, 30.0/255, 30.0/255, 1),
 		"opaque grey":     vtHalfImage(0.5, 0.5, 0.5, 2),
 	} {
 		if out := vtTinted(src, 0, cocoa.NSColorColorWithDeviceRed(0, 0, 1, 1).Id); out.Id != src.Id {
@@ -79,15 +88,15 @@ func TestViewTableTintedKeepsColour(t *testing.T) {
 	}
 }
 
-// No Display and no window: the grey glyph of TestViewTableTinted in the second column keeps its pixels.
+// No Display and no window: the template image of TestViewTableTinted in the second column keeps its pixels.
 func TestViewTableTintedLeadingColumnOnly(t *testing.T) {
 	runtime.LockOSThread() // the pool and the graphics state stack belong to one thread; it exits with the test
 	pool := cocoa.Msg(cocoa.Msg(cocoa.OSObjc_getClass("NSAutoreleasePool"), "alloc"), "init")
 	defer cocoa.Msg(pool, "drain")
-	src := vtHalfImage(30.0/255, 30.0/255, 30.0/255, 1)
+	src := vtTemplateImage(30.0/255, 30.0/255, 30.0/255, 1)
 	defer src.Release()
 	if out := vtTinted(src, 1, cocoa.NSColorColorWithDeviceRed(0, 0, 1, 1).Id); out.Id != src.Id {
-		t.Fatal("a glyph in column 1 was tinted, want only column 0")
+		t.Fatal("a template image in column 1 was tinted, want only column 0")
 	}
 }
 

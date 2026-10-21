@@ -3,7 +3,6 @@ package swt
 import (
 	"math"
 	"os"
-	"unsafe"
 
 	"github.com/ebitengine/purego"
 	"github.com/haiodo/gowt/internal/cocoa"
@@ -475,13 +474,12 @@ func (this *List) vtDrawCell(view int64) {
 const vtStyleSourceList = 3 // NSTableViewStyleSourceList
 
 // vtTinted returns img in color, autoreleased: one bitmap per representation of img keeps it sharp
-// at every scale. Only the glyph of the leading column (col 0) is tinted, as Finder tints the row symbol
-// only; a badge in a later column and any image that is not a glyph (vtGlyph) come back as they are.
+// at every scale. As AppKit does, only a template image (NSImage isTemplate) is tinted, and only in the
+// leading column (col 0), as Finder tints the row symbol only; any other image comes back as it is.
 func vtTinted(img *cocoa.NSImage, col int64, color int64) *cocoa.NSImage {
-	if col != 0 {
+	if col != 0 || cocoa.Msg(img.Id, "isTemplate")&0xff == 0 {
 		return img
 	}
-	template := cocoa.Msg(img.Id, "isTemplate")&0xff != 0
 	size := img.Size()
 	rect := cocoa.NSRect{Width: size.Width, Height: size.Height}
 	out := castcocoaNSObjectTococoaNSImage(cocoa.NewNSImage().Alloc()).InitWithSize(size)
@@ -500,12 +498,6 @@ func vtTinted(img *cocoa.NSImage, col int64, color int64) *cocoa.NSImage {
 		cocoa.NSGraphicsContextSetCurrentContext(ctx)
 		src.DrawInRect(rect)
 		ctx.FlushGraphics()
-		if !template && !vtGlyph(unsafe.Slice((*byte)(unsafe.Add(unsafe.Pointer(nil), rep.BitmapData())), w*h*4)) {
-			cocoa.NSGraphicsContextStatic_restoreGraphicsState()
-			rep.Release()
-			out.Release()
-			return img
-		}
 		ctx.SetCompositingOperation(int64(cocoa.OSNSCompositingOperationSourceAtop))
 		cocoa.NewNSColorOverload1(color).SetFill()
 		cocoa.NSBezierPathFillRect(rect)
@@ -515,29 +507,6 @@ func vtTinted(img *cocoa.NSImage, col int64, color int64) *cocoa.NSImage {
 	}
 	cocoa.Msg(out.Id, "autorelease")
 	return out
-}
-
-// vtGlyph reports premultiplied RGBA pixels that are one grey with alpha, as a template image is: icons.Get
-// makes bitmaps, not template NSImages. A coloured, multi-tone or opaque image is not a glyph.
-func vtGlyph(pix []byte) bool {
-	const tolerance = 24
-	lo, hi := 255, 0
-	seeThrough := false
-	for i := 0; i+3 < len(pix); i += 4 {
-		a := int(pix[i+3])
-		if a == 0 {
-			seeThrough = true
-		}
-		if a < 128 { // edge pixels lose precision when unpremultiplied
-			continue
-		}
-		r, g, b := int(pix[i])*255/a, int(pix[i+1])*255/a, int(pix[i+2])*255/a
-		if max(r, g, b)-min(r, g, b) > tolerance {
-			return false
-		}
-		lo, hi = min(lo, r, g, b), max(hi, r, g, b)
-	}
-	return seeThrough && lo <= hi && hi-lo <= tolerance
 }
 
 func (this *Table) vtCheckMouseDown(view int64, event int64) {

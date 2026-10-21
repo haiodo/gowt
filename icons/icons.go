@@ -85,15 +85,20 @@ type iconConfig struct {
 // Size sets the icon's side in points (default 16).
 func Size(points int) Option { return func(c *iconConfig) { c.size = points } }
 
-// Color sets the tint; by default light gray in dark mode and near-black in light mode.
+// Color sets the tint; by default light gray in dark mode and near-black in light mode. On macOS an
+// icon with a Color is not a template image: it keeps that colour wherever it is shown.
 func Color(c gowt.RGB) Option { return func(ic *iconConfig) { ic.color = &c } }
 
 // Get returns the named icon from the system set of the current OS (SF Symbols, Segoe Fluent
 // Icons, freedesktop symbolic icons), or from the embedded Lucide set when the system has none.
 // The result is drawn at every zoom and tinted for the theme at call time: after
-// App.OnThemeChange call Get again (the old image keeps its colour). Images are cached per
-// name, size and colour and owned by the App like every gowt.Image; after a Dispose, Get makes the
-// image again. It panics on an unknown name; Names lists the valid ones.
+// App.OnThemeChange call Get again (the old image keeps its colour). On macOS an icon without a
+// Color option is also a template image (NSImage isTemplate): AppKit draws it in the label colour in
+// buttons, tool items and menu items (white on a highlight), and a look.SetSidebar Table tints it in the
+// accent colour when its row is selected. Images from FromSVG, App.ImageFromProvider, App.ImageFrom and
+// App.LoadImage are never templates. Images are cached per name, size and colour and owned by the App
+// like every gowt.Image; after a Dispose, Get makes the image again. It panics on an unknown name;
+// Names lists the valid ones.
 func Get(a *gowt.App, name string, opts ...Option) *gowt.Image {
 	e, ok := iconDict[name]
 	if !ok {
@@ -111,10 +116,15 @@ func Get(a *gowt.App, name string, opts ...Option) *gowt.Image {
 	if cfg.color != nil {
 		c = *cfg.color
 	}
-	return cached(a, iconKey{name: name, size: cfg.size, c: c}, func() *gowt.Image {
+	template := cfg.color == nil
+	return cached(a, iconKey{name: name, size: cfg.size, c: c, template: template}, func() *gowt.Image {
 		src, _ := lucide.SVG(e.lucide)
-		return a.ImageFromProvider(&iconProvider{a: a, e: e, size: cfg.size, c: c,
+		img := a.ImageFromProvider(&iconProvider{a: a, e: e, size: cfg.size, c: c,
 			fallback: svg.NewImageDataProvider(src, cfg.size, cfg.size, fmt.Sprintf("#%02x%02x%02x", c.R, c.G, c.B))})
+		if template {
+			markTemplate(img.Unwrap())
+		}
+		return img
 	})
 }
 
@@ -150,6 +160,8 @@ type iconKey struct {
 	svg  string
 	size int
 	c    gowt.RGB
+	// template tells Get(name) from Get(name, Color(c)) with the same c.
+	template bool
 }
 
 // The images belong to their App and are disposed when its Run returns, but the entries stay: one

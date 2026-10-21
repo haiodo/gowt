@@ -222,3 +222,36 @@ func TestFeedAddSameAsFullLayout(t *testing.T) {
 		}
 	})
 }
+
+// A setter that grows a row lays out on the next turn; an Add in the same turn must measure that row
+// again, so the result equals a full layout before the turn ends.
+func TestFeedAddAfterSetText(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	onMain(func() {
+		err := Run(func(app *App) {
+			var head *LabelView
+			w, sv := feedWindow(app, 20, "label")
+			sv.Add(HBox(GrowX(), Label("last row", Ref(&head))))
+			app.Flush()
+			head.SetText("the last row\ngrew\nto four\nlines")
+			sv.Add(feedRows(500, 3, "label")...)
+			c := sv.Content().Unwrap()
+			got := bounds(&c.Control)
+			gotH := sv.Unwrap().GetMinHeight()
+			c.LayoutOverload2(true, true)
+			sv.Fit()
+			if h := sv.Unwrap().GetMinHeight(); h != gotH {
+				t.Errorf("min height after SetText and Add %d, after a full layout %d", gotH, h)
+			}
+			if want := bounds(&c.Control); !slices.Equal(got, want) {
+				t.Error("bounds after SetText and Add differ from a full layout")
+			}
+			w.Close()
+		})
+		if err != nil {
+			t.Error(err)
+		}
+	})
+}

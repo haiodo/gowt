@@ -4,19 +4,23 @@ import (
 	"sort"
 
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/swt"
 )
 
 // rowClip hides the content rows far from the visible part natively: on each scroll frame AppKit updated
 // the tracking areas of every view in the content, each answered from Go, but it skips a hidden subtree.
-// SWT still sees the rows visible: layout, focus, traversal and Visible do not change.
+// SWT state stays: forceFocus and print show a hidden row first (swt/widgets_reveal_manual_darwin.go).
 type rowClip struct {
 	s             *ScrollView
 	rows          []*swt.Control // the shown children of the content in layout order, as of the last layout
 	tops, bottoms []int32
-	lo, hi        int  // rows[lo:hi] are natively shown, the others hidden
+	lo, hi        int  // rows[lo:hi] are in the band; the others are hidden unless they hold the focus
 	all           bool // VoiceOver is on: every row is shown, hidden views leave the accessibility tree
 }
+
+// clips are the live rowClips, for the VoiceOver observer.
+var clips = map[*rowClip]bool{}
 
 func (s *ScrollView) watchRows() {
 	r := &rowClip{s: s}
@@ -26,11 +30,24 @@ func (s *ScrollView) watchRows() {
 	if l, ok := s.body.c.GetLayout().Impl().(*boxLayout); ok {
 		l.laidOut = r.measure
 	}
+	clips[r] = true
+	s.s.AddDisposeListener(disposeFunc(func() { delete(clips, r) }))
+	d := s.s.GetDisplay()
+	cocoa.ObserveVoiceOver(func() {
+		d.AsyncExec(jrt.NewRunnable(func() {
+			for r := range clips {
+				r.measure()
+			}
+		}))
+	})
 }
 
 // measure takes the rows' places after a layout of the content and hides or shows every row.
 func (r *rowClip) measure() {
 	body := r.s.body.c
+	if body.IsDisposed() {
+		return
+	}
 	r.rows, r.tops, r.bottoms = r.rows[:0], r.tops[:0], r.bottoms[:0]
 	for _, k := range body.GetChildren() {
 		if !k.GetVisible() {
@@ -43,8 +60,9 @@ func (r *rowClip) measure() {
 	}
 	r.all = cocoa.VoiceOverEnabled()
 	from, to := r.band()
+	focus := r.focusRow()
 	for i, k := range r.rows {
-		setHidden(k, !r.all && (r.bottoms[i] < from || r.tops[i] > to))
+		setHidden(k, !r.all && k != focus && (r.bottoms[i] < from || r.tops[i] > to))
 	}
 	r.lo, r.hi = r.find(from, to)
 }
@@ -52,20 +70,13 @@ func (r *rowClip) measure() {
 // scroll hides the rows that left the band and shows those that entered it, so a frame costs the rows
 // that change, not all of them.
 func (r *rowClip) scroll() {
-	body := r.s.body.c
-	if body.IsDisposed() || r.s.s.IsDisposed() {
-		return
-	}
-	if r.all != cocoa.VoiceOverEnabled() {
-		r.measure()
-		return
-	}
-	if r.all {
+	if r.s.body.c.IsDisposed() || r.s.s.IsDisposed() || r.all {
 		return
 	}
 	lo, hi := r.find(r.band())
+	focus := r.focusRow()
 	for i := r.lo; i < r.hi; i++ {
-		if i < lo || i >= hi {
+		if (i < lo || i >= hi) && r.rows[i] != focus {
 			setHidden(r.rows[i], true)
 		}
 	}
@@ -75,16 +86,34 @@ func (r *rowClip) scroll() {
 		}
 	}
 	r.lo, r.hi = lo, hi
-	// A hidden view gives up the keyboard focus: the row holding it stays shown wherever it is.
-	for f := body.GetDisplay().GetFocusControl(); f != nil && f != &body.Control; f = &f.GetParent().Control {
-		if f.GetParent() == body {
-			setHidden(f, false)
-			break
-		}
-		if &f.GetShell().Control == f {
-			break
-		}
+}
+
+// focusRow is the row holding the first responder of the ScrollView's window, key or not: a hidden
+// view gives the focus up, and AppKit would not let it come back.
+func (r *rowClip) focusRow() *swt.Control {
+	body := r.s.body.c
+	win := body.View.Window()
+	if win == nil {
+		return nil
 	}
+	fr := win.FirstResponder()
+	if fr == nil || !fr.IsKindOfClass(cocoa.OSClass_NSView) {
+		return nil
+	}
+	content := body.ContentView()
+	v := cocoa.NewNSViewOverload1(fr.Id)
+	for v != nil && v.Id != content.Id {
+		if p := v.Superview(); p != nil && p.Id == content.Id {
+			for _, k := range r.rows {
+				if k.TopView().Id == v.Id {
+					return k
+				}
+			}
+			return nil
+		}
+		v = v.Superview()
+	}
+	return nil
 }
 
 // band is the part of the content kept shown: the visible part and a quarter of it above and below.

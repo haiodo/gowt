@@ -2,9 +2,15 @@
 
 ## Unreleased
 
+New API
+- `gowt.Borderless()` and `gowt.Circle()` for a push `Button`, and `gowt.AccessibleLabel(s)` for any widget (fusion-desktop gowt-issues 13). An image-only button was a grey rounded rectangle on every platform. macOS: `Borderless` sets `isBordered = false` (AppKit dims the image while pressed); `Circle` sets the circular bezel and, on macOS 26, `borderShape = .circle`; `AccessibleLabel` sets `accessibilityLabel`, which VoiceOver reads for a button with no text. Linux: the GTK style classes `flat` and `circular` (hover and press feedback are the theme's) and the ATK name. Windows: the frame stays and `Accessible` is a stub, so the three do nothing. They go to `App.OnError` on a Check, Radio or Toggle button. Give a round button a square `Size`. Apple's design wins where the request differed: a circle with glass is `Circle()` plus `look.GlassButton()` in either order, not a separate `look.GlassCircleButton()`, since AppKit and SwiftUI keep bezel style and border shape apart; a borderless button has no hover chrome, as `NSButton` without a bezel has none.
+
 Behaviour change
 - macOS: the selected row of a Table in a `look.SetSidebar` sidebar tints the icon of the first column only when it is a template image (`NSImage isTemplate`), as AppKit does. An app image is no longer tinted because its pixels are one grey with alpha: a grey "#" glyph and a black-and-white photo with transparent padding keep their pixels (fusion-desktop item 9).
 - macOS: `icons.Get` without `icons.Color` returns a template image, so the sidebar tint of the toolkit's own icons stays. A template image is drawn in the label colour by buttons, tool items and menu items (white on a highlight, dimmed when disabled), so such an icon follows the appearance of the view and not the theme of the call. `icons.Get` with `icons.Color`, `icons.FromSVG`, `App.ImageFromProvider`, `App.ImageFrom` and `App.LoadImage` give plain images that keep their colours everywhere.
+
+Fixes
+- macOS 26: `look.GlassButton()` showed a plain button (fusion-desktop gowt-issues 13). SWT's `Button.setBounds` and `setFont` put the push bezel back on every layout, and AppKit draws the glass bezel only for a view class without `drawRect:` and a plain `NSButtonCell`, which SWT's `SWTButton` and `SWTButtonCell` are not. `tooling/port.sh` limits both methods to the two push bezels, and a glass button moves to a new `SWTGlassButton` class (same events, no `drawRect:`, so no `Paint` event) with a plain cell that gets the title, image, font, target, action and default-button state. The press animation and the focus ring are AppKit's.
 
 ## v0.9.5 (2026-10-21)
 

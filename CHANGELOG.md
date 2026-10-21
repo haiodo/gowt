@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+New API
+- `look.SetGlassRadius(c, r)` and the radius `look.Capsule` (fusion-desktop gowt-issues 10): the corner radius of the glass `look.SetGlass` puts behind a panel, 12 by default. `Capsule` is half the shorter side and follows every resize. Other systems have no glass: no-op. A field that grows over several lines wants a fixed radius of half its one-line height, as the iPad composer has; `Capsule` would turn a tall field into an oval.
+- `AutoGrow(minHeight, maxHeight)` and `TextView.SetAutoGrow` (gowt-issues 12): a multi-line `Text` as high as its text, wrapped lines counted, between the two limits (0 is no maximum); beyond the maximum it scrolls. Text shorter than the minimum is centred vertically, so a one-line field looks like the single line of a native field. The field takes the width its layout leaves over instead of the width of its longest line, so a long text does not push it out of the window (macOS; on Linux set the text after `Show`).
+- `Inset(x, y)` and `TextView.SetInset` (gowt-issues 12): space between the text and the edges of a multi-line `Text`, the hint included. `x` is for both sides, `y` above and below: AppKit's `textContainerInset` has no per-side value, so the facade keeps one pair on every platform. macOS: `textContainerInset`, Linux: the margins of the `GtkTextView`, Windows: `EM_SETRECT` (not run).
+- `TextView.ContentHeight(width)` (gowt-issues 12): the height the text needs at a width, visual lines counted, with the vertical inset and one line at least; the number for `SetHeight` of a field that follows its text without `AutoGrow`.
+- `SetHeight(h)` on every widget in a VBox, HBox, Grid, Flow or Form: changes the height `Size` gave at creation, and lays the parents out on the next event-loop turn or at `App.Flush`.
+
+Behaviour change
+- macOS: a multi-line `Text` in a `look.SetGlass` panel draws no background of its own, neither the `NSTextView` nor its `NSScrollView` (gowt-issues 11); the glass shows through, as in the iPad composer. A single-line `Text` keeps its native field.
+
 ## v0.9.5 (2026-10-21)
 
 New API

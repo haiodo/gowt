@@ -430,7 +430,7 @@ func Switch(text string, opts ...Option) Option {
 func Text(opts ...Option) Option {
 	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewText(p, resolve(swt.NONE, opts))
-		return &TextView{base{&t.Control}, t}
+		return &TextView{base: base{&t.Control}, t: t}
 	})
 }
 
@@ -635,7 +635,9 @@ func (s *SwitchView) OnChange(f func(on bool)) {
 // TextView is an edit field.
 type TextView struct {
 	base
-	t *swt.Text
+	t     *swt.Text
+	inset [2]int
+	grow  *autoGrow
 }
 
 // Text returns the current content.

@@ -12,6 +12,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 |---|---|
 | `Check()`, `Radio()` | button kind; `Check` also makes Table/Tree rows and ToolBar items checkable |
 | `Multiline()`, `Password()`, `ReadOnly()` | Text (and `ReadOnly` for Combo) |
+| `Inset(x, y)`, `AutoGrow(minHeight, maxHeight)` | multi-line Text: space between text and edges (`x` both sides, `y` above and below, one pair as in AppKit); height that follows the wrapped lines between the two limits (0 is no maximum), shorter text centred vertically |
 | `Border()`, `Flat()`, `Wrap()` | frame; flat tool bar; Label and StyledText text wrapped into lines, tool bar items wrapped into rows |
 | `Vertical()` | Scale, Slider, Progress, Sash, Split orientation |
 | `MultiSelect()` | List, Table, Tree |
@@ -44,7 +45,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Spacer, Separator | `Spacer()`, `Separator()` | an empty cell that takes the free space of a VBox, HBox or Grid row; a horizontal line (`Vertical()` for a vertical one). Both create a `*LabelView` |
 | Switch | `Switch(text, opts...)` | on/off toggle; options `Checked`, `OnChange`, `Bind`; methods `Checked`, `SetChecked`, `SetText`, `OnChange(func(bool))`. A check box on every OS (SWT creates no NSSwitch or GtkSwitch) |
 | Button | `Button(text, opts...)` | push by default; `Check()`/`Radio()`; `OnClick(f)`; `Checked`, `SetChecked`, `SetImage`, `OnClick` |
-| Text | `Text()` | `Text`, `SetText`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `SetHint` (or the option `Hint`), `OnChange(func(string))`, `OnActivate(func())` (Enter) |
+| Text | `Text()` | `Text`, `SetText`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `SetHint` (or the option `Hint`), `OnChange(func(string))`, `OnActivate(func())` (Enter); multi-line: `SetInset(x, y)`, `ContentHeight(width)` (height of the wrapped text at a width, inset included, one line at least), `SetAutoGrow(min, max)` |
 | Link | `Link(html, opts...)` | text with `<a href="...">`; `OnClick(func(href string))` gets the href |
 | Combo | `Combo(items)` | `Index` (-1 if none), `Items`, `Select`, `Text`, `OnSelect(func(int))`, `OnChange(func(string))` |
 | List | `List(items)` | `Add`, `Remove`, `Clear`, `Index`, `Selected`, `Select(i...)`, `OnSelect`, `OnActivate` (double click) |
@@ -82,7 +83,7 @@ All images of one Table or Tree, in every row and column, get the size of the fi
 
 ## Any control
 
-Every widget (`Window` and containers included) has these methods, which are also the methods of the `Widget` interface: `SetEnabled(v)` / `Enabled()` (children of a disabled container follow), `SetVisible(v)` / `Visible()` (in a Grid, VBox or HBox layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(Font{Name, Size, Scale, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; with Size 0, `Scale` is a multiple of the system font size, `app.SystemFont()`; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; controls given equal fonts share one native font, freed after its last user), `SetForeground(paint)`, `SetBackground(paint)` (an `RGB`, or an `Adaptive{Light, Dark}` that follows the system theme; on a container the labels and boxes inside show the background too; nil restores the default), `SetTooltip(s)`, `Focus()`, `Dispose()` (the parent is laid out again; a second call does nothing), `OnDispose(f)`, and the options `BindVisible(r)` / `BindEnabled(r)` that follow an rx value ([events.md](events.md)). The header font of Table and Tree is not reachable; use `Unwrap()`.
+Every widget (`Window` and containers included) has these methods, which are also the methods of the `Widget` interface: `SetEnabled(v)` / `Enabled()` (children of a disabled container follow), `SetVisible(v)` / `Visible()` (in a Grid, VBox or HBox layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(Font{Name, Size, Scale, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; with Size 0, `Scale` is a multiple of the system font size, `app.SystemFont()`; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; controls given equal fonts share one native font, freed after its last user), `SetForeground(paint)`, `SetBackground(paint)` (an `RGB`, or an `Adaptive{Light, Dark}` that follows the system theme; on a container the labels and boxes inside show the background too; nil restores the default), `SetHeight(h)` (the height `Size` gave, 0 for the natural one; the parents are laid out on the next event-loop turn or at `App.Flush`), `SetTooltip(s)`, `Focus()`, `Dispose()` (the parent is laid out again; a second call does nothing), `OnDispose(f)`, and the options `BindVisible(r)` / `BindEnabled(r)` that follow an rx value ([events.md](events.md)). The header font of Table and Tree is not reachable; use `Unwrap()`.
 
 `Table.Batch(f)` and `Tree.Batch(f)` suspend drawing while `f` runs, so many row changes repaint once.
 
@@ -107,6 +108,25 @@ Wrappers returned by `Row`, `Node` and the `Tree.On*` callbacks are fresh each c
 ## Selection
 
 `Index()` is the first selected item (-1 for none) for Combo, List and Table; `Select(i)` selects one Combo item. List and Table also have `Selected()` (all selected), and their `Select(i...)` takes several indexes (none clears the selection). The option `Selected(i)` sets the initial selection of Combo, List, Table, Tabs and CTabs. Callbacks receive indexes. Tree callbacks receive `*Node`.
+
+## Message input row
+
+A chat composer is a glass capsule with a multi-line `Text` that grows with its lines:
+
+```go
+var row *gowt.Panel
+gowt.HBox(gowt.Ref(&row), gowt.GrowX(), gowt.Padding(0),
+    gowt.Text(gowt.Multiline(), gowt.GrowX(), gowt.Hint("Message"),
+        gowt.Inset(14, 8), gowt.AutoGrow(40, 120)))
+look.SetGlass(row, true)
+look.SetGlassRadius(row, 20) // half the one-line height, as the iPad composer
+```
+
+- `AutoGrow(min, max)` sets the height to `ContentHeight(width)` between the limits, after every edit and every change of width; the text scrolls beyond `max`, and text shorter than `min` is centred. It gives the field the width its layout leaves over (use `GrowX`), not that of its longest line. The field needs a parent laid out by a VBox, HBox, Grid, Flow or Form, and the panel around it must not have a fixed height. Without `AutoGrow`, `ContentHeight(width)` with `SetHeight` does the same by hand (a field that follows its text only at certain moments).
+- `Inset(x, y)` is one pair for both sides (AppKit has `textContainerInset` only); the hint moves with the text. Linux: the margins of the `GtkTextView`. Windows: `EM_SETRECT`, reset on every resize by the control (a listener sets it again); not run on a real system yet.
+- `look.SetGlassRadius(row, r)`: a fixed radius while the field grows; `look.Capsule` follows half the shorter side and is for a row that stays one line.
+- In a `look.SetGlass` panel on macOS the multi-line `Text` draws no background, so the glass is the field. Linux and Windows have no glass; the field keeps the native background.
+- Linux: a text set before the first `Show` may wrap at a width wider than the field (a `GtkTextView` asks for the width of the longest line it first held); set it after `Show`.
 
 ## Known limits
 

@@ -65,6 +65,11 @@ func GlassAvailable() bool { return class("NSGlassEffectView") != 0 }
 // shows and gets the default background back only when a material was removed. Otherwise the
 // caller keeps the frame in step with SyncBackdrop.
 func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
+	return installBackdrop(view, kind, window, false)
+}
+
+// installBackdrop is InstallBackdrop; child puts a glass backdrop inside view instead (see InstallPanelBackdrop).
+func installBackdrop(view *NSView, kind int, window, child bool) (had bool) {
 	initAssociated()
 	v := uintptr(view.Id)
 	if old := getAssociated(v, backdropKey()); old != 0 {
@@ -82,8 +87,11 @@ func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
 	if kind == BackdropNone || host == 0 {
 		return had
 	}
+	inside := child && kind == BackdropGlass && GlassAvailable() && glassGroupContent(host, kind, window) == 0
 	var bd uintptr
-	if kind == BackdropGlass && GlassAvailable() {
+	if inside {
+		bd = msg(msg(panelGlassClass(), "alloc"), "init")
+	} else if kind == BackdropGlass && GlassAvailable() {
 		bd = msg(msg(class("NSGlassEffectView"), "alloc"), "init")
 	} else {
 		bd = msg(msg(class("NSVisualEffectView"), "alloc"), "init")
@@ -94,10 +102,12 @@ func InstallBackdrop(view *NSView, kind int, window bool) (had bool) {
 	if window {
 		msg(bd, "setAutoresizingMask:", viewWidthHeightSizable)
 		msgRectOnly(bd, sel("setFrame:"), NewNSViewOverload1(int64(host)).Bounds())
-	} else {
+	} else if !inside {
 		msgRectOnly(bd, sel("setFrame:"), view.Frame())
 	}
-	if group := glassGroupContent(host, kind, window); group != 0 {
+	if inside {
+		placePanelGlass(v, bd)
+	} else if group := glassGroupContent(host, kind, window); group != 0 {
 		msg(group, "addSubview:", bd)
 	} else {
 		msg(host, "addSubview:positioned:relativeTo:", bd, windowBelowArg, v)
@@ -128,7 +138,11 @@ func boxChrome(v uintptr, shown bool) {
 func SyncBackdrop(view *NSView) {
 	initAssociated()
 	if bd := getAssociated(uintptr(view.Id), backdropKey()); bd != 0 {
-		msgRectOnly(bd, sel("setFrame:"), view.Frame())
+		if panelGlassInside(uintptr(view.Id), bd) {
+			syncPanelGlass(uintptr(view.Id), bd)
+		} else {
+			msgRectOnly(bd, sel("setFrame:"), view.Frame())
+		}
 	}
 	syncGlassGroup(uintptr(view.Id))
 }

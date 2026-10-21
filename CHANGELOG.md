@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+Behaviour change
+- macOS: the selected row of a Table in a `look.SetSidebar` sidebar tints the icon of the first column only when it is a template image (`NSImage isTemplate`), as AppKit does. An app image is no longer tinted because its pixels are one grey with alpha: a grey "#" glyph and a black-and-white photo with transparent padding keep their pixels (fusion-desktop item 9).
+- macOS: `icons.Get` without `icons.Color` returns a template image, so the sidebar tint of the toolkit's own icons stays. A template image is drawn in the label colour by buttons, tool items and menu items (white on a highlight, dimmed when disabled), so such an icon follows the appearance of the view and not the theme of the call. `icons.Get` with `icons.Color`, `icons.FromSVG`, `App.ImageFromProvider`, `App.ImageFrom` and `App.LoadImage` give plain images that keep their colours everywhere.
+
 ## v0.9.5 (2026-10-21)
 
 New API

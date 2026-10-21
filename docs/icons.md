@@ -12,7 +12,7 @@ b.SetImage(icons.Get(app, "search", icons.Size(24)))
 
 - `icons.Names()` lists the valid names (39 today: add, back, check, close, copy, cut, delete, down, download, edit, error, file, filter, folder, forward, heart, help, home, info, lock, menu, open, paste, pause, play, print, redo, refresh, remove, save, search, settings, star, stop, undo, up, upload, user, warning). `Get` panics on an unknown one.
 - `icons.Size(points)`: the side in points, default 16.
-- `icons.Color(rgb)`: the tint. Default is light gray in dark mode and near-black in light mode.
+- `icons.Color(rgb)`: the tint. Default is light gray in dark mode and near-black in light mode. On macOS an icon without `Color` is a template image (`NSImage isTemplate`): AppKit draws it in the label colour in buttons, tool items and menu items (white on a highlight, dimmed when disabled), and a `look.SetSidebar` Table tints it in the accent colour in a selected row. With `Color` the icon is not a template and keeps that colour. Images from `FromSVG`, `App.ImageFromProvider`, `App.ImageFrom` and `App.LoadImage` are never templates.
 - `icons.FromSVG(app, data, size, rgb)`: an image from your own SVG document, `currentColor` drawn in `rgb`, cached like `Get` per document, size and colour.
 - The App owns the images, as every `gowt.Image`; `Dispose` frees one early, and the next `Get` or `FromSVG` makes it again.
 - The image is drawn at every zoom.

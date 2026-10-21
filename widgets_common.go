@@ -106,8 +106,15 @@ func sizing(c *swt.Control, set func()) {
 	before := preferred(c)
 	set()
 	after := preferred(c)
+	if after.X != before.X || after.Y != before.Y {
+		a.relayout(c)
+	}
+}
+
+// relayout queues the layout of c's parents for the next event-loop turn, once for each control.
+func (a *App) relayout(c *swt.Control) {
 	// Linear: a turn changes few controls; thousands of them in one turn would want a set.
-	if after.X == before.X && after.Y == before.Y || slices.Contains(a.relayouts, c) {
+	if slices.Contains(a.relayouts, c) {
 		return
 	}
 	a.relayouts = append(a.relayouts, c)

@@ -500,7 +500,7 @@ fi
 # two, with every visible row counted (visibleRowCount, swt/widgets_tree_manual_linux.go).
 if [ "$PLATFORM" = gtk ]; then
 	TR_GO=swt/widgets_tree_linux.go
-	perl -0pi -e 's/\tif hHint == DEFAULT && size\.Y == this\.GetHeaderHeight\(\) \{\n\t\tvar itemHeight int32 = this\.GetItemHeight\(\)\n\t\tsize\.Y = this\.GetItemCount\(\)\*itemHeight \+ this\.GetHeaderHeight\(\)\n\t\tfor _, item := range this\.items \{\n\t\t\tif item != \(nil\) && item\.isExpanded \{\n\t\t\t\tsize\.Y \+= gtk\.GTKGtk_tree_model_iter_n_children\(this\.modelHandle, item\.Handle\) \* itemHeight\n\t\t\t\}\n\t\t\}\n\t\}\n/\tif hHint == DEFAULT {\n\t\tsize.Y = max(size.Y, this.visibleRowCount(0)*this.GetItemHeight()+this.GetHeaderHeight())\n\t}\n/' "$TR_GO"
+	perl -0pi -e 's/\tif hHint == DEFAULT && size\.Y == this\.GetHeaderHeight\(\) \{\n\t\tvar itemHeight int32 = this\.GetItemHeight\(\)\n\t\tsize\.Y = this\.GetItemCount\(\) \* itemHeight \+ this\.GetHeaderHeight\(\)\n\t\tfor _, item := range this\.items \{\n\t\t\tif item != \(nil\) && item\.isExpanded \{\n\t\t\t\tsize\.Y \+= gtk\.GTKGtk_tree_model_iter_n_children\(this\.modelHandle, item\.Handle\) \* itemHeight\n\t\t\t\}\n\t\t\}\n\t\}\n/\tif hHint == DEFAULT {\n\t\tsize.Y = max(size.Y, this.visibleRowCount(0)*this.GetItemHeight()+this.GetHeaderHeight())\n\t}\n/' "$TR_GO"
 	[ "$(grep -c 'this.visibleRowCount(0)' "$TR_GO")" = 1 ] || { echo "port.sh: Tree visibleRowCount rewrite did not apply" >&2; exit 1; }
 fi
 

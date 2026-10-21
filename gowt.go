@@ -341,6 +341,14 @@ func (p *panel) Add(children ...Option) {
 // layoutAdded lays c out after Add: only the children missing from old are measured, the others
 // keep the sizes their layouts cached, so adding to a long list costs the new rows only.
 func layoutAdded(c *swt.Composite, old []*swt.Control) {
+	// A setter's size change is laid out on the next turn: drop its stale cached size now.
+	if a := appOf(&c.Control); a != nil {
+		for _, k := range a.relayouts {
+			if k != nil && !k.IsDisposed() {
+				flushUp(k)
+			}
+		}
+	}
 	had := make(map[*swt.Control]bool, len(old))
 	for _, k := range old {
 		had[k] = true

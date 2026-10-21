@@ -1127,6 +1127,7 @@ func (this *Control) ForceFocus() bool {
 	}
 	shell.SetSavedFocus(nil)
 	var focusView *cocoa.NSView = this.impl.focusView_()
+	revealForFocus(this)
 	if !focusView.CanBecomeKeyView() {
 		return false
 	}
@@ -2320,6 +2321,7 @@ func (this *Control) print_(gc *GC) bool {
 	if gc.impl.isDisposed_() {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
+	defer revealForPrint(this)()
 	this.View.DisplayRectIgnoringOpacity(this.View.Bounds(), gc.Handle)
 	return true
 }

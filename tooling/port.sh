@@ -395,6 +395,15 @@ ST_GO=swt/custom_styledtext.go
 perl -0pi -e 's/(\tthis\.ResetCacheFirstLineCount\(0, 0\)\n)\tthis\.SetCaretLocations\(\)\n/$1\tif !this.wordWrap || this.clientAreaWidth > 0 {\n\t\tthis.SetCaretLocations()\n\t}\n/' "$ST_GO"
 [ "$(grep -c 'if !this.wordWrap || this.clientAreaWidth > 0 {' "$ST_GO")" = 1 ] || { echo "port.sh: StyledText.reset caret rewrite did not apply" >&2; exit 1; }
 
+# gowt's ScrollView hides the rows far off screen natively (NSView.hidden, SWT state untouched). forceFocus asks
+# canBecomeKeyView, which is NO in a hidden subtree, and print draws through the view: both show such views first
+# (swt/widgets_reveal_manual_darwin.go), so Tab, setFocus and print work as without the hiding.
+if [ "$PLATFORM" = cocoa ]; then
+	RV_GO=swt/widgets_control_darwin.go
+	perl -0pi -e 's/(\tvar focusView \*cocoa\.NSView = this\.impl\.focusView_\(\)\n)(?!\trevealForFocus)(\tif !focusView\.CanBecomeKeyView\(\) \{\n)/$1\trevealForFocus(this)\n$2/; s/(\t\}\n)(?!\tdefer revealForPrint)(\tthis\.View\.DisplayRectIgnoringOpacity\(this\.View\.Bounds\(\), gc\.Handle\)\n\treturn true\n)/$1\tdefer revealForPrint(this)()\n$2/' "$RV_GO"
+	[ "$(grep -c 'revealForFocus(this)' "$RV_GO")" = 1 ] && [ "$(grep -c 'defer revealForPrint(this)()' "$RV_GO")" = 1 ] || { echo "port.sh: Control reveal rewrite did not apply" >&2; exit 1; }
+fi
+
 # Group.computeTrim (cocoa) re-measures the NSBox natively on each layout; swt/widgets_group_manual_darwin.go caches the
 # frame-minus-content offset by title text and font. The Java body cannot be split out via manual.txt, so the block is rewritten.
 if [ "$PLATFORM" = cocoa ]; then

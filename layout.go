@@ -137,6 +137,9 @@ func (l *boxLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, flush boo
 
 func (l *boxLayout) LayoutFn_(c *swt.Composite, flush bool) {
 	l.columns(c)
+	if !l.row {
+		fitCapped(c)
+	}
 	l.GridLayout.LayoutFn(c, flush)
 	if l.laidOut != nil {
 		l.laidOut()
@@ -179,6 +182,9 @@ func (c GridCell) data() *swt.GridData {
 	}
 	if c.Height == 0 {
 		d.HeightHint = swt.DEFAULT
+	} else if c.GrowY {
+		// The grid shrinks a growing cell below its hint when the space is short; the hint is its minimum.
+		d.MinimumHeight = int32(c.Height)
 	}
 	return d
 }

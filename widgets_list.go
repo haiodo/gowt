@@ -97,6 +97,9 @@ func (l *ListView) Selected() []int { return toInts(l.l.GetSelectionIndices()) }
 // Select replaces the selection with items i; no i clears it.
 func (l *ListView) Select(i ...int) { l.l.SetSelectionIndices(toInt32s(i)) }
 
+// Deselect clears the selection and calls no OnSelect, as SWT's deselectAll sends no Selection.
+func (l *ListView) Deselect() { l.l.DeselectAll() }
+
 // SetItem replaces the text of item i, keeping the selection.
 func (l *ListView) SetItem(i int, s string) { l.l.SetItem(int32(i), s) }
 
@@ -148,10 +151,16 @@ func (t *TableView) ShowRowLines(v bool) {
 func (t *TableView) Len() int { return int(t.t.GetItemCount()) }
 
 // Remove deletes row i.
-func (t *TableView) Remove(i int) { t.t.Remove(int32(i)) }
+func (t *TableView) Remove(i int) {
+	t.t.Remove(int32(i))
+	contentChanged(&t.t.Control)
+}
 
 // Clear deletes all rows and with them the selection.
-func (t *TableView) Clear() { t.t.RemoveAll() }
+func (t *TableView) Clear() {
+	t.t.RemoveAll()
+	contentChanged(&t.t.Control)
+}
 
 // Batch runs f with drawing of the table suspended, so that many row changes repaint once.
 func (t *TableView) Batch(f func()) {
@@ -172,6 +181,9 @@ func (t *TableView) Selected() []int { return toInts(t.t.GetSelectionIndices()) 
 // Select replaces the selection with rows i; no i clears it.
 func (t *TableView) Select(i ...int) { t.t.SetSelectionIndices(toInt32s(i)) }
 
+// Deselect clears the selection and calls no OnSelect, as SWT's deselectAll sends no Selection.
+func (t *TableView) Deselect() { t.t.DeselectAll0() }
+
 // RowAt returns row i.
 func (t *TableView) RowAt(i int) *TableRow { return &TableRow{t.t.GetItem(int32(i))} }
 
@@ -189,6 +201,7 @@ func (t *TableView) Column(title string, width int, opts ...Option) *Column {
 func (t *TableView) Row(cells ...string) *TableRow {
 	it := swt.NewTableItem(t.t, swt.NONE)
 	it.SetTexts(cells)
+	contentChanged(&t.t.Control)
 	return &TableRow{it}
 }
 
@@ -393,6 +406,9 @@ type TreeView struct {
 func Tree(opts ...Option) Option {
 	return leaf("Tree", sCheck|sMultiSelect|sNoBorder|sCellSelect, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTree(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
+		// The natural height follows the visible rows: lay out again after an expand or collapse.
+		t.AddTreeListener(swt.TreeListenerTreeExpandedAdapter(func(*swt.TreeEvent) { contentChanged(&t.Control) }))
+		t.AddTreeListener(swt.TreeListenerTreeCollapsedAdapter(func(*swt.TreeEvent) { contentChanged(&t.Control) }))
 		return &TreeView{base{&t.Control}, t}
 	})
 }
@@ -481,7 +497,10 @@ func (t *TreeView) Batch(f func()) {
 }
 
 // Clear deletes all nodes, children included.
-func (t *TreeView) Clear() { t.t.RemoveAll() }
+func (t *TreeView) Clear() {
+	t.t.RemoveAll()
+	contentChanged(&t.t.Control)
+}
 
 // Unwrap returns the underlying swt.Tree for the full API.
 func (t *TreeView) Unwrap() *swt.Tree { return t.t }
@@ -490,6 +509,7 @@ func (t *TreeView) Unwrap() *swt.Tree { return t.t }
 func (t *TreeView) Node(text string) *Node {
 	it := swt.NewTreeItem(t.t, swt.NONE)
 	it.SetTextIndexString(0, text)
+	contentChanged(&t.t.Control)
 	return &Node{it}
 }
 
@@ -499,8 +519,17 @@ func (t *TreeView) Roots() []*Node { return nodes(t.t.GetItems()) }
 // Selected returns the selected nodes.
 func (t *TreeView) Selected() []*Node { return nodes(t.t.GetSelection()) }
 
-// Select selects n alone.
-func (t *TreeView) Select(n *Node) { t.t.SetSelection(n.it) }
+// Select selects n alone; nil clears the selection. It calls no OnSelect, as SWT's setSelection sends no Selection.
+func (t *TreeView) Select(n *Node) {
+	if n == nil {
+		t.Deselect()
+		return
+	}
+	t.t.SetSelection(n.it)
+}
+
+// Deselect clears the selection and calls no OnSelect, as SWT's deselectAll sends no Selection.
+func (t *TreeView) Deselect() { t.t.DeselectAll0() }
 
 // OnSelect runs f with the first selected node, nil if none.
 func (t *TreeView) OnSelect(f func(n *Node)) {
@@ -555,6 +584,7 @@ type Node struct{ it *swt.TreeItem }
 func (n *Node) Node(text string) *Node {
 	it := swt.NewTreeItemParentItemStyle(n.it, swt.NONE)
 	it.SetTextIndexString(0, text)
+	contentChanged(&n.it.GetParent().Control)
 	return &Node{it}
 }
 
@@ -568,7 +598,10 @@ func (n *Node) SetText(s string) { n.it.SetTextIndexString(0, s) }
 func (n *Node) Expanded() bool { return n.it.GetExpanded() }
 
 // SetExpanded shows or hides the children.
-func (n *Node) SetExpanded(v bool) { n.it.SetExpanded(v) }
+func (n *Node) SetExpanded(v bool) {
+	n.it.SetExpanded(v)
+	contentChanged(&n.it.GetParent().Control)
+}
 
 // Checked reports the check box of a Check tree.
 func (n *Node) Checked() bool { return n.it.GetChecked() }
@@ -598,7 +631,11 @@ func (n *Node) Data() any { return n.it.GetData() }
 func (n *Node) SetData(v any) { n.it.SetData(v) }
 
 // Remove deletes the node with its children.
-func (n *Node) Remove() { n.it.Dispose() }
+func (n *Node) Remove() {
+	t := n.it.GetParent()
+	n.it.Dispose()
+	contentChanged(&t.Control)
+}
 
 // Unwrap returns the underlying swt.TreeItem for the full API.
 func (n *Node) Unwrap() *swt.TreeItem { return n.it }

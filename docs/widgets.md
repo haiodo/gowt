@@ -50,9 +50,9 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Text | `Text()` | `Text`, `SetText`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `SetHint` (or the option `Hint`), `OnChange(func(string))`, `OnActivate(func())` (Enter); multi-line: `SetInset(x, y)`, `ContentHeight(width)` (height of the wrapped text at a width, inset included, one line at least), `SetAutoGrow(min, max)` |
 | Link | `Link(html, opts...)` | text with `<a href="...">`; `OnClick(func(href string))` gets the href |
 | Combo | `Combo(items)` | `Index` (-1 if none), `Items`, `Select`, `Text`, `OnSelect(func(int))`, `OnChange(func(string))` |
-| List | `List(items)` | `Add`, `Remove`, `Clear`, `Index`, `Selected`, `Select(i...)`, `OnSelect`, `OnActivate` (double click) |
+| List | `List(items)` | `Add`, `Remove`, `Clear`, `Index`, `Selected`, `Select(i...)`, `Deselect()`, `OnSelect`, `OnActivate` (double click) |
 | Table | `Table()` | `Column(title, width)`, `Row(cells...)` returns `*TableRow` (`TextAt(col)`, `SetTextAt(col, s)`, `SetImageAt(col, img)`, `SetData`, `Data`, `SetChecked`), `RowAt(i)`, selection as for List, `ShowHeader`, `ShowLines`, `ShowRowLines`, `SetSort(col, dir)`, `CellAt(x, y)`, `OnCellClick`; `Column` also has `SetResizable` |
-| Tree | `Tree()` | `Node(text)` on the tree and on a node; callbacks get `*Node` (`Text`, `SetExpanded`, `Children`, `SetData`, `Remove`); `Roots`, `Selected`, `Select(node)`, `Clear`; `OnSelect`, `OnActivate`, `OnExpand`, `OnCollapse`. Columns as in Table: `Column(title, width, opts...)` returns the same `*Column` type (the first holds the tree), `ShowHeader`, `ShowRowLines`, `SetSort`, `CellAt`, `OnCellClick`; per-column cells `Node.TextAt(col)`, `SetTextAt`, `SetImageAt` |
+| Tree | `Tree()` | `Node(text)` on the tree and on a node; callbacks get `*Node` (`Text`, `SetExpanded`, `Children`, `SetData`, `Remove`); `Roots`, `Selected`, `Select(node)` (nil clears), `Deselect()`, `Clear`; `OnSelect`, `OnActivate`, `OnExpand`, `OnCollapse`. Columns as in Table: `Column(title, width, opts...)` returns the same `*Column` type (the first holds the tree), `ShowHeader`, `ShowRowLines`, `SetSort`, `CellAt`, `OnCellClick`; per-column cells `Node.TextAt(col)`, `SetTextAt`, `SetImageAt` |
 | Scale, Slider, Spinner | `Scale(min, max, opts...)` | start value with the option `Value(n)` (default `min`); `Value`, `SetValue`, `OnChange(func(int))` |
 | Progress | `Progress(max, opts...)` | option `Value(n)`; `SetValue`, `SetMax`, `Value` |
 | DateTime | `DateTime()` | `Value`/`SetValue` as `time.Time`, `OnChange` |
@@ -85,7 +85,7 @@ All images of one Table or Tree, in every row and column, get the size of the fi
 
 ## Any control
 
-Every widget (`Window` and containers included) has these methods, which are also the methods of the `Widget` interface: `SetEnabled(v)` / `Enabled()` (children of a disabled container follow), `SetVisible(v)` / `Visible()` (in a Grid, VBox or HBox layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(Font{Name, Size, Scale, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; with Size 0, `Scale` is a multiple of the system font size, `app.SystemFont()`; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; controls given equal fonts share one native font, freed after its last user), `SetForeground(paint)`, `SetBackground(paint)` (an `RGB`, or an `Adaptive{Light, Dark}` that follows the system theme; on a container the labels and boxes inside show the background too; nil restores the default), `SetHeight(h)` (the height `Size` gave, 0 for the natural one; the parents are laid out on the next event-loop turn or at `App.Flush`), `SetTooltip(s)`, `Focus()`, `Dispose()` (the parent is laid out again; a second call does nothing), `OnDispose(f)`, and the options `BindVisible(r)` / `BindEnabled(r)` that follow an rx value ([events.md](events.md)). The header font of Table and Tree is not reachable; use `Unwrap()`.
+Every widget (`Window` and containers included) has these methods, which are also the methods of the `Widget` interface: `SetEnabled(v)` / `Enabled()` (children of a disabled container follow), `SetVisible(v)` / `Visible()` (in a Grid, VBox or HBox layout the hidden control gives up its cell and the parent is laid out again; `SetVisible(true)` clears that, and a placement option applied afterwards resets it), `SetFont(Font{Name, Size, Scale, Weight, Bold, Italic})` (empty Name and zero Size keep the current ones; with Size 0, `Scale` is a multiple of the system font size, `app.SystemFont()`; `Weight` is `Light`/`Regular`/`Medium`/`Semibold`/`Bold` or any 100..900 and overrides `Bold`, the system UI font gets a real weight on every OS, a named family gets the nearest face it has; controls given equal fonts share one native font, freed after its last user), `SetForeground(paint)`, `SetBackground(paint)` (an `RGB`, or an `Adaptive{Light, Dark}` that follows the system theme; on a container the labels and boxes inside show the background too; nil restores the default), `SetHeight(h)` (the height `Size` gave, 0 for the natural one; the parents are laid out on the next event-loop turn or at `App.Flush`), `SetSize(w, h)` (both hints, 0 for the natural value), `SetMaxHeight(h)` and the option `MaxHeight(h)` (below), `SetTooltip(s)`, `Focus()`, `Dispose()` (the parent is laid out again; a second call does nothing), `OnDispose(f)`, and the options `BindVisible(r)` / `BindEnabled(r)` that follow an rx value ([events.md](events.md)). The header font of Table and Tree is not reachable; use `Unwrap()`.
 
 `Table.Batch(f)` and `Tree.Batch(f)` suspend drawing while `f` runs, so many row changes repaint once.
 
@@ -109,7 +109,7 @@ Wrappers returned by `Row`, `Node` and the `Tree.On*` callbacks are fresh each c
 
 ## Selection
 
-`Index()` is the first selected item (-1 for none) for Combo, List and Table; `Select(i)` selects one Combo item. List and Table also have `Selected()` (all selected), and their `Select(i...)` takes several indexes (none clears the selection). The option `Selected(i)` sets the initial selection of Combo, List, Table, Tabs and CTabs. Callbacks receive indexes. Tree callbacks receive `*Node`.
+`Index()` is the first selected item (-1 for none) for Combo, List and Table; `Select(i)` selects one Combo item. List and Table also have `Selected()` (all selected), and their `Select(i...)` takes several indexes (none clears the selection). `Deselect()` on List, Table and Tree clears the selection and calls no `OnSelect`, as SWT's `deselectAll` sends no Selection; `Tree.Select(nil)` does the same. The option `Selected(i)` sets the initial selection of Combo, List, Table, Tabs and CTabs. Callbacks receive indexes. Tree callbacks receive `*Node`.
 
 ## Message input row
 
@@ -125,6 +125,19 @@ look.SetGlassRadius(row, 20) // half the one-line height, as the iPad composer
 ```
 
 - `AutoGrow(min, max)` sets the height to `ContentHeight(width)` between the limits, after every edit and every change of width; the text scrolls beyond `max`, and text shorter than `min` is centred. It gives the field the width its layout leaves over (use `GrowX`), not that of its longest line. The field needs a parent laid out by a VBox, HBox, Grid, Flow or Form, and the panel around it must not have a fixed height. Without `AutoGrow`, `ContentHeight(width)` with `SetHeight` does the same by hand (a field that follows its text only at certain moments).
+
+### Capping the height of a Tree or Table
+
+```go
+gowt.VBox(
+	gowt.Table(gowt.Grow(), gowt.Size(0, 120)),
+	gowt.Tree(gowt.GrowX(), gowt.MaxHeight(300)))
+```
+
+- `MaxHeight(h)` / `SetMaxHeight(h)` (h in points, border included, 0 removes it) keeps the natural height of a widget at most `h`. A Tree or Table is as high as its rows, follows `Node`, `Row`, `Remove`, `Clear`, `SetExpanded` and the user's expand and collapse (the parents are laid out by themselves on the next event-loop turn, no `Relayout` is needed), and scrolls beyond `h`.
+- In a VBox the limit is also what the other rows leave: the height of the VBox, less its padding and gaps, less the minimum of each growing row and the height of each other row. So with a window lower than the Table's 120 and the Tree's natural height together, the Table keeps 120 (`Size` is the minimum of a row that also has `Grow`/`GrowY`) and the Tree takes the rest and scrolls. A window resize and a `Relayout` of the VBox apply it again. Other parents (HBox, Grid, Flow, Form) take the plain limit.
+- `SetHeight` and `SetSize` replace the limit. A height hint is a client height, as `Size` is: the border of a Scrollable comes on top (8 points on Linux, 21 on Windows with the horizontal bar); the limit counts it in.
+- A relative limit (half of the sidebar) is not an option: the VBox rule above does that for the usual case; for another, call `SetMaxHeight` from the parent's resize handler.
 - `Inset(x, y)` is one pair for both sides (AppKit has `textContainerInset` only); the hint moves with the text. Linux: the margins of the `GtkTextView`. Windows: `EM_SETRECT`, reset on every resize by the control (a listener sets it again); not run on a real system yet.
 - `look.SetGlassRadius(row, r)`: a fixed radius while the field grows; `look.Capsule` follows half the shorter side and is for a row that stays one line.
 - In a `look.SetGlass` panel on macOS the multi-line `Text` draws no background, so the glass is the field. Linux and Windows have no glass; the field keeps the native background.

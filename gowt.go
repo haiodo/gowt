@@ -383,6 +383,7 @@ func (p *panel) added(Widget)         {}
 // SetFont, SetTitle of a Group, SetItems of a Combo) lay out by themselves. p keeps its own size: to
 // let it grow too, Relayout the Window.
 func (p *panel) Relayout() {
+	refitUnder(p.c)
 	flushUp(&p.c.Control)
 	p.c.LayoutOverload2(true, true)
 }

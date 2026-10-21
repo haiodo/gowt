@@ -495,6 +495,15 @@ if [ "$PLATFORM" = gtk ]; then
 	[ "$(grep -c 'this.hookPage(pageHandle)' "$TF_GO")" = 1 ] || { echo "port.sh: TabFolder hookPage rewrite did not apply" >&2; exit 1; }
 fi
 
+# gtk Tree.computeSize takes GtkTreeView's own height, which stays at the collapsed height after a node is collapsed and
+# expanded again, and counts the rows itself only when GtkTreeView reports the header height. It takes the larger of the
+# two, with every visible row counted (visibleRowCount, swt/widgets_tree_manual_linux.go).
+if [ "$PLATFORM" = gtk ]; then
+	TR_GO=swt/widgets_tree_linux.go
+	perl -0pi -e 's/\tif hHint == DEFAULT && size\.Y == this\.GetHeaderHeight\(\) \{\n\t\tvar itemHeight int32 = this\.GetItemHeight\(\)\n\t\tsize\.Y = this\.GetItemCount\(\)\*itemHeight \+ this\.GetHeaderHeight\(\)\n\t\tfor _, item := range this\.items \{\n\t\t\tif item != \(nil\) && item\.isExpanded \{\n\t\t\t\tsize\.Y \+= gtk\.GTKGtk_tree_model_iter_n_children\(this\.modelHandle, item\.Handle\) \* itemHeight\n\t\t\t\}\n\t\t\}\n\t\}\n/\tif hHint == DEFAULT {\n\t\tsize.Y = max(size.Y, this.visibleRowCount(0)*this.GetItemHeight()+this.GetHeaderHeight())\n\t}\n/' "$TR_GO"
+	[ "$(grep -c 'this.visibleRowCount(0)' "$TR_GO")" = 1 ] || { echo "port.sh: Tree visibleRowCount rewrite did not apply" >&2; exit 1; }
+fi
+
 # cocoa Table.createItem tells NSTableView about every new row (noteNumberOfRowsChanged and tile), so filling a table costs
 # native work per row even with redraw off. Like Tree's reloadPending, a row appended while redraw is off only marks the
 # count stale (rowsPending); syncRows (widgets_table_manual_darwin.go) catches the view up when redraw comes back and before

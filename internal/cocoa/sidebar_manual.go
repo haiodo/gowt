@@ -125,7 +125,7 @@ func SetSourceList(view *NSView) {
 	if !respondsTo(v, "setStyle:") {
 		return
 	}
-	sourceListHooks(msg(v, "class"))
+	sourceListHooks(msg(v, "class"), msg(v, "isKindOfClass:", class("NSOutlineView"))&0xff != 0)
 	// setStyle: and setSelectionHighlightStyle: reselect the selected rows, which the delegate (the SWT widget) reports
 	// as a Selection. Setting the delegate again also refreshes NSTableView's cache of which delegate methods exist.
 	d := msg(v, "delegate")
@@ -179,9 +179,10 @@ const rowViewIDName = "GowtSidebarRow"
 // sourceListHooks gives the table class cls two methods that act only on its source-list instances:
 // setBackgroundColor: stores clear, since SWT sets its default opaque colour again whenever the
 // background is refreshed (an alpha-0 parent background does not count as one there), and the
-// delegate method tableView:rowViewForRow: returns row views that are never emphasized. SWT tables are
-// their own delegate, and other tables keep the default row view (nil).
-func sourceListHooks(cls uintptr) {
+// delegate method tableView:rowViewForRow: (outlineView:rowViewForItem: for an outline view) returns
+// row views that are never emphasized. SWT tables are their own delegate, and other tables keep the
+// default row view (nil).
+func sourceListHooks(cls uintptr, outline bool) {
 	if hookedTables[cls] {
 		return
 	}
@@ -219,7 +220,7 @@ func sourceListHooks(cls uintptr) {
 		addMethod(rowViewClass, sel("setSelected:"), selected, "v@:c")
 		registerClass(rowViewClass)
 	}
-	rowView := purego.NewCallback(func(self, _, table uintptr, row int) uintptr {
+	rowView := func(table uintptr) uintptr {
 		if msg(table, "style") != tableStyleSourceList {
 			return 0
 		}
@@ -230,8 +231,15 @@ func sourceListHooks(cls uintptr) {
 		rv := msg(msg(msg(rowViewClass, "alloc"), "init"), "autorelease")
 		msg(rv, "setIdentifier:", id)
 		return rv
-	})
-	OSClass_addMethod(int64(cls), int64(sel("tableView:rowViewForRow:")), int64(rowView), "@@:@q")
+	}
+	// An outline view asks its delegate for outlineView:rowViewForItem: and never for tableView:rowViewForRow:.
+	if outline {
+		forItem := purego.NewCallback(func(self, _, outline, item uintptr) uintptr { return rowView(outline) })
+		OSClass_addMethod(int64(cls), int64(sel("outlineView:rowViewForItem:")), int64(forItem), "@@:@@")
+		return
+	}
+	forRow := purego.NewCallback(func(self, _, table uintptr, row int) uintptr { return rowView(table) })
+	OSClass_addMethod(int64(cls), int64(sel("tableView:rowViewForRow:")), int64(forRow), "@@:@q")
 }
 
 // SetBackdropFrame moves the material of InstallBackdrop to a frame of its own, in the coordinates of

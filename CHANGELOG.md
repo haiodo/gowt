@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.9.6 (2026-10-22)
 
 New API
 - `gowt.Borderless()` and `gowt.Circle()` for a push `Button`, and `gowt.AccessibleLabel(s)` for any widget (fusion-desktop gowt-issues 13). An image-only button was a grey rounded rectangle on every platform. macOS: `Borderless` sets `isBordered = false` (AppKit dims the image while pressed); `Circle` sets the circular bezel and, on macOS 26, `borderShape = .circle`; `AccessibleLabel` sets `accessibilityLabel`, which VoiceOver reads for a button with no text. Linux: the GTK style classes `flat` and `circular` (hover and press feedback are the theme's) and the ATK name. Windows: the frame stays and `Accessible` is a stub, so the three do nothing. They go to `App.OnError` on a Check, Radio or Toggle button. Give a round button a square `Size`. Apple's design wins where the request differed: a circle with glass is `Circle()` plus `look.GlassButton()` in either order, not a separate `look.GlassCircleButton()`, since AppKit and SwiftUI keep bezel style and border shape apart; a borderless button has no hover chrome, as `NSButton` without a bezel has none.

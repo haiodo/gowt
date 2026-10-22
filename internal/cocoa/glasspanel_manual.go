@@ -69,3 +69,21 @@ func KeepPanelBackdropBelow(view *NSView) {
 		lowerPanelGlass(panelHost(v), bd)
 	}
 }
+
+var msgToF64 func(self, sel uintptr) float64
+
+// PanelGlassClip reads the corner radius and masksToBounds of the layer of the glass InstallPanelBackdrop
+// put in view; ok is false without such glass.
+func PanelGlassClip(view *NSView) (radius float64, masks, ok bool) {
+	initAssociated()
+	v := uintptr(view.Id)
+	bd := getAssociated(v, backdropKey())
+	if bd == 0 || !panelGlassInside(v, bd) || !respondsTo(msg(bd, "layer"), "cornerRadius") {
+		return 0, false, false
+	}
+	if msgToF64 == nil {
+		purego.RegisterFunc(&msgToF64, objcMsgSend)
+	}
+	l := msg(bd, "layer")
+	return msgToF64(l, sel("cornerRadius")), msg(l, "masksToBounds")&0xff != 0, true
+}

@@ -226,6 +226,20 @@ func SetGlassCornerRadius(view *NSView, r float64) {
 	}
 	if bd := getAssociated(uintptr(view.Id), backdropKey()); respondsTo(bd, "setCornerRadius:") {
 		msgF64(bd, sel("setCornerRadius:"), r)
+		if panelGlassInside(uintptr(view.Id), bd) {
+			clipPanelGlass(bd, r)
+		}
+	}
+}
+
+// clipPanelGlass clips the glass of a SetGlass panel to its rounded corners. On macOS 26.5 the view
+// that hosts the glass fills the whole frame, a light square behind the capsule that shows on a
+// white content panel; same as ClipGlassCircle for a button.
+func clipPanelGlass(bd uintptr, r float64) {
+	msg(bd, "setWantsLayer:", 1)
+	if l := msg(bd, "layer"); respondsTo(l, "setCornerRadius:") {
+		msgF64(l, sel("setCornerRadius:"), r)
+		msg(l, "setMasksToBounds:", 1)
 	}
 }
 

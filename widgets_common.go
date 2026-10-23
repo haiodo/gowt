@@ -294,6 +294,12 @@ func AccessibleLabel(s string) Option {
 	})
 }
 
+// ID names a widget, a Panel or a Window for the QA driver, which picks controls by it. It is the
+// same in every build and has no effect on the control. In an Each, take it from the row's data.
+func ID(id string) Option {
+	return apply(func(c *swt.Control) { c.SetDataKeyValue("gowt.id", id) })
+}
+
 func pushButton(w Widget) (*swt.Button, bool) {
 	b, ok := w.(*ButtonView)
 	if !ok || b.b.GetStyle()&(swt.CHECK|swt.RADIO|swt.TOGGLE|swt.ARROW) != 0 {

@@ -246,6 +246,7 @@ type StyleSpan struct { Start, Length int; Style TextStyle }
 | `Lines() int`, `LineAt(offset int) int`, `LineStart(line int) int`, `SetTopLine(i int)` | `GetLineCount`, `GetLineAtOffset`, `GetOffsetAtLine`, `SetTopIndex` |
 | `SetStyle(start, length int, s TextStyle)`, `Styles() []StyleSpan`, `ClearStyles()` | `SetStyleRange(StyleRange)`, `GetStyleRanges`, `ReplaceStyleRanges(0, GetCharCount, nil)` |
 | `SetLineBackground(line, count int, c RGB)` | `SetLineBackground` |
+| `SetParagraphSpacing(line, before int)` | `SetLineVerticalIndent` |
 | `SetEditable(bool)`, `SetWrap(bool)`, `SetTabs(n int)` | `SetEditable`, `SetWordWrap`, `SetTabs` |
 | `Cut()`, `Copy()`, `Paste()` | same names |
 | `OnChange(func(text string))` | `AddModifyListener` (as `Text.OnChange`) |
@@ -255,6 +256,7 @@ type StyleSpan struct { Start, Length int; Style TextStyle }
 | `Unwrap() *swt.StyledText` | |
 
 - Offsets and lengths are runes (indexes into `[]rune(Text())`); the facade converts to and from the UTF-16 units SWT uses (`DefaultContent` stores `[]uint16`). Known ceiling: each conversion scans the text, O(n) per call; a line index is the way out for very large documents. `Unwrap()` offsets stay UTF-16. `OnStyle` avoids the scan: its callback gets one line and `Start` counts runes from the line start.
+- `SetParagraphSpacing` leaves `before` points above a line, as `NSParagraphStyle.paragraphSpacingBefore` does; the line's own `SetLineBackground` color starts below the gap, so a colored block with a gap above its first line shows the widget background there. The gap is part of the line: it moves with the line when text is inserted above, `SetText` drops it, and SWT ignores it while an `OnStyle` listener is set. Checked on Linux (GTK) only.
 - `TextStyle` -> `swt.StyleRange`: colors via `RGB.color()`; `Bold`/`Italic` go to `StyleRange.FontStyle` (no font object, widget font is reused); `Font` with a name or size creates an `swt.Font` that the `StyledText` wrapper keeps in a cache keyed by the `Font` value and disposes on the widget's dispose event. The user never sees a disposable.
 - Not covered -> `Unwrap()`: bullets, line alignment/indent/spacing providers, `GlyphMetrics`, `TextStyle.Rise`/`Data`/borders/underline styles and colors, block and multi-selection, `VerifyListener`/`VerifyKeyListener`/`ExtendedModifyListener` (undo tracking), bidi segments, content replacement (`StyledTextContent`), printing, widget fonts (no widget-font API in the facade yet).
 - Platform caveats (`tests/expected*.txt`): style rendering tests (`setStyleRanges_render`, `lineStyleListener_*_render`, `lostStyles`) are skipped on macOS (upstream bugs 553090, 536588), so rendering of styled text is verified only on Linux/Windows; foreground alpha does not exist on Windows; `test_backspaceAndDelete` fails on macOS (`Display.post` does not deliver the key event, test infrastructure, not diagnosed); `caretSizeAndPositionVariableGlyphMetrics` is skipped on Linux; clipboard-carryover test is skipped on macOS.

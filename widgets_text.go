@@ -181,6 +181,15 @@ func (t *StyledTextView) SetLineBackground(line, count int, c RGB) {
 	t.t.SetLineBackground(int32(line), int32(count), c.color())
 }
 
+// SetParagraphSpacing leaves before points of empty space above line (NSParagraphStyle
+// paragraphSpacingBefore); 0 removes it. A SetLineBackground color stops at the gap, so the gap
+// above the first line of a colored block shows the widget background. The space belongs to
+// the line: it moves with it when text is inserted above, SetText and a replace of the whole text
+// drop it, and it does nothing while an OnStyle listener is set.
+func (t *StyledTextView) SetParagraphSpacing(line, before int) {
+	t.t.SetLineVerticalIndent(int32(line), int32(before))
+}
+
 // SetStyle applies s to length runes from start, replacing the styles there.
 func (t *StyledTextView) SetStyle(start, length int, s TextStyle) {
 	text := t.t.GetText()

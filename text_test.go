@@ -237,3 +237,52 @@ func TestEditsText(t *testing.T) {
 		}
 	}
 }
+
+func TestStyledTextParagraphSpacing(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		st := put[*StyledTextView](w, StyledText(Scrollbars()))
+		ed := st.Unwrap()
+		w.SetSize(300, 200)
+		w.Show()
+		app.Flush()
+		st.SetText("a\nb\nc\nd\ne")
+		h := ed.GetLineHeight()
+		pixel := func(i int) int32 { return ed.GetLinePixel(int32(i)) }
+		heights := func(want ...int32) {
+			t.Helper()
+			for i, wh := range want {
+				if got := pixel(i+1) - pixel(i); got != wh {
+					t.Errorf("height of line %d = %d, want %d", i, got, wh)
+				}
+			}
+		}
+		heights(h, h, h, h)
+
+		st.SetParagraphSpacing(1, 6)
+		st.SetParagraphSpacing(3, 6)
+		heights(h, h+6, h, h+6)
+		for i := 0; i < 5; i++ {
+			if got := ed.GetLineIndex(pixel(i)); got != int32(i) {
+				t.Errorf("GetLineIndex(top of line %d) = %d", i, got)
+			}
+			if i < 4 && ed.GetLineIndex(pixel(i+1)-1) != int32(i) {
+				t.Errorf("GetLineIndex(bottom of line %d) = %d", i, ed.GetLineIndex(pixel(i+1)-1))
+			}
+		}
+		if got := ed.GetLocationAtOffset(ed.GetOffsetAtLine(1)).Y; got != pixel(1)+6 {
+			t.Errorf("text of the spaced line starts at y=%d, want %d: the gap is above it", got, pixel(1)+6)
+		}
+		if got := ed.GetLineAtOffset(ed.GetOffsetAtPoint(swt.NewPoint(1, pixel(1)+2))); got != 1 {
+			t.Errorf("a point in the gap hits line %d, want 1", got)
+		}
+
+		st.SetParagraphSpacing(1, 0)
+		heights(h, h, h, h+6)
+
+		st.SetParagraphSpacing(1, 6)
+		st.Replace(0, 0, "x\n")
+		heights(h, h, h+6, h, h+6)
+		st.SetText("a\nb\nc")
+		heights(h, h)
+	})
+}

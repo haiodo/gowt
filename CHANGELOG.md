@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+Fixes
+- Windows `webview`: `window.gowt.call` showed the native "This page says" prompt instead of reaching the handler. WebView2 raises `ScriptDialogOpening` only when `AreDefaultScriptDialogsEnabled` is false, and nothing set it. The engine now turns the default dialogs off, so the event fires for every dialog: the call prompt goes to the handler, and the page's own `alert`, `confirm`, `prompt` and `beforeunload` get a gowt message box or input box.
+
 ## v0.11.0 (2026-10-24)
 
 New API

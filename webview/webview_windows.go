@@ -162,6 +162,7 @@ func (e *wv2Engine) controllerReady(hr, ctl uintptr) {
 	}
 	e.view = *out
 	if vcall(e.view, 3, addr(out)) == sOK { // get_Settings
+		vcall(*out, 8, 0)                      // put_AreDefaultScriptDialogsEnabled: ScriptDialogOpening fires only without them
 		vcall(*out, 12, b2u(e.opts.Inspectable)) // put_AreDevToolsEnabled
 		release(*out)
 	}
@@ -352,17 +353,23 @@ func (e *wv2Engine) hookEvents() {
 	})
 }
 
-// scriptDialog answers the prompt window.gowt.call raises, the way the darwin engine does: the page blocks
-// in prompt() until the handler is done, and the reply is the prompt's result. Other dialogs and prompts are
-// left to the default UI.
+// scriptDialog gets every page dialog, as the default ones are off. window.gowt.call's prompt goes to
+// the handler; the rest get gowt's boxes. An event left unaccepted counts as cancelled.
 func (e *wv2Engine) scriptDialog(args uintptr) {
 	kind := heap[int32]()
-	if e.call == nil || vcall(args, 4, addr(kind)) != sOK || *kind != wv2DialogPrompt { // get_Kind
+	if vcall(args, 4, addr(kind)) != sOK { // get_Kind
 		return
 	}
+	if *kind != wv2DialogPrompt || e.call == nil || !e.answerCall(args) {
+		e.pageDialog(args, *kind)
+	}
+}
+
+// answerCall reports whether args was the call marker's prompt, answered or refused.
+func (e *wv2Engine) answerCall(args uintptr) bool {
 	def := heap[uintptr]()
 	if vcall(args, 7, addr(def)) != sOK || takeString(*def) != wv2CallMark { // get_DefaultText
-		return
+		return false
 	}
 	from := heap[uintptr]()
 	if vcall(args, 3, addr(from)) != sOK || !sameDocument(takeString(*from), e.url()) { // get_Uri
@@ -370,15 +377,50 @@ func (e *wv2Engine) scriptDialog(args uintptr) {
 		empty := utf16Z("")
 		vcall(args, 9, addr(&empty[0]))
 		vcall(args, 6)
-		return
+		return true
 	}
 	msg := heap[uintptr]()
 	if vcall(args, 5, addr(msg)) != sOK { // get_Message
-		return
+		return true
 	}
 	reply := utf16Z(e.call(takeString(*msg)))
 	vcall(args, 9, addr(&reply[0])) // put_ResultText
 	vcall(args, 6)                  // Accept
+	return true
+}
+
+// pageDialog shows the page's own dialog after the event handler returned, as a modal loop inside the
+// handler would block WebView2's callback; the deferral holds the page until it is answered.
+func (e *wv2Engine) pageDialog(args uintptr, kind int32) {
+	str := func(slot int) string {
+		out := heap[uintptr]()
+		if vcall(args, slot, addr(out)) != sOK {
+			return ""
+		}
+		return takeString(*out)
+	}
+	msg, def := str(5), str(7)
+	d := heap[uintptr]()
+	if vcall(args, 10, addr(d)) != sOK { // GetDeferral
+		return
+	}
+	deferral := *d
+	vcall(args, 1) // AddRef: args outlives the handler
+	e.host.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
+		defer func() { vcall(deferral, 3); release(deferral); release(args) }() // Complete
+		if e.disposed {
+			return
+		}
+		ok, text := pageDialog(e.host.GetShell(), kind, msg, def)
+		if !ok {
+			return
+		}
+		if kind == wv2DialogPrompt {
+			r := utf16Z(text)
+			vcall(args, 9, addr(&r[0])) // put_ResultText
+		}
+		vcall(args, 6) // Accept
+	}))
 }
 
 func (e *wv2Engine) serve(args uintptr) {
@@ -526,7 +568,7 @@ func (e *wv2Engine) stop() { e.nav(43) }
 // Set before the first load, so the events are hooked after it.
 func (e *wv2Engine) setNavigationPolicy(f func(url string, mainFrame bool) bool) { e.policy = f }
 
-// window.gowt.call exists only with a handler, as without one the default prompt UI would show.
+// window.gowt.call exists only with a handler, as without one its marker prompt would reach the user.
 func (e *wv2Engine) setCallHandler(f func(msg string) string) {
 	if e.call == nil {
 		e.addScript(wv2CallBridge)

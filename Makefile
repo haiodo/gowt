@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -54,7 +54,7 @@ vet:
 test:
 	go test ./...
 
-check: vet test xcheck examples-check api-check qa-check
+check: vet test xcheck examples-check api-check qa-check licence-check
 
 # Platform-neutral code must build for every OS and must not import a platform's PI package; the
 # platform-specific rest (swt, cmd, ...) builds only where that platform's port exists. jface is one source for every OS: it builds on all three.
@@ -227,3 +227,7 @@ linux-shell: linux-vnc
 
 linux-run: linux-vnc
 	docker exec $(LINUX_CTR) sh -c '$(CMD)'
+
+# Translated files keep the original Copyright and licence lines (tooling/licence-check.sh).
+licence-check:
+	bash tooling/licence-check.sh

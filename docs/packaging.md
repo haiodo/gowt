@@ -12,7 +12,7 @@ CGO_ENABLED=0 GOOS=linux   GOARCH=arm64 go build -o app-linux .
 CGO_ENABLED=0 GOOS=darwin  GOARCH=arm64 go build -o app-macos .
 ```
 
-`make consumer-check` builds an outside module for darwin, windows and linux this way. Building is checked everywhere; running was checked on macOS, on Windows only under Wine, and on Linux only in Docker with Xvfb.
+`make consumer-check` builds an outside module for darwin, windows and linux this way. Building is checked everywhere; running was checked on macOS, on Windows under Wine and on a real Windows 11 arm64 virtual machine (the swttest gate and the GUI tests; a packaged or installed app was not run there), and on Linux only in Docker with Xvfb.
 
 For a smaller file add `-ldflags='-s -w' -trimpath`; `make release` does this for the demos and keeps the pclntab so stack traces still work.
 

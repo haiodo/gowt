@@ -84,7 +84,7 @@ Protocol: one JSON object per line, `{id, cmd, args}` answered by `{id, ok, resu
 
 ## Windows stand
 
-The Windows port is built on a Mac and run under Wine in a CrossOver bottle named `gowt`: `make win-build`, `win-probe`, `win-hello`, `win-swttest`, `win-snap-check`, `win-snap-update`. `win-probe` opens no window. It has not been run on real Windows.
+The Windows port is built on a Mac and run under Wine in a CrossOver bottle named `gowt`: `make win-build`, `win-probe`, `win-hello`, `win-swttest`, `win-snap-check`, `win-snap-update`. `win-probe` opens no window. The swttest gate also ran on a real Windows 11 arm64 virtual machine (see [platforms.md](platforms.md)); a `win-probe` run there is not recorded.
 
 ## Linux stand
 

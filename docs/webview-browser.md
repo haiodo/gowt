@@ -7,7 +7,7 @@ Two packages put a web page next to native widgets. Both use the system engine, 
 | | `webview` | `browser` |
 |---|---|---|
 | What | small hand-written Go API | SWT's `Browser` widget, translated, with `webview` as its engine |
-| Engine | WKWebView (macOS), WebKitGTK 4.1 (Linux), WebView2 (Windows, never run on real Windows) | the same |
+| Engine | WKWebView (macOS), WebKitGTK 4.1 (Linux), WebView2 (Windows, not checked on real Windows) | the same |
 | Use it for | new code | porting SWT code, or SWT's listener model |
 
 ## webview
@@ -62,5 +62,5 @@ b.AddLocationListener(browser.LocationListenerChangedAdapter(func(e *browser.Loc
 - History queries, `Stop`, the navigation policy that lets `LocationListener.Changing` cancel, and the call handler behind `BrowserFunction` (`WebView.SetCallHandler`) are implemented for all three engines (`webview_darwin.go`, `webview_linux.go`, `webview_windows.go`).
 - Browser tests (`tests/expected*.txt`): Linux 201 pass and 0 fail of 209 (8 skipped). macOS: the listed gaps are implemented but not yet run there.
 - Linux: WebKitGTK does not report which frame navigates, so the navigation policy always gets `mainFrame=true`.
-- Windows: the WebView2 code (COM callbacks written in Go, no `WebView2Loader.dll`) has never run on a real Windows.
+- Windows: the WebView2 code (COM callbacks written in Go, no `WebView2Loader.dll`) was not checked on a real Windows; under CrossOver pages never finish loading (see [platforms.md](platforms.md)).
 - The examples in this repository were type-checked for the three OSes but not run.

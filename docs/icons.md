@@ -25,4 +25,4 @@ app.OnThemeChange(func(bool) { button.SetImage(icons.Get(app, "search", icons.Si
 
 ## Known gaps
 
-- Without the Fluent font (CrossOver) Windows uses the Lucide fallback; the Fluent glyph path was not checked on a real Windows 11.
+- Without the Fluent font (CrossOver) Windows uses the Lucide fallback; the Fluent glyph path was not checked on the real Windows 11 virtual machine.

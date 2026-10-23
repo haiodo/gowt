@@ -916,6 +916,7 @@ gowt func Nodes[T, K comparable](list github.com/haiodo/gowt/rx.Reader[[]T], key
 gowt func OnActivate[F func() | func(int) | func(*Node)](f F) Option
 gowt func OnChange[F func(string) | func(bool) | func(int) | func(time.Time)](f F) Option
 gowt func OnClick[F func() | func(string)](f F) Option
+gowt func OnFocus(f func(focused bool)) Option
 gowt func OnSelect[F func(int) | func(*Node)](f F) Option
 gowt func Padding(points int) Option
 gowt func Pages(opts ...Option) Option
@@ -1067,6 +1068,7 @@ gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)
 gowt/look func SetFullSizeContent(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetGlass(c Container, on bool)
 gowt/look func SetGlassBorder(c Container, on bool)
+gowt/look func SetGlassFocusRing(c Container, on bool)
 gowt/look func SetGlassGroup(c Container, spacing float64)
 gowt/look func SetGlassRadius(c Container, r float64)
 gowt/look func SetInspector(w *github.com/haiodo/gowt.Window, content Container, inspector Container, width int)

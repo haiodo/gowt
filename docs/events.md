@@ -20,6 +20,7 @@ gowt.Tree(gowt.OnSelect(func(n *gowt.Node) { show(n.Text()) }))
 | `OnClick(func())` | Button; `OnClick(func(href string))` Link |
 | `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
 | `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)` |
+| `OnFocus(func(bool))` | any widget: true on gaining keyboard focus, false on losing it; a container reports its own focus only |
 | `OnActivate(f)` | Text `func()` (Enter); List, Table `func(int)`; Tree `func(*Node)` |
 
 The initial state goes in options too: `Hint(s)` for Text, `Checked(b)` for Switch and Check/Radio Button, `Selected(i)` for Combo, List, Table, Tabs and CTabs, `Value(v)` for Scale, Slider, Spinner and Progress (int), for Text, Combo and StyledText (string) and for DateTime (`time.Time`).

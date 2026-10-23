@@ -15,7 +15,13 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		name := rx.New("")
 		greeting := rx.New("")
-		w := app.Window("Greeter",
+		var w *gowt.Window
+		w = app.Window("Greeter",
+			gowt.Button("Clear", gowt.ID("clear"), gowt.OnClick(func() {
+				if w.Confirm("Clear", "Forget the greeting?") {
+					greeting.Set("")
+				}
+			})),
 			gowt.Text(gowt.ID("name"), gowt.OnChange(func(s string) { name.Set(s) })),
 			gowt.Button("Greet", gowt.ID("greet"), gowt.OnClick(func() { greeting.Set("Hello, " + name.Get()) })),
 			gowt.Label("", gowt.ID("greeting"), gowt.BindText(greeting)),

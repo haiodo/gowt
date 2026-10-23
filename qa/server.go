@@ -69,6 +69,7 @@ func Start(h Host) error {
 	if err != nil {
 		return fmt.Errorf("qa: %w", err)
 	}
+	activateDialogs()
 	s := &server{h: h, token: token}
 	go s.accept(l)
 	return nil
@@ -173,7 +174,11 @@ func (s *server) run(req request) (v any, err error) {
 				return nil, fmt.Errorf("settle: %w", err)
 			}
 		}
-		return nil, s.settle(durationMS(a.TimeoutMS, settleTimeout))
+		return nil, errors.Join(s.settle(durationMS(a.TimeoutMS, settleTimeout)), takeDialogFailures())
+	case "answer":
+		return nil, answerCmd(req.Args)
+	case "dialogs":
+		return dialogsCmd(req.Args)
 	case "shot":
 		return s.shot(req.Args)
 	case "jobs":
@@ -259,13 +264,11 @@ func (s *server) act(raw json.RawMessage) (any, error) {
 	_, err := s.ui(cmdTimeout, func() (any, error) {
 		return nil, qatree.Act(s.h.Display, a.Selector, a.Action, a.Args)
 	})
-	if err != nil {
-		return nil, err
+	if err == nil && (a.Settle == nil || *a.Settle) {
+		err = s.settle(durationMS(a.TimeoutMS, settleTimeout))
 	}
-	if a.Settle != nil && !*a.Settle {
-		return nil, nil
-	}
-	return nil, s.settle(durationMS(a.TimeoutMS, settleTimeout))
+	// A dialog without a scripted answer was cancelled; that is the cause of whatever else went wrong.
+	return nil, errors.Join(takeDialogFailures(), err)
 }
 
 // settle flushes until nothing is pending and two dumps in a row are equal. Pending includes the
@@ -368,6 +371,7 @@ func (s *server) state(raw json.RawMessage) (any, error) {
 		return nil, fmt.Errorf("state %s: %w", a.Name, err)
 	}
 	v, err := s.ui(cmdTimeout, func() (any, error) { return fn(args) })
+	err = errors.Join(takeDialogFailures(), err)
 	if err != nil {
 		return nil, fmt.Errorf("state %s: %w", a.Name, err)
 	}

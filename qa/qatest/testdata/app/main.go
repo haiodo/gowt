@@ -10,10 +10,19 @@ import (
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/qa"
 	"github.com/haiodo/gowt/rx"
+	"github.com/haiodo/gowt/swt"
 )
+
+type keyFunc func(*swt.Event)
+
+func (f keyFunc) HandleEvent(e *swt.Event) { f(e) }
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
+		var events []string
+		var w *gowt.Window
+		vetoClose := false
+		note := func(format string, a ...any) { events = append(events, fmt.Sprintf(format, a...)) }
 		clicks := rx.New(0)
 		off := rx.New(0)
 		name := rx.New("")
@@ -21,13 +30,59 @@ func main() {
 		pick := rx.New(-1)
 		report := rx.New("")
 		text := rx.Compute(func() string { return fmt.Sprintf("clicks: %d", clicks.Get()) })
-		w := app.Window("QA fixture",
+		w = app.Window("QA fixture",
 			gowt.Label("", gowt.BindText(text), gowt.ID("count")),
 			gowt.Button("Click", gowt.ID("click"), gowt.OnClick(func() { clicks.Set(clicks.Get() + 1) })),
 			gowt.Button("Off", gowt.ID("off"), gowt.Disabled(), gowt.OnClick(func() { off.Set(off.Get() + 1) })),
-			gowt.Text(gowt.ID("name"), gowt.OnChange(func(s string) { name.Set(s) })),
+			gowt.Text(gowt.ID("name"), gowt.OnChange(func(s string) { name.Set(s) }),
+				gowt.OnActivate(func() { note("activate name") }),
+				gowt.OnFocus(func(on bool) { note("focus name %v", on) }),
+				gowt.Init(func(t *gowt.TextView) {
+					t.Unwrap().AddListener(swt.KeyDown, keyFunc(func(e *swt.Event) { note("keydown name %d", e.KeyCode) }))
+				})),
 			gowt.Button("Agree", gowt.Check(), gowt.ID("agree"), gowt.OnClick(func() { agree.Set(!agree.Get()) })),
-			gowt.List([]string{"a", "b", "c"}, gowt.ID("list"), gowt.OnSelect(func(i int) { pick.Set(i) })),
+			gowt.List([]string{"a", "b", "c"}, gowt.ID("list"), gowt.OnSelect(func(i int) { pick.Set(i) }),
+				gowt.OnActivate(func(i int) { note("activate list %d", i) })),
+			gowt.Table(gowt.ID("tbl"), gowt.OnActivate(func(i int) { note("activate table %d", i) }),
+				gowt.Init(func(t *gowt.TableView) {
+					t.Column("Name", 80)
+					t.Row("alpha")
+					t.Row("beta")
+				})),
+			gowt.Tree(gowt.ID("lazy"), gowt.OnActivate(func(n *gowt.Node) { note("activate tree %s", n.Text()) }),
+				gowt.Init(func(t *gowt.TreeView) {
+					t.Node("remote").Node("loading")
+					t.OnExpand(func(n *gowt.Node) {
+						note("expand %s", n.Text())
+						for _, c := range n.Children() {
+							c.Remove()
+						}
+						n.Node("disk")
+						n.Node("net")
+					})
+					t.OnCollapse(func(n *gowt.Node) { note("collapse %s", n.Text()) })
+				})),
+			gowt.Button("Delete", gowt.ID("delete"), gowt.OnClick(func() {
+				if w.Confirm("Delete", "Delete the file?") {
+					note("deleted")
+				}
+			})),
+			gowt.Button("Open", gowt.ID("open"), gowt.OnClick(func() {
+				for _, p := range w.FileDialog(gowt.FileDialog{Title: "Open", Multi: true, Filters: []gowt.FileFilter{{Name: "Text", Pattern: "*.txt"}}}) {
+					note("opened %s", p)
+				}
+			})),
+			gowt.Button("Popup", gowt.ID("popup"), gowt.OnClick(func() {
+				p := app.Window("Popup", gowt.Label("popup"))
+				p.OnClose(func() bool { note("close popup"); return !vetoClose })
+				p.Show()
+			})),
+			gowt.Scroll(gowt.ID("feed"), gowt.Size(300, 120), gowt.Init(func(s *gowt.ScrollView) {
+				for i := range 60 {
+					s.Add(gowt.Label(fmt.Sprintf("row %d", i), gowt.ID(fmt.Sprintf("row-%d", i))))
+				}
+				s.OnScroll(func(x, y int) { note("scroll %d", y) })
+			})),
 			gowt.Button("Load", gowt.ID("load"), gowt.OnClick(func() {
 				app.Job("Download report", func(ctx context.Context, p *gowt.JobProgress) error {
 					p.Total(3)
@@ -40,6 +95,8 @@ func main() {
 			})),
 			gowt.Label("", gowt.BindText(report), gowt.ID("report")),
 			gowt.Button("Twin"), gowt.Button("Twin"))
+		w.OnKey("Cmd+K", func() { note("key mod+k") })
+		w.MenuBar().Submenu("File").Item("Run", func() { note("menu run") }, gowt.Shortcut("Cmd+R"))
 		w.Show()
 		// Perpetual work: listed by Jobs, never waited for by settle.
 		app.Job("poll", func(ctx context.Context, p *gowt.JobProgress) error {
@@ -50,8 +107,11 @@ func main() {
 			clicks.Set(0)
 			off.Set(0)
 			report.Set("")
+			events, vetoClose = nil, false
 			return nil
 		})
+		qa.HandleValue("events", func(qa.Args) (any, error) { return events, nil })
+		qa.Handle("veto", func(a qa.Args) error { vetoClose = a.Bool("on"); return nil })
 		qa.Handle("add", func(a qa.Args) error { clicks.Set(clicks.Get() + a.Int("n")); return nil })
 		qa.HandleValue("get", func(qa.Args) (any, error) { return clicks.Get(), nil })
 		qa.HandleValue("form", func(qa.Args) (any, error) {

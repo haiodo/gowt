@@ -14,6 +14,12 @@ const (
 	EnvData   = "GOWT_QA_DATA"   // a private data directory for the app to use instead of the user's
 )
 
+// Environment of the test process, read by qatest.
+const (
+	EnvArtifacts = "GOWT_QA_ARTIFACTS" // directory for the shots, dump and logs of failed tests
+	EnvKeep      = "GOWT_QA_KEEP"      // set: keep the app's socket, data and log directory after the run
+)
+
 // Args are the key-value arguments a test passes to a handler.
 type Args struct{ m map[string]json.RawMessage }
 
@@ -94,4 +100,30 @@ type Job struct {
 	Done       int    `json:"done,omitempty"`
 	Total      int    `json:"total,omitempty"`
 	Text       string `json:"text,omitempty"`
+}
+
+// Dialog is a scripted answer for qatest's Answer, or a dialog the app asked for as Dialogs reports it.
+// Kind is "message" (Window.MessageBox), "confirm" (Window.Confirm), "file" (FileDialog), "dir"
+// (DirDialog), "color" (ColorDialog) or "font" (FontDialog).
+//
+// Reply by kind: a button name ("OK", "Cancel", "Yes", "No", "Retry", "Abort", "Ignore") for message;
+// a bool for confirm; a path, or a list of paths for a Multi dialog, for file; a path for dir; "#rrggbb"
+// for color; a Font object ({"Name": "Menlo", "Size": 12, "Bold": true}) for font. Cancel answers as
+// the user who dismissed the dialog and needs no Reply.
+//
+// In what Dialogs returns, Reply and Cancel are what the app received, and Unanswered marks a dialog
+// with no scripted answer, which got Cancel.
+type Dialog struct {
+	Kind       string   `json:"kind"`
+	Reply      any      `json:"reply,omitempty"`
+	Cancel     bool     `json:"cancel,omitempty"`
+	Title      string   `json:"title,omitempty"`
+	Message    string   `json:"message,omitempty"`
+	Buttons    []string `json:"buttons,omitempty"` // message: the buttons it offers
+	Dir        string   `json:"dir,omitempty"`     // file, dir: where it opens
+	Name       string   `json:"name,omitempty"`    // file: the proposed file name
+	Save       bool     `json:"save,omitempty"`
+	Multi      bool     `json:"multi,omitempty"`
+	Filters    []string `json:"filters,omitempty"` // file: "Name|pattern"
+	Unanswered bool     `json:"unanswered,omitempty"`
 }

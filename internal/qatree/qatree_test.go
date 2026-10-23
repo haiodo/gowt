@@ -1,8 +1,11 @@
 package qatree
 
 import (
+	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/haiodo/gowt/swt"
 )
 
 func leaf(class, id, text, value string, kids ...*entry) *entry {
@@ -51,5 +54,35 @@ func TestRows(t *testing.T) {
 	}
 	if strings.Join(ids, "") != "acb" {
 		t.Errorf("pre-order %v", ids)
+	}
+}
+
+func TestKeyEvent(t *testing.T) {
+	mod := int32(swt.CTRL)
+	if runtime.GOOS == "darwin" {
+		mod = swt.COMMAND
+	}
+	for _, c := range []struct {
+		keys        string
+		state, code int32
+		char        uint16
+	}{
+		{"Mod+K", mod, 'k', 0},
+		{"Enter", 0, int32(swt.CR), uint16(swt.CR)},
+		{"a", 0, 'a', 'a'},
+		{"Shift+A", swt.SHIFT, 'a', 'A'},
+		{"Ctrl+Alt+Left", swt.CTRL | swt.ALT, swt.ARROW_LEFT, 0},
+		{"Mod++", mod, '+', 0},
+		{"f5", 0, swt.F5, 0},
+	} {
+		state, code, char, err := keyEvent(c.keys)
+		if err != nil || state != c.state || code != c.code || char != c.char {
+			t.Errorf("keyEvent(%q) = %d, %d, %d, %v; want %d, %d, %d", c.keys, state, code, char, err, c.state, c.code, c.char)
+		}
+	}
+	for _, keys := range []string{"Hyper+K", "Mod+Nope", ""} {
+		if _, _, _, err := keyEvent(keys); err == nil {
+			t.Errorf("keyEvent(%q) gave no error", keys)
+		}
 	}
 }

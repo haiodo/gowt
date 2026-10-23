@@ -179,7 +179,7 @@ func (s *session) stop() {
 	if s.conn != nil {
 		s.conn.Close()
 	}
-	if os.Getenv("GOWT_QA_KEEP") == "" {
+	if os.Getenv(qa.EnvKeep) == "" {
 		os.RemoveAll(s.dir)
 	}
 }

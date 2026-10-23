@@ -9,14 +9,19 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// Act runs click, type {"text"}, check {"on"} or select {"index"} / {"text"} on the one control s
-// picks. Hidden, disabled, in a closed window or under a modal window: refused.
+// Act runs click, type {"text"}, check {"on"}, select {"index"} / {"text"}, activate, expand,
+// collapse, focus, close, scroll {"to": selector} / {"dx", "dy"} or key {"keys"} on the one control s
+// picks; key with an empty s goes to the focus control. Hidden, disabled, in a closed window or
+// under a modal window: refused.
 func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("qatree: %s on %s: %v", action, s, r)
 		}
 	}()
+	if action == "key" && s == (Selector{}) {
+		return keyFocused(d, args)
+	}
 	es, err := resolve(walk(d), s)
 	if err != nil {
 		return err
@@ -52,6 +57,34 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 			return err
 		}
 		return selectItem(e, a.Index, a.Text)
+	case "activate":
+		return activate(e)
+	case "expand", "collapse":
+		return setExpanded(e, action == "expand")
+	case "focus":
+		return focus(d, e)
+	case "close":
+		return closeShell(e)
+	case "scroll":
+		var a struct {
+			To     *Selector
+			DX, DY int
+		}
+		if err := parse(args, &a); err != nil {
+			return err
+		}
+		return scroll(d, e, a.To, a.DX, a.DY)
+	case "key":
+		var a struct{ Keys string }
+		if err := parse(args, &a); err != nil {
+			return err
+		}
+		c, err := controlOf(e)
+		if err != nil {
+			return err
+		}
+		c.SetFocus()
+		return key(d, c, a.Keys)
 	}
 	return fmt.Errorf("qatree: unknown action %q", action)
 }

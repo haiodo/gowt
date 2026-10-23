@@ -56,6 +56,7 @@ make check        # without the build
 make test-swt     # translated SWT tests against tests/expected[_<os>].txt (SWTTEST_FLAGS="-run GC")
 make test-jface   # the same for JFace, tests/expected_jface[_<os>].txt
 make snap-check   # ControlExample tab snapshots against tests/snapshots[_<os>]
+make check-gui    # GOWT_GUI_TEST=1 go test of every package with such tests (opens windows; CI runs it in the Linux stand)
 make api-check    # exported API of swt per OS, and the facade against tooling/apidump/facade-api.txt
 make xcheck       # platform-neutral packages build for every OS and import no platform package
 make examples-check   # go vet of examples/<topic> for darwin, windows and linux
@@ -95,6 +96,7 @@ make linux-image                                      # build the image
 make linux-vnc                                        # start the container, prints http://localhost:6080/vnc.html
 make linux-run CMD="make test-swt"                    # run a command inside, DISPLAY=:99, repo at /src
 make test-webview-linux                               # webview tests (GOWT_GUI_TEST=1) in the stand
+make linux-run CMD="make check-gui"                    # GOWT_GUI_TEST=1 tests of every package that has them
 make linux-shell
 ```
 

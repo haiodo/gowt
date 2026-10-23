@@ -104,11 +104,12 @@ jobs:
             cmd: >-
               go build -tags jface -o /tmp/jfacetest ./cmd/swttest &&
               /tmp/jfacetest -expected tests/expected_jface_linux.txt
-          # Unit tests (the one that needs a display, swt TestApplyAccent, runs against Xvfb) and the webview test.
-          - gate: unit and webview tests
-            cmd: >-
-              go test -count=1 ./... &&
-              GOWT_GUI_TEST=1 go test -count=1 ./webview
+          # Unit tests (the one that needs a display, swt TestApplyAccent, runs against Xvfb).
+          - gate: unit tests
+            cmd: go test -count=1 ./...
+          # Every package with GOWT_GUI_TEST tests (facade, look, icons, qa/qatest e2e, examples/qa, webview), one package at a time.
+          - gate: gui tests
+            cmd: make check-gui
     steps:
       - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v4

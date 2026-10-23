@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.9.8 (2026-10-23)
 
 New API
 - `look.SetGlassBorder(c, on)` and the option `look.GlassBorder()` (client platform-go item 16): a hairline around a glass panel or a glass button, one device pixel (0.5 pt on Retina) in `NSColor.separatorColor`, following the corner radius, so a glass capsule or circle shows on a white content panel. It sits on the layer of the glass, under the controls. The colour is resolved under the view's appearance and set again when the system switches light and dark; resizes and `AutoGrow` keep it in step. `GlassBorder()` works next to `GlassButton()` and `gowt.Circle()` in either order, `SetGlassBorder` may come before `SetGlass`. No-op before macOS 26 and on other systems.

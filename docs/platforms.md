@@ -30,7 +30,7 @@ SWT's translated JUnit tests, `make test-swt`, counted from `tests/expected*.txt
 
 3894 tests in all. JFace tests (`expected_jface*.txt`): 86 pass, 1 skip on macOS and Windows; 85 pass, 1 fail, 1 skip on Linux.
 
-CI (GitHub Actions, v0.11.0, all green) builds and vets darwin, linux and windows on amd64 and arm64, runs `gen-check` and `xcheck`/`api-check`, and runs the GUI gates in Linux Docker under Xvfb: swt tests, jface tests, unit and webview tests (`GOWT_GUI_TEST=1`). macOS and Windows GUI tests are not in CI, there are no runners with a display. Every non-pass line in the expected files has a reason; none is `UNDESCRIBED` now.
+CI (GitHub Actions, v0.11.0, all green) builds and vets darwin, linux and windows on amd64 and arm64, runs `gen-check` and `xcheck`/`api-check`, and runs the GUI gates in Linux Docker under Xvfb: swt tests, jface tests, unit tests, and the GUI tests of every package that has them (`make check-gui`, `GOWT_GUI_TEST=1`, webview and the `qa/qatest` e2e among them). macOS and Windows GUI tests are not in CI, there are no runners with a display. Every non-pass line in the expected files has a reason; none is `UNDESCRIBED` now.
 
 ## How the ports differ
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+Fixes
+- macOS 26.5: a `look.SetGlass` capsule showed a light rectangle with square corners behind it on a white content panel (client platform-go item 15). The glass of a `SetGlass` panel is now clipped to its corner radius (`masksToBounds`), as the glass circle button already was.
+
 ## v0.9.6 (2026-10-22)
 
 New API

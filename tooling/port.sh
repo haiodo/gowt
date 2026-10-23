@@ -297,9 +297,10 @@ BR_STUB=(org/eclipse/swt/browser/WebViewBrowser.java)
 if [ "$PLATFORM" = gtk ]; then
 	SWT_FILES=("${SWT_FILES[@]/org\/eclipse\/swt\/internal\/graphics\/ImageUtil.java/}")
 	for i in "${!SWT_FILES[@]}"; do [ -n "${SWT_FILES[$i]}" ] || unset 'SWT_FILES[i]'; done
-	# gtk helpers the widgets and Image/GC call straight into.
+	# gtk helpers the widgets and Image/GC call straight into. GDBus and SessionManagerDBus are LGPL upstream:
+	# not translated, swt/dbus_stub_manual_linux.go stands in.
 	SWT_FILES+=(org/eclipse/swt/internal/ImageList.java org/eclipse/swt/internal/SWTGeometry.java
-		org/eclipse/swt/internal/GDBus.java org/eclipse/swt/internal/SessionManagerDBus.java org/eclipse/swt/internal/AsyncReadyCallback.java
+		org/eclipse/swt/internal/AsyncReadyCallback.java
 		org/eclipse/swt/internal/GAsyncReadyCallbackHelper.java org/eclipse/swt/internal/SyncDialogUtil.java org/eclipse/swt/internal/GTK4GlibFuture.java
 		org/eclipse/swt/widgets/Tracker.java org/eclipse/swt/widgets/IME.java)
 fi

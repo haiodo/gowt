@@ -132,13 +132,13 @@ func (this *RTFTransfer) nativeToJava_(transferData *TransferData) any {
 	var chars []uint16 = gtk.ConverterMbcsToWcs(buffer)
 	var string_ string = jrt.FromChars(chars)
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
-	var cond901 any
+	var cond891 any
 	if end == -1 {
-		cond901 = string_
+		cond891 = string_
 	} else {
-		cond901 = jrt.Substring(string_, 0, end)
+		cond891 = jrt.Substring(string_, 0, end)
 	}
-	return cond901
+	return cond891
 }
 
 func (this *RTFTransfer) NativeToJavaGTK4(transferDataLike TransferDataLike) any {
@@ -148,8 +148,8 @@ func (this *RTFTransfer) NativeToJavaGTK4(transferDataLike TransferDataLike) any
 	}
 	_ = transferData
 	var buffer any = this.ByteArrayTransfer.nativeToJava_(transferData)
-	bytes, ok902 := buffer.([]int8)
-	if ok902 {
+	bytes, ok892 := buffer.([]int8)
+	if ok892 {
 		return jrt.FromChars(gtk.ConverterMbcsToWcs(bytes))
 	}
 	return nil
@@ -164,8 +164,8 @@ func (this *RTFTransfer) getTypeNames_() []string {
 }
 
 func (this *RTFTransfer) CheckRTF(object any) bool {
-	_, ok904 := object.(string)
-	return (ok904 && !(len((jrt.Cast[string](object))) == 0))
+	_, ok894 := object.(string)
+	return (ok894 && !(len((jrt.Cast[string](object))) == 0))
 }
 
 func (this *RTFTransfer) validate_(object any) bool {

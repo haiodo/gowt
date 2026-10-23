@@ -4,8 +4,7 @@ source commit af630a9093 (SWT); org.eclipse.jface.* comes from eclipse.platform.
 SPDX-License-Identifier: EPL-2.0
 
 Copyright notices of the original authors are kept in the header of every translated file.
-Two files translated from gtk sources, swt/internal_gdbus_linux.go and swt/internal_sessionmanagerdbus_linux.go,
-are licensed upstream under the LGPL 2.1 (not EPL-2.0); their headers keep that notice. tooling/licence-check.sh enforces the headers.
+tooling/licence-check.sh enforces the headers and rejects LGPL text anywhere in the repository.
 
 icons/lucide embeds a subset of Lucide icons (https://lucide.dev), ISC License, partly derived from
 Feather (MIT); the full text is in icons/lucide/LICENSE. System icon sets (SF Symbols, Segoe Fluent

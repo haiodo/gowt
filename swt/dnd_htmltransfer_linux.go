@@ -114,13 +114,13 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 		string_ = jrt.FromChars(unicode)
 	}
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
-	var cond897 any
+	var cond887 any
 	if end == -1 {
-		cond897 = string_
+		cond887 = string_
 	} else {
-		cond897 = jrt.Substring(string_, 0, end)
+		cond887 = jrt.Substring(string_, 0, end)
 	}
-	return cond897
+	return cond887
 }
 
 func (this *HTMLTransfer) getTypeIds_() []int32 {
@@ -132,8 +132,8 @@ func (this *HTMLTransfer) getTypeNames_() []string {
 }
 
 func (this *HTMLTransfer) CheckHTML(object any) bool {
-	_, ok899 := object.(string)
-	return (ok899 && !(len((jrt.Cast[string](object))) == 0))
+	_, ok889 := object.(string)
+	return (ok889 && !(len((jrt.Cast[string](object))) == 0))
 }
 
 func (this *HTMLTransfer) validate_(object any) bool {

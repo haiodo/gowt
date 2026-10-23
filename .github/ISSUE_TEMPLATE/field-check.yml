@@ -1,0 +1,39 @@
+name: Field check
+description: Results of go run ./cmd/fieldcheck on your machine
+title: "Field check: <OS version, CPU>"
+labels: ["field-check"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Run `go run ./cmd/fieldcheck` in a checkout of gowt and attach the zip it writes. Steps: [docs/field-check.md](https://github.com/haiodo/gowt/blob/main/docs/field-check.md).
+  - type: input
+    id: os
+    attributes:
+      label: OS and version
+      description: For Linux also the desktop and the session type (X11 or Wayland).
+      placeholder: Windows 11 24H2 / Ubuntu 24.04 GNOME Wayland / macOS 26.1
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware
+      description: CPU, the number of monitors and their scale (100%, 150%, Retina).
+      placeholder: Ryzen 7 5800X, two monitors, 100% and 150%
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What looked wrong
+      description: Anything you saw while it ran that the report cannot show: flicker, a window in the wrong place, a wrong colour, a hang. "Nothing" is an answer.
+    validations:
+      required: true
+  - type: textarea
+    id: zip
+    attributes:
+      label: Result file
+      description: Drag gowt-fieldcheck-*.zip into this box. It has the environment, the results, the full logs and a few window pictures; the logs can contain file paths of your machine, so check them if your user name matters.
+    validations:
+      required: true

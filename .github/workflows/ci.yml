@@ -137,3 +137,29 @@ jobs:
       - name: Return cache ownership
         if: always()
         run: sudo chown -R "$(id -u):$(id -g)" ~/.cache/gowt-gocache ~/.cache/gowt-gomod
+
+  # Developer Certificate of Origin: every commit of a pull request carries a Signed-off-by line (git commit -s).
+  dco:
+    name: DCO sign-off
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Check Signed-off-by
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          bad=0
+          for c in $(git rev-list --no-merges "$BASE..$HEAD"); do
+            if ! git log -1 --format=%B "$c" | grep -qE '^Signed-off-by: .+ <.+@.+>$'; then
+              echo "::error::commit $c has no Signed-off-by line: $(git log -1 --format=%s "$c")"
+              bad=1
+            fi
+          done
+          if [ "$bad" = 1 ]; then
+            echo "Add it with git commit -s, or git rebase --signoff $BASE for several commits. See CONTRIBUTING.md." >&2
+            exit 1
+          fi

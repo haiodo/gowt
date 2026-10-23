@@ -1,0 +1,15 @@
+{"Action":"run","Package":"example.com/a","Test":"TestA"}
+{"Action":"output","Package":"example.com/a","Test":"TestA","Output":"=== RUN   TestA\n"}
+{"Action":"pass","Package":"example.com/a","Test":"TestA","Elapsed":0.1}
+{"Action":"run","Package":"example.com/a","Test":"TestB"}
+{"Action":"output","Package":"example.com/a","Test":"TestB","Output":"=== RUN   TestB\n"}
+{"Action":"output","Package":"example.com/a","Test":"TestB","Output":"    b_test.go:12: got 1, want 2\n"}
+{"Action":"output","Package":"example.com/a","Test":"TestB","Output":"--- FAIL: TestB (0.00s)\n"}
+{"Action":"fail","Package":"example.com/a","Test":"TestB","Elapsed":0}
+{"Action":"run","Package":"example.com/a","Test":"TestC"}
+{"Action":"skip","Package":"example.com/a","Test":"TestC","Elapsed":0}
+{"Action":"output","Package":"example.com/a","Output":"FAIL\n"}
+{"Action":"fail","Package":"example.com/a","Elapsed":0.2}
+{"Action":"output","Package":"example.com/broken","Output":"# example.com/broken\n"}
+{"Action":"output","Package":"example.com/broken","Output":"./x.go:3:2: undefined: x\n"}
+{"Action":"fail","Package":"example.com/broken","Elapsed":0}

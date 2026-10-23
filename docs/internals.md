@@ -24,7 +24,7 @@ gowt is Eclipse SWT translated from Java to Go by a translator in this repositor
 | `winmanifest/` | The Windows manifest as `.syso` objects; import it for visual styles and DPI awareness |
 | `examples/<topic>/` | Small programs backing the documentation pages |
 | `examples/controlexample/` | SWT's ControlExample, translated into its own package on top of `swt` |
-| `cmd/` | Demos and tools. Demos written with the facade: `gowtdemo`, `hellogowt`, `icondemo`, `glassdemo`, `backdropdemo`, `finderdemo`, `themecheck`, `webviewdemo`, `minibrowser`, `form`, `paint`, `stack`, `tree`, `widgets2`. On `swt`: `hello`, `images`, `jfacedemo`, `controlexample`. Tools: `swttest` (runs the translated tests), `snapcheck` (compares snapshots), `winprobe` (Windows: checks that every DLL function the bindings call resolves, opens no window) |
+| `cmd/` | Demos and tools. Demos written with the facade: `gowtdemo`, `hellogowt`, `icondemo`, `glassdemo`, `backdropdemo`, `finderdemo`, `themecheck`, `webviewdemo`, `minibrowser`, `form`, `paint`, `stack`, `tree`, `widgets2`. On `swt`: `hello`, `images`, `jfacedemo`, `controlexample`. Tools: `swttest` (runs the translated tests), `snapcheck` (compares snapshots), `winprobe` (Windows: checks that every DLL function the bindings call resolves, opens no window), `fieldcheck` (runs the suites on a real machine into one zip, [field-check.md](field-check.md); `tooling/fieldreport` compares those zips) |
 | `tests/swttests/`, `tests/jfacetests/` | SWT's and JFace's JUnit tests, translated |
 | `tests/expected*.txt`, `tests/snapshots*/` | The per-OS regression gates and snapshot references |
 | `tooling/j2go/` | The Java-to-Go translator, with its notes in `tooling/j2go/README.md` |

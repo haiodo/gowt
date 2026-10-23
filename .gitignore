@@ -3,3 +3,4 @@ tooling/j2go/dependency-reduced-pom.xml
 bin/
 tooling/j2go/gtkstubs-gen/
 dist/
+gowt-fieldcheck-*.zip

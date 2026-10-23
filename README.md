@@ -120,4 +120,6 @@ JFace tests: 86 pass on macOS and Windows, 85 pass and 1 fail on Linux. Counts a
 
 More: [docs/platforms.md](docs/platforms.md). How the repository and the translator work: [docs/internals.md](docs/internals.md).
 
+Contributing (build, tests, generated code, DCO sign-off): [CONTRIBUTING.md](CONTRIBUTING.md). To help test on a real Windows, Linux or Mac: [docs/field-check.md](docs/field-check.md).
+
 License: EPL-2.0, see `LICENSE` and `NOTICE`.

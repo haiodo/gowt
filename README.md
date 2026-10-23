@@ -112,7 +112,7 @@ JFace tests: 86 pass on macOS and Windows, 85 pass and 1 fail on Linux. Counts a
 ## Known gaps
 
 - Windows runs on a real Windows 11 arm64 (UTM virtual machine) and under Wine (CrossOver). Not checked: Mica, Acrylic and rounded corners by eye, a machine with two monitors (the VM has one display), the QA driver. Per-monitor DPI changes while running are not handled by the port itself; they use upstream SWT code and are untested.
-- CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and webview tests) on Linux under Xvfb. macOS and Windows GUI tests are not in CI; they run locally and on the VM.
+- CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb. macOS and Windows GUI tests are not in CI; they run locally and on the VM.
 - Linux: GTK 3 only.
 - `Browser` does not support the Authentication event; see [docs/webview-browser.md](docs/webview-browser.md) for the rest.
 - Clipboard, drag and drop and `StyledText` are in the facade (`App.Clipboard`, `DragFrom`/`DropOn`, `StyledText`). Not verified: drag and drop with a real mouse on any OS; cross-application clipboard transfer (the peer-process SWT tests are skipped); `StyledText` style rendering on macOS (upstream tests skipped). `Accessible` is a stub on all three OSes.

@@ -96,20 +96,20 @@ func (this *DragSource) initDragSource(control *Control, style int32) {
 		gtk.OSG_signal_connect(control.Handle, gtk.OSDrag_end, DragSourceDragEnd_.GetAddress(), int64(0))
 		gtk.OSG_signal_connect(control.Handle, gtk.OSDrag_data_delete, DragSourceDragDataDelete_.GetAddress(), int64(0))
 		var effect any = control.impl.getDataKey_(DragSourceDEFAULT_DRAG_SOURCE_EFFECT)
-		_, ok876 := dragSourceAdapterImplAsDragSourceEffect(effect)
-		if ok876 {
+		_, ok866 := dragSourceAdapterImplAsDragSourceEffect(effect)
+		if ok866 {
 			this.dragEffect = castanyToDragSourceEffect(effect)
 		} else {
-			_, ok877 := isControlToTree(control)
-			if ok877 {
+			_, ok867 := isControlToTree(control)
+			if ok867 {
 				this.dragEffect = upcastTreeDragSourceEffectToDragSourceEffect(NewTreeDragSourceEffect(castControlToTree(control)))
 			} else {
-				_, ok878 := isControlToTable(control)
-				if ok878 {
+				_, ok868 := isControlToTable(control)
+				if ok868 {
 					this.dragEffect = upcastTableDragSourceEffectToDragSourceEffect(NewTableDragSourceEffect(castControlToTable(control)))
 				} else {
-					_, ok879 := isControlToList(control)
-					if ok879 {
+					_, ok869 := isControlToList(control)
+					if ok869 {
 						this.dragEffect = upcastListDragSourceEffectToDragSourceEffect(NewListDragSourceEffect(castControlToList(control)))
 					}
 				}
@@ -253,8 +253,8 @@ func (this *DragSource) Drag(dragEventLike EventLike) {
 }
 
 func (this *DragSource) DragBegin(widget int64, context int64) {
-	_, ok880 := isControlToText(this.control)
-	if ok880 {
+	_, ok870 := isControlToText(this.control)
+	if ok870 {
 		var event *DNDEvent = newDNDEvent()
 		var display *Display = DisplayGetCurrent()
 		var loc *Point = display.GetCursorLocation()
@@ -318,8 +318,8 @@ func (this *DragSource) DragEnd(widget int64, context int64) {
 	event.Detail = operation
 	this.NotifyListeners(DNDDragEnd, upcastDNDEventToEvent(event))
 	if gtk.OSIsWayland() {
-		_, ok882 := isControlToTable(this.control)
-		if ok882 || func() bool { _, ok883 := isControlToTree(this.control); return ok883 }() || func() bool { _, ok884 := isControlToList(this.control); return ok884 }() {
+		_, ok872 := isControlToTable(this.control)
+		if ok872 || func() bool { _, ok873 := isControlToTree(this.control); return ok873 }() || func() bool { _, ok874 := isControlToList(this.control); return ok874 }() {
 			var selection int64 = gtk.GTKGtk_tree_view_get_selection(widget)
 			gtk.GTKGtk_tree_selection_set_select_function(selection, int64(0), int64(0), int64(0))
 		}

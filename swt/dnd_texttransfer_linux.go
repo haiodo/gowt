@@ -189,13 +189,13 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 	var unicode []uint16 = gtk.ConverterMbcsToWcs(utf8)
 	var string_ string = jrt.FromChars(unicode)
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
-	var cond905 any
+	var cond895 any
 	if end == -1 {
-		cond905 = string_
+		cond895 = string_
 	} else {
-		cond905 = jrt.Substring(string_, 0, end)
+		cond895 = jrt.Substring(string_, 0, end)
 	}
-	return cond905
+	return cond895
 }
 
 func (this *TextTransfer) NativeToJavaGTK4(transferDataLike TransferDataLike) any {
@@ -205,8 +205,8 @@ func (this *TextTransfer) NativeToJavaGTK4(transferDataLike TransferDataLike) an
 	}
 	_ = transferData
 	var buffer any = this.ByteArrayTransfer.nativeToJava_(transferData)
-	bytes, ok906 := buffer.([]int8)
-	if ok906 {
+	bytes, ok896 := buffer.([]int8)
+	if ok896 {
 		return jrt.FromChars(gtk.ConverterMbcsToWcs(bytes))
 	}
 	return nil
@@ -233,8 +233,8 @@ func (this *TextTransfer) getTypeNames_() []string {
 }
 
 func (this *TextTransfer) CheckText(object any) bool {
-	_, ok908 := object.(string)
-	return (ok908 && !(len((jrt.Cast[string](object))) == 0))
+	_, ok898 := object.(string)
+	return (ok898 && !(len((jrt.Cast[string](object))) == 0))
 }
 
 func (this *TextTransfer) validate_(object any) bool {

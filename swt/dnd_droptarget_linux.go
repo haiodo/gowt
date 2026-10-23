@@ -129,16 +129,16 @@ func (this *DropTarget) initDropTarget(control *Control, style int32) {
 		this.OnDispose()
 	}})
 	var effect any = control.impl.getDataKey_(DropTargetDEFAULT_DROP_TARGET_EFFECT)
-	_, ok885 := dropTargetAdapterImplAsDropTargetEffect(effect)
-	if ok885 {
+	_, ok875 := dropTargetAdapterImplAsDropTargetEffect(effect)
+	if ok875 {
 		this.dropEffect = castanyToDropTargetEffect(effect)
 	} else {
-		_, ok886 := isControlToTable(control)
-		if ok886 {
+		_, ok876 := isControlToTable(control)
+		if ok876 {
 			this.dropEffect = upcastTableDropTargetEffectToDropTargetEffect(NewTableDropTargetEffect(castControlToTable(control)))
 		} else {
-			_, ok887 := isControlToTree(control)
-			if ok887 {
+			_, ok877 := isControlToTree(control)
+			if ok877 {
 				this.dropEffect = upcastTreeDropTargetEffectToDropTargetEffect(NewTreeDropTargetEffect(castControlToTree(control)))
 			}
 		}
@@ -562,8 +562,8 @@ func (this *DropTarget) SetTransfer(transferAgents []*Transfer) {
 			gtk.GTK3MemmoveOverload30(pTargets+int64(i*gtk.GtkTargetEntrySizeof), &targets[i], int64(gtk.GtkTargetEntrySizeof))
 		}
 		var actions int32 = this.OpToOsOp(this.impl.getStyle_())
-		_, ok888 := isControlToCombo(this.control)
-		if ok888 {
+		_, ok878 := isControlToCombo(this.control)
+		if ok878 {
 			if (this.control.impl.getStyle_() & READ_ONLY) == 0 {
 				var entryHandle int64 = gtk.GTK3Gtk_bin_get_child(this.control.Handle)
 				if entryHandle != 0 {
@@ -820,11 +820,11 @@ func (this *DropTarget) DropGtk4(drop int64, x float64, y float64) bool {
 	var gtype int64 = ContentProvidersGetInstance().GetGType(selectedTransfer)
 	var dropDataType *TransferData = this.selectedDataType
 	var dropAllowedOperations int32 = allowedOperations
-	anon889 := &DropTargetAnon1{}
-	anon889.fnAsync = func(callback int64) {
+	anon879 := &DropTargetAnon1{}
+	anon879.fnAsync = func(callback int64) {
 		gtk.GTK4Gdk_drop_read_value_async(drop, gtype, gtk.OSG_PRIORITY_DEFAULT, int64(0), callback, int64(0))
 	}
-	anon889.fnCallback = func(result int64) {
+	anon879.fnCallback = func(result int64) {
 		var object any = nil
 		var gvalue int64 = gtk.GTK4Gdk_drop_read_value_finish(drop, result, nil)
 		if gvalue != 0 {
@@ -847,7 +847,7 @@ func (this *DropTarget) DropGtk4(drop int64, x float64, y float64) bool {
 		}
 		gtk.GTK4Gdk_drop_finish(drop, this.OpToOsOp(operation))
 	}
-	GAsyncReadyCallbackHelperRun(anon889)
+	GAsyncReadyCallbackHelperRun(anon879)
 	return true
 }
 
@@ -940,13 +940,13 @@ func DropTargetDrag_Drop(widget int64, context int64, x int64, y int64, time int
 	if target == (nil) {
 		return int64(0)
 	}
-	var cond890 int32
+	var cond880 int32
 	if target.Drag_drop(widget, context, int32(x), int32(y), int32(time)) {
-		cond890 = 1
+		cond880 = 1
 	} else {
-		cond890 = 0
+		cond880 = 0
 	}
-	return int64(cond890)
+	return int64(cond880)
 }
 
 func DropTargetDrag_Leave(widget int64, context int64, time int64) int64 {
@@ -963,13 +963,13 @@ func DropTargetDrag_Motion(widget int64, context int64, x int64, y int64, time i
 	if target == (nil) {
 		return int64(0)
 	}
-	var cond891 int32
+	var cond881 int32
 	if target.Drag_motion(widget, context, int32(x), int32(y), int32(time)) {
-		cond891 = 1
+		cond881 = 1
 	} else {
-		cond891 = 0
+		cond881 = 0
 	}
-	return int64(cond891)
+	return int64(cond881)
 }
 
 func DropTargetFindDropTarget(handle int64) *DropTarget {
@@ -997,13 +997,13 @@ func DropTargetDropAccept(controller int64, drop int64) int64 {
 	if target == (nil) {
 		return int64(0)
 	}
-	var cond892 int32
+	var cond882 int32
 	if target.DropAcceptGtk4(drop) {
-		cond892 = 1
+		cond882 = 1
 	} else {
-		cond892 = 0
+		cond882 = 0
 	}
-	return int64(cond892)
+	return int64(cond882)
 }
 
 func DropTargetDropEnter(controller int64, drop int64, x float64, y float64) int64 {
@@ -1035,13 +1035,13 @@ func DropTargetDrop(controller int64, drop int64, x float64, y float64) int64 {
 	if target == (nil) {
 		return int64(0)
 	}
-	var cond893 int32
+	var cond883 int32
 	if target.DropGtk4(drop, x, y) {
-		cond893 = 1
+		cond883 = 1
 	} else {
-		cond893 = 0
+		cond883 = 0
 	}
-	return int64(cond893)
+	return int64(cond883)
 }
 
 // j2go: instanceof helper for DropTargetEffect and its subclasses within the translated set.

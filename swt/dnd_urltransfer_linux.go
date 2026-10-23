@@ -103,13 +103,13 @@ func (this *URLTransfer) nativeToJava_(transferData *TransferData) any {
 	gtk.CMemmoveOverload10(chars, transferData.PValue, int64(size))
 	var string_ string = jrt.FromChars(chars)
 	var end int32 = jrt.IndexFrom(string_, string(rune('\u0000')), 0)
-	var cond910 any
+	var cond900 any
 	if end == -1 {
-		cond910 = string_
+		cond900 = string_
 	} else {
-		cond910 = jrt.Substring(string_, 0, end)
+		cond900 = jrt.Substring(string_, 0, end)
 	}
-	return cond910
+	return cond900
 }
 
 func (this *URLTransfer) getTypeIds_() []int32 {
@@ -121,7 +121,7 @@ func (this *URLTransfer) getTypeNames_() []string {
 }
 
 func (this *URLTransfer) CheckURL(object any) bool {
-	return !jrt.IsNil(object) && func() bool { _, ok913 := object.(string); return (ok913) }() && jrt.StringLength((jrt.Cast[string](object))) > 0
+	return !jrt.IsNil(object) && func() bool { _, ok903 := object.(string); return (ok903) }() && jrt.StringLength((jrt.Cast[string](object))) > 0
 }
 
 func (this *URLTransfer) validate_(object any) bool {

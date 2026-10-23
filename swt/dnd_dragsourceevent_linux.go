@@ -85,13 +85,13 @@ func (this *DragSourceEvent) UpdateEvent(eLike DNDEventLike) {
 
 func (this *DragSourceEvent) string_() string {
 	var string_ string = this.TypedEvent.string_()
-	var cond863 int64
+	var cond853 int64
 	if this.DataType != (nil) {
-		cond863 = this.DataType.Type
+		cond853 = this.DataType.Type
 	} else {
-		cond863 = int64(0)
+		cond853 = int64(0)
 	}
-	return fmt.Sprintf("%s operation=%d type=%d doit=%t}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), this.Detail, (cond863), this.Doit)
+	return fmt.Sprintf("%s operation=%d type=%d doit=%t}", jrt.Substring(string_, 0, jrt.StringLength(string_)-1), this.Detail, (cond853), this.Doit)
 }
 
 func upcastDNDEventToEvent(x *DNDEvent) *Event {

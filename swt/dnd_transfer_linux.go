@@ -173,9 +173,9 @@ func NewTransfer() *Transfer {
 }
 
 func (this *Transfer) initTransfer() {
-	t909 := TransferNextId
+	t899 := TransferNextId
 	TransferNextId++
-	this.id = t909
+	this.id = t899
 }
 
 func (this *Transfer) GetSupportedTypes() []*TransferData {

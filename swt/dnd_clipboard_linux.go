@@ -130,8 +130,8 @@ func (this *Clipboard) GetContentsTransferClipboards(transferLike TransferLike, 
 	_ = transfer
 	if gtk.GTKGTK4 {
 		var contentsAsync *jrt.CompletableFuture = this.Gtk4_getContentsAsync(transfer, clipboards)
-		var tret870 any
-		tretd871 := false
+		var tret860 any
+		tretd861 := false
 		func() {
 			defer func() {
 				r := recover()
@@ -148,8 +148,8 @@ func (this *Clipboard) GetContentsTransferClipboards(transferLike TransferLike, 
 					e := r.(*jrt.InterruptedException)
 					_ = e
 					jrt.Ignore(jrt.CurrentThread())
-					tret870 = nil
-					tretd871 = true
+					tret860 = nil
+					tretd861 = true
 					return
 				} else if func() bool {
 					switch r.(type) {
@@ -162,19 +162,19 @@ func (this *Clipboard) GetContentsTransferClipboards(transferLike TransferLike, 
 					_ = e
 					var proxy *ClipboardProxyGTK4 = ClipboardProxyGTK4_getInstance(this.display)
 					proxy.Clear(this, clipboards, true)
-					tret870 = nil
-					tretd871 = true
+					tret860 = nil
+					tretd861 = true
 					return
 				} else {
 					panic(r)
 				}
 			}()
-			tret870 = GTK4GlibFutureGet(this.display, contentsAsync, jrt.DurationOfSeconds(int64(5)))
-			tretd871 = true
+			tret860 = GTK4GlibFutureGet(this.display, contentsAsync, jrt.DurationOfSeconds(int64(5)))
+			tretd861 = true
 			return
 		}()
-		if tretd871 {
-			return tret870
+		if tretd861 {
+			return tret860
 		}
 	}
 	return this.Gtk3_getContents(transfer, clipboards)
@@ -318,13 +318,13 @@ func (this *Clipboard) GetAvailableTypesClipboards(clipboards int32) []*Transfer
 			result[offset+i].Type = int64(types[i])
 		}
 	}
-	var cond872 []*TransferData
+	var cond862 []*TransferData
 	if result == (nil) {
-		cond872 = make([]*TransferData, 0)
+		cond862 = make([]*TransferData, 0)
 	} else {
-		cond872 = result
+		cond862 = result
 	}
-	return cond872
+	return cond862
 }
 
 func (this *Clipboard) GetAvailableTypeNames() []string {
@@ -344,9 +344,9 @@ func (this *Clipboard) GetAvailableTypeNames() []string {
 		var buffer []int8 = make([]int8, gtk.CStrlen(pName))
 		gtk.CMemmoveOverload8(buffer, pName, int64(int32(len(buffer))))
 		gtk.OSG_free(pName)
-		t873 := count
+		t863 := count
 		count++
-		result[t873] = fmt.Sprintf("GTKCLIPBOARD %s", jrt.FromChars(gtk.ConverterMbcsToWcs(buffer)))
+		result[t863] = fmt.Sprintf("GTKCLIPBOARD %s", jrt.FromChars(gtk.ConverterMbcsToWcs(buffer)))
 	}
 	for i := int32(0); i < int32(len(types2)); i++ {
 		var pName int64 = gtk.GDKGdk_atom_name(int64(types2[i]))
@@ -356,9 +356,9 @@ func (this *Clipboard) GetAvailableTypeNames() []string {
 		var buffer []int8 = make([]int8, gtk.CStrlen(pName))
 		gtk.CMemmoveOverload8(buffer, pName, int64(int32(len(buffer))))
 		gtk.OSG_free(pName)
-		t874 := count
+		t864 := count
 		count++
-		result[t874] = fmt.Sprintf("GTKPRIMARYCLIPBOARD %s", jrt.FromChars(gtk.ConverterMbcsToWcs(buffer)))
+		result[t864] = fmt.Sprintf("GTKPRIMARYCLIPBOARD %s", jrt.FromChars(gtk.ConverterMbcsToWcs(buffer)))
 	}
 	if count < int32(len(result)) {
 		var temp []string = make([]string, count)
@@ -470,13 +470,13 @@ func (this *Clipboard) Gtk3_clipboard_wait_for_contents(clipboard int64, target 
 	display.SetData(key, nil)
 	var duration int64 = jrt.CurrentTimeMillis() - startTime
 	if selection_data == 0 && duration > 5000 {
-		var cond875 int32
+		var cond865 int32
 		if clipboard == ClipboardGTKCLIPBOARD {
-			cond875 = DNDCLIPBOARD
+			cond865 = DNDCLIPBOARD
 		} else {
-			cond875 = DNDSELECTION_CLIPBOARD
+			cond865 = DNDSELECTION_CLIPBOARD
 		}
-		ClipboardProxy_getInstance(display).SetData(this, upcastArrstringToany([]string{" "}), []*Transfer{upcastTextTransferToTransfer(TextTransferGetInstance())}, cond875)
+		ClipboardProxy_getInstance(display).SetData(this, upcastArrstringToany([]string{" "}), []*Transfer{upcastTextTransferToTransfer(TextTransferGetInstance())}, cond865)
 	}
 	return selection_data
 }

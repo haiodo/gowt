@@ -1054,6 +1054,7 @@ gowt/look const BackdropTranslucent Backdrop = 1
 gowt/look const Capsule untyped int = -1
 gowt/look func Classic()
 gowt/look func DragsWindow(c Container)
+gowt/look func GlassBorder() github.com/haiodo/gowt.Option
 gowt/look func GlassButton() github.com/haiodo/gowt.Option
 gowt/look func InspectorVisible(w *github.com/haiodo/gowt.Window) bool
 gowt/look func InspectorWidth(w *github.com/haiodo/gowt.Window) int
@@ -1063,6 +1064,7 @@ gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)
 gowt/look func SetFullSizeContent(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetGlass(c Container, on bool)
+gowt/look func SetGlassBorder(c Container, on bool)
 gowt/look func SetGlassGroup(c Container, spacing float64)
 gowt/look func SetGlassRadius(c Container, r float64)
 gowt/look func SetInspector(w *github.com/haiodo/gowt.Window, content Container, inspector Container, width int)

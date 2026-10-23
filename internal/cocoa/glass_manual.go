@@ -228,6 +228,7 @@ func SetGlassCornerRadius(view *NSView, r float64) {
 		msgF64(bd, sel("setCornerRadius:"), r)
 		if panelGlassInside(uintptr(view.Id), bd) {
 			clipPanelGlass(bd, r)
+			RefreshGlassBorder(view)
 		}
 	}
 }

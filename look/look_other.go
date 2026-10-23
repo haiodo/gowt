@@ -20,6 +20,8 @@ func setGlassRadius(*swt.Composite, float64) {}
 
 func glassButton(*swt.Control) {}
 
+func setGlassBorder(*swt.Control, bool) {}
+
 func setDarkContent(*swt.Display, bool) {}
 
 func setToolbar(*swt.Shell, []ToolbarItem) bool { return false }

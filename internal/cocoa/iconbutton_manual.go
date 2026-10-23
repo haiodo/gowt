@@ -41,6 +41,7 @@ func SetButtonCircle(view *NSView) {
 // square, a little darker than the background, over the whole frame behind the circle; macOS 27 does
 // not. Call it again after the button is resized.
 func ClipGlassCircle(view *NSView) {
+	defer RefreshGlassBorder(view)
 	v := uintptr(view.Id)
 	if msg(v, "bezelStyle") != bezelStyleGlass || ButtonBorderShape(view) != borderShapeCircle {
 		return
@@ -94,6 +95,7 @@ func SetGlassButton(view *NSView) {
 	if round {
 		SetButtonCircle(view)
 	}
+	RefreshGlassBorder(view)
 }
 
 // moveToPlainCell copies what SWT put on the button's cell to a new NSButtonCell, so the SWT cell

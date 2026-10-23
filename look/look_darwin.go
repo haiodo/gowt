@@ -105,6 +105,32 @@ func glassButton(c *swt.Control) {
 	}
 }
 
+const glassBorderKey = "gowt.look.glassBorder"
+
+// setGlassBorder sets the stroke on the glass of c and, once per control, follows what changes it: the
+// system appearance (a layer keeps the CGColor it was given) and the size of a capsule button.
+func setGlassBorder(c *swt.Control, on bool) {
+	cocoa.SetGlassBorder(c.View, on)
+	if c.GetDataKey(glassBorderKey) != nil {
+		return
+	}
+	t := &borderTheme{c}
+	c.SetDataKeyValue(glassBorderKey, t)
+	c.GetDisplay().AddListener(swt.Settings, t)
+	c.AddListener(swt.Dispose, t)
+	c.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { cocoa.RefreshGlassBorder(c.View) }))
+}
+
+type borderTheme struct{ c *swt.Control }
+
+func (t *borderTheme) HandleEvent(e *swt.Event) {
+	if e.Type == swt.Dispose {
+		t.c.GetDisplay().RemoveListener(swt.Settings, t)
+		return
+	}
+	cocoa.RefreshGlassBorder(t.c.View)
+}
+
 func setRoundedCorners(*swt.Shell, bool) {}
 
 func setDarkContent(*swt.Display, bool) {}

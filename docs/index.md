@@ -59,6 +59,7 @@ Four ideas carry the whole API:
 | Widget catalog (all widgets, one line each) | [widget-catalog.md](widget-catalog.md) | [`examples/catalog`](../examples/catalog) |
 | Packaging and distribution | [packaging.md](packaging.md) | - |
 | Platform notes and known gaps | [platforms.md](platforms.md) | - |
+| Testing an app with the QA driver | [qa.md](qa.md) | [`examples/qa`](../examples/qa) |
 
 ## SWT port
 

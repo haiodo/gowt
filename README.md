@@ -56,6 +56,7 @@ Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable pr
 | Theme and platform look | [theme-look](docs/theme-look.md) | [theme](examples/theme) |
 | Icons | [icons](docs/icons.md) | [icons](examples/icons) |
 | Web view | [webview-browser](docs/webview-browser.md) | [webview](examples/webview) |
+| Testing with the QA driver | [qa](docs/qa.md) | [qa](examples/qa) |
 
 SWT port, for porting SWT and JFace code (apps and the examples above do not use it):
 

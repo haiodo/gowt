@@ -2,7 +2,9 @@
 package main
 
 import (
+	"context"
 	"log"
+	"time"
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/qa"
@@ -16,7 +18,13 @@ func main() {
 		w := app.Window("Greeter",
 			gowt.Text(gowt.ID("name"), gowt.OnChange(func(s string) { name.Set(s) })),
 			gowt.Button("Greet", gowt.ID("greet"), gowt.OnClick(func() { greeting.Set("Hello, " + name.Get()) })),
-			gowt.Label("", gowt.ID("greeting"), gowt.BindText(greeting)))
+			gowt.Label("", gowt.ID("greeting"), gowt.BindText(greeting)),
+			gowt.Button("Load", gowt.ID("load"), gowt.OnClick(func() {
+				app.Job("Load greeting", func(ctx context.Context, p *gowt.JobProgress) error {
+					time.Sleep(time.Second) // a slow request
+					return nil
+				}).Then(func(error) { greeting.Set("Loaded") })
+			})))
 		w.Show()
 
 		// A no-op without -tags gowtqa. qatest calls "reset" before every test.

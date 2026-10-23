@@ -93,10 +93,22 @@ func (c *Client) must(cmd string, arg any) json.RawMessage {
 	return r
 }
 
-// Settle waits until the app has nothing queued for the UI thread and two dumps in a row are equal.
+// Settle waits until the app has nothing queued for the UI thread, no running Job, Track or short
+// timer, and two dumps in a row are equal. Every action settles before it returns. On a timeout the
+// error names what was still pending.
 func (c *Client) Settle() {
 	c.t.Helper()
 	c.must("settle", nil)
+}
+
+// Jobs returns the Jobs and Tracks the app is running now, background ones included.
+func (c *Client) Jobs() []qa.Job {
+	c.t.Helper()
+	var jobs []qa.Job
+	if err := json.Unmarshal(c.must("jobs", nil), &jobs); err != nil {
+		c.t.Fatalf("qatest: jobs: %v", err)
+	}
+	return jobs
 }
 
 // Dump returns the control tree of every window.

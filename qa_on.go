@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"strings"
+	"time"
 
 	"github.com/haiodo/gowt/qa"
 	"github.com/haiodo/gowt/rx"
@@ -19,10 +21,22 @@ func qaStart(a *App) {
 		Sync:    a.Sync,
 		Flush:   a.Flush,
 		Pending: func() string {
-			if a.Pending() == 0 {
-				return ""
+			var parts []string
+			if n := rx.Pending(); n+len(a.relayouts) > 0 {
+				parts = append(parts, fmt.Sprintf("%d rx effects and posts, %d layouts", n, len(a.relayouts)))
 			}
-			return fmt.Sprintf("%d rx effects and posts, %d layouts", rx.Pending(), len(a.relayouts))
+			if w := a.waitingOn(); w != "" {
+				parts = append(parts, w)
+			}
+			return strings.Join(parts, ", ")
+		},
+		Jobs: func() []qa.Job {
+			var out []qa.Job
+			for _, j := range a.Jobs() {
+				out = append(out, qa.Job{Name: j.Name, Background: j.Background, Track: j.Track,
+					ElapsedMS: time.Since(j.Started).Milliseconds(), Done: j.Done, Total: j.Total, Text: j.Text})
+			}
+			return out
 		},
 		Quit:       a.Quit,
 		ShotHandle: shotHandle,

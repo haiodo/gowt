@@ -84,3 +84,14 @@ type Node struct {
 	Path     string `json:"path"`
 	Children []Node `json:"children,omitempty"`
 }
+
+// Job is one running Job or Track of the app, as the "jobs" command reports it; it mirrors gowt.JobInfo.
+type Job struct {
+	Name       string `json:"name"`
+	Background bool   `json:"background,omitempty"`
+	Track      bool   `json:"track,omitempty"`
+	ElapsedMS  int64  `json:"elapsed_ms"`
+	Done       int    `json:"done,omitempty"`
+	Total      int    `json:"total,omitempty"`
+	Text       string `json:"text,omitempty"`
+}

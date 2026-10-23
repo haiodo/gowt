@@ -35,6 +35,7 @@ type App struct {
 	// controls whose preferred size changed in this event-loop turn; see sizing
 	relayouts []*swt.Control
 	badge     string
+	jobs      jobSet // Job, Track and short After timers, see jobs.go
 }
 
 // SetAppName sets the name the system shows for the process (macOS menu bar and Dock, Linux
@@ -55,6 +56,8 @@ func Run(setup func(*App)) (err error) {
 	defer catch(&err)
 	a := &App{display: swt.NewDisplay(), images: map[*Image]struct{}{}, fonts: map[Font]*sharedFont{}}
 	defer a.display.Dispose()
+	a.jobs.init()
+	defer a.jobs.close()
 	toOnError := func(err error) { a.fail(err) }
 	a.display.SetRuntimeExceptionHandler(toOnError)
 	a.display.SetErrorHandler(toOnError)
@@ -177,8 +180,17 @@ func ignoreDisposed() {
 	}
 }
 
-// After runs f on the UI thread once, after d.
+// After runs f on the UI thread once, after d. A timer under one second counts in Pending until it
+// fires; a longer one does not.
 func (a *App) After(d time.Duration, f func()) {
+	if d < shortTimer {
+		a.jobs.timers.Add(1)
+		inner := f
+		f = func() {
+			a.jobs.timers.Add(-1)
+			inner()
+		}
+	}
 	a.display.TimerExec(int32(d.Milliseconds()), jrt.NewRunnable(f))
 }
 
@@ -208,9 +220,10 @@ func (a *App) Flush() {
 	a.display.RunDeferredLayouts()
 }
 
-// Pending counts the updates waiting for the next event-loop turn: stale rx effects, posted values
-// and layouts that bindings put off. Zero means Flush has nothing to do. UI thread only.
-func (a *App) Pending() int { return rx.Pending() + len(a.relayouts) }
+// Pending counts the work the app has not finished: stale rx effects, posted values and layouts that
+// bindings put off (Flush applies those), running Jobs and Tracks that are not BackgroundJob, and
+// After timers under one second. Zero means nothing is left to wait for. UI thread only.
+func (a *App) Pending() int { return rx.Pending() + len(a.relayouts) + a.outstanding() }
 
 // ScreenSize returns the size in points of the primary monitor's area for windows, without the
 // menu bar, Dock or taskbar.

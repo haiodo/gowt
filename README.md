@@ -93,11 +93,13 @@ SWT's own JUnit tests, translated to Go and run per OS by `make test-swt` agains
 
 | OS | pass | fail | skip |
 |---|---|---|---|
-| macOS | 3492 | 30 (+2 flaky) | 26 |
-| Windows (Wine, not real Windows) | 3275 | 232 (209 Browser tests: no WebView2 Runtime in the CrossOver bottle; 23 others) | 43 |
-| Linux (Docker, Xvfb) | 3497 | 33 | 20 |
+| macOS | 3817 | 5 (+3 flaky) | 69 |
+| Windows (`expected_windows.txt`, recorded under Wine) | 3728 | 70 (61 Browser tests, 9 others) (+7 flaky) | 89 |
+| Linux (Docker, Xvfb) | 3840 | 2 (+1 flaky) | 58 |
 
-JFace tests: 86 pass on macOS and Windows, 85 on Linux. Counts are the `pass`, `fail`, `flaky` and `skip` lines of the expected files; every non-pass line carries a reason. The facade itself has `go test` examples and an API stability gate (`make api-check`).
+3894 tests in all. On real Windows 11 arm64 (a UTM virtual machine) the run of 2026-10-22 gave 3741 passed, 64 failed, 89 skipped; the gate file was not re-recorded from it.
+
+JFace tests: 86 pass on macOS and Windows, 85 pass and 1 fail on Linux. Counts are the `pass`, `fail`, `flaky` and `skip` lines of the expected files; every non-pass line carries a reason. The facade itself has `go test` examples and an API stability gate (`make api-check`).
 
 ## Platform requirements
 
@@ -109,7 +111,8 @@ JFace tests: 86 pass on macOS and Windows, 85 on Linux. Counts are the `pass`, `
 
 ## Known gaps
 
-- Windows was never run on real Windows, only under Wine (CrossOver). Mica, Acrylic and WebView2 are unverified; per-monitor DPI changes while running are not handled.
+- Windows runs on a real Windows 11 arm64 (UTM virtual machine) and under Wine (CrossOver). Not checked: Mica, Acrylic and rounded corners by eye, a machine with two monitors (the VM has one display), the QA driver. Per-monitor DPI changes while running are not handled by the port itself; they use upstream SWT code and are untested.
+- CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and webview tests) on Linux under Xvfb. macOS and Windows GUI tests are not in CI; they run locally and on the VM.
 - Linux: GTK 3 only.
 - `Browser` does not support the Authentication event; see [docs/webview-browser.md](docs/webview-browser.md) for the rest.
 - Clipboard, drag and drop and `StyledText` are in the facade (`App.Clipboard`, `DragFrom`/`DropOn`, `StyledText`). Not verified: drag and drop with a real mouse on any OS; cross-application clipboard transfer (the peer-process SWT tests are skipped); `StyledText` style rendering on macOS (upstream tests skipped). `Accessible` is a stub on all three OSes.

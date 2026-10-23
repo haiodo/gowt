@@ -251,7 +251,7 @@ If the connection to the app is already lost, the screenshot and the dump are sk
 - Not in the dump: the items of a native toolbar set with `look.SetToolbar` (NSToolbar), column headers of a table, context menus of controls (only the window's menu bar is walked), the tray, and the content of a `Browser` or web view. Native dialogs (message boxes, file choosers) are not in the dump either; see Dialogs.
 - A modal dialog the facade does not route (one opened through `Unwrap()` or a custom modal `Shell` loop) blocks the UI thread. Commands that need it fail after 10 seconds with `the UI thread did not answer in 10s (a modal dialog?)`.
 - There is no true headless mode on macOS and Windows: the app opens real windows on the desktop, without taking the focus. On Linux run the test under Xvfb (`xvfb-run go test ...`). The gowt stand for Linux is Docker with Xvfb.
-- Windows is not verified on real hardware, only under CrossOver/Wine; see [platforms.md](platforms.md).
+- The QA driver was never run on Windows. The Windows port itself runs on a real Windows 11 arm64 virtual machine and under CrossOver/Wine; see [platforms.md](platforms.md).
 - Input is semantic. A click is delivered to the control even when another control covers it on screen, and a text is typed into a field the user could not focus. A test can pass where a real user would be blocked. Check overlaps with `Bounds` and by eye with a screenshot.
 - `Type` sends characters without key modifiers, input methods or shortcuts.
 - Pixel output is not compared; `Shot` is for you to look at.

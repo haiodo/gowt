@@ -80,7 +80,7 @@ app.Job("Sync", poll, gowt.BackgroundJob()) // perpetual work: listed, never wai
 - `JobProgress` has `Total(n)`, `Step(n)` and `Text(s)`; call them from the job's goroutine.
 - `Track` is for external work: `done` is idempotent and safe from any goroutine. Call it after the result has reached the UI (inside `app.Async`), or a test sees the app idle too early.
 - `app.Jobs()` lists the running jobs and tracks (name, `Background`, `Track`, `Started`, `Done`, `Total`, `Text`). `app.OnJobs(f)` calls `f` on the UI thread when the set or a progress changes, at most once per event-loop turn.
-- `app.Pending()` counts the jobs and tracks that are not `BackgroundJob`, until their `Then` callbacks have run, and the `After` timers shorter than one second. A longer `After` and every `Every` are not counted. The QA driver's `settle` (so every `qatest` action) waits for exactly that, and on a timeout names it: `waiting: job "Download report" 4.2s, track "Send message" 1.0s, 1 timer`.
+- `app.Pending()` counts the jobs and tracks that are not `BackgroundJob`, until their `Then` callbacks have run, and the `After` timers shorter than one second. A longer `After` and every `Every` are not counted. The QA driver's `settle` (so every `qatest` action) waits for exactly that, and on a timeout names it: `waiting: job "Download report" 4.2s, track "Send message" 1.0s, 1 timer`. How to write tests against this is in [qa.md](qa.md).
 
 ## Reactive state (package rx)
 

@@ -260,3 +260,50 @@ func TestQATree(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestQATreeActions(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1 to open windows")
+	}
+	var activated, expanded, collapsed, keys, accel, closed int
+	var err error
+	onMain(func() {
+		err = Run(func(app *App) {
+			w := app.Window("qa actions")
+			w.Add(VBox(
+				Button("go", ID("go")),
+				List([]string{"a", "b"}, ID("list"), OnActivate(func(i int) { activated += i + 1 })),
+				Tree(ID("tree"), Init(func(t *TreeView) {
+					t.Node("lazy").Node("loading")
+					t.OnExpand(func(n *Node) { expanded++; n.Node("real") })
+					t.OnCollapse(func(*Node) { collapsed++ })
+				})),
+			))
+			w.OnKey("Cmd+K", func() { keys++ })
+			w.OnClose(func() bool { closed++; return closed > 1 })
+			w.MenuBar().Submenu("File").Item("Run", func() { accel++ }, Shortcut("Cmd+R"))
+			w.Show()
+
+			qaAct(t, app, qatree.Selector{Class: "ListItem", Text: "b"}, "activate", "")
+			qaAct(t, app, qatree.Selector{Class: "TreeItem", Text: "lazy"}, "expand", "")
+			qaFind(t, app, qatree.Selector{Class: "TreeItem", Text: "real"})
+			qaAct(t, app, qatree.Selector{Class: "TreeItem", Text: "lazy"}, "collapse", "")
+			qaRefuse(t, app, qatree.Selector{Class: "TreeItem", Text: "real"}, "activate", "not visible")
+			qaAct(t, app, qatree.Selector{ID: "go"}, "key", `{"keys":"Mod+K"}`)
+			qaAct(t, app, qatree.Selector{ID: "go"}, "key", `{"keys":"Mod+R"}`)
+			qaAct(t, app, qatree.Selector{ID: "go"}, "focus", "")
+			qaAct(t, app, qatree.Selector{}, "key", `{"keys":"Mod+K"}`) // to the focus control
+			if activated != 2 || expanded != 1 || collapsed != 1 || keys != 2 || accel != 1 {
+				t.Errorf("activated=%d expanded=%d collapsed=%d keys=%d accel=%d", activated, expanded, collapsed, keys, accel)
+			}
+			qaAct(t, app, qatree.Selector{Class: "Shell"}, "close", "")
+			if closed != 1 || len(qatree.Dump(app.Unwrap())) != 1 {
+				t.Errorf("the vetoed close: closed=%d", closed)
+			}
+			qaAct(t, app, qatree.Selector{Class: "Shell"}, "close", "")
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}

@@ -26,3 +26,5 @@ func clickButton(b *swt.Button) {
 
 // selectTab fires the listeners of the tab folder like a click on the tab.
 func selectTab(f *swt.TabFolder, i int) { f.SetSelectionIndexNotify(int32(i), true) }
+
+func flush(*swt.Display) {}

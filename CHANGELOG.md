@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+New API
+- QA driver actions (qa-driver TSK-08): `activate` (DefaultSelection of a double click or Enter on a List, Table or Tree row, a single-line Text, a push Button, a window's default button), `expand` and `collapse` (a Tree row: the Expand or Collapse event runs first, so an app that builds the children lazily does it, then the state changes; a lazy node needs a placeholder child), `focus` (FocusIn and `gowt.OnFocus`; the window must be the active one), `close` (Shell.Close: `OnClose` can veto), `scroll` (a ScrollView to a control, by `dx`, `dy`, or a control inside it into view: `ScrollView.OnScroll` and the feed's row clipping run) and `key` (`Mod+K`, `Enter`, `Shift+Tab`; `Mod` is Cmd on macOS and Ctrl elsewhere). `key` runs the menu item with that accelerator, as macOS key equivalents do before the control sees the key; otherwise it sends KeyDown to the display filters (`Window.OnKey`) and the control's listeners (a listener may veto with `Doit`), then KeyUp, and Enter that nobody vetoed also sends DefaultSelection. Without a selector `key` goes to the focus control. `qatest`: `Element.Activate`, `Expand`, `Collapse`, `Focus`, `Close`, `Key`, `ScrollTo`, `ScrollBy`, `ScrollIntoView`, `SelectText` and `Client.Key`.
+- QA driver dialogs (qa-driver TSK-10): in a `-tags gowtqa` build with the QA socket, `MessageBox`, `Confirm`, `FileDialog`, `DirDialog`, `ColorDialog` and `FontDialog` do not open a native dialog (it blocks the UI thread in a modal loop). They take the answer a test queued with `app.Answer(qa.Dialog{Kind: "confirm", Reply: true})` and are recorded for `app.Dialogs()` (title, message, buttons, folder, filters). A dialog with no queued answer gets Cancel and fails the action that opened it, instead of hanging. The default build links none of it.
+- `qatest`: `Client.Eventually(timeout, cond)` polls for what `Settle` cannot see; the env names `GOWT_QA_ARTIFACTS` and `GOWT_QA_KEEP` are the constants `qa.EnvArtifacts` and `qa.EnvKeep`.
+
 ## v0.10.0 (2026-10-24)
 
 New API

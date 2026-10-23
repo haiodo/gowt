@@ -65,3 +65,23 @@ func TestLoad(t *testing.T) {
 		t.Fatalf("greeting is %q", got)
 	}
 }
+
+func TestClear(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1 to open windows")
+	}
+	app := qatest.App(t)
+	app.Find(qa.ID("name")).Type("Ada")
+	app.Find(qa.ID("greet")).Click()
+
+	// The dialog is not shown: the app's Confirm returns the scripted answer.
+	app.Answer(qa.Dialog{Kind: "confirm", Reply: true})
+	app.Find(qa.ID("clear")).Click()
+
+	if got := app.Find(qa.ID("greeting")).Node().Text; got != "" {
+		t.Errorf("greeting is %q after confirming", got)
+	}
+	if d := app.Dialogs(); len(d) != 1 || d[0].Message != "Forget the greeting?" {
+		t.Errorf("dialogs: %+v", d)
+	}
+}

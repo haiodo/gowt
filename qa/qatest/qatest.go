@@ -72,6 +72,9 @@ func App(t testing.TB) *Client {
 		cur = s
 	}
 	c := &Client{t: t, s: cur}
+	if _, err := c.s.call("dialogs", map[string]bool{"clear": true}, 15*time.Second); err != nil {
+		t.Fatalf("qatest: clear dialogs: %v", err)
+	}
 	if _, err := c.s.call("state", map[string]any{"name": "reset"}, 15*time.Second); err != nil && !strings.Contains(err.Error(), `no handler "reset"`) {
 		t.Fatalf("qatest: reset: %v", err)
 	}
@@ -99,6 +102,52 @@ func (c *Client) must(cmd string, arg any) json.RawMessage {
 func (c *Client) Settle() {
 	c.t.Helper()
 	c.must("settle", nil)
+}
+
+// Eventually polls cond every 50 ms until it reports ok, for what Settle cannot see: a server
+// push, a file written by another process. cond returns the value it looked at; the failure
+// names the last one.
+func (c *Client) Eventually(timeout time.Duration, cond func() (observed any, ok bool)) {
+	c.t.Helper()
+	deadline := time.Now().Add(timeout)
+	for {
+		v, ok := cond()
+		if ok {
+			return
+		}
+		if time.Now().After(deadline) {
+			c.t.Fatalf("qatest: condition not met in %v, last observed: %v", timeout, v)
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+}
+
+// Key sends a key or combination to the control that has the focus, or to the active window.
+// Window.OnKey shortcuts and menu accelerators run; see Element.Key for the names.
+func (c *Client) Key(keys string) {
+	c.t.Helper()
+	if _, err := c.Call("act", map[string]any{"selector": qa.Selector{}, "action": "key", "args": map[string]string{"keys": keys}}); err != nil {
+		c.t.Fatalf("qatest: key %s: %v", keys, err)
+	}
+}
+
+// Answer queues the reply to a dialog the app will open. The dialog does not appear: the app's
+// call returns the reply. Answers of one kind are used in the order queued. A dialog with no
+// answer fails the action that opened it and gets Cancel. Unused answers are dropped by the
+// next App(t).
+func (c *Client) Answer(d qa.Dialog) {
+	c.t.Helper()
+	c.must("answer", d)
+}
+
+// Dialogs returns the dialogs the app opened since App(t), with the reply each got.
+func (c *Client) Dialogs() []qa.Dialog {
+	c.t.Helper()
+	var ds []qa.Dialog
+	if err := json.Unmarshal(c.must("dialogs", nil), &ds); err != nil {
+		c.t.Fatalf("qatest: dialogs: %v", err)
+	}
+	return ds
 }
 
 // Jobs returns the Jobs and Tracks the app is running now, background ones included.
@@ -170,7 +219,7 @@ var unsafeName = regexp.MustCompile(`[^A-Za-z0-9_.-]+`)
 
 // artifactDir is $GOWT_QA_ARTIFACTS/<test> or a temp directory (t.TempDir would vanish with the test).
 func (c *Client) artifactDir() string {
-	base := os.Getenv("GOWT_QA_ARTIFACTS")
+	base := os.Getenv(qa.EnvArtifacts)
 	dir := ""
 	if base != "" {
 		dir = filepath.Join(base, unsafeName.ReplaceAllString(c.t.Name(), "_"))
@@ -240,6 +289,51 @@ func (e *Element) Check(on bool) { e.c.t.Helper(); e.act("check", map[string]boo
 
 // Select selects the item at index in a list, combo, table or tab folder.
 func (e *Element) Select(index int) { e.c.t.Helper(); e.act("select", map[string]int{"index": index}) }
+
+// Activate does what a double click or Enter does on a row of a list, table or tree (the selected
+// row of the control itself), in a single-line text field, on a push button, or on a window (its
+// default button). A row is selected first.
+func (e *Element) Activate() { e.c.t.Helper(); e.act("activate", nil) }
+
+// Expand opens a tree row: the Expand event runs first, so the app can build the children.
+func (e *Element) Expand() { e.c.t.Helper(); e.act("expand", nil) }
+
+// Collapse closes a tree row.
+func (e *Element) Collapse() { e.c.t.Helper(); e.act("collapse", nil) }
+
+// Focus gives the control the keyboard focus. Its window must be the active one.
+func (e *Element) Focus() { e.c.t.Helper(); e.act("focus", nil) }
+
+// Close closes a window as its close button does: OnClose handlers can keep it open.
+func (e *Element) Close() { e.c.t.Helper(); e.act("close", nil) }
+
+// Key sends a key or combination to the control: "Enter", "Esc", "Shift+Tab", "Mod+K". Mod is Cmd
+// on macOS and Ctrl elsewhere; Cmd works on macOS only.
+func (e *Element) Key(keys string) {
+	e.c.t.Helper()
+	e.act("key", map[string]string{"keys": keys})
+}
+
+// ScrollTo scrolls a ScrollView so that the control target picks is shown.
+func (e *Element) ScrollTo(target qa.Selector) {
+	e.c.t.Helper()
+	e.act("scroll", map[string]any{"to": target})
+}
+
+// ScrollBy moves the content of a ScrollView by dx, dy pixels; the origin stops at the content's edge.
+func (e *Element) ScrollBy(dx, dy int) {
+	e.c.t.Helper()
+	e.act("scroll", map[string]int{"dx": dx, "dy": dy})
+}
+
+// ScrollIntoView scrolls the ScrollView that holds the control until the control is shown.
+func (e *Element) ScrollIntoView() { e.c.t.Helper(); e.act("scroll", nil) }
+
+// SelectText selects the item with exactly this text in a list, combo, table, tree or tab folder.
+func (e *Element) SelectText(text string) {
+	e.c.t.Helper()
+	e.act("select", map[string]string{"text": text})
+}
 
 // Nodes returns every control the selector matches now.
 func (e *Element) Nodes() []qa.Node {

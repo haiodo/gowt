@@ -3,6 +3,7 @@
 package gowt
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -13,6 +14,14 @@ import (
 	"github.com/haiodo/gowt/qa"
 	"github.com/haiodo/gowt/rx"
 )
+
+func init() {
+	qaDialog = func(c dialogCall) (json.RawMessage, bool, bool) {
+		return qa.Ask(qa.Dialog{Kind: c.Kind, Title: c.Title, Message: c.Message, Buttons: c.Buttons, Dir: c.Dir,
+			Name: c.Name, Save: c.Save, Multi: c.Multi, Filters: c.Filters})
+	}
+	qaDialogFailed = qa.Failed
+}
 
 // qaStart serves the QA driver (package qa) when GOWT_QA_SOCKET is set.
 func qaStart(a *App) {

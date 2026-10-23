@@ -19,3 +19,6 @@ func selectTab(f *swt.TabFolder, i int) {
 	objc.ID(f.View.Id).Send(objc.RegisterName("selectTabViewItemAtIndex:"), i)
 	f.GetDisplay().RunDeferredEvents()
 }
+
+// flush runs the events SWT queued while the action ran.
+func flush(d *swt.Display) { d.RunDeferredEvents() }

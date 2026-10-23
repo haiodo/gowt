@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.10.0 (2026-10-24)
 
 New API
 - `App.Job(name, fn, opts...) *Job`, `Job.Then`, `Job.Cancel`, `Job.Wait`, `JobProgress` (`Total`, `Step`, `Text`), `BackgroundJob()`, `App.Track(name) (done func())`, `App.Jobs() []JobInfo` and `App.OnJobs(f)` (qa-driver TSK-13, 14, 15): work the app is busy with, modelled on Eclipse Jobs. `Job` runs `fn(ctx, p)` in a goroutine (ctx ends with `Cancel` and with `Run`; a panic goes to `OnError` and is the job's error); `Then` runs on the UI thread, also when added after the end; `Wait` panics on the UI thread. `Track` counts work gowt does not start until `done()`. `Jobs` and `OnJobs` (coalesced, one call per event-loop turn) feed a status spinner. `Progress` and `Background` were taken by the progress bar and the colour option, hence the names `JobProgress` and `BackgroundJob`.

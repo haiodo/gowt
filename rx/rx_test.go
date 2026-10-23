@@ -544,3 +544,26 @@ func TestPostBeforeAttachWaits(t *testing.T) {
 		t.Fatalf("a=%d", a.Peek())
 	}
 }
+
+func TestPending(t *testing.T) {
+	reset(t)
+	s := New(0)
+	stop := Effect(func() { s.Get() })
+	defer stop()
+	if n := Pending(); n != 0 {
+		t.Fatalf("idle: %d", n)
+	}
+	s.Set(1)
+	if n := Pending(); n != 1 {
+		t.Fatalf("after Set: %d, want the one stale effect", n)
+	}
+	Flush()
+	s.Post(2)
+	if n := Pending(); n != 1 {
+		t.Fatalf("after Post: %d, want the one posted value", n)
+	}
+	tick()
+	if n := Pending(); n != 0 {
+		t.Fatalf("after the tick: %d", n)
+	}
+}

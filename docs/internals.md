@@ -66,6 +66,22 @@ make app          # macOS .app bundles of demos, ad-hoc signed
 
 A new failing test fails `make test-swt`; the expected file records every non-pass test with a reason (`UNDESCRIBED` until one is written). `make test-swt-update` and `test-jface-update` rewrite it.
 
+## QA driver
+
+A build with `-tags gowtqa` and `GOWT_QA_SOCKET=<path>` makes `gowt.Run` listen on a unix socket (Windows without AF_UNIX: loopback TCP, `<path>.tcp` holds the address and a token). Package `gowt/qa` is the server and `qa.Handle(name, fn)` registers app state handlers; without the tag `Handle` does nothing and the binary has no server (`make qa-check` verifies it). Package `gowt/qa/qatest` drives the app from `go test`; it links no toolkit:
+
+```go
+func TestMain(m *testing.M) { qatest.Main(m, "./bin/myapp") }
+
+func TestCount(t *testing.T) {
+	app := qatest.App(t) // one app per test package, "reset" handler called first
+	app.State("add", "n", 3)
+	app.Settle()
+}
+```
+
+Protocol: one JSON object per line, `{id, cmd, args}` answered by `{id, ok, result, error}`; commands `ping`, `windows`, `dump`, `find`, `act`, `settle`, `shot`, `state`, `quit`, each run on the UI thread with a timeout. `settle` flushes until `App.Pending()` is zero and two dumps in a row are equal; Jobs and `After` timers are not seen. In a QA run macOS does not activate the app and windows open without becoming key (Windows: without activation).
+
 ## Windows stand
 
 The Windows port is built on a Mac and run under Wine in a CrossOver bottle named `gowt`: `make win-build`, `win-probe`, `win-hello`, `win-swttest`, `win-snap-check`, `win-snap-update`. `win-probe` opens no window. It has not been run on real Windows.

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+New API
+- `gowt.ID(id)`: names a widget, a Panel or a Window for the QA driver, which picks controls by it. It stores the id under the data key `gowt.id` in every build and changes nothing else. In an `Each`, pass the id from the row data.
+
 ## v0.9.8 (2026-10-23)
 
 New API

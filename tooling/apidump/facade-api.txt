@@ -899,6 +899,7 @@ gowt func GrowX() Option
 gowt func GrowY() Option
 gowt func HBox(opts ...Option) Option
 gowt func Hint(s string) Option
+gowt func ID(id string) Option
 gowt func Indent(x int, y int) Option
 gowt func Indeterminate() Option
 gowt func Init[T Widget](f func(T)) Option

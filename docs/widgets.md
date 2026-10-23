@@ -19,6 +19,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Borderless()`, `Circle()` | push Button: no frame (an icon beside a field); round. `Circle()` with `look.GlassButton()` is a glass circle on macOS 26, the paperclip of the iPad composer. Give a round button a square `Size`. Windows keeps the rectangle |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
 | `AccessibleLabel(s)` | any widget: the name a screen reader says for a control with no text, an icon-only Button. macOS `accessibilityLabel`, Linux the ATK name, Windows nothing (`Accessible` is a stub) |
+| `ID(id)` | any widget, a Panel or a Window: names it for the QA driver, which picks controls by it. Stored in the data key `gowt.id` in every build, it changes nothing on screen. Rows made by `Each` pass an id from their row data |
 | `Gap(n)`, `Padding(n)` | containers: space between children and from the edge, see [windows-layouts.md](windows-layouts.md) |
 | `Ref(&x)`, `Init(f)` | store the created widget in `x`; run `f` on it once it and its children exist |
 | `OnClick(f)` | Button `func()`, Link `func(href string)` |

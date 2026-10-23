@@ -2,7 +2,12 @@
 
 package cocoa
 
-import "github.com/ebitengine/purego"
+import (
+	"fmt"
+	"os"
+
+	"github.com/ebitengine/purego"
+)
 
 // Kinds of the page's own dialogs, as WKView.Dialog gets them.
 const (
@@ -36,6 +41,9 @@ func blockRelease(b uintptr) { purego.SyscallN(blockReleaseFn, b) }
 
 // answerDialog calls the WebKit handler: alert takes nothing, confirm a BOOL, prompt a string or nil.
 func answerDialog(kind int, handler uintptr, ok bool, text string) {
+	if wkTrace {
+		fmt.Fprintf(os.Stderr, "wk: dialog answer kind=%d ok=%v\n", kind, ok)
+	}
 	switch {
 	case kind == WKDialogAlert:
 		callBlock(handler)

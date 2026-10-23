@@ -212,6 +212,6 @@ Checked on the Linux stand (GTK 3, Adwaita light and dark): `look` GUI tests `Te
 ## Known gaps
 
 - On Windows the material shows only where the client area is black, so `SetBackdrop` turns the shell background black. Text drawn in pure black becomes transparent: use a near-black foreground. Widgets with their own opaque background are unaffected.
-- Mica, Acrylic and rounded corners were never checked on a real Windows 11 (CrossOver has no DWM).
+- Mica, Acrylic and rounded corners were not checked by eye on the real Windows 11 arm64 virtual machine, and CrossOver has no DWM.
 - Windows per-monitor DPI changes while running (`WM_DPICHANGED`) are not handled.
 - The macOS toolbar has no menus or toggles, and its delegate lives as long as the window.

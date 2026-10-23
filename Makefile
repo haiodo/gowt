@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -54,11 +54,11 @@ vet:
 test:
 	go test ./...
 
-check: vet test xcheck examples-check api-check
+check: vet test xcheck examples-check api-check qa-check
 
 # Platform-neutral code must build for every OS and must not import a platform's PI package; the
 # platform-specific rest (swt, cmd, ...) builds only where that platform's port exists. jface is one source for every OS: it builds on all three.
-XCHECK_PKGS := ./internal/jrt ./internal/junit ./internal/snapcmp ./cmd/snapcheck ./tooling/apidump ./examples/controlexample/res
+XCHECK_PKGS := ./internal/jrt ./internal/junit ./internal/snapcmp ./cmd/snapcheck ./tooling/apidump ./examples/controlexample/res ./qa/qatest
 xcheck:
 	@for os in windows linux; do GOOS=$$os go build $(XCHECK_PKGS) || exit 1; done
 	@for os in darwin windows linux; do GOOS=$$os go build ./jface ./browser ./webview ./look ./icons ./rx || exit 1; done
@@ -75,6 +75,10 @@ examples-check:
 api-check:
 	go run ./tooling/apidump -check
 	go run ./tooling/apidump -facade
+
+# The QA server is in a -tags gowtqa build and in no other; qa/qatest links no toolkit (tooling/qa-check.sh).
+qa-check:
+	bash tooling/qa-check.sh
 
 # Translated SWT JUnit tests on the main thread (cmd/swttest), gated by tests/expected.txt: fails on a
 # regression or an undescribed failure. SWTTEST_FLAGS e.g. -run GC (the gate then checks only those).

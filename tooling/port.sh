@@ -486,6 +486,14 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.tabFromWindow(nsEvent)' "$TW_GO")" = 1 ] || { echo "port.sh: Shell tabFromWindow rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa applicationDidFinishLaunching activates a non-bundled binary, which steals the focus on every launch. A QA build
+# (-tags gowtqa, GOWT_QA_SOCKET set) skips it, see swt/qa_manual_on_darwin.go.
+if [ "$PLATFORM" = cocoa ]; then
+	DS_GO=swt/widgets_display_darwin.go
+	perl -0pi -e 's/(SetActivationPolicy\(int64\(cocoa\.OSNSApplicationActivationPolicyRegular\)\)\n)\t\t(this\.application\.ActivateIgnoringOtherApps\(true\)\n)/$1\t\tif !qaNoActivate() {\n\t\t\t$2\t\t}\n/' "$DS_GO"
+	[ "$(grep -c 'qaNoActivate()' "$DS_GO")" = 1 ] || { echo "port.sh: Display qaNoActivate rewrite did not apply" >&2; exit 1; }
+fi
+
 # gtk TabFolder sizes the selected page's control from the notebook page's allocation. A page that GTK has not allocated
 # yet (added after show, or selected before the first allocation) reports 1x1, and the control stayed 1x1: an empty page.
 # swt/widgets_tabfolder_manual_linux.go sizes the control again when GTK allocates its page.

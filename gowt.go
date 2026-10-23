@@ -74,6 +74,7 @@ func Run(setup func(*App)) (err error) {
 	if p := os.Getenv("GOWT_SNAP"); p != "" {
 		snapTick = a.armSnap(p, &err)
 	}
+	qaStart(a)
 	// The display can dispose itself inside ReadAndDispatch: macOS Quit, Windows WM_ENDSESSION.
 	for !a.quit.Load() && !a.display.IsDisposed() && len(a.display.GetShells()) > 0 {
 		snapTick()
@@ -206,6 +207,10 @@ func (a *App) Flush() {
 	a.runRelayouts()
 	a.display.RunDeferredLayouts()
 }
+
+// Pending counts the updates waiting for the next event-loop turn: stale rx effects, posted values
+// and layouts that bindings put off. Zero means Flush has nothing to do. UI thread only.
+func (a *App) Pending() int { return rx.Pending() + len(a.relayouts) }
 
 // ScreenSize returns the size in points of the primary monitor's area for windows, without the
 // menu bar, Dock or taskbar.
@@ -541,7 +546,11 @@ func (w *Window) Show() {
 		// Shell.Open, and windowDidBecomeKey on macOS, give the focus to the saved control first.
 		w.shell.SetSavedFocus(c)
 	}
-	w.shell.Open()
+	if qaQuiet() {
+		w.shell.SetVisible(true) // orderFront without key on macOS, no activation on Windows
+	} else {
+		w.shell.Open()
+	}
 	// Open passes over a push button on Windows and Linux.
 	if c != nil && !c.IsDisposed() {
 		c.SetFocus()

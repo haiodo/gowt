@@ -46,6 +46,16 @@ func Attach(prepare func(tick func()) (wake func())) (detach func()) {
 	}
 }
 
+// Pending counts the work waiting for a tick: stale effects and State.Post values not applied yet.
+// For a test that waits for the UI to go quiet. UI thread only.
+func Pending() int {
+	mustUI("Pending")
+	postMu.Lock()
+	n := len(postList)
+	postMu.Unlock()
+	return n + len(queue)
+}
+
 // wakeLoop asks the attached loop for a tick; false when no loop is attached.
 func wakeLoop() bool {
 	loopMu.RLock()

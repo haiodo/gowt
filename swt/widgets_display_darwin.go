@@ -4461,7 +4461,9 @@ func (this *Display) ApplicationSendEvent(id int64, sel int64, event int64) {
 func (this *Display) ApplicationDidFinishLaunching(id int64, sel int64, notification int64) {
 	if !this.IsBundled() {
 		this.application.SetActivationPolicy(int64(cocoa.OSNSApplicationActivationPolicyRegular))
-		this.application.ActivateIgnoringOtherApps(true)
+		if !qaNoActivate() {
+			this.application.ActivateIgnoringOtherApps(true)
+		}
 	}
 }
 

@@ -77,6 +77,8 @@ Reference material:
 - [screenshots.md](screenshots.md): how `docs/img` is produced (`GOWT_SNAP`, `make docs-shots`).
 - Package docs: `go doc github.com/haiodo/gowt` (every exported name has a doc comment).
 - [facade.md](facade.md): why the API looks the way it does.
+- [CONTRIBUTING.md](../CONTRIBUTING.md): build, tests, generated code, DCO sign-off, commit style.
+- [field-check.md](field-check.md): run the checks on your machine with one command and attach the result to an issue.
 - [internals.md](internals.md): repository map, the Java-to-Go translator, how the ports are built. Only needed to work on gowt itself.
 
 ## Not in the facade yet

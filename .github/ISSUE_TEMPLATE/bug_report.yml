@@ -1,0 +1,32 @@
+name: Bug report
+description: Something does not work or looks wrong
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: gowt version
+      description: The module version from go.mod, or the commit if you build from a checkout.
+      placeholder: v0.11.0
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: OS, version and architecture
+      description: For Linux also the desktop and the session type (X11 or Wayland). For Windows the build number.
+      placeholder: macOS 26.1 arm64
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What you did and what you expected
+      description: The smallest program that shows it, if you can. Say what you saw instead.
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Output, screenshots
+      description: Error text from the terminal as text, pictures if it is about looks.

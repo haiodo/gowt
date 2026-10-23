@@ -1,0 +1,10 @@
+PASS Test_org_eclipse_swt_widgets_Button.test_a (0.010s)
+PASS Test_org_eclipse_swt_widgets_Button.test_b (0.002s)
+SKIP Test_org_eclipse_swt_browser_Browser.test_x (0.000s): Assumption failed: Edge only
+FAIL Test_org_eclipse_swt_widgets_Tree.test_Virtual (0.310s): SetData count 3 != 4 at swt/x.go:1
+PASS Test_org_eclipse_swt_widgets_Tree.test_update (0.020s)
+FAIL Test_org_eclipse_swt_widgets_Text.test_new (0.050s): process died: fatal error: boom
+3 passed, 2 failed, 1 skipped, 6 total in 12.3s
+GATE regression: Test_org_eclipse_swt_widgets_Text.test_new expected pass, got FAIL: process died
+GATE undescribed failure: Test_org_eclipse_swt_widgets_Tree.test_Virtual: SetData
+GATE FAILED: 1 problems

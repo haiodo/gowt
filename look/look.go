@@ -75,6 +75,19 @@ func SetGlassRadius(c Container, r float64) { setGlassRadius(c.AsComposite(), r)
 // button is unchanged.
 func GlassButton() gowt.Option { return gowt.Custom(glassButton) }
 
+// SetGlassBorder draws a hairline around the glass SetGlass puts behind c: one device pixel in the
+// system separator colour, following the corner radius. On a white content panel a glass capsule is
+// otherwise almost invisible. The colour follows light and dark mode and the stroke follows
+// resizes. It can come before SetGlass. A panel in a SetGlassGroup gets none. Other systems and
+// macOS before 26: nothing happens.
+func SetGlassBorder(c Container, on bool) { setGlassBorder(&c.AsComposite().Control, on) }
+
+// GlassBorder is SetGlassBorder(true) for a glass button; it works with GlassButton and
+// gowt.Circle in either order.
+func GlassBorder() gowt.Option {
+	return gowt.Custom(func(c *swt.Control) { setGlassBorder(c, true) })
+}
+
 // SetDarkContent on Windows turns on the dark theme of the window content (scroll bars, tables, trees,
 // buttons) through undocumented uxtheme exports. Call before creating windows; it does not switch live.
 // GTK and AppKit theme the content themselves, so it does nothing there.

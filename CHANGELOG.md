@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+New API
+- `StyledTextView.SetParagraphSpacing(line, before)` (client platform-go item 18): `before` points of space above a line, like `NSParagraphStyle.paragraphSpacingBefore`, so the blocks of a feed message get a gap of about 6 pt instead of one solid column of lines. It is `swt.StyledText.SetLineVerticalIndent`, which the client used through `Unwrap`; the facade only names it. A `SetLineBackground` color stops at the gap (SWT paints the widget background there), so a code block keeps a clean edge above its first line and no band shows between a block and the paragraph before it. The gap is part of its line: it follows the line when text is inserted above it, `SetText` drops it, and SWT ignores it while `OnStyle` is set. Checked in the Linux stand (line heights, `GetLineIndex`, hit-testing in the gap, selection, line backgrounds); not run on macOS or Windows.
+
 ## v0.9.8 (2026-10-23)
 
 New API

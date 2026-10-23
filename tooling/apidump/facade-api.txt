@@ -9,8 +9,11 @@ gowt App.Every(d time.Duration, f func()) (stop func())
 gowt App.Flush()
 gowt App.ImageFrom(r io.Reader) (img *Image, err error)
 gowt App.ImageFromProvider(p github.com/haiodo/gowt/swt.ImageDataProvider) *Image
+gowt App.Job(name string, fn func(ctx context.Context, p *JobProgress) error, opts ...JobOption) *Job
+gowt App.Jobs() []JobInfo
 gowt App.LoadImage(path string) (img *Image, err error)
 gowt App.OnError(f func(error))
+gowt App.OnJobs(f func([]JobInfo))
 gowt App.OnThemeChange(f func(dark bool))
 gowt App.Pending() int
 gowt App.Quit()
@@ -18,6 +21,7 @@ gowt App.ScreenSize() (width int, height int)
 gowt App.SetBadge(text string)
 gowt App.Sync(f func())
 gowt App.SystemFont() Font
+gowt App.Track(name string) (done func())
 gowt App.Tray(tooltip string, onClick func()) *TrayIcon
 gowt App.Unwrap() *github.com/haiodo/gowt/swt.Display
 gowt App.Window(title string, opts ...Option) *Window
@@ -236,6 +240,19 @@ gowt GroupView.Visible() bool
 gowt Image.Dispose()
 gowt Image.Size() (w int, h int)
 gowt Image.Unwrap() *github.com/haiodo/gowt/swt.Image
+gowt Job.Cancel()
+gowt Job.Then(f func(err error)) *Job
+gowt Job.Wait() error
+gowt JobInfo.Background field bool
+gowt JobInfo.Done field int
+gowt JobInfo.Name field string
+gowt JobInfo.Started field time.Time
+gowt JobInfo.Text field string
+gowt JobInfo.Total field int
+gowt JobInfo.Track field bool
+gowt JobProgress.Step(n int)
+gowt JobProgress.Text(s string)
+gowt JobProgress.Total(n int)
 gowt LabelView.Dispose()
 gowt LabelView.Enabled() bool
 gowt LabelView.Focus() bool
@@ -857,6 +874,7 @@ gowt func AsCalendar() Option
 gowt func AsTime() Option
 gowt func AutoGrow(minHeight int, maxHeight int) Option
 gowt func Background(c Paint) Option
+gowt func BackgroundJob() JobOption
 gowt func Beside[T Widget](w *T, gap int) Edge
 gowt func BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool]) Option
 gowt func BindText(r github.com/haiodo/gowt/rx.Reader[string]) Option
@@ -993,6 +1011,10 @@ gowt type GridCell struct
 gowt type GroupView struct
 gowt type Icon int
 gowt type Image struct
+gowt type Job struct
+gowt type JobInfo struct
+gowt type JobOption func(*Job)
+gowt type JobProgress struct
 gowt type LabelView struct
 gowt type LinkView struct
 gowt type ListView struct
@@ -1090,6 +1112,13 @@ gowt/qa Args.Decode(key string, v any) error
 gowt/qa Args.Has(key string) bool
 gowt/qa Args.Int(key string) int
 gowt/qa Args.String(key string) string
+gowt/qa Job.Background field bool
+gowt/qa Job.Done field int
+gowt/qa Job.ElapsedMS field int64
+gowt/qa Job.Name field string
+gowt/qa Job.Text field string
+gowt/qa Job.Total field int
+gowt/qa Job.Track field bool
 gowt/qa Node.Bounds field [4]int
 gowt/qa Node.Checked field *bool
 gowt/qa Node.Children field []Node
@@ -1116,11 +1145,13 @@ gowt/qa func ID(id string) Selector
 gowt/qa func NewArgs(raw encoding/json.RawMessage) (Args, error)
 gowt/qa func Text(text string) Selector
 gowt/qa type Args struct
+gowt/qa type Job struct
 gowt/qa type Node struct
 gowt/qa type Selector struct
 gowt/qa/qatest Client.Call(cmd string, arg any) (encoding/json.RawMessage, error)
 gowt/qa/qatest Client.Dump() []github.com/haiodo/gowt/qa.Node
 gowt/qa/qatest Client.Find(sel github.com/haiodo/gowt/qa.Selector) *Element
+gowt/qa/qatest Client.Jobs() []github.com/haiodo/gowt/qa.Job
 gowt/qa/qatest Client.Settle()
 gowt/qa/qatest Client.Shot(name string) string
 gowt/qa/qatest Client.State(name string, kv ...any) encoding/json.RawMessage

@@ -50,6 +50,38 @@ go func() {
 }()
 ```
 
+## Background work: Job, Track, Jobs
+
+`app.Job` runs work in a goroutine and tells the app about it, so a status spinner and the QA driver know when the app is busy. It models Eclipse Jobs.
+
+```go
+job := app.Job("Download report", func(ctx context.Context, p *gowt.JobProgress) error {
+	p.Total(len(files))
+	for _, f := range files {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		fetch(f)
+		p.Step(1)
+	}
+	return nil
+}).Then(func(err error) { /* on the UI thread */ })
+job.Cancel()     // cancels ctx and returns
+err := job.Wait() // from a goroutine other than the UI thread: fn's error, after the Then callbacks ran
+
+done := app.Track("Send message") // work gowt does not start: a core library's callback, your own HTTP client
+core.Send(msg, func(r Reply) { app.Async(func() { show(r); done() }) })
+
+app.Job("Sync", poll, gowt.BackgroundJob()) // perpetual work: listed, never waited for
+```
+
+- `fn` gets a `ctx` that `Job.Cancel` and the end of `Run` cancel. A panic in `fn` goes to `App.OnError` and is the error `Then` and `Wait` see.
+- `Then(f)` runs `f(err)` on the UI thread after `fn` returned; called later, it still runs `f`, queued. `Job.Wait` panics on the UI thread, where it would wait for callbacks that it blocks.
+- `JobProgress` has `Total(n)`, `Step(n)` and `Text(s)`; call them from the job's goroutine.
+- `Track` is for external work: `done` is idempotent and safe from any goroutine. Call it after the result has reached the UI (inside `app.Async`), or a test sees the app idle too early.
+- `app.Jobs()` lists the running jobs and tracks (name, `Background`, `Track`, `Started`, `Done`, `Total`, `Text`). `app.OnJobs(f)` calls `f` on the UI thread when the set or a progress changes, at most once per event-loop turn.
+- `app.Pending()` counts the jobs and tracks that are not `BackgroundJob`, until their `Then` callbacks have run, and the `After` timers shorter than one second. A longer `After` and every `Every` are not counted. The QA driver's `settle` (so every `qatest` action) waits for exactly that, and on a timeout names it: `waiting: job "Download report" 4.2s, track "Send message" 1.0s, 1 timer`.
+
 ## Reactive state (package rx)
 
 Package `github.com/haiodo/gowt/rx` keeps widgets in step with state, in the style of Svelte 5 runes. A `State` is a value you set, a `Derived` is computed from other signals, an `Effect` reruns when something it read has changed. Nothing is declared: whatever a `Derived` or an `Effect` reads with `Get` is its dependency. Widgets bind to a state through options, so the data a screen shares lives in `rx` and needs no variable per widget.

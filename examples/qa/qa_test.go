@@ -51,3 +51,17 @@ func TestGreet(t *testing.T) {
 		t.Errorf("model says %s", got)
 	}
 }
+
+func TestLoad(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1 to open windows")
+	}
+	app := qatest.App(t)
+
+	// The click settles, and settle waits for the Job and its Then: no sleep, no polling.
+	app.Find(qa.ID("load")).Click()
+
+	if got := app.Find(qa.ID("greeting")).Node().Text; got != "Loaded" {
+		t.Fatalf("greeting is %q", got)
+	}
+}

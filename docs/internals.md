@@ -80,7 +80,7 @@ func TestCount(t *testing.T) {
 }
 ```
 
-Protocol: one JSON object per line, `{id, cmd, args}` answered by `{id, ok, result, error}`; commands `ping`, `windows`, `dump`, `find`, `act`, `settle`, `shot`, `state`, `quit`, each run on the UI thread with a timeout. `settle` flushes until `App.Pending()` is zero and two dumps in a row are equal; Jobs and `After` timers are not seen. In a QA run macOS does not activate the app and windows open without becoming key (Windows: without activation).
+Protocol: one JSON object per line, `{id, cmd, args}` answered by `{id, ok, result, error}`; commands `ping`, `windows`, `dump`, `find`, `act`, `settle`, `jobs`, `shot`, `state`, `quit`, each run on the UI thread with a timeout. `settle` flushes until nothing is pending and two dumps in a row are equal; pending is the rx queue and the layouts, the running `App.Job`s and `App.Track`s that are not `BackgroundJob`, and `After` timers under one second (`App.Pending()` counts the same). Every `act` settles, so a click that starts a job returns when the job and its `Then` callbacks are done. A timeout names what was still pending: `waiting: job "Download report" 4.2s, track "Send message" 1.0s, 1 timer`. `jobs` lists the running jobs including background ones (`qatest`: `app.Jobs()`). In a QA run macOS does not activate the app and windows open without becoming key (Windows: without activation).
 
 ## Windows stand
 

@@ -28,7 +28,8 @@ type Host struct {
 	Display    *swt.Display
 	Sync       func(f func())
 	Flush      func()
-	Pending    func() string // what waits for the next event-loop turn, "" when nothing
+	Pending    func() string // what settle waits for: queued updates, jobs, tracks, short timers; "" when nothing
+	Jobs       func() []Job
 	Quit       func()
 	ShotHandle func(*swt.Shell) int64
 }
@@ -175,6 +176,8 @@ func (s *server) run(req request) (v any, err error) {
 		return nil, s.settle(durationMS(a.TimeoutMS, settleTimeout))
 	case "shot":
 		return s.shot(req.Args)
+	case "jobs":
+		return s.ui(cmdTimeout, func() (any, error) { return s.h.Jobs(), nil })
 	case "state":
 		return s.state(req.Args)
 	case "quit":
@@ -265,19 +268,20 @@ func (s *server) act(raw json.RawMessage) (any, error) {
 	return nil, s.settle(durationMS(a.TimeoutMS, settleTimeout))
 }
 
-// settle flushes until nothing is pending and two dumps in a row are equal. Jobs and timers are not
-// seen yet: work that waits on them needs an explicit wait in the test.
+// settle flushes until nothing is pending and two dumps in a row are equal. Pending includes the
+// running Jobs, Tracks and short timers; background jobs and long timers are not waited for.
 func (s *server) settle(timeout time.Duration) error {
 	deadline := time.Now().Add(timeout)
 	var prev []byte
 	var pending string
+	changing := false
 	for {
 		var cur []byte
 		left := time.Until(deadline)
 		if left <= 0 {
-			return fmt.Errorf("settle: not quiet after %v: pending: %s", timeout, describe(pending, prev != nil))
+			return fmt.Errorf("settle: not quiet after %v: waiting: %s", timeout, describe(pending, changing))
 		}
-		_, err := s.ui(left, func() (any, error) {
+		_, err := s.ui(cmdTimeout, func() (any, error) {
 			s.h.Flush()
 			pending = s.h.Pending()
 			cur, _ = json.Marshal(qatree.Dump(s.h.Display))
@@ -289,6 +293,7 @@ func (s *server) settle(timeout time.Duration) error {
 		if pending == "" && bytes.Equal(cur, prev) {
 			return nil
 		}
+		changing = prev != nil && !bytes.Equal(cur, prev)
 		prev = cur
 		time.Sleep(10 * time.Millisecond)
 	}

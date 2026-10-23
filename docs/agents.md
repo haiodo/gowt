@@ -95,6 +95,7 @@ go func() {                                        // slow work off the UI threa
 	r := fetch()
 	status.Post(r)                                 // rx state from any goroutine; or app.Async(func() { ... })
 }()
+app.Job("Export", func(ctx context.Context, p *gowt.JobProgress) error { return export(ctx) }).Then(showResult) // tracked goroutine, Then on the UI thread
 app.After(time.Second, tick)                       // once
 stop := app.Every(time.Second, tick)               // repeats until stop()
 file.Item("&Save", save, gowt.Shortcut("Cmd+S"))   // Cmd+S binds the key and shows it; Ctrl+S on Windows and Linux

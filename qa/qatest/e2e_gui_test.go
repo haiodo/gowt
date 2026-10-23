@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/haiodo/gowt/qa"
 	"github.com/haiodo/gowt/qa/qatest"
@@ -167,4 +168,32 @@ func TestErrors(t *testing.T) {
 	if err != nil || json.Unmarshal(r, &v) != nil {
 		t.Errorf("ping after errors: %v", err)
 	}
+}
+
+func TestJobSettles(t *testing.T) {
+	guiOnly(t)
+	app := qatest.App(t)
+	start := time.Now()
+	app.Find(qa.ID("load")).Click()
+	// No sleep: the click settled, so the 1.5 s job and its Then are done.
+	if n := app.Find(qa.ID("report")).Node(); n.Text != "report ready" {
+		t.Fatalf("report label right after the click: %q", n.Text)
+	}
+	if d := time.Since(start); d < 1400*time.Millisecond {
+		t.Errorf("click returned after %v, before the job ended", d)
+	}
+	jobs := app.Jobs()
+	if len(jobs) != 1 || jobs[0].Name != "poll" || !jobs[0].Background {
+		t.Errorf("jobs after settle: %+v, want only the background poll", jobs)
+	}
+}
+
+func TestSettleTimeoutNamesJob(t *testing.T) {
+	guiOnly(t)
+	app := qatest.App(t)
+	_, err := app.Call("act", map[string]any{"selector": qa.ID("load"), "action": "click", "timeout_ms": 300})
+	if err == nil || !strings.Contains(err.Error(), `waiting: job "Download report"`) {
+		t.Errorf("settle timeout: %v", err)
+	}
+	app.Settle() // the job outlives this test otherwise
 }

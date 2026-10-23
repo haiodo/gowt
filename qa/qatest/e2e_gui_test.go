@@ -75,6 +75,73 @@ func TestShot(t *testing.T) {
 	}
 }
 
+func state(t *testing.T, app *qatest.Client) (m struct {
+	Off   int
+	Name  string
+	Agree bool
+	Pick  int
+}) {
+	t.Helper()
+	if err := json.Unmarshal(app.State("form"), &m); err != nil {
+		t.Fatal(err)
+	}
+	return m
+}
+
+func TestFindAndClick(t *testing.T) {
+	guiOnly(t)
+	app := qatest.App(t)
+	if n := app.Find(qa.ID("count")).Node(); n.Class != "Label" || n.Text != "clicks: 0" {
+		t.Fatalf("count: %+v", n)
+	}
+	if app.Find(qa.ID("no-such-id")).Exists() {
+		t.Error("a missing id exists")
+	}
+	app.Find(qa.ID("click")).Click()
+	if got := string(app.State("get")); got != "1" {
+		t.Fatalf("one click ran the handler %s times", got)
+	}
+	if n := app.Find(qa.ID("count")).Node(); n.Text != "clicks: 1" {
+		t.Errorf("label after click: %q", n.Text)
+	}
+	if n := app.Find(qa.Text("Click")).Node(); n.ID != "click" {
+		t.Errorf("by text: %+v", n)
+	}
+	if n := app.Find(qa.Text("~gre")).Node(); n.ID != "agree" {
+		t.Errorf("by substring: %+v", n)
+	}
+}
+
+func TestInputs(t *testing.T) {
+	guiOnly(t)
+	app := qatest.App(t)
+	app.Find(qa.ID("name")).Type("Ada")
+	app.Find(qa.ID("agree")).Check(true)
+	app.Find(qa.ID("list")).Select(2)
+	if m := state(t, app); m.Name != "Ada" || !m.Agree || m.Pick != 2 {
+		t.Errorf("form: %+v", m)
+	}
+	if n := app.Find(qa.ID("name")).Node(); n.Value != "Ada" {
+		t.Errorf("name node: %+v", n)
+	}
+}
+
+func TestRefusedAndStrict(t *testing.T) {
+	guiOnly(t)
+	app := qatest.App(t)
+	_, err := app.Call("act", map[string]any{"selector": qa.ID("off"), "action": "click"})
+	if err == nil || !strings.Contains(err.Error(), "disabled") {
+		t.Errorf("click on a disabled button: %v", err)
+	}
+	if m := state(t, app); m.Off != 0 {
+		t.Errorf("the disabled handler ran %d times", m.Off)
+	}
+	_, err = app.Call("act", map[string]any{"selector": qa.Text("Twin"), "action": "click"})
+	if err == nil || !strings.Contains(err.Error(), "2 controls match") {
+		t.Errorf("click on two matches: %v", err)
+	}
+}
+
 func TestErrors(t *testing.T) {
 	guiOnly(t)
 	app := qatest.App(t)
@@ -90,15 +157,6 @@ func TestErrors(t *testing.T) {
 	}
 	if _, err := app.Call("nope", nil); err == nil || !strings.Contains(err.Error(), "unknown command") {
 		t.Errorf("unknown command: %v", err)
-	}
-	// Tree commands may be unsupported or answer for real; either way they answer, and the app lives on.
-	for _, cmd := range []string{"dump", "windows"} {
-		if _, err := app.Call(cmd, nil); err != nil && !strings.Contains(err.Error(), "unsupported") {
-			t.Errorf("%s: %v", cmd, err)
-		}
-	}
-	if _, err := app.Call("find", qa.ID("no-such-id")); err != nil && !strings.Contains(err.Error(), "unsupported") {
-		t.Errorf("find: %v", err)
 	}
 	_, err := app.Call("act", map[string]any{"selector": qa.ID("no-such-id"), "action": "click"})
 	if err == nil || strings.Contains(err.Error(), "panic") {

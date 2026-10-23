@@ -4,6 +4,7 @@
 
 New API
 - `gowt.ID(id)`: names a widget, a Panel or a Window for the QA driver, which picks controls by it. It stores the id under the data key `gowt.id` in every build and changes nothing else. In an `Each`, pass the id from the row data.
+- Package `gowt/qa` and `gowt/qa/qatest`: a QA driver. A build with `-tags gowtqa` and `GOWT_QA_SOCKET` serves find, click, type, check, select, dump, settle, shot and app state handlers (`qa.Handle`) on a socket; `qatest` drives it from `go test` without linking the toolkit. Without the tag the app has no server. Example in `examples/qa`; see docs/internals.md. `App.Pending` and `rx.Pending` tell what waits for the next event-loop turn.
 
 ## v0.9.8 (2026-10-23)
 

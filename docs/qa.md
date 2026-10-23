@@ -141,17 +141,48 @@ app.Find(qa.ID("rooms")).Select(2)       // item by index in a list, combo, tabl
 | `Check(on)` | Does nothing when the state already is `on`. A radio button cannot be cleared; select another one. A control without a checked state fails. |
 | `Select(index)` | The index counts the items in the dump's order; for a tree, in pre-order. |
 
-The `act` command also accepts `select` by `{"text": "..."}` and per-call `settle` and `timeout_ms`; `qatest` has no method for them, use `app.Call("act", ...)`.
+The `act` command also accepts per-call `settle` and `timeout_ms`; `qatest` has no method for them, use `app.Call("act", ...)`.
 
 Before an action runs the driver checks that the user could do it. It refuses, with the reason in the error, when the control or an ancestor is not visible or is disabled, when its window is closed, or when an application-modal or system-modal window is open above it.
 
 Every action settles before it returns (see Waiting), so the next line of the test sees the result.
 
-<!-- actions: more coming in wt/qa-actions -->
+More actions:
+
+| Call | Does |
+|---|---|
+| `SelectText("b")` | Selects the item with this text in a list, combo, table, tree or tab folder. |
+| `Activate()` | Double click or Enter: a List, Table or Tree row (selected first), the selected row of the control, a single-line Text, a push Button, a window (its default button). `OnActivate` runs once. |
+| `Expand()`, `Collapse()` | A Tree row. The Expand event runs first, so a lazy tree builds its children; a lazy node needs a placeholder child. |
+| `Focus()` | Gives the control focus (`OnFocus`). The window must be the active one. |
+| `Close()` | Closes a window like its close button; `OnClose` may veto. |
+| `Key("Mod+K")`, `app.Key(...)` | A key or combo: `Enter`, `Esc`, `Shift+Tab`, `F5`, `Mod+K`. `Mod` is Cmd on macOS, Ctrl elsewhere. `app.Key` goes to the focus control. |
+| `ScrollTo(sel)`, `ScrollBy(dx, dy)`, `ScrollIntoView()` | Scroll a ScrollView to a control, by pixels, or the ScrollView holding this control. `OnScroll` runs. |
+
+`Key`: a menu item with that accelerator runs and the control sees nothing, as with macOS key equivalents. Otherwise `Window.OnKey` filters and the control's key listeners get KeyDown, then KeyUp; Enter that was not vetoed also activates. A key does not type text; use `Type`.
+
+`app.Eventually(timeout, func() (observed any, ok bool))` polls for what settle cannot see (a server push, a file); the error shows the last observed value.
 
 ## Dialogs
 
-<!-- dialogs: to be written with wt/qa-actions -->
+In a QA build `MessageBox`, `Confirm`, `FileDialog`, `DirDialog`, `ColorDialog` and `FontDialog` are not shown. Queue the answer before the action:
+
+```go
+app.Answer(qa.Dialog{Kind: "confirm", Reply: true})
+app.Find(qa.ID("delete")).Click()
+d := app.Dialogs()[0] // Kind, Title, Message, Buttons, Dir, Filters ...
+```
+
+| Kind | Reply |
+|---|---|
+| `message` | button name: `"OK"`, `"Cancel"`, `"Yes"`, `"No"`, `"Retry"`, `"Abort"`, `"Ignore"` |
+| `confirm` | `true` or `false` |
+| `file` | a path, or a list of paths for a `Multi` open dialog |
+| `dir` | a path |
+| `color` | `"#rrggbb"` |
+| `font` | `gowt.Font` fields, e.g. `map[string]any{"Name": "Menlo", "Size": 12}` |
+
+`Cancel: true` answers as a dismissed dialog. Answers are used in order per kind. A dialog with no answer gets Cancel and fails the action that opened it, so a test never hangs on a native dialog. `App(t)` clears answers and the record.
 
 ## Waiting
 
@@ -173,7 +204,7 @@ settle: not quiet after 5s: waiting: nothing queued; the dump kept changing
 
 The second form means the UI never stopped changing, for example a clock label. Stop such updates in the QA build or in `reset`.
 
-There is no `Eventually`, polling helper or sleep in `qatest`, and tests should not need one. Make the app tell the driver about its work:
+Tests should not sleep. `app.Eventually` (see Actions) is for the rare condition outside the app; for the app's own work, make the app tell the driver about it:
 
 | Work | Wrap it in | Waited for |
 |---|---|---|
@@ -218,7 +249,7 @@ If the connection to the app is already lost, the screenshot and the dump are sk
 ## Limits
 
 - Not in the dump: the items of a native toolbar set with `look.SetToolbar` (NSToolbar), column headers of a table, context menus of controls (only the window's menu bar is walked), the tray, and the content of a `Browser` or web view. Native dialogs (message boxes, file choosers) are not in the dump either; see Dialogs.
-- A modal dialog blocks the UI thread. Commands that need it fail after 10 seconds with `the UI thread did not answer in 10s (a modal dialog?)`.
+- A modal dialog the facade does not route (one opened through `Unwrap()` or a custom modal `Shell` loop) blocks the UI thread. Commands that need it fail after 10 seconds with `the UI thread did not answer in 10s (a modal dialog?)`.
 - There is no true headless mode on macOS and Windows: the app opens real windows on the desktop, without taking the focus. On Linux run the test under Xvfb (`xvfb-run go test ...`). The gowt stand for Linux is Docker with Xvfb.
 - Windows is not verified on real hardware, only under CrossOver/Wine; see [platforms.md](platforms.md).
 - Input is semantic. A click is delivered to the control even when another control covers it on screen, and a text is typed into a field the user could not focus. A test can pass where a real user would be blocked. Check overlaps with `Bounds` and by eye with a screenshot.

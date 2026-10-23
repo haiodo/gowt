@@ -58,6 +58,9 @@ type WKView struct {
 	Status func(text string)
 	// Features of the window.open that made this view; zero for any other.
 	Features WKFeatures
+	// Dialog answers the page's own alert, confirm and prompt (WKDialog*) instead of a sheet on the
+	// view's window; tests set it. def is the prompt's default text.
+	Dialog func(kind int, message, def string) (ok bool, text string)
 
 	// The last navigation started: WebKit commits about:blank for a refused connection and reports no
 	// failure, so a commit of about:blank for another URL is the failure (see didCommit).
@@ -69,6 +72,7 @@ type WKView struct {
 	disposed         bool
 	scriptOff        bool
 	statusOn         bool
+	dialogs          map[*wkDialog]struct{} // sheets still up, answered at Dispose
 }
 
 var wkTrace = os.Getenv("GOWT_WK_TRACE") != ""
@@ -231,11 +235,23 @@ func wkSetup() {
 					v.Close()
 				}
 			}), "v@:@"},
+			"webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:": {purego.NewCallback(func(self, _, _, message, frame, handler uintptr) {
+				defer enterCallback()()
+				wkPageDialog(view(self), WKDialogAlert, frame, goString(message), "", handler)
+			}), "v@:@@@?"},
+			"webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:": {purego.NewCallback(func(self, _, _, message, frame, handler uintptr) {
+				defer enterCallback()()
+				wkPageDialog(view(self), WKDialogConfirm, frame, goString(message), "", handler)
+			}), "v@:@@@?"},
 			"webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:": {purego.NewCallback(func(self, _, _, prompt, def, frame, handler uintptr) {
 				defer enterCallback()()
+				if goString(def) != wkCallMark {
+					wkPageDialog(view(self), WKDialogPrompt, frame, goString(prompt), goString(def), handler)
+					return
+				}
 				reply := uintptr(0)
 				// Only the main frame may call Go: a subframe (possibly cross-origin) has its own window.gowt.
-				if v := view(self); v != nil && v.Call != nil && goString(def) == wkCallMark && msg(frame, "isMainFrame")&0xff != 0 {
+				if v := view(self); v != nil && v.Call != nil && msg(frame, "isMainFrame")&0xff != 0 {
 					func() {
 						defer func() { _ = recover() }()
 						reply = nsString(v.Call(goString(prompt)))
@@ -430,6 +446,7 @@ func (v *WKView) Dispose() {
 		return
 	}
 	v.disposed = true
+	v.endDialogs()
 	msg(v.View, "removeObserver:forKeyPath:", v.obj, nsString("title"))
 	msg(v.ucc, "removeScriptMessageHandlerForName:", nsString("gowt"))
 	if v.statusOn {

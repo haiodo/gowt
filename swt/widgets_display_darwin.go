@@ -1095,7 +1095,7 @@ func (this *Display) GetFocusControl() *Control {
 	if this.keyWindow != (nil) {
 		window = this.keyWindow
 	} else {
-		window = this.application.KeyWindow()
+		window = this.keyWindowQA()
 	}
 	return this._getFocusControl(window)
 }

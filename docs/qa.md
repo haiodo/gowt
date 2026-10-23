@@ -154,7 +154,7 @@ More actions:
 | `SelectText("b")` | Selects the item with this text in a list, combo, table, tree or tab folder. |
 | `Activate()` | Double click or Enter: a List, Table or Tree row (selected first), the selected row of the control, a single-line Text, a push Button, a window (its default button). `OnActivate` runs once. |
 | `Expand()`, `Collapse()` | A Tree row. The Expand event runs first, so a lazy tree builds its children; a lazy node needs a placeholder child. |
-| `Focus()` | Gives the control focus (`OnFocus`). The window must be the active one. |
+| `Focus()` | Gives the control focus (`OnFocus`). On macOS the app stays inactive and no window is brought to the front. |
 | `Close()` | Closes a window like its close button; `OnClose` may veto. |
 | `Key("Mod+K")`, `app.Key(...)` | A key or combo: `Enter`, `Esc`, `Shift+Tab`, `F5`, `Mod+K`. `Mod` is Cmd on macOS, Ctrl elsewhere. `app.Key` goes to the focus control. |
 | `ScrollTo(sel)`, `ScrollBy(dx, dy)`, `ScrollIntoView()` | Scroll a ScrollView to a control, by pixels, or the ScrollView holding this control. `OnScroll` runs. |

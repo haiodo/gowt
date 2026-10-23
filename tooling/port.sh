@@ -494,6 +494,12 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'qaNoActivate()' "$DS_GO")" = 1 ] || { echo "port.sh: Display qaNoActivate rewrite did not apply" >&2; exit 1; }
 fi
 
+# GetFocusControl reads the first responder of the key window, and an inactive QA app has none (see qa_manual_on_darwin.go).
+if [ "$PLATFORM" = cocoa ]; then
+	perl -0pi -e 's/(func \(this \*Display\) GetFocusControl\(\) \*Control \{.*?\t\twindow = )this\.application\.KeyWindow\(\)/$1this.keyWindowQA()/s' "$DS_GO"
+	[ "$(grep -c 'keyWindowQA()' "$DS_GO")" = 1 ] || { echo "port.sh: Display keyWindowQA rewrite did not apply" >&2; exit 1; }
+fi
+
 # gtk TabFolder sizes the selected page's control from the notebook page's allocation. A page that GTK has not allocated
 # yet (added after show, or selected before the first allocation) reports 1x1, and the control stayed 1x1: an empty page.
 # swt/widgets_tabfolder_manual_linux.go sizes the control again when GTK allocates its page.

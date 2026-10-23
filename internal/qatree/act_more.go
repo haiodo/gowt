@@ -63,7 +63,7 @@ func activate(e *entry) error {
 		if o.GetStyle()&swt.SINGLE == 0 {
 			return fmt.Errorf("qatree: activate: Enter in the multi-line %s adds a line, use key or type", e.n.Path)
 		}
-		o.SetFocus()
+		swt.QAFocus(&o.Control)
 		o.NotifyListeners(swt.DefaultSelection, ev)
 		return nil
 	case *swt.List:
@@ -137,10 +137,10 @@ func focus(d *swt.Display, e *entry) error {
 	if _, ok := e.obj.(*swt.Shell); ok {
 		return fmt.Errorf("qatree: focus applies to a control, not the window %s", e.n.Path)
 	}
-	c.SetFocus()
+	swt.QAFocus(c)
 	flush(d)
 	if d.GetFocusControl() != c {
-		return fmt.Errorf("qatree: focus: %s did not take the focus; its window is not the active one", e.n.Path)
+		return fmt.Errorf("qatree: focus: %s did not take the focus", e.n.Path)
 	}
 	return nil
 }

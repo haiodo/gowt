@@ -83,7 +83,7 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 		if err != nil {
 			return err
 		}
-		c.SetFocus()
+		swt.QAFocus(c)
 		return key(d, c, a.Keys)
 	}
 	return fmt.Errorf("qatree: unknown action %q", action)
@@ -231,7 +231,7 @@ func typeText(e *entry, text string) error {
 	default:
 		return fmt.Errorf("qatree: type does not apply to %s %s", e.n.Class, e.n.Path)
 	}
-	c.SetFocus()
+	swt.QAFocus(c)
 	if get() != "" {
 		set("")
 	}

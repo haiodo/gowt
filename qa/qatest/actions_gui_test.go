@@ -2,6 +2,9 @@ package qatest_test
 
 import (
 	"encoding/json"
+	"os/exec"
+	"runtime"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -91,6 +94,7 @@ func TestKeys(t *testing.T) {
 
 func TestFocus(t *testing.T) {
 	guiOnly(t)
+	before := frontApp()
 	app := qatest.App(t)
 	app.Find(qa.ID("click")).Focus()
 	app.Find(qa.ID("name")).Focus()
@@ -102,6 +106,30 @@ func TestFocus(t *testing.T) {
 	if n := len(ev); n < 2 || ev[n-2] != "focus name true" || ev[n-1] != "focus name false" {
 		t.Errorf("events %q, want focus name true, then false at the end", ev)
 	}
+
+	// Between two windows the old control gets FocusOut before the new one gets FocusIn.
+	app.Find(qa.ID("name")).Focus()
+	app.Find(qa.ID("popup")).Click()
+	app.Find(qa.ID("pname")).Focus()
+	app.Find(qa.ID("name")).Focus()
+	ev = events(t, app)
+	want := []string{"focus name false", "focus pname true", "focus pname false", "focus name true"}
+	if n := len(ev); n < 4 || !slices.Equal(ev[n-4:], want) {
+		t.Errorf("events %q, want %q at the end", ev, want)
+	}
+	app.Find(qa.Selector{Class: "Shell", Text: "Popup"}).Close()
+	if after := frontApp(); after != before {
+		t.Errorf("the frontmost app changed from %q to %q", before, after)
+	}
+}
+
+// frontApp is the name of the frontmost application on macOS, "" elsewhere.
+func frontApp() string {
+	if runtime.GOOS != "darwin" {
+		return ""
+	}
+	out, _ := exec.Command("sh", "-c", "lsappinfo info -only name $(lsappinfo front)").Output()
+	return strings.TrimSpace(string(out))
 }
 
 func TestScroll(t *testing.T) {

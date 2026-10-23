@@ -73,7 +73,8 @@ func main() {
 				}
 			})),
 			gowt.Button("Popup", gowt.ID("popup"), gowt.OnClick(func() {
-				p := app.Window("Popup", gowt.Label("popup"))
+				p := app.Window("Popup", gowt.Label("popup"),
+					gowt.Text(gowt.ID("pname"), gowt.OnFocus(func(on bool) { note("focus pname %v", on) })))
 				p.OnClose(func() bool { note("close popup"); return !vetoClose })
 				p.Show()
 			})),

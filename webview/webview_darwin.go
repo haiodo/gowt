@@ -9,6 +9,9 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
+// pageDialog, when set (tests), answers the page's alert, confirm and prompt instead of a sheet.
+var pageDialog func(kind int32, msg, def string) (bool, string)
+
 type disposeFunc func()
 
 func (f disposeFunc) WidgetDisposed(*swt.DisposeEvent) { f() }
@@ -101,6 +104,9 @@ func (e *wkEngine) start() *cocoa.WKView {
 		if w.OnTitleChanged != nil {
 			w.OnTitleChanged(t)
 		}
+	}
+	if pageDialog != nil {
+		v.Dialog = func(kind int, m, d string) (bool, string) { return pageDialog(int32(kind), m, d) }
 	}
 	v.Scheme = e.serve
 	v.Decide = e.policy

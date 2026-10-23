@@ -67,3 +67,40 @@ func TestGlassBorder(t *testing.T) {
 		}
 	})
 }
+
+// The focus ring replaces the separator stroke only while the ring is on and a descendant has focus; the
+// flags may come before the glass.
+func TestGlassFocusRing(t *testing.T) {
+	if !GlassAvailable() {
+		t.Skip("no NSGlassEffectView")
+	}
+	onMain(func() {
+		v := msg(msg(class("NSView"), "alloc"), "init")
+		view := NewNSViewOverload1(int64(v))
+		host := msg(msg(class("NSView"), "alloc"), "init")
+		msg(host, "addSubview:", v)
+		SetGlassBorder(view, true)
+		SetGlassFocusRing(view, true)
+		SetGlassFocused(view, true)
+		InstallPanelBackdrop(view, BackdropGlass)
+		SetGlassCornerRadius(view, 18)
+		check := func(what string, width float64, rgba [4]float64) {
+			w, c, ok := GlassBorder(view)
+			if !ok || math.Abs(w-width) > 1e-9 {
+				t.Errorf("%s: width %v (glass found %v), want %v", what, w, ok, width)
+			}
+			for i := range c {
+				if math.Abs(c[i]-rgba[i]) > 0.01 {
+					t.Errorf("%s: colour %v, want %v", what, c, rgba)
+					break
+				}
+			}
+		}
+		check("focused", focusRingWidth, FocusRingRGBA(false))
+		SetGlassFocused(view, false)
+		check("blurred", 1/backingScale(v), SeparatorRGBA(false))
+		SetGlassFocused(view, true)
+		SetGlassFocusRing(view, false)
+		check("ring off", 1/backingScale(v), SeparatorRGBA(false))
+	})
+}

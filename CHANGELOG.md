@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+New API
+- `look.SetGlassFocusRing(c, on)` (client platform-go item 17): while `c` or any control inside it has keyboard focus, the stroke on the glass of a `SetGlass` panel becomes a ring in `NSColor.keyboardFocusIndicatorColor` (the accent colour), 2 points wide, following the corner radius; on blur the `SetGlassBorder` stroke (or nothing) is back. Focus is read from a display filter on `FocusIn` and `FocusOut`, so controls added later count; resizes and `AutoGrow` keep the ring in step, and the colour is resolved again on `SWT.Settings` (accent colour and light/dark switch). Opt-in: macOS 26 Messages draws no ring on its composer, the ring is what a text field has. AppKit's own ring was not used: it is drawn only for the first responder, from its `drawFocusRingMask`, and a layer-backed view cannot draw it outside its layer, while the first responder here is an `NSTextView` inside a scroll view, smaller than the capsule. The ring sits inside the glass (clipped to its corners) and appears without the system's fade. No-op before macOS 26 and on other systems.
+- `gowt.OnFocus(func(focused bool))`: an option for any widget, called with true on `FocusIn` and false on `FocusOut` (SWT events, all three systems). A container reports only its own focus, not its children's.
+
 ## v0.9.8 (2026-10-23)
 
 New API

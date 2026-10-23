@@ -3,6 +3,8 @@ package gowt
 import (
 	"fmt"
 	"time"
+
+	"github.com/haiodo/gowt/swt"
 )
 
 // Event options. Each names one concept for every widget that has it; the handler's parameter is
@@ -174,6 +176,21 @@ func isLabel(w any) bool {
 	}
 	return false
 }
+
+// OnFocus runs f with true when the widget gets keyboard focus and with false when it loses it. A
+// container does not report the focus of its children: put the option on the widget that takes keys.
+func OnFocus(f func(focused bool)) Option {
+	return hook(func(w Widget) error {
+		l := focusFunc(f)
+		w.control().AddListener(swt.FocusIn, l)
+		w.control().AddListener(swt.FocusOut, l)
+		return nil
+	})
+}
+
+type focusFunc func(bool)
+
+func (f focusFunc) HandleEvent(e *swt.Event) { f(e.Type == swt.FocusIn) }
 
 func misfit(opt string, f any, w Widget) error {
 	return fmt.Errorf("gowt: %s(%T) does not apply to %s", opt, f, nameOf(w.control()))

@@ -82,6 +82,14 @@ func GlassButton() gowt.Option { return gowt.Custom(glassButton) }
 // macOS before 26: nothing happens.
 func SetGlassBorder(c Container, on bool) { setGlassBorder(&c.AsComposite().Control, on) }
 
+// SetGlassFocusRing turns the glass stroke of c into a ring in the keyboard focus colour
+// (NSColor.keyboardFocusIndicatorColor, the accent colour) while c or any control inside it has
+// keyboard focus, as a text field has one; on blur the SetGlassBorder stroke is back. It follows the
+// corner radius, resizes (AutoGrow too), the accent colour and light and dark mode. Two points wide,
+// inside the glass: the glass is clipped to its corners. macOS 26 only; elsewhere nothing happens.
+// macOS 26 Messages shows no such ring on its composer, so this is opt-in.
+func SetGlassFocusRing(c Container, on bool) { setGlassFocusRing(&c.AsComposite().Control, on) }
+
 // GlassBorder is SetGlassBorder(true) for a glass button; it works with GlassButton and
 // gowt.Circle in either order.
 func GlassBorder() gowt.Option {

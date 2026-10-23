@@ -11,6 +11,13 @@ import (
 
 func borderKey() uintptr { return sel("gowtGlassBorder") }
 
+func ringKey() uintptr    { return sel("gowtGlassFocusRing") }
+func focusedKey() uintptr { return sel("gowtGlassFocused") }
+
+// focusRingWidth is in points and sits inside the glass layer, which masksToBounds clips: AppKit's own ring
+// is drawn outside the view and a layer-backed view cannot show it there (TN QA1785).
+const focusRingWidth = 2
+
 // SetGlassBorder asks for a one-pixel separatorColor stroke around the glass of a SetGlass panel or a
 // glass push button. It can come before the glass: the stroke goes on with the radius or the shape.
 func SetGlassBorder(view *NSView, on bool) {
@@ -36,12 +43,38 @@ func RefreshGlassBorder(view *NSView) {
 	if msgF64 == nil {
 		purego.RegisterFunc(&msgF64, objcMsgSend)
 	}
+	if getAssociated(v, ringKey()) != 0 && getAssociated(v, focusedKey()) != 0 {
+		msgF64(l, sel("setBorderWidth:"), focusRingWidth)
+		msg(l, "setBorderColor:", appearanceCGColor(v, "keyboardFocusIndicatorColor"))
+		return
+	}
 	if getAssociated(v, borderKey()) == 0 {
 		msgF64(l, sel("setBorderWidth:"), 0)
 		return
 	}
 	msgF64(l, sel("setBorderWidth:"), 1/backingScale(v))
-	msg(l, "setBorderColor:", separatorCGColor(v))
+	msg(l, "setBorderColor:", appearanceCGColor(v, "separatorColor"))
+}
+
+// SetGlassFocusRing makes the glass stroke of a SetGlass panel a keyboardFocusIndicatorColor ring while
+// SetGlassFocused says a descendant has focus; off, or unfocused, the SetGlassBorder stroke is back.
+func SetGlassFocusRing(view *NSView, on bool) {
+	setFlag(view, ringKey(), on)
+}
+
+// SetGlassFocused tells the ring whether a descendant of the panel is the first responder.
+func SetGlassFocused(view *NSView, focused bool) {
+	setFlag(view, focusedKey(), focused)
+}
+
+func setFlag(view *NSView, key uintptr, on bool) {
+	initAssociated()
+	flag := uintptr(0)
+	if on {
+		flag = msg(class("NSNumber"), "numberWithBool:", 1)
+	}
+	setAssociated(uintptr(view.Id), key, flag, 1)
+	RefreshGlassBorder(view)
 }
 
 // glassBorderLayer is the layer that carries the glass shape: the glass view of a panel, the button itself
@@ -90,13 +123,13 @@ func backingScale(v uintptr) float64 {
 // BackingScale is the pixels per point the stroke of view is measured in, for tests.
 func BackingScale(view *NSView) float64 { return backingScale(uintptr(view.Id)) }
 
-// separatorCGColor is NSColor.separatorColor resolved under the appearance of v.
-func separatorCGColor(v uintptr) uintptr {
+// appearanceCGColor is the NSColor class property named color, resolved under the appearance of v.
+func appearanceCGColor(v uintptr, color string) uintptr {
 	ap := class("NSAppearance")
 	old := msg(ap, "currentAppearance")
 	msg(old, "retain")
 	msg(ap, "setCurrentAppearance:", msg(v, "effectiveAppearance"))
-	cg := msg(msg(class("NSColor"), "separatorColor"), "CGColor")
+	cg := msg(msg(class("NSColor"), color), "CGColor")
 	msg(ap, "setCurrentAppearance:", old)
 	msg(old, "release")
 	return cg
@@ -118,7 +151,12 @@ func GlassBorder(view *NSView) (width float64, rgba [4]float64, ok bool) {
 }
 
 // SeparatorRGBA is NSColor.separatorColor under the Aqua or Dark Aqua appearance, for tests.
-func SeparatorRGBA(dark bool) [4]float64 {
+func SeparatorRGBA(dark bool) [4]float64 { return namedColorRGBA("separatorColor", dark) }
+
+// FocusRingRGBA is NSColor.keyboardFocusIndicatorColor under the Aqua or Dark Aqua appearance, for tests.
+func FocusRingRGBA(dark bool) [4]float64 { return namedColorRGBA("keyboardFocusIndicatorColor", dark) }
+
+func namedColorRGBA(color string, dark bool) [4]float64 {
 	name := "NSAppearanceNameAqua"
 	if dark {
 		name = "NSAppearanceNameDarkAqua"
@@ -127,7 +165,7 @@ func SeparatorRGBA(dark bool) [4]float64 {
 	old := msg(ap, "currentAppearance")
 	msg(old, "retain")
 	msg(ap, "setCurrentAppearance:", msg(ap, "appearanceNamed:", nsString(name)))
-	c := cgColorRGBA(msg(msg(class("NSColor"), "separatorColor"), "CGColor"))
+	c := cgColorRGBA(msg(msg(class("NSColor"), color), "CGColor"))
 	msg(ap, "setCurrentAppearance:", old)
 	msg(old, "release")
 	return c

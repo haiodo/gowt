@@ -131,6 +131,71 @@ func (t *borderTheme) HandleEvent(e *swt.Event) {
 	cocoa.RefreshGlassBorder(t.c.View)
 }
 
+const glassFocusKey = "gowt.look.glassFocus"
+
+// setGlassFocusRing keeps the ring of c in step with the focus control through a display filter: a
+// control added to c later is covered, and SWT sends FocusOut to the old control before FocusIn to the new.
+func setGlassFocusRing(c *swt.Control, on bool) {
+	cocoa.SetGlassFocusRing(c.View, on)
+	f, _ := c.GetDataKey(glassFocusKey).(*focusRing)
+	switch {
+	case on && f == nil:
+		f = &focusRing{c: c}
+		c.SetDataKeyValue(glassFocusKey, f)
+		d := c.GetDisplay()
+		d.AddFilter(swt.FocusIn, f)
+		d.AddFilter(swt.FocusOut, f)
+		c.AddListener(swt.Dispose, f)
+	case !on && f != nil:
+		f.detach()
+		c.SetDataKeyValue(glassFocusKey, nil)
+	}
+	if on {
+		f.set(f.holdsFocus(c.GetDisplay().GetFocusControl()))
+	}
+}
+
+type focusRing struct{ c *swt.Control }
+
+func (f *focusRing) HandleEvent(e *swt.Event) {
+	switch e.Type {
+	case swt.Dispose:
+		f.detach()
+	case swt.FocusIn:
+		f.set(f.holdsFocus(f.c.GetDisplay().GetFocusControl()))
+	case swt.FocusOut:
+		f.set(false)
+	}
+}
+
+func (f *focusRing) detach() {
+	d := f.c.GetDisplay()
+	d.RemoveFilter(swt.FocusIn, f)
+	d.RemoveFilter(swt.FocusOut, f)
+	f.c.RemoveListener(swt.Dispose, f)
+}
+
+func (f *focusRing) set(focused bool) {
+	if !f.c.IsDisposed() {
+		cocoa.SetGlassFocused(f.c.View, focused)
+	}
+}
+
+// holdsFocus is true for the focus control that is c or lies inside it.
+func (f *focusRing) holdsFocus(focus *swt.Control) bool {
+	for focus != nil {
+		if focus == f.c {
+			return true
+		}
+		parent := focus.GetParent()
+		if parent == nil {
+			return false
+		}
+		focus = &parent.Control
+	}
+	return false
+}
+
 func setRoundedCorners(*swt.Shell, bool) {}
 
 func setDarkContent(*swt.Display, bool) {}

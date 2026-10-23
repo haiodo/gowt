@@ -62,5 +62,6 @@ b.AddLocationListener(browser.LocationListenerChangedAdapter(func(e *browser.Loc
 - History queries, `Stop`, the navigation policy that lets `LocationListener.Changing` cancel, and the call handler behind `BrowserFunction` (`WebView.SetCallHandler`) are implemented for all three engines (`webview_darwin.go`, `webview_linux.go`, `webview_windows.go`).
 - Browser tests (`tests/expected*.txt`): Linux 201 pass and 0 fail of 209 (8 skipped). macOS: the listed gaps are implemented but not yet run there.
 - Linux: WebKitGTK does not report which frame navigates, so the navigation policy always gets `mainFrame=true`.
+- Page dialogs (`alert`, `confirm`, `prompt`, `beforeunload`): Windows turns the WebView2 default dialogs off and shows its own message box or input box; Linux shows the WebKitGTK default dialog; macOS implements only the prompt panel, so the page's own alert, confirm and prompt are dismissed without UI (`confirm` gives false, `prompt` null).
 - Windows: the WebView2 code (COM callbacks written in Go, no `WebView2Loader.dll`) has never run on a real Windows.
 - The examples in this repository were type-checked for the three OSes but not run.

@@ -33,18 +33,18 @@ const (
 // A node changes only through Scene.Update; the getters read the state as of the last Commit and are
 // safe on the goroutine that commits, or inside Scene.Read.
 type Node struct {
-	id       int
-	parent   *Node
-	kids     []*Node
-	t        Affine
-	opacity  float64
-	z        int
-	pic      *Picture
-	shape    *Path // local coordinates, for HitFill and HitStroke
-	clip     *nodeClip
-	hit      HitMode
-	hasClip  bool // a clip of an ancestor or of this node applies
-	indexed  bool
+	id      int
+	parent  *Node
+	kids    []*Node
+	t       Affine
+	opacity float64
+	z       int
+	pic     *Picture
+	shape   *Path // local coordinates, for HitFill and HitStroke
+	clip    *nodeClip
+	hit     HitMode
+	hasClip bool // a clip of an ancestor or of this node applies
+	indexed bool
 
 	// derived by Commit
 	world    Affine

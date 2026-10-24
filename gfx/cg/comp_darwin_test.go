@@ -81,12 +81,15 @@ func TestCompositorHeadless(t *testing.T) {
 		name           string
 		intervals, cpu []float64
 		model          []float64
+		setup          float64 // ms the setup took, a Lift in the drag phases
 		tiles          uint64
 	}
 	run := func(name string, d time.Duration, setup func(), step func(el float64, st *stat), end func()) *stat {
 		st := &stat{name: name}
 		if setup != nil {
+			ts := time.Now()
 			setup()
+			st.setup = float64(time.Since(ts)) / 1e6
 		}
 		t0 := time.Now()
 		tiles0 := c.Stats().Rastered
@@ -200,7 +203,7 @@ func TestCompositorHeadless(t *testing.T) {
 		line := fmt.Sprintf("%-24s frames %4d interval ms p50 %5.2f p99 %5.2f max %6.2f (%d over 12 ms) | frame cpu ms p50 %5.2f p99 %5.2f max %5.2f | tiles %d",
 			s.name, len(s.intervals), pct(s.intervals, .5), pct(s.intervals, .99), pct(s.intervals, 1), over, pct(s.cpu, .5), pct(s.cpu, .99), pct(s.cpu, 1), s.tiles)
 		if len(s.model) > 0 {
-			line += fmt.Sprintf(" | model ms p50 %5.2f max %5.2f", pct(s.model, .5), pct(s.model, 1))
+			line += fmt.Sprintf(" | model ms p50 %5.2f max %5.2f | setup (Lift) ms %5.2f", pct(s.model, .5), pct(s.model, 1), s.setup)
 		}
 		t.Log(line)
 		if len(s.intervals) < 5 {

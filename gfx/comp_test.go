@@ -7,7 +7,10 @@ import (
 	"time"
 )
 
-type fakeImg struct{ w, h float64 }
+type fakeImg struct {
+	w, h  float64
+	items int // nodes drawn into it
+}
 
 func (f *fakeImg) Size() (float64, float64) { return f.w, f.h }
 
@@ -52,7 +55,7 @@ func (t *fakeTarget) Draw(items []Item) {
 }
 func (t *fakeTarget) Size() (int, int)            { return t.w, t.h }
 func (t *fakeTarget) Pixels() []byte              { return nil }
-func (t *fakeTarget) Snapshot(w, h float64) Image { return &fakeImg{w, h} }
+func (t *fakeTarget) Snapshot(w, h float64) Image { return &fakeImg{w, h, t.cur.items} }
 func (t *fakeTarget) Close()                      {}
 
 type fakeLayer struct {
@@ -65,9 +68,10 @@ type fakeLayer struct {
 	hidden  bool
 	removed bool
 	images  int
+	img     *fakeImg
 }
 
-func (l *fakeLayer) SetImage(Image) { l.images++ }
+func (l *fakeLayer) SetImage(i Image) { l.images++; l.img, _ = i.(*fakeImg) }
 func (l *fakeLayer) Set(f Rect, a Point, m Affine) {
 	l.frame, l.anchor, l.m = f, a, m
 }
@@ -79,6 +83,8 @@ type fakeHost struct {
 	layers  []*fakeLayer
 	batches int
 	open    bool
+	// onCommit runs at the end of every transaction
+	onCommit func()
 }
 
 func (h *fakeHost) NewLayer(g Group) Layer {
@@ -90,6 +96,9 @@ func (h *fakeHost) Begin() { h.open = true }
 func (h *fakeHost) Commit() {
 	h.open = false
 	h.batches++
+	if h.onCommit != nil {
+		h.onCommit()
+	}
 }
 
 func (h *fakeHost) live(g Group) (out []*fakeLayer) {
@@ -315,12 +324,84 @@ func TestLiftKeepsTilesQuiet(t *testing.T) {
 	}
 }
 
+// A node moved in the frame it is lifted must not show at the new place while a tile still holds
+// its old pixels: the sprite is drawn by Lift itself and waits where the node was.
+func TestLiftHoldsSpriteUntilTilesAreClean(t *testing.T) {
+	g := newRig(t, Options{})
+	n := g.addBox(1, 100, 100, 50, 50)
+	g.settle()
+	g.c.Lift(n)
+	act := g.h.live(GroupActive)
+	if len(act) != 1 || act[0].images != 1 || act[0].frame.Min != (Point{100, 100}) {
+		t.Fatalf("sprite right after Lift: %+v", act)
+	}
+	g.s.Update(func(tx *Tx) { tx.Move(n, 300, 200) })
+	g.c.Frame(FrameInfo{Time: g.now + time.Millisecond, Interval: time.Millisecond, Seq: g.seq + 1})
+	if g.c.clean(R(100, 100, 50, 50)) && act[0].frame.Min != (Point{300, 200}) {
+		t.Errorf("tiles are clean but the sprite is held at %v", act[0].frame.Min)
+	}
+	if !g.c.clean(R(100, 100, 50, 50)) && act[0].frame.Min != (Point{100, 100}) {
+		t.Errorf("sprite at %v while a tile under the lifted node is stale", act[0].frame.Min)
+	}
+	g.settle()
+	if act[0].frame.Min != (Point{300, 200}) || act[0].images != 1 {
+		t.Errorf("after the tiles: sprite at %v, drawn %d times", act[0].frame.Min, act[0].images)
+	}
+}
+
+// Every host transaction, Lift's own included, must show a lifted node exactly once: in a tile or in
+// its sprite, never in both (a shadow would be blended twice) and never in neither.
+func TestLiftShowsNodeOnceInEveryTransaction(t *testing.T) {
+	g := newRig(t, Options{})
+	n := g.addBox(1, 100, 100, 50, 50)
+	g.settle()
+	g.r.delay = 3 * time.Millisecond // tiles lag behind the frames
+	commits := 0
+	g.h.onCommit = func() {
+		commits++
+		seen := 0
+		for _, l := range g.h.layers {
+			if l.removed || l.hidden || l.img == nil {
+				continue
+			}
+			if l.group == GroupActive || (l.group == GroupTiles && l.img.items > 0) {
+				seen++
+			}
+		}
+		if seen != 1 {
+			for _, l := range g.h.layers {
+				if !l.removed && l.img != nil {
+					t.Logf("  layer group %d hidden %v items %d frame %v", l.group, l.hidden, l.img.items, l.frame)
+				}
+			}
+			t.Errorf("transaction %d shows the node %d times", commits, seen)
+		}
+	}
+	g.c.Lift(n)
+	for i := 1; i <= 30; i++ {
+		g.s.Update(func(tx *Tx) { tx.Move(n, 100+float64(i)*10, 100) })
+		g.frame()
+		time.Sleep(time.Millisecond)
+	}
+	g.settle()
+	g.c.Land(n)
+	for i := 0; i < 10; i++ {
+		g.frame()
+		time.Sleep(time.Millisecond)
+	}
+	g.settle()
+	if len(g.h.live(GroupActive)) != 0 {
+		t.Error("sprite still there after landing")
+	}
+	g.h.onCommit = nil // Close removes every layer
+}
+
 func TestLiftedLiveNodeRedrawsEachFrame(t *testing.T) {
 	g := newRig(t, Options{})
 	conn := g.addBox(1, 100, 100, 50, 50)
 	g.settle()
 	g.c.Lift(conn)
-	g.frame()
+	g.settle() // a lifted sprite is held in place until the tiles are redrawn without its node
 	l := g.h.live(GroupActive)[0]
 	base := l.images
 	for i := 0; i < 5; i++ {

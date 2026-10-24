@@ -103,6 +103,29 @@ type lift struct {
 	wpx     int
 	hpx     int
 	landing bool
+	// hold: the sprite is drawn but hidden, and the node stays in the tiles, until the tiles under it
+	// are redrawn without it; then both change in one host transaction, so the node is on screen once
+	hold  bool
+	hrect Rect
+}
+
+// scratch is a target and a collect buffer for drawing a sprite image; index 0 is the Frame
+// goroutine's, the others belong to the goroutines of a parallel batch.
+type scratch struct {
+	t     Target
+	items Items
+}
+
+// liftJob is one lifted node whose sprite image must be drawn again.
+type liftJob struct {
+	l         *lift
+	area      Rect
+	wpx, hpx  int
+	w         Affine
+	rev, deep uint32
+	want      float64
+	clipped   bool
+	img       Image
 }
 
 // Compositor shows a Scene on a Host: static tiles drawn by a pool of workers, an active layer of
@@ -131,8 +154,8 @@ type Compositor struct {
 	sprites        []*Sprite
 	smu            sync.Mutex
 	pendingSprites []*Sprite
-	uiT            Target
-	items          Items
+	scr            []scratch
+	jobs           []liftJob
 	onFrame        func(FrameInfo)
 	fi             FrameInfo
 	busy           bool
@@ -154,7 +177,7 @@ type Compositor struct {
 
 func NewCompositor(s *Scene, r Renderer, h Host, o Options) *Compositor {
 	o.fill()
-	c := &Compositor{scene: s, r: r, host: h, o: o, dpr: 1, vw: 800, vh: 600, cam: Camera{Zoom: 1}, lastZoom: -1}
+	c := &Compositor{scene: s, r: r, host: h, o: o, dpr: 1, vw: 800, vh: 600, cam: Camera{Zoom: 1}, lastZoom: -1, scr: make([]scratch, 1)}
 	c.cond = sync.NewCond(&c.mu)
 	c.snap.Store(&camSnap{})
 	c.camDirty.Store(true)
@@ -192,8 +215,10 @@ func (c *Compositor) Close() {
 	}
 	c.ready = nil
 	c.mu.Unlock()
-	if c.uiT != nil {
-		c.uiT.Close()
+	for i := range c.scr {
+		if c.scr[i].t != nil {
+			c.scr[i].t.Close()
+		}
 	}
 }
 
@@ -612,11 +637,24 @@ func (c *Compositor) layout() {
 // as connectors, are redrawn into their sprite on each Frame. Call Land when the drag ends.
 func (c *Compositor) Lift(nodes ...*Node) {
 	var dmg []Rect
+	c.host.Begin()
+	fresh := make([]*lift, 0, len(nodes))
 	for _, n := range nodes {
-		dmg = append(dmg, c.scene.Lift(n))
-		c.lifts = append(c.lifts, &lift{node: n, layer: c.host.NewLayer(GroupActive)})
+		r := c.scene.Lift(n)
+		dmg = append(dmg, r)
+		fresh = append(fresh, &lift{node: n, layer: c.host.NewLayer(GroupActive), hrect: r})
 	}
+	c.lifts = append(c.lifts, fresh...)
 	c.invalidate(dmg)
+	// draw now, before the frame applies the moves that follow the lift
+	c.refreshLifts(fresh)
+	for _, l := range fresh {
+		if l.has && c.cur != nil {
+			l.hold = true
+			l.layer.SetHidden(true)
+		}
+	}
+	c.host.Commit()
 	c.busy = true
 }
 

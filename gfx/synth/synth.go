@@ -97,11 +97,12 @@ func (d *Doc) Link(a, b *Box, vert bool) *Conn {
 
 func (d *Doc) link(tx *gfx.Tx, a, b *Box, vert bool) *Conn {
 	c := &Conn{A: a, B: b, Vert: vert, Dashed: len(d.Conns)%3 == 2}
-	pic, shape := c.build()
-	c.Node, c.Shape = gfx.NewNode(1<<20+len(d.Conns)), shape
+	pic, local, o := c.build()
+	c.Node, c.Shape = gfx.NewNode(1<<20+len(d.Conns)), Curve(a, b, vert)
 	tx.Add(nil, c.Node)
+	tx.Move(c.Node, o.X, o.Y)
 	tx.SetPicture(c.Node, pic)
-	tx.SetShape(c.Node, shape, gfx.HitStroke)
+	tx.SetShape(c.Node, local, gfx.HitStroke)
 	a.Conns = append(a.Conns, c)
 	b.Conns = append(b.Conns, c)
 	d.Conns = append(d.Conns, c)
@@ -113,10 +114,11 @@ func (d *Doc) Move(tx *gfx.Tx, b *Box, x, y float64) {
 	b.X, b.Y = x, y
 	tx.Move(b.Node, x, y)
 	for _, c := range b.Conns {
-		pic, shape := c.build()
-		c.Shape = shape
+		pic, local, o := c.build()
+		c.Shape = Curve(c.A, c.B, c.Vert)
+		tx.Move(c.Node, o.X, o.Y)
 		tx.SetPicture(c.Node, pic)
-		tx.SetShape(c.Node, shape, gfx.HitStroke)
+		tx.SetShape(c.Node, local, gfx.HitStroke)
 	}
 }
 
@@ -174,9 +176,17 @@ func Curve(a, b *Box, vert bool) *gfx.Path {
 	return p
 }
 
-// build records the connector in scene coordinates, so its node sits at (0, 0).
-func (c *Conn) build() (*gfx.Picture, *gfx.Path) {
-	curve := Curve(c.A, c.B, c.Vert)
+// build records the connector relative to its start point o, where its node sits. When both boxes
+// move by the same amount the picture is the same and only the node moves: the compositor then
+// has nothing to draw again. Offsets are rounded to 1/64, so that the float error of adding the
+// same shift to both ends does not make the picture differ.
+func (c *Conn) build() (pic *gfx.Picture, curve *gfx.Path, o gfx.Point) {
+	world := Curve(c.A, c.B, c.Vert)
+	o = world.Pts[0]
+	curve = &gfx.Path{Verbs: world.Verbs, Pts: make([]gfx.Point, len(world.Pts))}
+	for i, p := range world.Pts {
+		curve.Pts[i] = gfx.Point{X: math.Round((p.X-o.X)*64) / 64, Y: math.Round((p.Y-o.Y)*64) / 64}
+	}
 	m := curve.Measure(0.05)
 	tip, dir := m.At(m.Length())
 	// the line stops at the arrow base so a dash does not poke through the head
@@ -195,9 +205,9 @@ func (c *Conn) build() (*gfx.Picture, *gfx.Path) {
 	r := gfx.NewRecorder()
 	r.StrokePath(body, st, link)
 	r.FillPath(head, link)
-	pic := r.Finish()
+	pic = r.Finish()
 	lr := gfx.NewRecorder()
 	lr.StrokePath(curve, gfx.StrokeStyle{Width: 1}, link)
 	pic.Lod, pic.LodBelow = lr.Finish(), lodBelow
-	return pic, curve
+	return pic, curve, o
 }

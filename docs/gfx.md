@@ -78,9 +78,15 @@ comp.Frame(frameInfo) // on the UI goroutine, once per display frame
 - **Pan** moves tile edges by whole device pixels; neighbours meet exactly.
 - **Active layer**: `comp.Lift(nodes...)` takes nodes (with subtrees) out of the tiles into
   sprites that follow their nodes. Pass the dragged nodes and the connectors that depend on them.
-  A sprite is drawn once; a plain move only repositions it, a picture change (a connector) redraws
-  it on that frame. `comp.Land(nodes...)` returns them; sprites stay until the tiles are redrawn.
-  Until the tiles under a lifted node are redrawn, the old pixels show as a ghost for a frame or two.
+  Lift draws the sprites at once, on the worker goroutines, but keeps them hidden: the node stays
+  in the tiles until they are redrawn without it, then the sprite and the clean tiles appear in one
+  host transaction, so the node is on screen once in every frame (no ghost, no flash). The drag
+  starts a frame or two later. A plain move only repositions a sprite; a changed picture (a
+  connector) is drawn again in that frame, all changed sprites in parallel. `Scene` ignores a
+  picture equal to the node's current one (`Picture.Equal`) and only the last picture of a node in
+  a Commit counts, so connectors built relative to their start point (see `synth`) are not drawn
+  again when both their boxes move by the same amount. `comp.Land(nodes...)` returns the nodes;
+  sprites stay until the tiles are redrawn.
 - **Overlay**: `comp.NewSprite(pic, space, pos)` for selection, handles, remote cursors. Spaces:
   `SpaceScene` (zooms with the scene), `SpacePinned` (anchored to a scene point, screen size),
   `SpaceScreen`.
@@ -156,8 +162,9 @@ The headless run is `go test ./gfx/cg -run CompositorHeadless -v`. Windowed numb
 
 - 10k boxes and 20k connectors: 1.1 KB per node (G-0: 2.2 KB), 512 px tile 0.7-2.0 ms, 24 tiles of
   a viewport on 8 workers 15 ms, first frame of the view about 30 ms, hit test 0.4 us.
-- Frame CPU in Frame: pan 0.1 ms, zoom 0.2 ms, drag of 1 node with 14 links about 2 ms,
-  drag of 100 nodes with their links about 5 ms (max 20 ms on the frame that lifts them).
+- Frame CPU in Frame: pan 0.1 ms, zoom 0.2 ms, drag of 1 node with 10 links about 0.9 ms (was 2.1),
+  drag of 100 nodes with their links p50 1.0 ms, p99 1.8 ms (was 5.4 and 7.1); the Lift call that
+  draws about 150 sprites takes 4 ms (was a 13 ms frame).
 
 ## Not there yet
 

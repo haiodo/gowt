@@ -1,6 +1,3 @@
-// Package gowt is an idiomatic Go facade over the generated swt package: no Java-shaped
-// overloads, listeners are plain funcs, errors come back from Run. Unwrap on any widget
-// returns the underlying swt object for the full API.
 package gowt
 
 import (

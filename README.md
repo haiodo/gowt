@@ -19,7 +19,10 @@ The commands were not run; the Windows and Linux ones are untested. -->
 
 ```sh
 go get github.com/haiodo/gowt@latest
+go mod tidy
 ```
+
+Run `go mod tidy` after writing code that imports `gowt`; until then `go.mod` lists it as `// indirect`. What to expect: the module is 5.2 MB; the first build with a cold cache took about 15 s (measured on a Mac for the hello program).
 
 Go 1.27 or newer. No C compiler and no Java. Cross-compiling works from any host: `GOOS=windows go build`. Details and per-OS requirements: [docs/install.md](docs/install.md).
 
@@ -106,8 +109,8 @@ JFace tests: 86 pass on macOS and Windows, 85 pass and 1 fail on Linux. Counts a
 | OS | Needed |
 |---|---|
 | macOS | 13 or later |
-| Windows | 10 or later (the minimum is not verified); WebView2 Runtime for the `webview` package (preinstalled on Windows 11); import `_ "github.com/haiodo/gowt/winmanifest"` for visual styles and DPI awareness |
-| Linux | GTK 3 and an X11 or XWayland display; WebKitGTK 4.1 for `webview` |
+| Windows | 10 or later (the minimum is not verified); WebView2 Runtime for the `webview` package (preinstalled on Windows 11); visual styles and DPI awareness come with the `gowt` facade (it imports `winmanifest`); a program on `swt` alone imports `_ "github.com/haiodo/gowt/winmanifest"` itself |
+| Linux | glibc (musl distributions such as Alpine are not supported); GTK 3 and an X11 or XWayland display; `librsvg2-common` on a minimal Debian or Ubuntu so that check marks draw; WebKitGTK 4.1 for `webview` |
 
 ## Known gaps
 

@@ -40,7 +40,7 @@ func openLibs() []uintptr {
 	}
 	if len(hs) == 0 {
 		// A library must not exit the process: gowt.Run returns this as an error, plain swt users see it in the panic.
-		panic(fmt.Errorf("gowt: GTK 3 is not installed (%w); install it: apt install libgtk-3-0 | dnf install gtk3 | pacman -S gtk3 | apk add gtk+3.0", firstErr))
+		panic(fmt.Errorf("gowt: GTK 3 is not installed (%w); install it: apt install libgtk-3-0 | dnf install gtk3 | pacman -S gtk3 (glibc distributions only)", firstErr))
 	}
 	return hs
 }

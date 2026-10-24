@@ -1,4 +1,5 @@
 // The Callback bridge (see README "Callback design" and "Round 20 (win32)").
+
 package swt
 
 import (

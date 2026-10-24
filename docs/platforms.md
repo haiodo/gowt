@@ -16,7 +16,7 @@ Same Go program, three native back ends. What differs:
 | Dark mode | whole UI | title bar; content with `look.SetDarkContent` | from the portal; not verified live |
 | Menu bar | application menu bar | window menu bar | window menu bar |
 
-Not in the facade on any OS: `Accessible` (a stub on all three OSes). Clipboard, drag and drop and `StyledText` are wrapped; see the caveats under Known gaps. On Windows import `_ "github.com/haiodo/gowt/winmanifest"`, see [install.md](install.md).
+Not in the facade on any OS: `Accessible` (a stub on all three OSes). Clipboard, drag and drop and `StyledText` are wrapped; see the caveats under Known gaps. On Windows the facade brings the manifest (visual styles, DPI awareness) itself, see [install.md](install.md).
 
 ## Test numbers
 

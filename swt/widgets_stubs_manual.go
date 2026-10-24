@@ -1,6 +1,7 @@
 // Hand-written opaque stubs for widget/graphics types not translated yet (manual.txt). Display is
 // real as of Round 6, GC as of Round 7, Dialog as of Round 9; Touch remains, the rest lives in
 // swt/widgets_stubs2_manual.go.
+
 package swt
 
 import "fmt"

@@ -1,5 +1,6 @@
 // Manual stubs for the org.eclipse.swt.internal helpers whose static members Display/Shell/Item/SWT call,
 // and the Callback bridge (see README "Callback design"), for the gtk port.
+
 package swt
 
 import (

@@ -1,3 +1,8 @@
+// Package icons gives a gowt app named system icons: SF Symbols on macOS, Segoe Fluent Icons
+// on Windows, freedesktop symbolic icons on Linux, with an embedded Lucide set where the OS
+// has none, so the same names work everywhere. Get returns a *gowt.Image tinted for the
+// current theme; Names lists the valid names and FromSVG makes an image from your own SVG.
+// See https://github.com/haiodo/gowt/blob/main/docs/icons.md.
 package icons
 
 import (

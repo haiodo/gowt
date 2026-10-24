@@ -8,6 +8,7 @@
 // listener that leaves event.browser unset refuses the window (SWT would make one), and while it runs
 // the opener's page is blocked, so evaluate on the opener there only queues the script and returns null.
 // A window opened by the page shares the opener's scripts and session (see webview.NewWindow).
+
 package browser
 
 import (

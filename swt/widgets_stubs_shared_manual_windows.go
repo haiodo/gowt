@@ -1,5 +1,6 @@
 // Hand-written stand-ins shared by the platforms: classes Display references only off the Shell+Button
 // path, and org.eclipse.swt.internal helpers whose static members Display/Shell/Item/SWT call.
+
 package swt
 
 import (

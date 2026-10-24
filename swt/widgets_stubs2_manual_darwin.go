@@ -2,6 +2,7 @@
 // Canvas/Decorations/Shell/Button's own field types, not translated yet), plus the graphics/
 // accessibility leaf types Control.java reads fields off of. Composite/Canvas/Decorations/Shell
 // are real as of Round 5, Menu/MenuItem as of Round 7, ScrollBar as of Round 8, Caret as of Round 10.
+
 package swt
 
 import "github.com/haiodo/gowt/internal/cocoa"

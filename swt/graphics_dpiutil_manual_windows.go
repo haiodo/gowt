@@ -1,6 +1,7 @@
 // DPIUtil as win32 needs it. Monitor-specific scaling follows upstream: on unless swt.autoScale.updateOnRuntime is
 // "false", then Display.create puts the thread in PerMonitorV2 and Shell handles WM_DPICHANGED. Ceiling: images are
 // always scaled with ImageData.ScaledTo, upstream's smooth method for this mode is not ported.
+
 package swt
 
 import (

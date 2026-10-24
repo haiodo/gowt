@@ -1,5 +1,6 @@
 // TaskItem.updateImage (manual.txt): draws through a bitmap-backed NSGraphicsContext instead of the
 // deprecated NSImage lockFocus/unlockFocus.
+
 package swt
 
 import (

@@ -38,7 +38,7 @@ func (l *layouter) lineH(n *rn) float64 {
 		return math.Round(n.lh * n.fsize)
 	}
 	m := l.measure("Hg", l.font(n))
-	return math.Round(m.Ascent) + math.Round(m.Descent)
+	return math.Round(m.Ascent + m.Descent)
 }
 
 func (l *layouter) natural(n *rn) []tline {

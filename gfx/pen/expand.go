@@ -103,12 +103,21 @@ func mergeProps(lo, hi map[string]any) map[string]any {
 // component inside a library name their targets and refs without the alias.
 const ctxKey = "$ctx"
 
+// ovKey is the key of the node id under the prefix pfx. The nodes of a component of the file itself
+// carry the marker ":" for the address, but are named bare in the overrides.
+func ovKey(pfx, id string) string {
+	if pfx == ":" {
+		return id
+	}
+	return pfx + id
+}
+
 func toOv(m map[string]any, pfx string) ovmap {
 	o := make(ovmap, len(m))
 	for k, v := range m {
 		if vm, ok := v.(map[string]any); ok {
 			if pfx != "" && !strings.Contains(k, ":") {
-				k = pfx + k
+				k = ovKey(pfx, k)
 			}
 			vm = clone(vm)
 			vm[ctxKey] = pfx
@@ -175,7 +184,7 @@ func (e *expander) expand(m map[string]any, pfx string, ov ovmap, mode string, d
 	kslot := slot
 	pip, pslot := ip, slot
 	if id != "" {
-		if o := ov[pfx+id]; o != nil {
+		if o := ov[ovKey(pfx, id)]; o != nil {
 			var replaced bool
 			m, replaced = override(m, o)
 			ctx, _ := o[ctxKey].(string)
@@ -600,7 +609,7 @@ func (e *expander) addr(id, pfx, ip string, slot bool) string {
 		}
 	}
 	if pfx == "" || ip == "" || slot && !strings.Contains(ip, "/") {
-		return pfx + id
+		return ovKey(pfx, id)
 	}
-	return ip + "/" + pfx + id
+	return ip + "/" + ovKey(pfx, id)
 }

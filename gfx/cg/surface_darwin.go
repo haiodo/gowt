@@ -4,6 +4,7 @@ package cg
 
 import (
 	"math"
+	"os"
 	"sync"
 	"unsafe"
 
@@ -19,6 +20,9 @@ type Options struct {
 	TextCache    bool // keep CTLine objects per (font, string)
 	ShadowSprite bool // draw box shadows from a cached 9-slice sprite instead of a live blur
 	LOD          bool // skip text, shadow and dashes that are unreadable at the current scale
+	// FontDir is registered with RegisterFonts for this process before the first text is laid out;
+	// the environment variable GFX_FONT_DIR stands in when it is empty.
+	FontDir string
 }
 
 // Renderer holds the caches shared by all Surfaces; it is safe for concurrent use.
@@ -45,6 +49,12 @@ type lineKey struct {
 
 func NewRenderer(o Options) *Renderer {
 	bind()
+	if o.FontDir == "" {
+		o.FontDir = os.Getenv("GFX_FONT_DIR")
+	}
+	if o.FontDir != "" {
+		_, _ = RegisterFonts(o.FontDir) // a missing directory leaves the system fonts
+	}
 	r := &Renderer{opts: o, cs: cgColorSpaceCreateDeviceRGB()}
 	if _, ok := gfx.DefaultMeasurer.(gfx.EstimateText); ok {
 		gfx.DefaultMeasurer = r // recordings from now on get CoreText bounds

@@ -116,7 +116,14 @@ var (
 func main() {
 	n := flag.Int("n", defaultN, "number of screens")
 	src := flag.String("src", defaultSrc, `"synth", or the path of a .pen file`)
+	fonts := flag.String("fonts", "", "directory with IBM Plex Sans .otf or .ttf files, registered for this process only")
 	flag.Parse()
+	if *fonts != "" {
+		if _, err := cg.RegisterFonts(*fonts); err != nil {
+			fmt.Println("error:", err)
+			os.Exit(1)
+		}
+	}
 	if *n < 1 {
 		fmt.Println("error: -n must be at least 1")
 		os.Exit(1)

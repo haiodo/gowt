@@ -12,7 +12,10 @@
 // theme; solid fills and linear gradients; strokes with inner or centered alignment; outer shadows;
 // uniform and per-corner radius; clip (kept only where it changes the picture); opacity; text with
 // family, size, weight, line height, fixed-width wrapping and center or right alignment, measured by
-// the Measurer given in Options. Fonts that are not installed fall back to the system font.
+// the Measurer given in Options. Text sizes follow pen.dev: a hug width is the measured width rounded up,
+// a line box is lineHeight * fontSize rounded (the font's own ascent plus descent when none is given).
+// Fonts that are not installed fall back to the system font; cg.RegisterFonts adds IBM Plex Sans
+// to a process without installing it. Boxes lists the laid out rectangles under pen.dev's ids.
 //
 // Not supported: fill rules (paths are filled non-zero, evenodd icons render as solid blobs),
 // inner shadows, blur effects, radial and angular gradients (drawn linear), image fills, per-side
@@ -74,7 +77,7 @@ func Open(path string, o Options) (*Doc, error) {
 		d.o.Measurer = gfx.DefaultMeasurer
 	}
 	if d.o.FontName == nil {
-		d.o.FontName = systemFont()
+		d.o.FontName = systemFont(d.o.Measurer)
 	}
 	if d.o.Mode == "" {
 		d.o.Mode = "light"
@@ -161,6 +164,7 @@ func splitRef(s string) (alias, id string) {
 // Info describes one top level node that is big enough to be a screen.
 type Info struct {
 	Index int
+	ID    string
 	Name  string
 	W, H  float64
 }
@@ -173,7 +177,8 @@ func (d *Doc) Screens() []Info {
 		w, h := d.topSize(m)
 		if w >= 400 && h >= 300 {
 			name, _ := m["name"].(string)
-			out = append(out, Info{i, name, w, h})
+			id, _ := m["id"].(string)
+			out = append(out, Info{i, id, name, w, h})
 		}
 	}
 	return out

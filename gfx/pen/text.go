@@ -1,6 +1,7 @@
 package pen
 
 import (
+	"math"
 	"strings"
 
 	"github.com/haiodo/gowt/gfx"
@@ -31,10 +32,13 @@ func (l *layouter) measure(s string, f gfx.Font) gfx.TextMetrics {
 }
 
 func (l *layouter) lineH(n *rn) float64 {
+	// pen.dev rounds the line box to whole units: 14 * 1.25 is 18, 13 * 1.25 is 16. Without a
+	// lineHeight it is the font's own: rounded ascent plus rounded descent.
 	if n.lh > 0 {
-		return n.lh * n.fsize
+		return math.Round(n.lh * n.fsize)
 	}
-	return n.fsize * 1.2
+	m := l.measure("Hg", l.font(n))
+	return math.Round(m.Ascent) + math.Round(m.Descent)
 }
 
 func (l *layouter) natural(n *rn) []tline {
@@ -79,7 +83,7 @@ func (l *layouter) wire(n *rn) {
 			for _, ln := range l.natural(n) {
 				w = max(w, ln.w)
 			}
-			return w
+			return math.Ceil(w)
 		}
 		n.LeafH = func(w float64) float64 {
 			if n.growW && w > 0 {

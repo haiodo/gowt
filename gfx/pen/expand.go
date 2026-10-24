@@ -2,8 +2,6 @@ package pen
 
 import (
 	al "github.com/haiodo/gowt/gfx/pen/autolayout"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -26,6 +24,8 @@ type shadow struct {
 type rn struct {
 	al.Node
 	typ     string
+	path    string
+	name    string
 	fill    *paint
 	stroke  *paint
 	sw      float64
@@ -98,10 +98,19 @@ func mergeProps(lo, hi map[string]any) map[string]any {
 	return out
 }
 
-func toOv(m map[string]any) ovmap {
+// ctxKey marks an override with the prefix of the file it was written in: the descendants of a
+// component inside a library name their targets and refs without the alias.
+const ctxKey = "$ctx"
+
+func toOv(m map[string]any, pfx string) ovmap {
 	o := make(ovmap, len(m))
 	for k, v := range m {
 		if vm, ok := v.(map[string]any); ok {
+			if pfx != "" && !strings.Contains(k, ":") {
+				k = pfx + k
+			}
+			vm = clone(vm)
+			vm[ctxKey] = pfx
 			o[k] = vm
 		}
 	}
@@ -130,9 +139,10 @@ func mergeOv(lo, hi ovmap) ovmap {
 }
 
 // override applies o to the node m: a property overlay, or a replacement when o names another
-// type or component.
+// type, component or id.
 func override(m, o map[string]any) (res map[string]any, replaced bool) {
-	if t, ok := o["type"]; ok && (t != m["type"] || o["ref"] != m["ref"]) {
+	oid, _ := o["id"].(string)
+	if t, ok := o["type"]; ok && (t != m["type"] || o["ref"] != m["ref"] || oid != "" && oid != m["id"]) {
 		r := clone(o)
 		for _, k := range [...]string{"x", "y"} {
 			if _, has := r[k]; !has {
@@ -155,19 +165,34 @@ type expander struct {
 }
 
 // expand resolves m. pfx is "F:" for the nodes of a library component, "" for the file's own.
-func (e *expander) expand(m map[string]any, pfx string, ov ovmap, mode string, depth int) *rn {
+func (e *expander) expand(m map[string]any, pfx string, ov ovmap, mode string, depth int, ip string, slot bool) *rn {
 	if depth > 60 {
 		return nil
 	}
-	if id, _ := m["id"].(string); id != "" {
+	id, _ := m["id"].(string)
+	kpfx := pfx // the prefix of the children: an override that brings its own children has its own
+	kslot := slot
+	pip, pslot := ip, slot
+	if id != "" {
 		if o := ov[pfx+id]; o != nil {
 			var replaced bool
 			m, replaced = override(m, o)
+			ctx, _ := o[ctxKey].(string)
 			if replaced {
-				pfx = ""
+				pfx, pslot = ctx, false
+				id, _ = m["id"].(string)
+				// under an instance at the top of the document a replacement is addressed by its own
+				// id, deeper in by the instance's path plus its id
+				if !strings.Contains(ip, "/") {
+					pip = ""
+				}
+			}
+			if _, has := o["children"]; has || replaced {
+				kpfx, kslot = ctx, true
 			}
 		}
 	}
+	path := e.addr(id, pfx, pip, pslot)
 	if en, ok := m["enabled"].(bool); ok && !en {
 		return nil
 	}
@@ -182,14 +207,15 @@ func (e *expander) expand(m map[string]any, pfx string, ov ovmap, mode string, d
 	}
 	typ, _ := m["type"].(string)
 	if typ == "ref" {
-		return e.expandRef(m, pfx, ov, mode, depth)
+		return e.expandRef(m, pfx, ov, mode, depth, path)
 	}
 	n := e.newRN(m, typ, mode)
 	if n == nil {
 		return nil
 	}
+	n.path = path
 	for _, c := range kids(m) {
-		if k := e.expand(c, pfx, ov, mode, depth+1); k != nil {
+		if k := e.expand(c, kpfx, ov, mode, depth+1, ip, kslot); k != nil {
 			n.kids = append(n.kids, k)
 			n.Kids = append(n.Kids, &k.Node)
 		}
@@ -197,7 +223,7 @@ func (e *expander) expand(m map[string]any, pfx string, ov ovmap, mode string, d
 	return n
 }
 
-func (e *expander) expandRef(m map[string]any, pfx string, ov ovmap, mode string, depth int) *rn {
+func (e *expander) expandRef(m map[string]any, pfx string, ov ovmap, mode string, depth int, path string) *rn {
 	s, _ := m["ref"].(string)
 	alias, id := splitRef(s)
 	if !strings.Contains(s, ":") && pfx != "" {
@@ -217,26 +243,32 @@ func (e *expander) expandRef(m map[string]any, pfx string, ov ovmap, mode string
 		}
 	}
 	desc, _ := m["descendants"].(map[string]any)
-	childOv := mergeOv(toOv(desc), ov)
+	childOv := mergeOv(toOv(desc, pfx), ov)
 	if comp["type"] == "ref" {
 		// a component that is itself an instance: its own overrides sit under ours
 		cd, _ := comp["descendants"].(map[string]any)
 		merged["descendants"] = cd
 		merged["ref"] = comp["ref"]
-		return e.expandRef(merged, alias+":", childOv, mode, depth+1)
+		return e.expandRef(merged, alias+":", childOv, mode, depth+1, path)
 	}
 	typ, _ := merged["type"].(string)
 	n := e.newRN(merged, typ, mode)
 	if n == nil {
 		return nil
 	}
+	n.path = path
+	if s, ok := m["name"].(string); ok {
+		n.name = s
+	}
 	cpfx := alias + ":"
 	src := kids(comp)
+	slot := false
 	if own := kids(m); len(own) > 0 {
-		src, cpfx = own, ""
+		// the children given to the instance belong to the file that wrote the instance
+		src, cpfx, slot = own, pfx, true
 	}
 	for _, c := range src {
-		if k := e.expand(c, cpfx, childOv, mode, depth+1); k != nil {
+		if k := e.expand(c, cpfx, childOv, mode, depth+1, path, slot); k != nil {
 			n.kids = append(n.kids, k)
 			n.Kids = append(n.Kids, &k.Node)
 		}
@@ -253,6 +285,7 @@ func (e *expander) newRN(m map[string]any, typ, mode string) *rn {
 	}
 	e.nodes++
 	n := &rn{typ: typ, opacity: 1, lh: 0}
+	n.name, _ = m["name"].(string)
 	n.W, n.H = parseSize(m["width"]), parseSize(m["height"])
 	if x, ok := get[float64](m, "x"); ok {
 		n.X = x
@@ -515,26 +548,23 @@ func (e *expander) parseShadow(v any, mode string) *shadow {
 	return s
 }
 
-// systemFont maps IBM Plex Sans to its PostScript names when the font is installed, and to
-// Helvetica Neue otherwise.
-func systemFont() func(string, int) string {
-	have := false
-	home, _ := os.UserHomeDir()
-	for _, dir := range []string{"/Library/Fonts", "/System/Library/Fonts", filepath.Join(home, "Library/Fonts"), "/usr/share/fonts", filepath.Join(home, ".fonts")} {
-		if fs, _ := filepath.Glob(filepath.Join(dir, "IBMPlexSans*")); len(fs) > 0 {
-			have = true
-			break
-		}
-	}
+// systemFont maps IBM Plex Sans to its PostScript names when the renderer has the font (installed or
+// registered for the process), and to Helvetica Neue otherwise. A missing font measures as the
+// fallback without an error, so the probe compares it with a name nobody has.
+func systemFont(m gfx.TextMeasurer) func(string, int) string {
+	const probe = "Hamburgefonstiv 0123 Жуков"
+	have := m.MeasureText(probe, gfx.Font{Name: "IBMPlexSans", Size: 100}) != m.MeasureText(probe, gfx.Font{Name: "NoSuchFont-Probe", Size: 100})
 	return func(family string, weight int) string {
 		if have && strings.HasPrefix(family, "IBM Plex Sans") {
 			switch {
 			case weight >= 700:
 				return "IBMPlexSans-Bold"
 			case weight >= 600:
-				return "IBMPlexSans-SemiBold"
+				return "IBMPlexSans-SmBld"
 			case weight >= 500:
-				return "IBMPlexSans-Medium"
+				return "IBMPlexSans-Medm"
+			case weight <= 300:
+				return "IBMPlexSans-Light"
 			}
 			return "IBMPlexSans"
 		}
@@ -551,4 +581,23 @@ func systemFont() func(string, int) string {
 // FontFallback reports whether text falls back to the system font.
 func (d *Doc) FontFallback() bool {
 	return !strings.HasPrefix(d.o.FontName("IBM Plex Sans", 400), "IBMPlex")
+}
+
+// addr is the id pen.dev reports for a node. A node of a component is its instance's path plus its id
+// in the component; a node written into a slot or an override keeps the bare id, and a copy of a
+// library node keeps its library address. Under an instance at the top of the document the instance's
+// path is left out for the nodes of a slot.
+func (e *expander) addr(id, pfx, ip string, slot bool) string {
+	if slot && pfx == "" {
+		for alias, idx := range e.d.index {
+			if alias != "" && idx[id] != nil {
+				pfx = alias + ":"
+				break
+			}
+		}
+	}
+	if pfx == "" || ip == "" || slot && !strings.Contains(ip, "/") {
+		return pfx + id
+	}
+	return ip + "/" + pfx + id
 }

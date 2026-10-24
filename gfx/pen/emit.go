@@ -20,6 +20,8 @@ type Screen struct {
 	Nodes, Texts, Paths, Frames, Source int
 	// Measures is the number of text measurements the layout took.
 	Measures int
+
+	tree *rn
 }
 
 // Build resolves the top level node i, lays it out and adds the scene nodes to tx under parent
@@ -28,26 +30,74 @@ func (d *Doc) Build(tx *gfx.Tx, parent *gfx.Node, i int) (*Screen, error) {
 	if i < 0 || i >= len(d.top) {
 		return nil, fmt.Errorf("pen: no top level node %d", i)
 	}
-	m := d.top[i]
+	return d.build(tx, parent, d.top[i], "")
+}
+
+// BuildNode is Build for any node by id: "F:5a12" for a node of the library imported as F, a plain
+// id for a node of the file. The node is built as if it were a top level one.
+func (d *Doc) BuildNode(tx *gfx.Tx, parent *gfx.Node, id string) (*Screen, error) {
+	alias, nid := splitRef(id)
+	m := d.index[alias][nid]
+	if m == nil {
+		return nil, fmt.Errorf("pen: no node %q", id)
+	}
+	pfx := ""
+	if alias != "" {
+		pfx = alias + ":"
+	}
+	return d.build(tx, parent, m, pfx)
+}
+
+func (d *Doc) build(tx *gfx.Tx, parent *gfx.Node, m map[string]any, pfx string) (*Screen, error) {
 	e := &expander{d: d}
 	// the position of a top level node belongs to the canvas, not to the screen
 	m = clone(m)
 	delete(m, "x")
 	delete(m, "y")
-	root := e.expand(m, "", nil, d.o.Mode, 0)
+	root := e.expand(m, pfx, nil, d.o.Mode, 0, "", false)
 	if root == nil {
-		return nil, fmt.Errorf("pen: top level node %d is empty", i)
+		return nil, fmt.Errorf("pen: node %v is empty", m["id"])
 	}
 	cnt := &Counters{}
 	l := &layouter{d: d, cnt: cnt}
 	l.wire(root)
 	root.Layout()
 	name, _ := m["name"].(string)
-	sc := &Screen{Name: name, W: root.RW, H: root.RH, Source: e.nodes}
+	sc := &Screen{Name: name, W: root.RW, H: root.RH, Source: e.nodes, tree: root}
 	b := &builder{d: d, tx: tx, sc: sc, l: l}
 	sc.Root = b.emit(root, parent, 0, 0, true)
 	sc.Measures = cnt.Measures
 	return sc, nil
+}
+
+// Box is the laid out rectangle of one node in the coordinates of its parent, under the id pen.dev
+// gives the node: the id for a node of the file, the path of the instance plus the id in the
+// component for the nodes inside an instance.
+type Box struct {
+	ID, Name, Type string
+	X, Y, W, H     float64
+	Depth          int
+	// Lines and TextW are the line count and the widest line of a text node.
+	Lines int
+	TextW float64
+}
+
+// Boxes lists every node of the screen in tree order, the root first at (0, 0).
+func (s *Screen) Boxes() []Box {
+	var out []Box
+	var walk func(n *rn, depth int)
+	walk = func(n *rn, depth int) {
+		b := Box{ID: n.path, Name: n.name, Type: n.typ, X: n.RX, Y: n.RY, W: n.RW, H: n.RH, Depth: depth, Lines: len(n.lines)}
+		for _, ln := range n.lines {
+			b.TextW = max(b.TextW, ln.w)
+		}
+		out = append(out, b)
+		for _, k := range n.kids {
+			walk(k, depth+1)
+		}
+	}
+	walk(s.tree, 0)
+	return out
 }
 
 type builder struct {

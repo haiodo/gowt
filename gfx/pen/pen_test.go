@@ -60,7 +60,8 @@ func TestBuildRefsAndLayout(t *testing.T) {
 	if scr.Texts != 2 {
 		t.Errorf("texts %d, want 2 (title and button label, both overridden)", scr.Texts)
 	}
-	// vertical card: padding 8, title 12 high (no line height: 1.2 em), gap 6, row 20 high at y 26
+	// vertical card: padding 8, title 11 high (no line height: ascent 8 plus descent 3 rounded), gap 6,
+	// row 20 high at y 25
 	var row *gfx.Node
 	for _, n := range scr.Root.Children() {
 		if n.Picture() != nil && n.Picture().Bounds.H() == 20 {
@@ -70,8 +71,8 @@ func TestBuildRefsAndLayout(t *testing.T) {
 	if row == nil {
 		t.Fatal("row not found")
 	}
-	if w := row.World(); w[4] != 8 || w[5] != 26 {
-		t.Errorf("row at %v, want (8, 26)", w[4:])
+	if w := row.World(); w[4] != 8 || w[5] != 25 {
+		t.Errorf("row at %v, want (8, 25)", w[4:])
 	}
 	if b := row.Picture().Bounds; b.W() != 584 {
 		t.Errorf("fill_container row is %v wide, want 584", b.W())

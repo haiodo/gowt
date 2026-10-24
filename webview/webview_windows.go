@@ -372,7 +372,7 @@ func (e *wv2Engine) answerCall(args uintptr) bool {
 		return false
 	}
 	from := heap[uintptr]()
-	if vcall(args, 3, addr(from)) != sOK || !sameDocument(takeString(*from), e.url()) { // get_Uri
+	if vcall(args, 3, addr(from)) != sOK || !isMainDocument(takeString(*from), e.url(), e.lastURL) { // get_Uri
 		// A subframe asked: answer empty so the marker prompt does not reach the user, and never call f.
 		empty := utf16Z("")
 		vcall(args, 9, addr(&empty[0]))

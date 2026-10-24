@@ -106,12 +106,12 @@ func main() {
 		if want := fmt.Sprintf("%d tests in all", total); !strings.Contains(text, want) {
 			bad = append(bad, fmt.Sprintf("%s: missing %q (pass+fail+flaky+skip of expected.txt)", doc, want))
 		}
-		wantJ := fmt.Sprintf("%d pass on macOS and Windows, %d pass and %d fail on Linux", jm["pass"], jl["pass"], jl["fail"])
+		wantJ := fmt.Sprintf("%d pass on macOS, %d pass and %d fail on Linux and Windows", jm["pass"], jl["pass"], jl["fail"])
 		if doc != "README.md" {
-			wantJ = fmt.Sprintf("%d pass, %d skip on macOS and Windows; %d pass, %d fail, %d skip on Linux", jm["pass"], jm["skip"], jl["pass"], jl["fail"], jl["skip"])
+			wantJ = fmt.Sprintf("%d pass, %d skip on macOS; %d pass, %d fail, %d skip on Linux and Windows", jm["pass"], jm["skip"], jl["pass"], jl["fail"], jl["skip"])
 		}
-		if jm["pass"] != jw["pass"] || jm["skip"] != jw["skip"] || jm["fail"] != jw["fail"] {
-			bad = append(bad, "tests/expected_jface.txt and expected_jface_windows.txt differ; the docs sentence assumes they are equal")
+		if jl["pass"] != jw["pass"] || jl["skip"] != jw["skip"] || jl["fail"] != jw["fail"] {
+			bad = append(bad, "tests/expected_jface_linux.txt and expected_jface_windows.txt differ; the docs sentence assumes they are equal")
 		} else if !strings.Contains(text, wantJ) {
 			bad = append(bad, fmt.Sprintf("%s: missing JFace text %q", doc, wantJ))
 		}

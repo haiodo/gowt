@@ -120,7 +120,7 @@ func (a *App) relayout(c *swt.Control) {
 	}
 	a.relayouts = append(a.relayouts, c)
 	if len(a.relayouts) == 1 {
-		a.display.AsyncExec(jrt.NewRunnable(a.runRelayouts))
+		a.display.AsyncExec(jrt.NewRunnable(a.live(a.runRelayouts)))
 	}
 }
 

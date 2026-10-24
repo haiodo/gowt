@@ -246,3 +246,12 @@ func sameDocument(a, b string) bool {
 	b, _, _ = strings.Cut(b, "#")
 	return a != "" && a == b
 }
+
+// isMainDocument tells the main document's dialog Uri from a subframe's. NavigateToString content has the
+// get_Source about:blank but a data: Uri in the dialog event, so there the last main-frame navigation decides.
+func isMainDocument(uri, source, lastNavigation string) bool {
+	if source == "about:blank" {
+		source = lastNavigation
+	}
+	return sameDocument(uri, source)
+}

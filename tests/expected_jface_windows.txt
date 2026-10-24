@@ -34,7 +34,7 @@ pass	TestUnitControlFactory.setsOrientation
 pass	TestUnitControlFactory.setsTooltip
 pass	TestUnitControlFactory.testUniqueLayoutData
 skip	TestUnitDateTimeFactory.createDateTimeWithAllProperties	not in the jface AllWidgetTests suite: onSelect and onDefaultSelect both call DateTime.addSelectionListener, which hooks Selection and DefaultSelection, so each has 2 listeners where the test expects 1 (same in gtk, cocoa and win32 DateTime.java)
-pass	TestUnitDateTimeFactory.createsDateTime
+fail	TestUnitDateTimeFactory.createsDateTime	VM: Windows 11 comctl32 creates the date/time picker without WS_EX_CLIENTEDGE even when SWT.BORDER is requested (window ex style 0x100000, measured), so Control.checkBorder clears SWT.BORDER; the same code is in win32 SWT
 pass	TestUnitGroupFactory.createsGroup
 pass	TestUnitGroupFactory.createsGroupWithText
 pass	TestUnitItemFactory.createsControlWithProperties

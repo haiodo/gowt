@@ -323,6 +323,7 @@ func (b *builder) pathPicture(n *rn) *gfx.Picture {
 		sx, sy = n.RW/n.vb[2], n.RH/n.vb[3]
 	}
 	p = p.Transform(gfx.Affine{sx, 0, 0, sy, -n.vb[0] * sx, -n.vb[1] * sy})
+	p.EvenOdd = n.evenOdd
 	r := gfx.NewRecorderWith(b.d.o.Measurer)
 	if n.fill != nil {
 		if n.fill.grad != nil {

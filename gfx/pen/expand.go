@@ -42,8 +42,9 @@ type rn struct {
 	talign          string
 	lines           []tline
 
-	geom string
-	vb   [4]float64
+	geom    string
+	evenOdd bool
+	vb      [4]float64
 
 	kids []*rn
 }
@@ -343,6 +344,8 @@ func (e *expander) newRN(m map[string]any, typ, mode string) *rn {
 		n.talign, _ = get[string](m, "textAlign")
 	case "path":
 		n.geom, _ = get[string](m, "geometry")
+		fr, _ := get[string](m, "fillRule")
+		n.evenOdd = fr == "evenodd"
 		n.vb = [4]float64{0, 0, 0, 0}
 		if vb, ok := m["viewBox"].([]any); ok && len(vb) == 4 {
 			for i := range vb {

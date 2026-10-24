@@ -214,7 +214,11 @@ func (r *Recorder) color(c Color) {
 func q8(v float64) byte { return byte(math.Round(math.Min(math.Max(v, 0), 1) * 255)) }
 
 func (r *Recorder) path(p *Path) {
-	r.uv(len(p.Verbs))
+	n := len(p.Verbs) << 1
+	if p.EvenOdd {
+		n |= 1
+	}
+	r.uv(n)
 	for _, v := range p.Verbs {
 		r.pic.data = append(r.pic.data, byte(v))
 	}
@@ -297,7 +301,7 @@ func (r *Recorder) ClipRRect(rc Rect, radius float64) {
 	r.f32(rc.Min.X, rc.Min.Y, rc.W(), rc.H(), radius)
 }
 
-// ClipPath limits what follows to the inside of p (non-zero winding).
+// ClipPath limits what follows to the inside of p, by its fill rule.
 func (r *Recorder) ClipPath(p *Path) {
 	r.clip = r.clip.Intersect(r.ctm.Bounds(p.Bounds()))
 	r.op(OpClipPath)
@@ -491,6 +495,8 @@ func (it *Iter) color() Color {
 
 func (it *Iter) readPath() *Path {
 	n := it.uv()
+	it.path.EvenOdd = n&1 != 0
+	n >>= 1
 	it.path.Verbs = it.path.Verbs[:0]
 	it.path.Pts = it.path.Pts[:0]
 	np := 0

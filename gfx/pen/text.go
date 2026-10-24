@@ -51,23 +51,43 @@ func (l *layouter) natural(n *rn) []tline {
 	return out
 }
 
-// wrap breaks the text greedily at spaces to fit w.
+// hyphenPieces splits word after each hyphen that sits between two other characters, the
+// break opportunities browsers and pen.dev allow inside a word.
+func hyphenPieces(word string) []string {
+	var out []string
+	start := 0
+	for i := 1; i+1 < len(word); i++ {
+		if word[i] == '-' && word[i-1] != '-' && word[i+1] != '-' {
+			out = append(out, word[start:i+1])
+			start = i + 1
+		}
+	}
+	return append(out, word[start:])
+}
+
+// wrap breaks the text greedily at spaces and after hyphens to fit w.
 func (l *layouter) wrap(n *rn, w float64) []tline {
 	f := l.font(n)
 	sp := l.measure(" ", f).Width
 	var out []tline
 	for _, para := range strings.Split(n.content, "\n") {
 		line, lw := "", 0.0
-		for _, word := range strings.Split(para, " ") {
-			ww := l.measure(word, f).Width
-			switch {
-			case line == "":
-				line, lw = word, ww
-			case lw+sp+ww <= w:
-				line, lw = line+" "+word, lw+sp+ww
-			default:
-				out = append(out, tline{line, lw})
-				line, lw = word, ww
+		for wi, word := range strings.Split(para, " ") {
+			for pi, piece := range hyphenPieces(word) {
+				pw := l.measure(piece, f).Width
+				gap, sep := 0.0, ""
+				if pi == 0 && wi > 0 {
+					gap, sep = sp, " "
+				}
+				switch {
+				case line == "":
+					line, lw = piece, pw
+				case lw+gap+pw <= w:
+					line, lw = line+sep+piece, lw+gap+pw
+				default:
+					out = append(out, tline{line, lw})
+					line, lw = piece, pw
+				}
 			}
 		}
 		out = append(out, tline{line, lw})

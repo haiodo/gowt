@@ -35,6 +35,14 @@ func (p *Path) SVG() string {
 	return b.String()
 }
 
+// fillRule is the SVG attribute for p, empty for the default.
+func (p *Path) fillRule(attr string) string {
+	if p.EvenOdd {
+		return " " + attr + `="evenodd"`
+	}
+	return ""
+}
+
 func num(v float64) string {
 	if math.Abs(v) < 5e-5 {
 		return "0"
@@ -69,7 +77,7 @@ func (w *svgWriter) clip(m Affine, kind ClipKind, r Rect, radius float64, p *Pat
 	case ClipRRect:
 		shape = fmt.Sprintf(`<rect x="%s" y="%s" width="%s" height="%s" rx="%s" transform="%s"/>`, num(r.Min.X), num(r.Min.Y), num(r.W()), num(r.H()), num(radius), matrix(m))
 	default:
-		shape = fmt.Sprintf(`<path d="%s" transform="%s"/>`, p.SVG(), matrix(m))
+		shape = fmt.Sprintf(`<path d="%s"%s transform="%s"/>`, p.SVG(), p.fillRule("clip-rule"), matrix(m))
 	}
 	fmt.Fprintf(&w.defs, `<clipPath id="%s">%s</clipPath>`, id, shape)
 	return id
@@ -189,9 +197,9 @@ func (w *svgWriter) picture(p *Picture) {
 				w.body.WriteString("</g>")
 			}
 		case OpFill:
-			fmt.Fprintf(&w.body, `<path d="%s" %s/>`, o.Path.SVG(), w.paint(o.Color, nil, "fill"))
+			fmt.Fprintf(&w.body, `<path d="%s"%s %s/>`, o.Path.SVG(), o.Path.fillRule("fill-rule"), w.paint(o.Color, nil, "fill"))
 		case OpFillGrad:
-			fmt.Fprintf(&w.body, `<path d="%s" %s/>`, o.Path.SVG(), w.paint(Color{}, o.Grad, "fill"))
+			fmt.Fprintf(&w.body, `<path d="%s"%s %s/>`, o.Path.SVG(), o.Path.fillRule("fill-rule"), w.paint(Color{}, o.Grad, "fill"))
 		case OpStroke:
 			fmt.Fprintf(&w.body, `<path d="%s" fill="none" %s%s/>`, o.Path.SVG(), w.paint(o.Color, nil, "stroke"), w.stroke(o.Style))
 		case OpStrokeGrad:

@@ -114,7 +114,7 @@ func (s *Surface) clip(c *gfx.Clip) {
 		cgClip(ctx)
 	case gfx.ClipPath:
 		s.addPath(c.Path)
-		cgClip(ctx)
+		s.clipFilled(c.Path)
 	}
 	if inv, ok := c.M.Invert(); ok {
 		s.concat(inv)
@@ -186,11 +186,15 @@ func (s *Surface) replayOps(p *gfx.Picture) {
 		case gfx.OpFill:
 			cgFillColor(ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A)
 			s.addPath(op.Path)
-			cgFillPath(ctx)
+			if op.Path.EvenOdd {
+				cgEOFillPath(ctx)
+			} else {
+				cgFillPath(ctx)
+			}
 		case gfx.OpFillGrad:
 			cgSaveGState(ctx)
 			s.addPath(op.Path)
-			cgClip(ctx)
+			s.clipFilled(op.Path)
 			s.gradient(op.Grad)
 			cgRestoreGSt(ctx)
 		case gfx.OpStroke:
@@ -227,7 +231,7 @@ func (s *Surface) replayOps(p *gfx.Picture) {
 			cgClip(ctx)
 		case gfx.OpClipPath:
 			s.addPath(op.Path)
-			cgClip(ctx)
+			s.clipFilled(op.Path)
 		case gfx.OpBeginLayer:
 			cgSaveGState(ctx)
 			cgSetAlpha(ctx, op.A)
@@ -304,6 +308,15 @@ func (s *Surface) gradient(g *gfx.Gradient) {
 		cgDrawLinear(s.ctx, cg, cgPoint{g.P0.X, g.P0.Y}, cgPoint{g.P1.X, g.P1.Y}, extend)
 	}
 	cgGradRelease(cg)
+}
+
+// clipFilled clips to the path already added, by the fill rule of p.
+func (s *Surface) clipFilled(p *gfx.Path) {
+	if p.EvenOdd {
+		cgEOClip(s.ctx)
+	} else {
+		cgClip(s.ctx)
+	}
 }
 
 func (s *Surface) addPath(p *gfx.Path) {

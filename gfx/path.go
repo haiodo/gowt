@@ -17,6 +17,8 @@ const (
 type Path struct {
 	Verbs []Verb
 	Pts   []Point
+	// EvenOdd selects the even-odd fill rule, for fills and clips; the default is non-zero winding.
+	EvenOdd bool
 }
 
 func (p *Path) MoveTo(x, y float64) {
@@ -47,7 +49,7 @@ func (p *Path) Reset() { p.Verbs, p.Pts = p.Verbs[:0], p.Pts[:0] }
 
 // Clone returns a deep copy.
 func (p *Path) Clone() *Path {
-	return &Path{append([]Verb(nil), p.Verbs...), append([]Point(nil), p.Pts...)}
+	return &Path{append([]Verb(nil), p.Verbs...), append([]Point(nil), p.Pts...), p.EvenOdd}
 }
 
 func (p *Path) Rect(x, y, w, h float64) {

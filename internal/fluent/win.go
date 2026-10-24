@@ -32,6 +32,8 @@ var (
 	pSendMessage          = user32.NewProc("SendMessageW")
 	pGetFocus             = user32.NewProc("GetFocus")
 	pTrackMouseEvent      = user32.NewProc("TrackMouseEvent")
+	pSetWindowRgn         = user32.NewProc("SetWindowRgn")
+	pCreateRectRgn        = gdi32.NewProc("CreateRectRgn")
 	pExcludeClipRect      = gdi32.NewProc("ExcludeClipRect")
 	pSelectObject         = gdi32.NewProc("SelectObject")
 	pGetTextMetrics       = gdi32.NewProc("GetTextMetricsW")
@@ -53,6 +55,7 @@ const (
 	wmMouseMove  = 0x200
 	wmMouseLeave = 0x2A3
 	wmPaint      = 0xF
+	wmSize       = 0x5
 	wmEraseBkgnd = 0x14
 
 	wsBorder  = 0x800000

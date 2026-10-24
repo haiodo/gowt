@@ -63,3 +63,20 @@ func (p *painter) line(c RGB, x1, y1, x2, y2, lw int32) {
 	p.gc.SetLineWidthInPixels(lw)
 	p.gc.DrawLineInPixels(x1, y1, x2, y2)
 }
+
+// drawBuffered paints a w by h image off screen and copies it to dst. GDI+ ignores the clip region of a
+// device context, so a non-client paint that must leave the client area alone goes through BitBlt.
+func drawBuffered(d *swt.Display, dst uintptr, w, h int32, fn func(p *painter)) {
+	mem := call(pCreateCompatDC, dst)
+	bmp := call(pCreateCompatBmp, dst, uintptr(w), uintptr(h))
+	if mem == 0 || bmp == 0 {
+		return
+	}
+	defer call(pDeleteDC, mem)
+	defer call(pDeleteObject, bmp)
+	call(pSelectObject, mem, bmp)
+	p := newPainter(d, mem)
+	fn(p)
+	p.done()
+	call(pBitBlt, dst, 0, 0, uintptr(w), uintptr(h), mem, 0, 0, 0xCC0020)
+}

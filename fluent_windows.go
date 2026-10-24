@@ -41,3 +41,6 @@ func fluentBorder(c *swt.Control) {
 }
 
 func fluentTable(t *swt.Table) { fluent.Table(t) }
+
+// fluentShell hides focus rectangles until the keyboard is used.
+func fluentShell(s *swt.Shell) { fluent.Shell(s) }

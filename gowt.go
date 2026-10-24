@@ -563,6 +563,7 @@ func (w *Window) SetTopInset(points int) {
 func (a *App) Window(title string, opts ...Option) *Window {
 	s := swt.NewShellDisplayStyle(a.display, swt.SHELL_TRIM)
 	s.SetText(title)
+	fluentShell(s)
 	a.badgeWindow(s)
 	gap, pad := spacingOf(opts, Spacing.PageMargin)
 	s.SetLayout(newBox(false, gap, pad))

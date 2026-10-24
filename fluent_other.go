@@ -11,3 +11,5 @@ func fluentText(*TextView, bool) {}
 func fluentBorder(*swt.Control) {}
 
 func fluentTable(*swt.Table) {}
+
+func fluentShell(*swt.Shell) {}

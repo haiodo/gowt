@@ -49,6 +49,9 @@ func Glass(c *swt.Composite, on bool) {
 func GlassRadius(c *swt.Composite, r float64) {
 	s := surfaceOf(c)
 	s.radius = r
+	if s.on {
+		s.adoptChildren()
+	}
 	c.Redraw()
 }
 
@@ -90,7 +93,9 @@ func (s *surface) hook() {
 		return
 	}
 	s.hooked = true
-	s.c.AddListener(swt.Paint, listener(s.paint))
+	// A plain Composite sends no Paint events, so the surface is the erased background.
+	attach(uintptr(s.c.Handle), s.proc)
+	s.c.AddListener(swt.Resize, listener(func(*swt.Event) { s.c.Redraw() }))
 	d := s.c.GetDisplay()
 	// The focus control is the new one only after the event: look at it on the next turn.
 	f := listener(func(*swt.Event) {
@@ -119,7 +124,7 @@ func (s *surface) adoptChildren() {
 	walk = func(cc *swt.Composite) {
 		for _, ch := range cc.GetChildren() {
 			if ch.GetName() == "Text" {
-				Unframe(ch)
+				Unframe(ch, s)
 				if !ch.HasCustomBackground() || frames[uintptr(ch.Handle)] != nil {
 					ch.SetBackgroundWithColor(col)
 				}
@@ -129,37 +134,48 @@ func (s *surface) adoptChildren() {
 	walk(s.c)
 }
 
-func (s *surface) paint(e *swt.Event) {
-	if !s.on || e.Gc == nil {
-		return
+func (s *surface) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, bool) {
+	if msg != wmEraseBkgnd || !s.on || wp == 0 {
+		return 0, false
 	}
-	z := s.c.GetAutoscalingZoom()
-	sz := s.c.GetSize()
-	w, h := swt.DPIUtilPointToPixel(sz.X, z), swt.DPIUtilPointToPixel(sz.Y, z)
+	var cr rect
+	call(pGetClientRect, hwnd, uintptr(unsafe.Pointer(&cr)))
+	w, h := cr.right, cr.bottom
+	if w <= 0 || h <= 0 {
+		return 1, true
+	}
+	s.draw(wp, w, h, 0, 0, w, h)
+	return 1, true
+}
+
+// draw paints the surface of size cw by ch into a w by h buffer on dst, the buffer's origin at (ox, oy)
+// of the surface: a Text inside it paints its non-client area from the same shape.
+func (s *surface) draw(dst uintptr, w, h, ox, oy, cw, ch int32) {
 	d := s.c.GetDisplay()
 	pal := Current(d)
 	bg := parentBackground(&s.c.Control)
-	var r int32
-	if s.radius < 0 {
-		r = min(w, h) / 2
-	} else {
-		r = swt.DPIUtilPointToPixel(int32(s.radius+0.5), z)
-	}
-	e.Gc.SetAntialias(swt.ON)
-	p := &painter{gc: e.Gc}
-	defer func() {
-		for _, c := range p.cols {
-			c.Dispose()
+	r := s.radiusPx()
+	ring := s.ring && s.hasFocus()
+	drawBuffered(d, dst, w, h, func(p *painter) {
+		p.fillRect(bg, 0, 0, w, h)
+		p.fillRound(pal.Fill, -ox, -oy, cw, ch, r)
+		if s.border {
+			p.strokeRound(pal.StrongStroke(bg).over(0.5, pal.Stroke(bg)), -ox, -oy, cw, ch, r, 1)
 		}
-	}()
-	p.fillRect(bg, 0, 0, w, h)
-	p.fillRound(pal.Fill, 0, 0, w, h, r)
-	if s.border {
-		p.strokeRound(pal.StrongStroke(bg).over(0.5, pal.Stroke(bg)), 0, 0, w, h, r, 1)
+		if ring {
+			p.strokeRound(pal.Accent, 1-ox, 1-oy, cw-2, ch-2, max(r-1, 0), 2)
+		}
+	})
+}
+
+// radiusPx is the corner radius in device pixels; Capsule is half the shorter side.
+func (s *surface) radiusPx() int32 {
+	z := s.c.GetAutoscalingZoom()
+	if s.radius >= 0 {
+		return swt.DPIUtilPointToPixel(int32(s.radius+0.5), z)
 	}
-	if s.ring && s.hasFocus() {
-		p.strokeRound(pal.Accent, 1, 1, w-2, h-2, max(r-1, 0), 2)
-	}
+	sz := s.c.GetSize()
+	return min(swt.DPIUtilPointToPixel(sz.X, z), swt.DPIUtilPointToPixel(sz.Y, z)) / 2
 }
 
 func (s *surface) hasFocus() bool {

@@ -47,8 +47,8 @@ func paintRing(c *swt.Control, hwnd uintptr) {
 	call(pExcludeClipRect, hdc, 1, 1, uintptr(w-1), uintptr(h-1))
 	d := c.GetDisplay()
 	pal := Current(d)
-	p := newPainter(d, hdc)
-	defer p.done()
-	p.gc.SetAntialias(swt.OFF)
-	p.fillRect(pal.Stroke(parentBackground(c)), 0, 0, w, h)
+	drawBuffered(d, hdc, w, h, func(p *painter) {
+		p.gc.SetAntialias(swt.OFF)
+		p.fillRect(pal.Stroke(parentBackground(c)), 0, 0, w, h)
+	})
 }

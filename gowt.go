@@ -518,6 +518,7 @@ func Text(opts ...Option) Option {
 	}))
 	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder|sNoBorder|sScrollbars, opts, func(p *swt.Composite) Widget {
 		t := swt.NewText(p, resolve(swt.NONE, opts))
+		textScrollOnOverflow(t)
 		return &TextView{base: base{&t.Control}, t: t}
 	})
 }

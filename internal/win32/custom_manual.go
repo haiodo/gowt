@@ -79,3 +79,11 @@ func OsVersionCheckCompatibleWindowsVersion() {}
 
 // OS.setTheme(boolean) took a Display and Colors; the dark-theme tweaks are not ported.
 func OSSetTheme(isDarkTheme bool) {}
+
+// COM.PathToPIDL (com.c): SHParseDisplayName(pszName, NULL, ppidl, 0, NULL).
+var proc_SHParseDisplayName = newProc("SHParseDisplayName")
+
+func custom_PathToPIDL(pszName []uint16, ppidl []int64) int32 {
+	r, _, _ := syscall.SyscallN(proc_SHParseDisplayName.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(pszName))), 0, uintptr(unsafe.Pointer(unsafe.SliceData(ppidl))), 0, 0)
+	return int32(r)
+}

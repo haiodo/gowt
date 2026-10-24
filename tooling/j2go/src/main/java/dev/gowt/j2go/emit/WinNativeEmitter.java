@@ -17,7 +17,7 @@ final class WinNativeEmitter {
 	// os_custom.c natives with no DLL export of their own: constants, and hand-written custom_<name> (custom_manual.go).
 	private static final Map<String, String> CONSTANTS = Map.of("DPI_AWARENESS_CONTEXT_UNAWARE", "-1", "DPI_AWARENESS_CONTEXT_SYSTEM_AWARE", "-2",
 			"DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE", "-3", "DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2", "-4", "DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED", "-5");
-	private static final java.util.Set<String> CUSTOM = java.util.Set.of("GetLibraryHandle", "AllowDarkModeForWindow", "SetPreferredAppMode", "IsDarkModeAvailable", "GID_ROTATE_ANGLE_FROM_ARGUMENT", "TreeView_GetItemRect");
+	private static final java.util.Set<String> CUSTOM = java.util.Set.of("GetLibraryHandle", "AllowDarkModeForWindow", "SetPreferredAppMode", "IsDarkModeAvailable", "GID_ROTATE_ANGLE_FROM_ARGUMENT", "TreeView_GetItemRect", "PathToPIDL");
 
 	private final Emitter emitter;
 	// Statements around the call for struct arguments: toC into a C-layout buffer before, fromC after.
@@ -80,7 +80,7 @@ final class WinNativeEmitter {
 			return;
 		}
 		// No Windows export behind these (os.c's own helpers, WebView2 glue): panic when called.
-		if (java.util.Set.of("setenv", "PathToPIDL", "CreateSwtWebView2Options").contains(javaName)) {
+		if (java.util.Set.of("setenv", "CreateSwtWebView2Options").contains(javaName)) {
 			emitter.emitUnsupportedNative(md, ci, out);
 			return;
 		}

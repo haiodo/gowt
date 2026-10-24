@@ -3206,7 +3206,7 @@ the first DLL of a fixed list (user32, gdi32, kernel32, comctl32, ... usp10, ucr
 `syscall.SyscallN`. Floats go through the integer slots (the Go runtime copies the first four words into XMM too); `//go:uintptrescapes` helpers
 keep Go pointers alive for GDI+. Callbacks (`Callback`, window procedures) are `syscall.NewCallback` with 0..8 word arguments (2000 slots, never freed).
 Why not purego or mingw cgo: purego's Windows support is the same SyscallN underneath, cgo needs a cross C toolchain. `COM.VtblCall*` reads the vtable slot.
-`dynamic` natives that a Windows lacks return 0 (`GetDpiForMonitor`). `setenv`, `PathToPIDL`, `CreateSwtWebView2Options` have no export: panic stubs.
+`dynamic` natives that a Windows lacks return 0 (`GetDpiForMonitor`). `setenv`, `CreateSwtWebView2Options` have no export: panic stubs.
 - **Struct layout.** SWT's Java structs are not C mirrors (flattened `rcPaint.left`, reordered fields, BOOL as boolean, bitfields, partial structs), so the
   Go structs keep the Java shape and every native copies them through a C-layout buffer: `toC`/`fromC` (generated, `WinPack`; `flags=no_in/no_out` honoured, by-value
   `flags=struct`). Offsets and sizes come from `tooling/j2go/win32_layout.txt`, measured with mingw-w64 and run under Wine by `tooling/j2go/win32/layout.py`

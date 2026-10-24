@@ -109,7 +109,7 @@ SWT's own JUnit tests, translated to Go and run per OS by `make test-swt` agains
 
 3894 tests in all. On real Windows 11 arm64 (a UTM virtual machine) the run of 2026-10-22 gave 3741 passed, 64 failed, 89 skipped; the gate file was not re-recorded from it.
 
-JFace tests: 86 pass on macOS and Windows, 85 pass and 1 fail on Linux. Counts are the `pass`, `fail`, `flaky` and `skip` lines of the expected files; every non-pass line carries a reason. The facade itself has `go test` examples and an API stability gate (`make api-check`).
+JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts are the `pass`, `fail`, `flaky` and `skip` lines of the expected files; every non-pass line carries a reason. The facade itself has `go test` examples and an API stability gate (`make api-check`).
 
 ## Platform requirements
 

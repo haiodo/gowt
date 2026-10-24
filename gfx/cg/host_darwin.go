@@ -21,6 +21,7 @@ var (
 	msgRectRet func(recv, sel uintptr) cgRect
 	msgAffRet  func(recv, sel uintptr) cgAffine
 	msgF32Ret  func(recv, sel uintptr) float32
+	msgF64Ret  func(recv, sel uintptr) float64
 
 	hostOnce sync.Once
 	sels     struct {
@@ -37,7 +38,7 @@ func initHost() {
 		if _, err := purego.Dlopen("/System/Library/Frameworks/QuartzCore.framework/QuartzCore", purego.RTLD_LAZY|purego.RTLD_GLOBAL); err != nil {
 			panic("gfx/cg: dlopen QuartzCore: " + err.Error())
 		}
-		for _, f := range []any{&msgRect, &msgPoint, &msgF64, &msgF32, &msgAffine, &msgInt, &msgRectRet, &msgAffRet, &msgF32Ret} {
+		for _, f := range []any{&msgRect, &msgPoint, &msgF64, &msgF32, &msgAffine, &msgInt, &msgRectRet, &msgAffRet, &msgF32Ret, &msgF64Ret} {
 			purego.RegisterLibFunc(f, purego.RTLD_DEFAULT, "objc_msgSend")
 		}
 		s := func(n string) uintptr { return uintptr(cocoa.OSSel_registerName(n)) }
@@ -75,6 +76,27 @@ func NewHost(root uintptr, scale float64) *Host {
 		h.groups[i] = l
 	}
 	return h
+}
+
+// ViewLayer makes the NSView layer-backed and returns its layer, to pass to NewHost.
+func ViewLayer(view uintptr) uintptr {
+	initHost()
+	sel := func(n string) uintptr { return uintptr(cocoa.OSSel_registerName(n)) }
+	msgInt(view, sel("setWantsLayer:"), 1)
+	return send0(view, sel("layer"))
+}
+
+// BackingScale is the device pixels per point of the screen the view's window is on; 1 without a window.
+func BackingScale(view uintptr) float64 {
+	initHost()
+	w := send0(view, uintptr(cocoa.OSSel_registerName("window")))
+	if w == 0 {
+		return 1
+	}
+	if s := msgF64Ret(w, uintptr(cocoa.OSSel_registerName("backingScaleFactor"))); s >= 1 {
+		return s
+	}
+	return 1
 }
 
 // SetScale changes the contents scale of layers made from now on.

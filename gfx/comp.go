@@ -214,6 +214,9 @@ func (c *Compositor) SetCamera(cam Camera) {
 	}
 }
 
+// Workers is the number of tile rasterizer goroutines.
+func (c *Compositor) Workers() int { return c.o.Workers }
+
 func (c *Compositor) Camera() Camera { return c.cam }
 
 // SceneAt maps a view point to a scene point.
@@ -379,12 +382,19 @@ func (c *Compositor) ensureTiles(moved bool) {
 			}
 		}
 	}
+	// far from the scale of the tiles, new ones are not worth drawing in the middle of a gesture:
+	// the next set is about to replace them
+	ratio := c.cam.Zoom * c.dpr / set.scale
+	skipNew := c.zooming && (ratio < 0.5 || ratio > 2)
 	var add []job
 	for y := y0; y <= y1; y++ {
 		for x := x0; x <= x1; x++ {
 			k := tileKey{x, y}
 			t := set.tiles[k]
 			if t == nil {
+				if skipNew {
+					continue
+				}
 				t = &tile{key: k, dirty: true}
 				set.tiles[k] = t
 			}

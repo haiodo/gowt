@@ -53,6 +53,7 @@ Four ideas carry the whole API:
 | Events, the UI thread and reactive state | [events.md](events.md) | [`examples/events`](../examples/events), [`examples/rows`](../examples/rows) |
 | Dialogs and menus | [dialogs-menus.md](dialogs-menus.md) | [`examples/dialogs`](../examples/dialogs) |
 | Graphics and images | [graphics.md](graphics.md) | [`examples/graphics`](../examples/graphics) |
+| Retained 2D canvas, gfx (experimental) | [gfx.md](gfx.md) | |
 | Theme and platform look | [theme-look.md](theme-look.md) | [`examples/theme`](../examples/theme) |
 | Icons | [icons.md](icons.md) | [`examples/icons`](../examples/icons) |
 | Web view | [webview-browser.md](webview-browser.md) | [`examples/webview`](../examples/webview) |

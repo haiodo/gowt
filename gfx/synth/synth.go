@@ -108,18 +108,21 @@ func (d *Doc) link(tx *gfx.Tx, a, b *Box, vert bool) *Conn {
 	return c
 }
 
+// Move records in tx the move of b to (x, y) and the new pictures of its connectors.
+func (d *Doc) Move(tx *gfx.Tx, b *Box, x, y float64) {
+	b.X, b.Y = x, y
+	tx.Move(b.Node, x, y)
+	for _, c := range b.Conns {
+		pic, shape := c.build()
+		c.Shape = shape
+		tx.SetPicture(c.Node, pic)
+		tx.SetShape(c.Node, shape, gfx.HitStroke)
+	}
+}
+
 // MoveBox moves b to (x, y), rebuilds its connectors and returns the area that went stale.
 func (d *Doc) MoveBox(b *Box, x, y float64) gfx.Rect {
-	b.X, b.Y = x, y
-	d.Scene.Update(func(tx *gfx.Tx) {
-		tx.Move(b.Node, x, y)
-		for _, c := range b.Conns {
-			pic, shape := c.build()
-			c.Shape = shape
-			tx.SetPicture(c.Node, pic)
-			tx.SetShape(c.Node, shape, gfx.HitStroke)
-		}
-	})
+	d.Scene.Update(func(tx *gfx.Tx) { d.Move(tx, b, x, y) })
 	dirty := gfx.EmptyRect()
 	for _, r := range d.Scene.Commit() {
 		dirty = dirty.Union(r)

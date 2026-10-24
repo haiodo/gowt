@@ -1,10 +1,14 @@
 package gowt
 
-import "github.com/haiodo/gowt/swt"
+import (
+	"github.com/haiodo/gowt/internal/fluent"
+	"github.com/haiodo/gowt/swt"
+)
 
-// A Win32 push button always draws its frame and Accessible is a stub: the three stay as they are.
-func setButtonBorderless(*swt.Button) {}
+// fluent paints the push button: Borderless is the WinUI 3 Subtle button, Circle a round one.
+func setButtonBorderless(b *swt.Button) { fluent.Button(b, true, false, false) }
 
-func setButtonCircle(*swt.Button) {}
+func setButtonCircle(b *swt.Button) { fluent.Button(b, false, true, false) }
 
+// Accessible is a stub in the toolkit on Windows.
 func setAccessibleLabel(*swt.Control, string) {}

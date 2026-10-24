@@ -297,8 +297,9 @@ func Check() Option { return style{id: sCheck, set: swt.CHECK} }
 // Radio makes a Button a radio button.
 func Radio() Option { return style{id: sRadio, set: swt.RADIO} }
 
-// Multiline makes a Text multi-line, wrapped, with a vertical scroll bar.
-func Multiline() Option { return style{id: sMultiline, set: swt.MULTI | swt.WRAP | swt.V_SCROLL} }
+// Multiline makes a Text multi-line and wrapped. macOS and GTK scroll with an overlay bar that shows on overflow;
+// Windows has no scroll bar unless Scrollbars() asks for one.
+func Multiline() Option { return style{id: sMultiline, set: swt.MULTI | swt.WRAP | multilineScroll} }
 
 // Password masks the characters typed into a Text.
 func Password() Option { return style{id: sPassword, set: swt.PASSWORD} }
@@ -502,9 +503,20 @@ func Switch(text string, opts ...Option) Option {
 }
 
 // Text creates an edit field.
-// Options: Multiline, Password, ReadOnly, Search, Border, Hint, Value, OnChange, OnActivate, Bind (string).
+// Options: Multiline, Password, ReadOnly, Search, Border, NoBorder, Scrollbars, Hint, Value, OnChange, OnActivate, Bind (string).
+// Windows 11: a Text has the WinUI 3 text box frame (4 px radius, hairline, accent line on focus) unless NoBorder.
 func Text(opts ...Option) Option {
-	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder, opts, func(p *swt.Composite) Widget {
+	noBorder := false
+	for _, o := range opts {
+		if s, ok := o.(style); ok && s.id == sNoBorder {
+			noBorder = true
+		}
+	}
+	opts = append(opts[:len(opts):len(opts)], lateHook(func(w Widget) error {
+		fluentText(w.(*TextView), noBorder)
+		return nil
+	}))
+	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder|sNoBorder|sScrollbars, opts, func(p *swt.Composite) Widget {
 		t := swt.NewText(p, resolve(swt.NONE, opts))
 		return &TextView{base: base{&t.Control}, t: t}
 	})

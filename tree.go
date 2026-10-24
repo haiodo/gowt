@@ -231,6 +231,7 @@ func finish(w Widget, allow styleID, opts []Option) {
 			}
 		}
 	}
+	fluentBorder(c)
 }
 
 // addNodes creates the children among opts in h, in order; other options are skipped.

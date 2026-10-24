@@ -883,3 +883,20 @@ func TestSetTextLaysOut(t *testing.T) {
 		t.Error("the check did not run")
 	}
 }
+
+// A callback queued while the last window is being disposed runs, if at all, during Display release on a
+// disposed widget; Async must drop it once the loop is over.
+func TestAsyncAfterLoopEndedDoesNotRun(t *testing.T) {
+	ran := false
+	guiRun(t, func(app *App, w *Window) {
+		w.Unwrap().AddDisposeListener(disposeFunc(func() {
+			app.Async(func() {
+				ran = true
+				w.Unwrap().GetSize()
+			})
+		}))
+	})
+	if ran {
+		t.Error("an Async callback queued at window disposal ran after Run ended")
+	}
+}

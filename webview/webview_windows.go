@@ -53,7 +53,8 @@ type wv2Engine struct {
 	status func(text string)
 	script *bool
 
-	deferred func()
+	deferred    func()
+	deferredURL string
 }
 
 func newEngine(w *WebView, parent *swt.Composite, opts Options) (engine, error) {
@@ -320,7 +321,7 @@ func (e *wv2Engine) hookEvents() {
 		u := e.url()
 		if *ok != 0 {
 			if w.OnNavigationFinished != nil {
-				w.OnNavigationFinished(u)
+				e.host.GetDisplay().AsyncExec(jrt.NewRunnable(func() { w.OnNavigationFinished(u) }))
 			}
 		} else if w.OnNavigationFailed != nil {
 			w.OnNavigationFailed(u, fmt.Errorf("webview: navigation failed (COREWEBVIEW2_WEB_ERROR_STATUS %d)", *status))
@@ -481,6 +482,13 @@ func (e *wv2Engine) navigationFailed(url string) func(error) {
 func (e *wv2Engine) load(slot int, content, url string) {
 	if e.deferred == nil {
 		e.host.GetDisplay().AsyncExec(jrt.NewRunnable(e.flush))
+	} else if e.policy != nil {
+		// The replaced load never starts; its listeners still see it, as SWT's Edge reports each one.
+		e.policy(e.deferredURL, true)
+	}
+	e.deferredURL = url
+	if url == "" {
+		e.deferredURL = "about:blank" // content loaded with setHTML
 	}
 	e.deferred = func() { e.loadNow(slot, content, url) }
 }

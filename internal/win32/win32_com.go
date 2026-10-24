@@ -1166,9 +1166,7 @@ func COMOleTranslateColor(clr int32, hpal int64, pcolorref []int32) int32 {
 	return int32(r)
 }
 
-func COMPathToPIDL(pszName []uint16, ppidl []int64) int32 {
-	panic("j2go: unsupported native PathToPIDL")
-}
+func COMPathToPIDL(pszName []uint16, ppidl []int64) int32 { return custom_PathToPIDL(pszName, ppidl) }
 
 var proc_COMProgIDFromCLSID = newProc("ProgIDFromCLSID")
 

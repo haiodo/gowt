@@ -38,7 +38,7 @@ func (this *comObjectMethod9) method9_(args []int64) int64 { return args[0] + 1 
 func TestCOMObjectCallbackReachesAnonymousOverride(t *testing.T) {
 	obj := &comObjectMethod9{}
 	obj.impl = obj
-	obj.initCOMObject([]int32{2, 0, 0, 1, 1, 1, 1, 1, 1, 12})
+	obj.initCOMObject([]int32{2, 0, 0, 1, 1, 1, 1, 1, 1, 2})
 	defer obj.Dispose()
 	if got := COMObjectCallback9([]int64{obj.PpVtable, 41}); got != 42 {
 		t.Fatalf("callback9 = %#x, want 42 from the override", got)

@@ -39,7 +39,8 @@ type webViewBrowser struct {
 	html string
 	// inCall counts handleCall frames in progress: the page is blocked in window.gowt.call then.
 	inCall int
-	// inOpen counts OpenWindow listener runs: the page that called window.open is blocked then.
+	// inOpen counts OpenWindow listener runs, where the page that called window.open is blocked, and
+	// LocationListener.changing runs, where WebView2 does not deliver script results until the handler returns.
 	inOpen int
 	// starting: Prestart began the engine; started: it is up (or failed).
 	starting, started bool
@@ -195,7 +196,11 @@ func (w *webViewBrowser) getText_() string {
 	if w.wv.URL() == "" {
 		return ""
 	}
-	res, err, ok := w.evalSync(`(document.doctype ? new XMLSerializer().serializeToString(document.doctype) : "") + document.documentElement.outerHTML`)
+	js := `(document.doctype ? new XMLSerializer().serializeToString(document.doctype) : "") + document.documentElement.outerHTML`
+	if runtime.GOOS == "windows" {
+		js = "document.documentElement.outerHTML" // Edge's getText has no doctype
+	}
+	res, err, ok := w.evalSync(js)
 	if !ok || err != nil {
 		return ""
 	}
@@ -294,7 +299,14 @@ func (w *webViewBrowser) decide(url string, mainFrame bool) bool {
 	if w.browser.IsDisposed() || w.blank == 1 {
 		return true
 	}
-	e := w.newLocationEvent(url, mainFrame)
+	loc := url
+	if mainFrame && strings.HasPrefix(url, "data:text/html;base64,") {
+		// WebView2 reports SetText's NavigateToString page by its data: URL; SWT shows about:blank for it.
+		loc = "about:blank"
+	}
+	e := w.newLocationEvent(loc, mainFrame)
+	w.inOpen++
+	defer func() { w.inOpen-- }()
 	for _, l := range w.locationListeners {
 		l.Changing(e)
 		if w.browser.IsDisposed() {
@@ -602,8 +614,9 @@ func (w *webViewBrowser) evaluateScript_(script string) any {
 	if w.scriptsOff {
 		return nil
 	}
-	if w.inOpen > 0 {
-		// The page that called window.open waits for the listener, so the script can only run after it.
+	if w.inOpen > 0 || w.inCall > 0 {
+		// The page that called window.open or the BrowserFunction waits for us, so the script can only run
+		// after we return; like SWT's Edge, queue it and answer null.
 		w.wv.Eval(evaluateWrapper(script), func(string, error) {})
 		return nil
 	}

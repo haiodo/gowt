@@ -1,0 +1,117 @@
+//go:build darwin && gfxdemo
+
+package main
+
+import (
+	"fmt"
+
+	"github.com/haiodo/gowt/gfx"
+	"github.com/haiodo/gowt/gfx/synth"
+	"github.com/haiodo/gowt/gfx/view"
+	"github.com/haiodo/gowt/swt"
+)
+
+const (
+	modeNone = iota
+	modePan
+	modeDrag
+)
+
+// interactive is the GFXDEMO_STAY mode after the timed phases: the view's own scroll and pinch
+// navigation, plus dragging a box with its connectors and dragging the empty space.
+func interactive(v *view.View, doc *synth.Doc) {
+	c := v.Compositor()
+	var (
+		mode   int
+		box    *synth.Box
+		lifted []*gfx.Node
+		grab   gfx.Point // box origin minus the pointer, in scene points
+		last   gfx.Point
+		shape  = view.CursorArrow
+	)
+	cursor := func(s view.Cursor) {
+		if s != shape {
+			shape = s
+			v.SetCursor(s)
+		}
+	}
+	land := func() {
+		if mode == modeDrag {
+			c.Land(lifted...)
+			lifted = lifted[:0]
+		}
+		mode = modeNone
+	}
+	v.OnPointer(func(p *view.Pointer) {
+		switch p.Kind {
+		case view.PointerDown:
+			if p.Button != 1 {
+				return
+			}
+			last = p.Pos
+			if b := boxOf(doc, p.Node); b != nil {
+				mode, box = modeDrag, b
+				grab = gfx.Point{X: b.X - p.Scene.X, Y: b.Y - p.Scene.Y}
+				lifted = append(lifted[:0], b.Node)
+				for _, cn := range b.Conns {
+					lifted = append(lifted, cn.Node)
+				}
+				c.Lift(lifted...)
+				cursor(view.CursorGrabbing)
+				return
+			}
+			mode = modePan
+			cursor(view.CursorGrabbing)
+		case view.PointerMove:
+			switch {
+			case mode == modeDrag && p.Drag:
+				x, y := p.Scene.X+grab.X, p.Scene.Y+grab.Y
+				doc.Scene.Update(func(tx *gfx.Tx) { doc.Move(tx, box, x, y) })
+			case mode == modePan && p.Drag:
+				v.Pan(p.Pos.X-last.X, p.Pos.Y-last.Y)
+				last = p.Pos
+			case !p.Drag && boxOf(doc, p.Node) != nil:
+				cursor(view.CursorHand)
+			case !p.Drag:
+				cursor(view.CursorGrab)
+			}
+		case view.PointerUp, view.PointerCancel:
+			land()
+			cursor(view.CursorGrab)
+		}
+	})
+	v.OnKey(func(k *view.Key) {
+		if !k.Down {
+			return
+		}
+		w, h := v.Canvas().Size()
+		mid := gfx.Point{X: float64(w) / 2, Y: float64(h) / 2}
+		switch {
+		case k.Char == '0':
+			c.ZoomAt(1/c.Camera().Zoom, mid)
+		case k.Char == '=' || k.Char == '+':
+			c.ZoomAt(1.25, mid)
+		case k.Char == '-':
+			c.ZoomAt(0.8, mid)
+		case k.Code == int(swt.ARROW_LEFT):
+			v.Pan(100, 0)
+		case k.Code == int(swt.ARROW_RIGHT):
+			v.Pan(-100, 0)
+		case k.Code == int(swt.ARROW_UP):
+			v.Pan(0, 100)
+		case k.Code == int(swt.ARROW_DOWN):
+			v.Pan(0, -100)
+		}
+	})
+	v.SetCursor(view.CursorGrab)
+	fmt.Println("interactive: two-finger scroll pans, pinch zooms, Cmd+scroll zooms, double tap toggles zoom 1;")
+	fmt.Println("             drag empty space to pan, drag a box to move it with its links; keys 0 = - and arrows (click the view first)")
+}
+
+// boxOf maps a hit node to its box: boxes carry their index as the node id, connectors do not.
+func boxOf(doc *synth.Doc, n *gfx.Node) *synth.Box {
+	if n != nil && n.ID() < len(doc.Boxes) && doc.Boxes[n.ID()].Node == n {
+		return doc.Boxes[n.ID()]
+	}
+	return nil
+}

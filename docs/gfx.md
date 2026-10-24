@@ -106,6 +106,45 @@ app.Window("title", view.New(scene, func(v *view.View) {
 frames are posted to the UI thread only while `NeedsFrame` is true. Elsewhere `view.New` gives a
 plain canvas and never calls `init`.
 
+### Input (macOS)
+
+The view reads the canvas mouse, key and focus events from SWT and the scroll, pinch and smart-zoom
+events from the NSEvent itself (SWT hands scrolls on as integers without phase or momentum). All
+callbacks run on the UI goroutine, one handler per kind; set them in `init`.
+
+```go
+v.OnPointer(func(p *view.Pointer) {
+	switch p.Kind { // PointerDown, PointerMove, PointerUp, PointerCancel
+	case view.PointerDown:
+		// p.Pos view points, p.Scene scene point, p.Node topmost node under it (nil on empty space),
+		// p.Button 1/2/3, p.Count 2 on a double click, p.Mods Ctrl/Shift/Alt/Cmd
+	case view.PointerMove:
+		// p.Drag: a button is held, p.Button which; p.Target and p.Origin: node and scene point of the press
+	}
+})
+v.OnScroll(func(s *view.Scroll) bool { return false }) // true = handled, false = the view pans
+v.OnMagnify(func(m *view.Magnify) bool { return false }) // m.Factor multiplies the zoom; false = ZoomAt the pointer
+v.OnSmartZoom(func(z *view.SmartZoom) bool { return false }) // false = toggle zoom 1 and the zoom before
+v.OnKey(func(k *view.Key) { /* k.Down, k.Code (SWT key code), k.Char, k.Mods */ })
+v.SetCursor(view.CursorGrab) // Arrow Hand Grab Grabbing Crosshair Text ResizeH ResizeV NotAllowed
+v.Pan(dx, dy); v.SetZoomLimits(0.02, 64)
+```
+
+- **Capture.** After a press the moves and the release keep coming outside the view (AppKit keeps the
+  mouse-down view as the target) until the last button is up. If the view loses focus with a button held, a
+  `PointerCancel` arrives: land what you lifted. A macOS Ctrl-click is Button 1 with `Mods.Ctrl`.
+- **Scroll.** `Precise` deltas (trackpad, Magic Mouse) are view points, a wheel gives lines (16 points each
+  in the built-in pan). `Phase` is the finger phase, `Momentum` the phase of the coasting after the fingers
+  lift; both are `PhaseNone` for a wheel. A press or resting fingers (`PhaseMayBegin`) drop the momentum
+  events that follow, as a native scroll view stops. Without a handler Cmd or Ctrl with scroll zooms.
+- **Scene point.** `Scene = camera origin + view point / zoom`, the same as `Compositor.SceneAt`; a node
+  drag is `Lift` on press, `Scene.Update` with the new position on each move, `Land` on release or cancel.
+- **Keys** need the view focused; a press on the view focuses it.
+- **Screen change.** A window moved to a screen with another backing scale is noticed through the window
+  notifications, and the next frame re-rasters at the new scale.
+- Scroll, pinch and smart-zoom events are consumed by the view, so a `MouseWheel` or `Gesture` listener on
+  the canvas does not see them. Diagonal resize cursors are not offered (AppKit has no public ones).
+
 ## Measured (M4 Max, macOS 26, CoreGraphics, no window)
 
 The headless run is `go test ./gfx/cg -run CompositorHeadless -v`. Windowed numbers come from
@@ -118,5 +157,5 @@ The headless run is `go test ./gfx/cg -run CompositorHeadless -v`. Windowed numb
 
 ## Not there yet
 
-Input beyond the canvas mouse listeners (wheel, pinch, key), the Windows and Linux backends, shadows
+Rotation and swipe gestures, text input (IME) in the canvas, the Windows and Linux backends, shadows
 blur on the overlay, group opacity for node subtrees, accessibility of the canvas.

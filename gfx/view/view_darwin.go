@@ -28,6 +28,10 @@ type View struct {
 	gone   atomic.Bool
 	dpr    float64
 	resize atomic.Bool
+	r      *router
+	onKey  func(*Key)
+	stops  []func()
+	cursor map[Cursor]*swt.Cursor
 }
 
 // New returns an Option that creates the scene canvas in the widget tree, like g.Canvas does. init
@@ -53,6 +57,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	v.comp.SetCamera(gfx.Camera{Zoom: 1})
 	w, h := cv.Size()
 	v.comp.SetViewport(float64(w), float64(h), v.dpr)
+	v.wireInput()
 	cv.Unwrap().AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { v.resize.Store(true) }))
 	display := cv.Unwrap().GetDisplay()
 	link, err := cg.NewDisplayLink(func(fi gfx.FrameInfo) {
@@ -74,6 +79,9 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	v.link = link
 	cv.OnDispose(func() {
 		v.gone.Store(true)
+		for _, stop := range v.stops {
+			stop()
+		}
 		v.link.Close()
 		v.comp.Close()
 		v.host.Close()

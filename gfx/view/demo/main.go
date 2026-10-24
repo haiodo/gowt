@@ -132,6 +132,10 @@ func run(w *g.Window, v *view.View, doc *synth.Doc, stay bool) {
 				report(phases, firstDone, c, v, end)
 				if !stay {
 					w.Close()
+				} else {
+					cursor.Remove()
+					interactive(v, doc)
+					c.OnFrame(nil) // an idle scene stops ticking
 				}
 				return
 			}

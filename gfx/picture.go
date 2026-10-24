@@ -90,6 +90,7 @@ type Op struct {
 type Picture struct {
 	Bounds Rect
 	// Lod, when set, replaces this picture where its larger side is under LodBelow device pixels.
+	// It should look like p at that size; a backend fades it out over the band above LodBelow.
 	Lod      *Picture
 	LodBelow float64
 

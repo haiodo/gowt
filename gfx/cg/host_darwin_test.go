@@ -31,6 +31,9 @@ func TestHostLayers(t *testing.T) {
 	if got := msgRectRet(l.ref, sels.frame); got != (cgRect{10, 20, 30, 40}) {
 		t.Errorf("frame %v", got)
 	}
+	if send0(l.ref, sels.minFilter) != filterTrilinear {
+		t.Error("tile layer does not minify trilinearly")
+	}
 	if send0(l.ref, sels.contents) == 0 {
 		t.Error("no contents")
 	}

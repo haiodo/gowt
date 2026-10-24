@@ -8,27 +8,41 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"sync/atomic"
 	"unsafe"
 
 	"github.com/ebitengine/purego"
+	"github.com/haiodo/gowt/internal/jrt"
 )
 
-// Opened lazily and RTLD_GLOBAL, so libgtk-3's dependency closure resolves with one handle; package
-// vars in the glue call into C before init order would reach an eagerly opened list.
+// Opened lazily and RTLD_GLOBAL, so libgtk-3's dependency closure resolves with one handle. Importing
+// the package must not fail without GTK: the generated static initialisers of swt call into C at
+// import, and gowt.Run returns the load error instead of the process dying before main.
 var (
 	libsOnce sync.Once
 	libsList []uintptr
+	loadErr  error
+	libNames = []string{"libgtk-3.so.0", "libgdk-3.so.0", "libX11.so.6", "libcairo.so.2", "libpangocairo-1.0.so.0", "libfontconfig.so.1"}
 )
 
 func libs() []uintptr {
-	libsOnce.Do(func() { libsList = openLibs() })
+	libsOnce.Do(func() {
+		libsList, loadErr = openLibs()
+		if loadErr != nil {
+			return
+		}
+		major, minor, micro := gtkVersionPart(libsList, "gtk_get_major_version"),
+			gtkVersionPart(libsList, "gtk_get_minor_version"), gtkVersionPart(libsList, "gtk_get_micro_version")
+		GTKGTK_VERSION = OSVERSION(major, minor, micro)
+		jrt.SetProperty("org.eclipse.swt.internal.gtk.version", fmt.Sprintf("%d.%d.%d", major, minor, micro))
+	})
 	return libsList
 }
 
-func openLibs() []uintptr {
+func openLibs() ([]uintptr, error) {
 	var hs []uintptr
 	var firstErr error
-	for _, n := range []string{"libgtk-3.so.0", "libgdk-3.so.0", "libX11.so.6", "libcairo.so.2", "libpangocairo-1.0.so.0", "libfontconfig.so.1"} {
+	for _, n := range libNames {
 		h, err := purego.Dlopen(n, purego.RTLD_NOW|purego.RTLD_GLOBAL)
 		if err != nil {
 			if firstErr == nil {
@@ -40,9 +54,28 @@ func openLibs() []uintptr {
 	}
 	if len(hs) == 0 {
 		// A library must not exit the process: gowt.Run returns this as an error, plain swt users see it in the panic.
-		panic(fmt.Errorf("gowt: GTK 3 is not installed (%w); install it: apt install libgtk-3-0 | dnf install gtk3 | pacman -S gtk3 | apk add gtk+3.0", firstErr))
+		return nil, fmt.Errorf("GTK 3 is not installed (%w); install it: apt install libgtk-3-0 | dnf install gtk3 | pacman -S gtk3 | apk add gtk+3.0", firstErr)
 	}
-	return hs
+	return hs, nil
+}
+
+// initDone is set by swt's last init(); until then GTK calls come from package initialisation.
+var initDone atomic.Bool
+
+// MarkInitDone ends the import-time phase: from now on a missing GTK panics instead of returning zeros.
+func MarkInitDone() { initDone.Store(true) }
+
+// missing reports that GTK could not be loaded. During package initialisation it returns true, so the
+// static initialisers see zero values; afterwards it panics with the load error, which is what
+// swt.NewDisplay and gowt.Run surface.
+func missing() bool {
+	if len(libs()) > 0 {
+		return false
+	}
+	if initDone.Load() {
+		panic(loadErr)
+	}
+	return true
 }
 
 func sym(name string) (uintptr, bool) {
@@ -65,6 +98,18 @@ type lz[F any] struct {
 func (l *lz[F]) get() F {
 	if l.ok {
 		return l.f
+	}
+	if missing() {
+		var f F
+		t := reflect.TypeOf(f)
+		reflect.ValueOf(&f).Elem().Set(reflect.MakeFunc(t, func([]reflect.Value) []reflect.Value {
+			out := make([]reflect.Value, t.NumOut())
+			for i := range out {
+				out[i] = reflect.Zero(t.Out(i))
+			}
+			return out
+		}))
+		return f
 	}
 	if a, found := sym(l.sym); found {
 		purego.RegisterFunc(&l.f, a)
@@ -102,6 +147,9 @@ var typeFns = map[string]int64{}
 func gtypeOf(symName string) int64 {
 	if t, ok := typeFns[symName]; ok {
 		return t
+	}
+	if missing() {
+		return 0
 	}
 	a, ok := sym(symName)
 	if !ok {

@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 	"unsafe"
+
+	"github.com/ebitengine/purego"
 )
 
 // GList/GSList are plain structs {data, next[, prev]} (GLib docs): the accessors read them directly.
@@ -49,11 +51,14 @@ var gVariantGetDouble = lz[func(uintptr) float64]{sym: "g_variant_get_double"}
 
 func OSG_variant_get_double(v int64) float64 { return gVariantGetDouble.get()(uintptr(v)) }
 
-// GVariantType pointers are the type string itself; the strings live for the process.
+// GVariantType pointers are the type string itself. Go memory kept in variantTypes, not g_malloc:
+// these vars are initialised at import, before GTK may be loaded.
+var variantTypes [][]byte
+
 func variantType(s string) int64 {
-	p := OSG_malloc(int64(len(s) + 1))
-	copy(unsafe.Slice((*byte)(at(p)), len(s)+1), s+"\x00")
-	return p
+	b := append([]byte(s), 0)
+	variantTypes = append(variantTypes, b)
+	return int64(uintptr(unsafe.Pointer(&b[0])))
 }
 
 var (
@@ -185,15 +190,19 @@ var OSIsGNOME = strings.Contains(strings.ToUpper(os.Getenv("XDG_CURRENT_DESKTOP"
 
 func OSGetEnvironmentalVariable(name string) string { return os.Getenv(name) }
 
-// GTK_VERSION is the runtime GTK version in OSVERSION encoding; this binding drives GTK 3.
-var GTKGTK_VERSION = OSVERSION(
-	int32(gtkVersionPart("gtk_get_major_version")),
-	int32(gtkVersionPart("gtk_get_minor_version")),
-	int32(gtkVersionPart("gtk_get_micro_version")))
+// GTK_VERSION is the runtime GTK version in OSVERSION encoding; this binding drives GTK 3. It is
+// set when the libraries load (libs), so it reads 0 until the first GTK call.
+var GTKGTK_VERSION int32
 
 const GTKGTK4 = false
 
-func gtkVersionPart(sym string) uint32 {
-	f := lz[func() uint32]{sym: sym}
-	return f.get()()
+func gtkVersionPart(hs []uintptr, name string) int32 {
+	for _, h := range hs {
+		if a, err := purego.Dlsym(h, name); err == nil && a != 0 {
+			var f func() uint32
+			purego.RegisterFunc(&f, a)
+			return int32(f())
+		}
+	}
+	return 0
 }

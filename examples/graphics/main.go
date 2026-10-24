@@ -56,10 +56,11 @@ func main() {
 			gowt.Label("Image from memory:"),
 			gowt.Label("", gowt.Ref(&l)))
 
-		app.Every(40*time.Millisecond, func() {
+		stop := app.Every(40*time.Millisecond, func() {
 			angle += 4
 			canvas.Redraw()
 		})
+		canvas.OnDispose(stop) // a tick on a closed window panics with "Widget is disposed"
 
 		l.SetImage(tile)
 		w.Show()

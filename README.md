@@ -28,19 +28,26 @@ Go 1.27 or newer. No C compiler and no Java. Cross-compiling works from any host
 ```go
 package main
 
-import "github.com/haiodo/gowt"
+import (
+	"log"
+
+	"github.com/haiodo/gowt"
+)
 
 func main() {
-	gowt.Run(func(app *gowt.App) {
+	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Hello",
 			gowt.Label("Hello, gowt"),
 			gowt.Button("Quit", gowt.OnClick(app.Quit)))
 		w.Show()
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 ```
 
-`Run` returns an `error`; [`examples/hello`](examples/hello) is the same program with the check.
+`Run` returns an `error` (no GTK, no display); [`examples/hello`](examples/hello) is the same program.
 
 ## Documentation
 

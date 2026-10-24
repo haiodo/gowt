@@ -3,7 +3,6 @@
 package gtk
 
 import (
-	"fmt"
 	"os"
 	"sync"
 	"syscall"
@@ -161,13 +160,12 @@ const (
 func OSX_EVENT_TYPE(xEvent int64) int32   { return peek32(xEvent) }
 func OSX_EVENT_WINDOW(xEvent int64) int64 { return peek64(xEvent + 32) }
 
-// SWT code and the tests ask for the GTK version and the backend through these properties before
-// any Display exists (Display sets the backend again from the real display).
+// SWT tests ask for the backend through this property before any Display exists (Display sets it
+// again from the real display); the GTK version property is set when the libraries load (libs).
 func init() {
 	b := "x11"
-	if OSIsWayland() {
+	if guessBackend() == "GdkWaylandDisplay" {
 		b = "wayland"
 	}
 	jrt.SetProperty("org.eclipse.swt.internal.gdk.backend", b)
-	jrt.SetProperty("org.eclipse.swt.internal.gtk.version", fmt.Sprintf("%d.%d.%d", gtkVersionPart("gtk_get_major_version"), gtkVersionPart("gtk_get_minor_version"), gtkVersionPart("gtk_get_micro_version")))
 }

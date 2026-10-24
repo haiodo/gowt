@@ -29,14 +29,14 @@ var samples = []sample{
 	{"link", gowt.Link(`Read the <a href="https://example.com">terms</a>`, gowt.OnClick(func(string) {}))},
 	{"combo", gowt.Combo([]string{"One", "Two", "Three"}, gowt.ReadOnly(), gowt.Selected(1))},
 	{"list", gowt.List([]string{"alpha", "beta", "gamma", "delta"}, gowt.Selected(1))},
-	{"table", gowt.Table(gowt.Border(), gowt.Init(func(t *gowt.TableView) {
+	{"table", gowt.Table(gowt.Init(func(t *gowt.TableView) {
 		t.Column("File", 120)
 		t.Column("Size", 70, gowt.Right())
 		t.Row("main.go", "2 KB")
 		t.Row("go.mod", "1 KB")
 		t.Row("README.md", "5 KB")
 	}))},
-	{"tree", gowt.Tree(gowt.Border(), gowt.Init(func(t *gowt.TreeView) {
+	{"tree", gowt.Tree(gowt.Init(func(t *gowt.TreeView) {
 		src := t.Node("src")
 		src.Node("main.go")
 		src.Node("util.go")

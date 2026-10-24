@@ -106,7 +106,7 @@ func (v *View) native(e cg.InputEvent) bool {
 	pos, m := gfx.Point{X: e.X, Y: e.Y}, modsOfFlags(e.Flags)
 	switch e.Kind {
 	case cg.InputScroll:
-		v.r.scroll(pos, e.DX, e.DY, e.Precise, phaseOf(e.Phase), phaseOf(e.Momentum), m)
+		v.r.scroll(pos, e.DX, e.DY, e.Precise, phaseOf(e.Phase), phaseOf(e.Momentum), m, e.Time)
 	case cg.InputMagnify:
 		v.r.magnify(pos, e.Magnification, phaseOf(e.Phase), m)
 	case cg.InputSmartMagnify:

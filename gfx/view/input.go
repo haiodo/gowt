@@ -246,7 +246,7 @@ func lowestButton(held uint8) int {
 	return 0
 }
 
-func (r *router) scroll(pos gfx.Point, dx, dy float64, precise bool, phase, momentum Phase, m g.Mods) {
+func (r *router) scroll(pos gfx.Point, dx, dy float64, precise bool, phase, momentum Phase, m g.Mods, at time.Duration) {
 	switch {
 	case phase == PhaseMayBegin:
 		r.coastOff = true
@@ -268,7 +268,10 @@ func (r *router) scroll(pos gfx.Point, dx, dy float64, precise bool, phase, mome
 		r.zoom(math.Exp(dy*wheelZoomRate), pos)
 		return
 	}
-	r.acc.add(dx, dy, r.clock())
+	if at == 0 {
+		at = r.clock()
+	}
+	r.acc.add(dx, dy, at)
 }
 
 func (r *router) magnify(pos gfx.Point, delta float64, phase Phase, m g.Mods) {

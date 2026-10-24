@@ -39,16 +39,38 @@ type DisplayLink struct {
 	running bool
 }
 
-// CVTimeStamp offsets: videoTimeScale int32 at 4, videoTime int64 at 8, videoRefreshPeriod int64 at 32.
+var (
+	machAbsolute func() uint64
+	machTimebase func(info *[2]uint32) int32
+	tbNumer      uint64 = 1
+	tbDenom      uint64 = 1
+)
+
+// hostNow is mach_absolute_time in nanoseconds: the clock of CVTimeStamp.hostTime and, in seconds,
+// of NSEvent.timestamp (time since system startup).
+func hostNow() time.Duration { return hostDuration(machAbsolute()) }
+
+func hostDuration(ticks uint64) time.Duration {
+	return time.Duration(ticks/tbDenom*tbNumer + ticks%tbDenom*tbNumer/tbDenom)
+}
+
+// CVTimeStamp offsets: videoTimeScale 4, videoTime 8, hostTime 16, videoRefreshPeriod 32, flags 64
+// (bit 1: hostTime valid). Time is the host time, the clock of input events, else the video time.
 func readStamp(p uintptr) (t, period time.Duration) {
 	base := *(*unsafe.Pointer)(unsafe.Pointer(&p))
 	scale := *(*int32)(unsafe.Add(base, 4))
 	vt := *(*int64)(unsafe.Add(base, 8))
+	host := *(*uint64)(unsafe.Add(base, 16))
 	rp := *(*int64)(unsafe.Add(base, 32))
+	flags := *(*uint64)(unsafe.Add(base, 64))
 	if scale <= 0 {
 		return 0, 0
 	}
-	return time.Duration(float64(vt) / float64(scale) * float64(time.Second)), time.Duration(float64(rp) / float64(scale) * float64(time.Second))
+	t = time.Duration(float64(vt) / float64(scale) * float64(time.Second))
+	if flags&2 != 0 && host != 0 {
+		t = hostDuration(host)
+	}
+	return t, time.Duration(float64(rp) / float64(scale) * float64(time.Second))
 }
 
 func dlTrampoline(link, now, out, flagsIn, flagsOut, ctx uintptr) uintptr {
@@ -73,6 +95,12 @@ func initDL() error {
 		purego.RegisterLibFunc(&dlStart, lib, "CVDisplayLinkStart")
 		purego.RegisterLibFunc(&dlStop, lib, "CVDisplayLinkStop")
 		purego.RegisterLibFunc(&dlRelease, lib, "CVDisplayLinkRelease")
+		purego.RegisterLibFunc(&machAbsolute, purego.RTLD_DEFAULT, "mach_absolute_time")
+		purego.RegisterLibFunc(&machTimebase, purego.RTLD_DEFAULT, "mach_timebase_info")
+		var tb [2]uint32
+		if machTimebase(&tb) == 0 && tb[1] != 0 {
+			tbNumer, tbDenom = uint64(tb[0]), uint64(tb[1])
+		}
 		dlCallback = purego.NewCallback(dlTrampoline)
 	})
 	return dlErr

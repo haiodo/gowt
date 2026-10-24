@@ -555,6 +555,17 @@ func (c *Compositor) worker() {
 // commit costs about 0.15 ms per tile.
 const pendingTileBudget = 8
 
+// tileApplyTime caps the time a frame spends applying finished tiles (a whole new set cost 40-76 ms).
+// Tiles in view go first; the previous set stays under them until the view is covered.
+const tileApplyTime = 4 * time.Millisecond
+
+func boolInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
+
 // drain puts the finished tile images on their layers. While a lift or a landing is under way, the
 // images of tiles under it are held back until every such tile is redrawn, and then applied in the
 // same transaction in which the sprites appear or go: a node is never seen in its sprite and in a
@@ -578,8 +589,12 @@ func (c *Compositor) drain() {
 		if slices.ContainsFunc(c.lifts, func(l *lift) bool { return l.pending }) {
 			budget = pendingTileBudget
 		}
+		view, applyStart := c.viewRect(), time.Now()
+		slices.SortStableFunc(res, func(a, b result) int {
+			return boolInt(b.t.rect.Intersects(view)) - boolInt(a.t.rect.Intersects(view))
+		})
 		for i, r := range res {
-			if i >= budget {
+			if i >= budget || i > 0 && time.Since(applyStart) > tileApplyTime {
 				c.mu.Lock()
 				c.ready = append(res[i:len(res):len(res)], c.ready...)
 				c.readyN.Store(true)

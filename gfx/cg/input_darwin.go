@@ -27,7 +27,7 @@ var (
 	isel      struct {
 		typ, window, locationInWindow, scrollingDeltaX, scrollingDeltaY, hasPrecise, phase, momentumPhase,
 		magnification, modifierFlags, convertPoint, isFlipped, bounds, addMonitor, removeMonitor, defaultCenter,
-		addObserver, removeObserver, object, buttonNumber, respondsTo, windowNumber, pressedButtons uintptr
+		addObserver, removeObserver, object, buttonNumber, respondsTo, windowNumber, pressedButtons, timestamp uintptr
 	}
 	clsNSEvent, clsNotifCenter, clsNSCursor uintptr
 )
@@ -46,7 +46,7 @@ func initInput() {
 		isel.addMonitor, isel.removeMonitor = s("addLocalMonitorForEventsMatchingMask:handler:"), s("removeMonitor:")
 		isel.defaultCenter, isel.addObserver, isel.removeObserver = s("defaultCenter"), s("addObserverForName:object:queue:usingBlock:"), s("removeObserver:")
 		isel.object, isel.buttonNumber, isel.respondsTo = s("object"), s("buttonNumber"), s("respondsToSelector:")
-		isel.windowNumber, isel.pressedButtons = s("windowNumber"), s("pressedMouseButtons")
+		isel.windowNumber, isel.pressedButtons, isel.timestamp = s("windowNumber"), s("pressedMouseButtons"), s("timestamp")
 		clsNSEvent = uintptr(cocoa.OSObjc_lookUpClass("NSEvent"))
 		clsNotifCenter = uintptr(cocoa.OSObjc_lookUpClass("NSNotificationCenter"))
 		clsNSCursor = uintptr(cocoa.OSObjc_lookUpClass("NSCursor"))
@@ -80,7 +80,9 @@ type InputEvent struct {
 	// Magnification: the relative zoom change of this pinch event.
 	Magnification float64
 	Flags         uint64 // NSEventModifierFlags
-	Button        int    // InputMouseUp: SWT numbering, 1 left, 2 middle, 3 right
+	// Time is the NSEvent timestamp on the host clock, the one of gfx.FrameInfo.Time.
+	Time   time.Duration
+	Button int // InputMouseUp: SWT numbering, 1 left, 2 middle, 3 right
 }
 
 // NSEventType values and masks.
@@ -174,6 +176,7 @@ func readInput(ev uintptr) (e InputEvent, win cgPoint, ok bool) {
 		return e, win, false
 	}
 	e.Flags = uint64(send0(ev, isel.modifierFlags))
+	e.Time = time.Duration(msgF64Ret(ev, isel.timestamp) * float64(time.Second))
 	return e, msgPtRet(ev, isel.locationInWindow), true
 }
 

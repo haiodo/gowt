@@ -13,6 +13,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 	"slices"
 	"sync"
@@ -70,7 +71,9 @@ func main() {
 
 	var cv *g.CanvasView
 	err := g.Run(func(app *g.App) {
-		w := app.Window("gfx spike", g.Canvas(nil, g.Grow()), g.Ref(&cv))
+		// a failed measurement must not leave the window open
+		app.OnError(func(err error) { fmt.Println("error:", err); os.Exit(1) })
+		w := app.Window("gfx spike", g.Canvas(nil, g.Grow(), g.Ref(&cv)))
 		w.SetSize(1440, 900)
 		w.Show()
 		app.After(300*time.Millisecond, func() { run(app, w, cv, doc, r, origin) })

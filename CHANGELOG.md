@@ -1,15 +1,33 @@
 # Changelog
 
-## Unreleased
+## v0.12.0 (2026-10-24)
 
 Behaviour change
 - Linux: the swt level no longer raises `OpenDocument`/`OpenUrl` from D-Bus or `QueryEndSession`/`EndSession`; the facade never exposed them. The two LGPL-2.1 upstream classes behind them (GDBus, SessionManagerDBus) are replaced by no-op stubs, so the repository is EPL-2.0 only. The "SWT SessionManagerDBus: Failed to connect" lines on stderr are gone.
 - Linux: the GTK libraries load on the first call into them, not when the program starts. Without GTK installed a program no longer dies with a raw panic and exit 2 before `main`: importing `gowt` (a `go test` of a package that only imports it) works, `gowt.Run` returns the "GTK 3 is not installed" error, and a plain `swt` program gets the same error as a panic from `NewDisplay`.
+- Browser on every OS: `evaluate` called inside `LocationListener.changing` or inside a `BrowserFunction` is queued and returns null, as SWT's Edge does. Before, the result differed per OS: macOS raised an error inside a `BrowserFunction`, and Windows never answered.
+- Windows `webview`: `OnNavigationFinished` (and so Browser's `LocationListener.changed` and `ProgressListener.completed`) runs after the WebView2 NavigationCompleted handler returns, as SWT's Edge posts it with `asyncExec`. A nested `evaluate` in those listeners now gets its result.
+- `App.Async`, `Sync`, `After`, `Every` and the facade relayout skip their callback once `Run` is ending; a callback queued during Display release ran on disposed widgets and panicked.
 
 Fixes
 - The README hello checks the error of `gowt.Run`; without a display the program exited 0 and printed nothing.
 - `examples/catalog` passed `Border()` to `Table` and `Tree`, which have a border already and reject the option (two logged stack traces on Windows). `examples/graphics` stops its timer when the canvas is disposed, instead of logging "Widget is disposed" on exit.
 - Windows `webview`: `window.gowt.call` showed the native "This page says" prompt instead of reaching the handler. WebView2 raises `ScriptDialogOpening` only when `AreDefaultScriptDialogsEnabled` is false, and nothing set it. The engine now turns the default dialogs off, so the event fires for every dialog: the call prompt goes to the handler, and the page's own `alert`, `confirm`, `prompt` and `beforeunload` get a gowt message box or input box.
+- Windows `webview`: `window.gowt.call` was answered with an empty string on a page loaded with `SetText`: WebView2 reports `about:blank` as the source but a `data:` URL in the dialog event. A subframe still gets the empty answer.
+- Windows Browser: `Changing` reports `about:blank` for `SetText` content, a load replaced by a newer one in the same turn still reaches the location policy, and `getText` returns the page without its doctype, as Edge does.
+- macOS `webview`: the page's `alert`, `confirm` and `prompt` show as `NSAlert` sheets, and every completion handler is answered exactly once.
+- Windows: `TextView.Text` and `OnChange` give `\n` line breaks, not the control's `\r\n`.
+- Windows GDI+: a font with an unknown face name falls back to the generic sans serif family instead of failing with "No more handles".
+- Windows: `COM.PathToPIDL` is implemented through `SHParseDisplayName` (FileTransfer and HTMLTransfer panicked with "unsupported native").
+
+Licences
+- Every j2go-generated file carries the licence header of its Java source; `make licence-check` (in `make check` and CI) fails on a file without one and on any LGPL text. The repository is EPL-2.0 only.
+
+Docs and tooling
+- Package documentation for pkg.go.dev (`gowt`, `swt`, `browser`, `jface`, `icons`); install notes: musl/Alpine unsupported, `librsvg2-common` for check marks, WebKitGTK packages verified, the truth about `winmanifest`.
+- CONTRIBUTING with DCO, `cmd/fieldcheck` (a one-file report from a live machine), issue templates.
+- `make check-gui` and a Linux CI gate for the facade, QA and webview GUI tests; `make docs-counts` checks the test counts in the docs.
+- Test results from real machines: `tests/expected_windows_vm.txt` (Windows 11 arm64: 0 fail, 6 flaky) and `tests/expected_linux_desktop.txt` (Ubuntu 26.04 GNOME on Wayland); `tooling/swtdiff.py` compares run logs with an expected file. `examples/qa` runs against a prebuilt app with `GOWT_QA_APP`.
 
 ## v0.11.0 (2026-10-24)
 

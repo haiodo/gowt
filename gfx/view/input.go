@@ -2,6 +2,7 @@ package view
 
 import (
 	"math"
+	"sync/atomic"
 	"time"
 
 	g "github.com/haiodo/gowt"
@@ -57,6 +58,9 @@ type Pointer struct {
 	// the pointer captured until the last button is released.
 	Pos   gfx.Point
 	Scene gfx.Point
+	// Outside is set when Pos lies outside the view. The coordinates stay exact, negative or past
+	// the view size; what to do with them (clamp, cancel, drop there) is the app's call.
+	Outside bool
 	// Node is the topmost node under the pointer, nil on empty space.
 	Node *gfx.Node
 	// Button is SWT's numbering: 1 left, 2 middle, 3 right; on a move the button held, 0 for a hover.
@@ -156,6 +160,10 @@ type router struct {
 	onMagnify func(*Magnify) bool
 	onSmart   func(*SmartZoom) bool
 
+	size     func() (w, h float64) // view size in points
+	auto     *autoScroll
+	autoWake atomic.Bool // set while auto-scroll runs; read by the display link thread
+	lastMods g.Mods
 	trace    func(format string, a ...any) // nil unless tracing
 	aborting bool
 	last     gfx.Point // view point of the last pointer event
@@ -178,7 +186,11 @@ func newRouter(cam camera, hit func(gfx.Point) *gfx.Node) *router {
 func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mods) {
 	p := &Pointer{Kind: k, Pos: pos, Scene: r.cam.SceneAt(pos), Button: button, Count: count, Mods: m}
 	p.Node = r.hit(p.Scene)
-	r.last = pos
+	if r.size != nil {
+		w, h := r.size()
+		p.Outside = pos.X < 0 || pos.Y < 0 || pos.X >= w || pos.Y >= h
+	}
+	r.last, r.lastMods = pos, m
 	if r.trace != nil {
 		r.trace("router kind=%d pos=(%.0f,%.0f) button=%d held=%b", k, pos.X, pos.Y, button, r.held)
 	}
@@ -211,6 +223,7 @@ func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mo
 		p.Target, p.Origin = r.target, r.origin
 	}
 	if r.held == 0 {
+		r.stopAuto()
 		defer func() { r.target = nil }()
 	}
 	if r.onPointer != nil {

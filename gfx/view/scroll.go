@@ -124,5 +124,6 @@ func (r *router) tick(ft time.Duration) (dx, dy float64, events int) {
 	if dx != 0 || dy != 0 {
 		r.pan(dx, dy)
 	}
+	r.stepAuto(ft)
 	return dx, dy, events
 }

@@ -82,7 +82,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	display := cv.Unwrap().GetDisplay()
 	link, err := cg.NewDisplayLink(func(fi gfx.FrameInfo) {
 		// runs on a Core Video thread: only decide, then hand over to the UI thread
-		if v.gone.Load() || !(v.comp.NeedsFrame() || v.resize.Load() || v.r.acc.wake.Load()) || !v.posted.CompareAndSwap(false, true) {
+		if v.gone.Load() || !(v.comp.NeedsFrame() || v.resize.Load() || v.r.acc.wake.Load() || v.r.autoWake.Load()) || !v.posted.CompareAndSwap(false, true) {
 			return
 		}
 		defer func() { _ = recover() }() // the display may be gone as the window closes

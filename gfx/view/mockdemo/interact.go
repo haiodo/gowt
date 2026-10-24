@@ -16,6 +16,14 @@ const (
 	modeDrag
 )
 
+// dropMargin keeps a dropped object's grab point this far inside the view, view points.
+const dropMargin = 8
+
+// clampToView moves a view point into the view, inset by margin.
+func clampToView(p gfx.Point, w, h, margin float64) gfx.Point {
+	return gfx.Point{X: min(max(p.X, margin), w-margin), Y: min(max(p.Y, margin), h-margin)}
+}
+
 // interactive is the GFXDEMO_STAY mode: the view's own scroll and pinch navigation, a drag of an
 // element (press on it), a drag of a whole screen (press on its background, or hold Option), and
 // a drag of the empty canvas.
@@ -74,6 +82,7 @@ func interactive(v *view.View, c *canvas) {
 			t := target.Transform()
 			grab = gfx.Point{X: t[4] - (p.Scene.X - pw[4]), Y: t[5] - (p.Scene.Y - pw[5])}
 			comp.Lift(target)
+			v.AutoScroll(view.AutoScrollOptions{})
 			cursor(view.CursorGrabbing)
 		case view.PointerMove:
 			switch {
@@ -90,6 +99,14 @@ func interactive(v *view.View, c *canvas) {
 				cursor(view.CursorGrab)
 			}
 		case view.PointerUp, view.PointerCancel:
+			if p.Kind == view.PointerUp && p.Outside && mode == modeDrag {
+				// the demo's drop rule, as in Figma and Freeform: the object lands at the nearest
+				// visible point, never offscreen
+				w, h := v.Canvas().Size()
+				q := comp.SceneAt(clampToView(p.Pos, float64(w), float64(h), dropMargin))
+				pw := moved.Parent().World()
+				c.scene.Update(func(tx *gfx.Tx) { tx.Move(moved, q.X-pw[4]+grab.X, q.Y-pw[5]+grab.Y) })
+			}
 			land()
 			cursor(view.CursorGrab)
 		}

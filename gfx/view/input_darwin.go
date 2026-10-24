@@ -22,6 +22,10 @@ func (v *View) wireInput() {
 			c.SetFocus()
 		}
 	}
+	v.r.size = func() (float64, float64) {
+		w, h := v.cv.Size()
+		return float64(w), float64(h)
+	}
 	if cg.Tracing {
 		v.r.trace = cg.Tracef
 	}
@@ -124,6 +128,12 @@ func (v *View) native(e cg.InputEvent) bool {
 // node under the pointer. While a button is held the moves and the release keep coming outside
 // the view. A Ctrl-click is Button 1 with Mods.Ctrl.
 func (v *View) OnPointer(f func(*Pointer)) { v.r.onPointer = f }
+
+// AutoScroll pans the camera each frame while the pointer is in the edge band or outside the view;
+// call it from the PointerDown that starts a drag. After each step the view repeats the last
+// position as a PointerMove, so the app re-places the dragged content. It ends on release, on
+// cancel or when stop is called. The drop rule on a release with Outside set is the app's.
+func (v *View) AutoScroll(o AutoScrollOptions) (stop func()) { return v.r.startAuto(o) }
 
 // OnScroll sets f to run for scroll gestures and wheel events. f returns true when it used the
 // event; otherwise the view pans (zooms with Cmd or Ctrl held).

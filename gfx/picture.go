@@ -1,8 +1,10 @@
 package gfx
 
 import (
+	"bytes"
 	"encoding/binary"
 	"math"
+	"slices"
 )
 
 type OpKind uint8
@@ -112,6 +114,24 @@ type picRes struct {
 	strs   []string
 	fonts  []Font
 	images []Image
+}
+
+// Equal reports whether q draws exactly what p draws, Lod included. Scene.SetPicture uses it to
+// ignore a picture that did not change, so a node moved with its content is not redrawn.
+func (p *Picture) Equal(q *Picture) bool {
+	if p == q {
+		return true
+	}
+	if p == nil || q == nil || p.Bounds != q.Bounds || p.LodBelow != q.LodBelow || !bytes.Equal(p.data, q.data) {
+		return false
+	}
+	if (p.res == nil) != (q.res == nil) || (p.Lod == nil) != (q.Lod == nil) {
+		return false
+	}
+	if p.res != nil && (!slices.Equal(p.res.strs, q.res.strs) || !slices.Equal(p.res.fonts, q.res.fonts) || !slices.Equal(p.res.images, q.res.images)) {
+		return false
+	}
+	return p.Lod == nil || p.Lod.Equal(q.Lod)
 }
 
 // Len is the number of bytes of the command stream.

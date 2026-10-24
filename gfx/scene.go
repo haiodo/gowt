@@ -160,6 +160,7 @@ const (
 	txShape
 	txClip
 	txReparent
+	txSuperseded // a txPicture followed by another one for the same node in this Commit
 )
 
 type txOp struct {
@@ -263,6 +264,21 @@ func (s *Scene) Commit() []Rect {
 	defer s.mu.Unlock()
 	var dirty []*Node
 	var damage []Rect
+	// only the last picture of a node counts, so that a node set to an intermediate picture and back
+	// within one Commit (a connector between two boxes moved one after the other) is not changed
+	last := map[*Node]struct{}{}
+	for i := len(txs) - 1; i >= 0; i-- {
+		ops := txs[i].ops
+		for k := len(ops) - 1; k >= 0; k-- {
+			if ops[k].kind != txPicture {
+				continue
+			}
+			if _, dup := last[ops[k].n]; dup {
+				ops[k].kind = txSuperseded
+			}
+			last[ops[k].n] = struct{}{}
+		}
+	}
 	for _, tx := range txs {
 		for i := range tx.ops {
 			s.apply(&tx.ops[i], &dirty, &damage)
@@ -432,6 +448,9 @@ func (s *Scene) apply(op *txOp, dirty *[]*Node, damage *[]Rect) {
 			s.structDirty = true
 		}
 	case txPicture:
+		if n.pic.Equal(op.pic) {
+			return
+		}
 		n.pic = op.pic
 		n.rev++
 		s.bump(n.parent)

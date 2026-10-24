@@ -3,6 +3,7 @@ package gfx
 import (
 	"math"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -260,72 +261,141 @@ func (c *Compositor) placeSprite(s *Sprite, st spriteState, pic *Picture, dirty 
 // drawArea draws items into a fresh image of wpx x hpx pixels showing the scene area from origin at
 // the given scale.
 func (c *Compositor) drawArea(origin Point, scale float64, wpx, hpx int, items []Item) Image {
-	if c.uiT != nil {
-		if w, h := c.uiT.Size(); w != wpx || h != hpx {
-			c.uiT.Close()
-			c.uiT = nil
+	return c.drawOn(&c.scr[0], origin, scale, wpx, hpx, items)
+}
+
+func (c *Compositor) drawOn(s *scratch, origin Point, scale float64, wpx, hpx int, items []Item) Image {
+	if s.t != nil {
+		if w, h := s.t.Size(); w != wpx || h != hpx {
+			s.t.Close()
+			s.t = nil
 		}
 	}
-	if c.uiT == nil {
-		c.uiT = c.r.NewTarget(wpx, hpx)
+	if s.t == nil {
+		s.t = c.r.NewTarget(wpx, hpx)
 	}
-	c.uiT.Begin(scale, origin, Color{})
-	c.uiT.Draw(items)
-	return c.uiT.Snapshot(float64(wpx)/c.dpr, float64(hpx)/c.dpr)
+	s.t.Begin(scale, origin, Color{})
+	s.t.Draw(items)
+	return s.t.Snapshot(float64(wpx)/c.dpr, float64(hpx)/c.dpr)
+}
+
+// drawJobs draws the images of jobs on up to Workers goroutines and returns when all are done:
+// the sprites follow the node in the same frame, with no lag to hide.
+func (c *Compositor) drawJobs(jobs []liftJob) {
+	if len(jobs) == 0 {
+		return
+	}
+	// waking a goroutine costs about as much as drawing a few connectors
+	n := min((len(jobs)+3)/4, c.o.Workers)
+	for len(c.scr) < max(n, 1) {
+		c.scr = append(c.scr, scratch{})
+	}
+	var next atomic.Int32
+	left := atomic.Int32{}
+	left.Store(int32(len(jobs)))
+	done := make(chan struct{})
+	run := func(s *scratch) {
+		for {
+			i := int(next.Add(1)) - 1
+			if i >= len(jobs) {
+				return
+			}
+			j := &jobs[i]
+			c.scene.CollectSubtree(j.l.node, j.area, &s.items)
+			j.img = c.drawOn(s, j.area.Min, j.want, j.wpx, j.hpx, s.items.List)
+			if left.Add(-1) == 0 {
+				close(done)
+			}
+		}
+	}
+	for i := 1; i < n; i++ {
+		go run(&c.scr[i])
+	}
+	run(&c.scr[0])
+	// wait for the jobs, not for the goroutines: one that woke up late finds nothing left to take
+	<-done
 }
 
 func (c *Compositor) stepLifts() {
 	live := c.lifts[:0]
-	view := c.viewRect().Expand(64 / c.cam.Zoom)
 	for _, l := range c.lifts {
-		var w Affine
-		var rev, deep uint32
 		var sb Rect
 		attached := false
-		c.scene.Read(func() {
-			attached = l.node.scene == c.scene
-			w, sb = l.node.world, l.node.SubtreeBounds()
-			rev, deep = l.node.Version()
-		})
+		c.scene.Read(func() { attached, sb = l.node.scene == c.scene, l.node.SubtreeBounds() })
 		if !attached || (l.landing && c.clean(sb)) {
 			l.layer.Remove()
 			continue
 		}
 		live = append(live, l)
+	}
+	c.lifts = live
+	c.refreshLifts(live)
+}
+
+// refreshLifts draws again the sprites whose node changed, all at once on the worker goroutines,
+// and places every sprite.
+func (c *Compositor) refreshLifts(lifts []*lift) {
+	view := c.viewRect().Expand(64 / c.cam.Zoom)
+	want := c.cam.Zoom * c.dpr
+	jobs := c.jobs[:0]
+	for _, l := range lifts {
+		if l.hold {
+			if !c.clean(l.hrect) {
+				continue
+			}
+			l.hold = false
+		}
+		var w Affine
+		var rev, deep uint32
+		var sb Rect
+		c.scene.Read(func() {
+			w, sb = l.node.world, l.node.SubtreeBounds()
+			rev, deep = l.node.Version()
+		})
 		if sb.Empty() {
 			l.layer.SetHidden(true)
 			continue
 		}
-		want := c.cam.Zoom * c.dpr
 		moved := w != l.w0
-		if !l.has || rev != l.rev || deep != l.deep || !w.SameLinear(l.w0) || (l.clipped && moved) ||
-			(!c.zooming && math.Abs(l.scale-want) > 1e-9*want) {
-			area := sb.Intersect(view)
-			if area.Empty() {
-				l.layer.SetHidden(true)
-				l.has = false
-				continue
-			}
-			wpx, hpx := int(math.Ceil(area.W()*want))+1, int(math.Ceil(area.H()*want))+1
-			if wpx > 1<<14 || hpx > 1<<14 {
-				continue
-			}
-			c.scene.CollectSubtree(l.node, area, &c.items)
-			img := c.drawArea(area.Min, want, wpx, hpx, c.items.List)
-			l.layer.SetImage(img)
-			Release(img)
-			l.rb, l.clipped, l.w0, l.rev, l.deep, l.scale, l.has = area, area != sb, w, rev, deep, want, true
-			l.wpx, l.hpx = wpx, hpx
-			c.stats.SpriteDraws++
-			moved = false
+		if l.has && rev == l.rev && deep == l.deep && w.SameLinear(l.w0) && !(l.clipped && moved) &&
+			(c.zooming || math.Abs(l.scale-want) <= 1e-9*want) {
+			c.placeLift(l, w)
+			continue
 		}
-		d := Point{w[4] - l.w0[4], w[5] - l.w0[5]}
-		min := c.ViewAt(Point{l.rb.Min.X + d.X, l.rb.Min.Y + d.Y})
-		// the image has whole pixels at the scale it was drawn at; its size follows the zoom
-		k := c.cam.Zoom / l.scale * c.dpr
-		min = Point{c.px(min.X), c.px(min.Y)}
-		l.layer.Set(Rect{min, Point{min.X + float64(l.wpx)*k/c.dpr, min.Y + float64(l.hpx)*k/c.dpr}}, Point{}, Identity())
-		l.layer.SetHidden(false)
+		area := sb.Intersect(view)
+		if area.Empty() {
+			l.layer.SetHidden(true)
+			l.has = false
+			continue
+		}
+		wpx, hpx := int(math.Ceil(area.W()*want))+1, int(math.Ceil(area.H()*want))+1
+		if wpx > 1<<14 || hpx > 1<<14 {
+			continue
+		}
+		jobs = append(jobs, liftJob{l: l, area: area, wpx: wpx, hpx: hpx, want: want, w: w, rev: rev, deep: deep, clipped: area != sb})
 	}
-	c.lifts = live
+	c.drawJobs(jobs)
+	for i := range jobs {
+		j := &jobs[i]
+		l := j.l
+		l.layer.SetImage(j.img)
+		Release(j.img)
+		l.rb, l.clipped, l.w0, l.rev, l.deep, l.scale, l.has = j.area, j.clipped, j.w, j.rev, j.deep, j.want, true
+		l.wpx, l.hpx = j.wpx, j.hpx
+		c.stats.SpriteDraws++
+		c.placeLift(l, j.w)
+		jobs[i] = liftJob{}
+	}
+	c.jobs = jobs[:0]
+}
+
+// placeLift puts the sprite of l where its node, at world transform w, is.
+func (c *Compositor) placeLift(l *lift, w Affine) {
+	d := Point{w[4] - l.w0[4], w[5] - l.w0[5]}
+	min := c.ViewAt(Point{l.rb.Min.X + d.X, l.rb.Min.Y + d.Y})
+	// the image has whole pixels at the scale it was drawn at; its size follows the zoom
+	k := c.cam.Zoom / l.scale * c.dpr
+	min = Point{c.px(min.X), c.px(min.Y)}
+	l.layer.Set(Rect{min, Point{min.X + float64(l.wpx)*k/c.dpr, min.Y + float64(l.hpx)*k/c.dpr}}, Point{}, Identity())
+	l.layer.SetHidden(false)
 }

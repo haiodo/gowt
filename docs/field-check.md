@@ -1,6 +1,6 @@
 # Field check: running gowt's tests on your machine
 
-gowt is developed on one Mac, with Windows under Wine and Linux under Xvfb in Docker. Real machines (other OS versions, other monitors, Wayland, real Windows) are where the bugs are. `cmd/fieldcheck` runs the checks there with one command and writes one zip file that you attach to a GitHub issue.
+gowt is developed on one Mac, with Windows under Wine and Linux under Xvfb in Docker and in a GNOME Wayland virtual machine. Real machines (other OS versions, other monitors, Wayland, real Windows) are where the bugs are. `cmd/fieldcheck` runs the checks there with one command and writes one zip file that you attach to a GitHub issue.
 
 ## What you need
 
@@ -47,8 +47,8 @@ It changes no system setting and no tracked file of the checkout; it never updat
 
 - **macOS**: run it from Terminal.
 - **Windows**: run it from PowerShell or `cmd` in the checkout. If the machine is a virtual machine, say so in the issue.
-- **Linux, X11**: run it inside the desktop session (not over plain SSH). With no `DISPLAY` and no `WAYLAND_DISPLAY` the tool skips the suites that need a window and says so. On a server, `xvfb-run go run ./cmd/fieldcheck` gives a headless result.
-- **Linux, Wayland**: run it in the Wayland session. gowt uses GTK 3 and the report records `XDG_SESSION_TYPE`, `WAYLAND_DISPLAY`, `DISPLAY`, `GDK_BACKEND` and `XDG_CURRENT_DESKTOP`, so X11 and Wayland results can be told apart. The Linux port was only run on X11 (Xvfb) so far; a Wayland run is new information, failures included.
+- **Linux, X11 or Xwayland**: run it inside the desktop session (not over plain SSH). With no `DISPLAY` and no `WAYLAND_DISPLAY` the tool skips the suites that need a window and says so. On a server, `xvfb-run go run ./cmd/fieldcheck` gives a headless result.
+- **Linux, Wayland**: run it in the Wayland session. gowt uses GTK 3 and the report records `XDG_SESSION_TYPE`, `WAYLAND_DISPLAY`, `DISPLAY`, `GDK_BACKEND` and `XDG_CURRENT_DESKTOP`, so X11 and Wayland results can be told apart. The gate was recorded on GNOME Wayland (Ubuntu 26.04, in a virtual machine); other compositors, KDE and real hardware are new information, failures included. `GDK_BACKEND=x11` gives Xwayland.
 
 ## What is in the zip
 

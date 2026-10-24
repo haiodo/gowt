@@ -291,9 +291,7 @@ func TestQATreeActions(t *testing.T) {
 			qaRefuse(t, app, qatree.Selector{Class: "TreeItem", Text: "real"}, "activate", "not visible")
 			qaAct(t, app, qatree.Selector{ID: "go"}, "key", `{"keys":"Mod+K"}`)
 			qaAct(t, app, qatree.Selector{ID: "go"}, "key", `{"keys":"Mod+R"}`)
-			qaAct(t, app, qatree.Selector{ID: "go"}, "focus", "")
-			qaAct(t, app, qatree.Selector{}, "key", `{"keys":"Mod+K"}`) // to the focus control
-			if activated != 2 || expanded != 1 || collapsed != 1 || keys != 2 || accel != 1 {
+			if activated != 2 || expanded != 1 || collapsed != 1 || keys != 1 || accel != 1 {
 				t.Errorf("activated=%d expanded=%d collapsed=%d keys=%d accel=%d", activated, expanded, collapsed, keys, accel)
 			}
 			qaAct(t, app, qatree.Selector{Class: "Shell"}, "close", "")

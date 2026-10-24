@@ -6,9 +6,9 @@ Same Go program, three native back ends. What differs:
 
 | | macOS | Windows | Linux |
 |---|---|---|---|
-| Toolkit | AppKit | Win32 | GTK 3 (X11 or XWayland) |
+| Toolkit | AppKit | Win32 | GTK 3 (Wayland or X11) |
 | Cross-compile | `GOOS=darwin go build` | `GOOS=windows go build` | `GOOS=linux go build` (all with `CGO_ENABLED=0`, from any host) |
-| Verified on | real Mac | real Windows 11 arm64 in a UTM virtual machine (since 2026-10-14) and CrossOver/Wine; Mica/Acrylic and two monitors not checked | Docker with Xvfb, not a real desktop |
+| Verified on | real Mac | real Windows 11 arm64 in a UTM virtual machine (since 2026-10-14) and CrossOver/Wine; Mica/Acrylic and two monitors not checked | Docker with Xvfb, and Ubuntu 26.04 GNOME on native Wayland in a UTM virtual machine with a GPU (not bare metal; Xwayland and other desktops not gated) |
 | Web view | WKWebView | WebView2 Runtime (preinstalled on Windows 11) | WebKitGTK 4.1 |
 | Glass, backdrop | Liquid Glass (macOS 26), translucent material | Mica/Acrylic (Windows 11), not checked by eye on the VM | none |
 | System tray | `App.Tray` returns nil where the system has none; not checked per OS | same | same |
@@ -26,7 +26,9 @@ SWT's translated JUnit tests, `make test-swt`, counted from `tests/expected*.txt
 |---|---|---|---|
 | macOS (`expected.txt`) | 3818 | 4 (+3 flaky) | 69 |
 | Windows (`expected_windows.txt`, recorded under Wine) | 3728 | 70 (+7 flaky) | 89 |
+| Windows 11 arm64 VM (`expected_windows_vm.txt`) | 3799 | 0 (+6 flaky) | 89 |
 | Linux (`expected_linux.txt`) | 3840 | 2 (+1 flaky) | 58 |
+| Linux desktop (`expected_linux_desktop.txt`, Ubuntu 26.04 GNOME, Wayland) | 3836 | 4 (+1 flaky) | 60 |
 
 3894 tests in all. JFace tests (`expected_jface*.txt`): 86 pass, 1 skip on macOS; 85 pass, 1 fail, 1 skip on Linux and Windows.
 
@@ -63,11 +65,11 @@ Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not 
 - NSGlassEffectContainerView, NSBackgroundExtensionView and a unified tool bar do not fit SWT's view tree and are not offered.
 
 **Windows** (gate file recorded under Wine; also run on a real Windows 11 arm64 in a UTM virtual machine)
-- `tests/expected_windows.txt` has 70 failures and 7 flaky. 61 failures and 5 flaky are `Browser` tests: under CrossOver WebView2 starts, the page commits but never finishes loading (no GL), so `NavigationCompleted` does not arrive. Whether these pass on the VM is not recorded in the file.
+- `tests/expected_windows.txt` has 70 failures and 7 flaky. 61 failures and 5 flaky are `Browser` tests: under CrossOver WebView2 starts, the page commits but never finishes loading (no GL), so `NavigationCompleted` does not arrive. On the VM they pass: see `tests/expected_windows_vm.txt` below.
 - 9 failures outside Browser: `TextLayout` 4, `GC` 2, `Table` 2 (`test_Virtual`, `test_getItemHeight`), `Display` 1. The reasons name Wine (gdiplus, `DrawText`, `ScriptItemize`, `ScriptBreak`, `ScriptPlace`, `LVM_APPROXIMATEVIEWRECT`, `VkKeyScan`) or a font missing in the bottle. Flaky outside Browser: `StyledText.test_backspaceAndDelete`, `Text.test_consistency_Segments`.
 - 41 of the 89 skips are SWT's own "alpha for foreground colors does not exist" assumption.
 - Real Windows 11 arm64, 2026-10-14: GDI+ float arguments were wrong on windows/arm64. Go's `syscall.SyscallN` loads only x0-x7, AAPCS64 needs floats in s0-s7. About 31 `f32` calls in `internal/win32/gdip_manual.go` were affected (matrices, pens, font size, arcs, paths). Fixed in `61701c5`; the full `swttest` then gave 3740 passed, 65 failed, 89 skipped, the same as amd64.
-- Real Windows 11 arm64, 2026-10-22: `swttest` 3741 passed, 64 failed, 89 skipped of 3894. The gate reports two problems: `GC.test_getFontMetrics_notAffectedByTransform` ("No more handles") and `Text`/`StyledText` `test_backspaceAndDelete` (flaky, passes alone). The `look` package: 25 tests pass. The root package: no regressions; `TestEnabledSwitchAndTextLog` fails (CRLF in `Text.TrimHead`) and `TestScrollOnScroll` is flaky, about 50% (timer granularity about 15.6 ms).
+- Real Windows 11 arm64 (UTM, build 26100, WebView2 Runtime 155): `tests/expected_windows_vm.txt` is recorded from two full runs of the same build: 3799 pass, 0 fail, 6 flaky, 89 skip of 3894. A line is flaky when the runs disagree or it was already flaky in earlier runs. The `look` package: 25 tests pass. The root package: no regressions; `TestEnabledSwitchAndTextLog` fails (CRLF in `Text.TrimHead`) and `TestScrollOnScroll` is flaky, about 50% (timer granularity about 15.6 ms).
 - Not checked on real Windows: Mica, Acrylic and rounded corners by eye; per-monitor DPI changes with two monitors (the VM has one display); the QA driver ([qa.md](qa.md)). Per-monitor DPI changes while running (`WM_DPICHANGED`) use upstream code and are untested. Manual test on Windows 10 1809+ with two monitors of different scale: start any `cmd/*` program on the 100% monitor, drag the window to the 150% one, expect controls, fonts and window size to rescale without restart; change the scale in Settings while it runs, expect the same. Wine reports 96 DPI.
 - Dark content is opt-in (`look.SetDarkContent`) and uses undocumented uxtheme exports.
 
@@ -77,7 +79,7 @@ Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not 
 - `DateTime` with `SWT.BORDER` loses the bit (`checkBorder`, no scrolled handle), which fails `TestUnitDateTimeFactory.createsDateTime` in JFace.
 - GTK 3 only. The theme and accent colour come from xdg-desktop-portal; this was not checked against a live portal.
 - WebKitGTK does not report the navigation frame, so the navigation policy always gets `mainFrame=true`.
-- The stand is X11 only (Xvfb); there is no Wayland run.
+- Two stands: Docker with Xvfb and openbox (`tests/expected_linux.txt`), and a real desktop, Ubuntu 26.04.1 arm64 GNOME on native Wayland in a UTM virtual machine with a GPU (`tests/expected_linux_desktop.txt`: 3836 pass, 4 fail, 1 flaky, 60 skip). GTK uses native Wayland there; under `GDK_BACKEND=x11` (Xwayland) `CTabFolder.test_chevronAppearanceChanged` fails and the `backspaceAndDelete` tests fail with other values, and that run is not recorded. Desktop-only failures: `StyledText.test_backspaceAndDelete`, `Display.test_post` (no input events through mutter), `GC.test_drawImage_nonAutoScalableGC_bug_2504`. Screen blanking and lock must be off, or every focus test fails. Not run: KDE, other compositors, bare metal.
 - `swt/gtkres/*.css` are 74 bytes or less, so SWT's CSS theming fixes are not applied.
 
 ## Cross-platform notes

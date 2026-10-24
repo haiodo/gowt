@@ -17,6 +17,9 @@ func TestMain(m *testing.M) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		os.Exit(m.Run())
 	}
+	if bin := os.Getenv("GOWT_QA_APP"); bin != "" { // a prebuilt app, for a machine without Go
+		qatest.Main(m, bin)
+	}
 	dir, err := os.MkdirTemp("", "qaexample")
 	if err != nil {
 		panic(err)

@@ -24,7 +24,7 @@ SWT's translated JUnit tests, `make test-swt`, counted from `tests/expected*.txt
 
 | | pass | fail | skip |
 |---|---|---|---|
-| macOS (`expected.txt`) | 3817 | 5 (+3 flaky) | 69 |
+| macOS (`expected.txt`) | 3818 | 4 (+3 flaky) | 69 |
 | Windows (`expected_windows.txt`, recorded under Wine) | 3728 | 70 (+7 flaky) | 89 |
 | Linux (`expected_linux.txt`) | 3840 | 2 (+1 flaky) | 58 |
 

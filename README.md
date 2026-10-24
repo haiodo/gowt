@@ -103,7 +103,7 @@ SWT's own JUnit tests, translated to Go and run per OS by `make test-swt` agains
 
 | OS | pass | fail | skip |
 |---|---|---|---|
-| macOS | 3817 | 5 (+3 flaky) | 69 |
+| macOS | 3818 | 4 (+3 flaky) | 69 |
 | Windows (`expected_windows.txt`, recorded under Wine) | 3728 | 70 (61 Browser tests, 9 others) (+7 flaky) | 89 |
 | Linux (Docker, Xvfb) | 3840 | 2 (+1 flaky) | 58 |
 

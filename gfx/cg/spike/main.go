@@ -120,7 +120,7 @@ func run(app *g.App, w *g.Window, cv *g.CanvasView, doc *synth.Doc, r *cg.Render
 					o := gfx.Point{X: origin.X + float64(i%cols)*tile, Y: origin.Y + float64(i/cols)*tile}
 					s.Begin(scale, o.X, o.Y, gfx.Color{R: 1, G: 1, B: 1, A: 1})
 					for _, n := range doc.Scene.Query(gfx.Rect{Min: o, Max: gfx.Point{X: o.X + tile, Y: o.Y + tile}}, nil) {
-						s.Replay(n.Pic, n.X, n.Y)
+						s.Replay(n.Picture(), n.World()[4], n.World()[5])
 					}
 					imgs[j] = s.Snapshot(tile, tile)
 				}

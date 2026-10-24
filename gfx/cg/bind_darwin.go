@@ -11,6 +11,8 @@ import (
 
 type cgRect struct{ X, Y, W, H float64 }
 type cgSize struct{ W, H float64 }
+type cgPoint struct{ X, Y float64 }
+type cgAffine struct{ A, B, C, D, Tx, Ty float64 }
 
 // The CoreGraphics, CoreFoundation and CoreText entry points the rasterizer calls; contexts,
 // colors, images and fonts travel as raw uintptr references.
@@ -55,6 +57,16 @@ var (
 	cgFontSmooth  func(ctx uintptr, on bool)
 	cgSetTextPos  func(ctx uintptr, x, y float64)
 	cgSetAA       func(ctx uintptr, on bool)
+	cgConcat      func(ctx uintptr, m cgAffine)
+	cgClip        func(ctx uintptr)
+	cgSetAlpha    func(ctx uintptr, a float64)
+	cgBeginLayer  func(ctx uintptr, aux uintptr)
+	cgEndLayer    func(ctx uintptr)
+	cgStrokedPath func(ctx uintptr)
+	cgGradCreate  func(cs uintptr, comps *float64, locs *float64, n uintptr) uintptr
+	cgGradRelease func(g uintptr)
+	cgDrawLinear  func(ctx uintptr, g uintptr, a, b cgPoint, opts uint32)
+	cgDrawRadial  func(ctx uintptr, g uintptr, c0 cgPoint, r0 float64, c1 cgPoint, r1 float64, opts uint32)
 
 	cfRelease               func(o uintptr)
 	cfStringCreateWithBytes func(alloc uintptr, b *byte, n int, enc uint32, external bool) uintptr
@@ -121,6 +133,16 @@ func bind() {
 		reg(&cgFontSmooth, "CGContextSetShouldSmoothFonts")
 		reg(&cgSetTextPos, "CGContextSetTextPosition")
 		reg(&cgSetAA, "CGContextSetShouldAntialias")
+		reg(&cgConcat, "CGContextConcatCTM")
+		reg(&cgClip, "CGContextClip")
+		reg(&cgSetAlpha, "CGContextSetAlpha")
+		reg(&cgBeginLayer, "CGContextBeginTransparencyLayer")
+		reg(&cgEndLayer, "CGContextEndTransparencyLayer")
+		reg(&cgStrokedPath, "CGContextReplacePathWithStrokedPath")
+		reg(&cgGradCreate, "CGGradientCreateWithColorComponents")
+		reg(&cgGradRelease, "CGGradientRelease")
+		reg(&cgDrawLinear, "CGContextDrawLinearGradient")
+		reg(&cgDrawRadial, "CGContextDrawRadialGradient")
 		reg(&cfRelease, "CFRelease")
 		reg(&cfStringCreateWithBytes, "CFStringCreateWithBytes")
 		reg(&cfDictionaryCreate, "CFDictionaryCreate")

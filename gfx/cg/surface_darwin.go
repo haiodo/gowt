@@ -28,6 +28,8 @@ type Renderer struct {
 	fonts   sync.Map // fontKey -> uintptr
 	lines   sync.Map // lineKey -> uintptr
 	sprites sync.Map // spriteKey -> *shadowSprite
+	images  sync.Map // *gfx.Raster -> *Image
+	metrics sync.Map // lineKey -> gfx.TextMetrics
 	skip    uint32   // bit per gfx.OpKind to leave out; benchmarks use it to split the cost
 }
 
@@ -43,7 +45,11 @@ type lineKey struct {
 
 func NewRenderer(o Options) *Renderer {
 	bind()
-	return &Renderer{opts: o, cs: cgColorSpaceCreateDeviceRGB()}
+	r := &Renderer{opts: o, cs: cgColorSpaceCreateDeviceRGB()}
+	if _, ok := gfx.DefaultMeasurer.(gfx.EstimateText); ok {
+		gfx.DefaultMeasurer = r // recordings from now on get CoreText bounds
+	}
+	return r
 }
 
 // Image is a CGImage snapshot of a Surface or a sprite piece. Size is in points.
@@ -79,6 +85,9 @@ type Surface struct {
 	data   uintptr
 	scale  float64
 	dashed bool
+	eff    float64 // scale times the scale of the item transform being drawn
+	it     gfx.Iter
+	layers int
 }
 
 func (r *Renderer) NewSurface(wpx, hpx int) *Surface {
@@ -121,7 +130,7 @@ func (s *Surface) Begin(scale, ox, oy float64, bg gfx.Color) {
 	cgTranslate(s.ctx, 0, float64(s.H))
 	cgScale(s.ctx, scale, -scale)
 	cgTranslate(s.ctx, -ox, -oy)
-	s.scale = scale
+	s.scale, s.eff = scale, scale
 	s.dashed = false
 }
 
@@ -137,7 +146,7 @@ func (s *Surface) BeginClipped(scale, ox, oy float64, dirty gfx.Rect) {
 	cgTranslate(s.ctx, 0, float64(s.H))
 	cgScale(s.ctx, scale, -scale)
 	cgTranslate(s.ctx, -ox, -oy)
-	s.scale = scale
+	s.scale, s.eff = scale, scale
 	s.dashed = false
 }
 
@@ -150,133 +159,6 @@ func (s *Surface) Snapshot(wpt, hpt float64) *Image {
 // Begin; it is the CPU compositor used by the tile benchmarks.
 func (s *Surface) Composite(img *Image, x, y, wpx, hpx float64) {
 	cgDrawImage(s.ctx, cgRect{x, float64(s.H) - y - hpx, wpx, hpx}, img.ref)
-}
-
-// Replay draws p translated by (dx, dy).
-func (s *Surface) Replay(p *gfx.Picture, dx, dy float64) {
-	ctx := s.ctx
-	if s.r.opts.LOD {
-		if w, h := p.Bounds.W()*s.scale, p.Bounds.H()*s.scale; w < 3 && h < 3 {
-			cgFillColor(ctx, 0.75, 0.75, 0.78, 1)
-			cgFillRect(ctx, cgRect{p.Bounds.Min.X + dx, p.Bounds.Min.Y + dy, math.Max(p.Bounds.W(), 1/s.scale), math.Max(p.Bounds.H(), 1/s.scale)})
-			return
-		}
-	}
-	if s.r.opts.LOD && p.Lod != nil && math.Max(p.Bounds.W(), p.Bounds.H())*s.scale < p.LodBelow {
-		p = p.Lod
-	}
-	cgSaveGState(ctx)
-	cgTranslate(ctx, dx, dy)
-	s.dashed = false
-	for i := range p.Ops {
-		op := &p.Ops[i]
-		if s.r.skip>>op.Kind&1 != 0 {
-			continue
-		}
-		switch op.Kind {
-		case gfx.OpSave:
-			cgSaveGState(ctx)
-		case gfx.OpRestore:
-			cgRestoreGSt(ctx)
-		case gfx.OpTranslate:
-			cgTranslate(ctx, op.A, op.B)
-		case gfx.OpScale:
-			cgScale(ctx, op.A, op.B)
-		case gfx.OpRotate:
-			cgRotate(ctx, op.A)
-		case gfx.OpFill:
-			cgFillColor(ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A)
-			s.addPath(p.Paths[op.Idx])
-			cgFillPath(ctx)
-		case gfx.OpStroke:
-			s.stroke(p.Paths[op.Idx], &p.Styles[op.Style], op.Color)
-		case gfx.OpShadowBox:
-			s.shadowBox(op)
-		case gfx.OpText:
-			s.text(p.Strs[op.Idx], op)
-		case gfx.OpImage:
-			img := p.Images[op.Idx].(*Image)
-			cgSaveGState(ctx)
-			cgTranslate(ctx, op.A, op.B+op.D)
-			cgScale(ctx, 1, -1)
-			cgDrawImage(ctx, cgRect{0, 0, op.C, op.D}, img.ref)
-			cgRestoreGSt(ctx)
-		}
-	}
-	cgRestoreGSt(ctx)
-}
-
-func (s *Surface) addPath(p *gfx.Path) {
-	ctx := s.ctx
-	cgBeginPath(ctx)
-	pts := p.Pts
-	for _, v := range p.Verbs {
-		switch v {
-		case gfx.MoveTo:
-			cgMoveTo(ctx, pts[0].X, pts[0].Y)
-			pts = pts[1:]
-		case gfx.LineTo:
-			cgLineTo(ctx, pts[0].X, pts[0].Y)
-			pts = pts[1:]
-		case gfx.QuadTo:
-			cgQuadTo(ctx, pts[0].X, pts[0].Y, pts[1].X, pts[1].Y)
-			pts = pts[2:]
-		case gfx.CubicTo:
-			cgCurveTo(ctx, pts[0].X, pts[0].Y, pts[1].X, pts[1].Y, pts[2].X, pts[2].Y)
-			pts = pts[3:]
-		case gfx.ClosePath:
-			cgClosePath(ctx)
-		}
-	}
-}
-
-func (s *Surface) stroke(p *gfx.Path, st *gfx.StrokeStyle, c gfx.Color) {
-	ctx := s.ctx
-	cgStrokeColor(ctx, c.R, c.G, c.B, c.A)
-	cgLineWidth(ctx, st.Width)
-	cgLineCap(ctx, int32(st.Cap))
-	cgLineJoin(ctx, int32(st.Join))
-	if st.MiterLimit > 0 {
-		cgMiterLimit(ctx, st.MiterLimit)
-	}
-	switch {
-	case len(st.Dash) > 0 && !(s.r.opts.LOD && s.scale < 0.4):
-		cgLineDash(ctx, st.DashPhase, &st.Dash[0], uintptr(len(st.Dash)))
-		s.dashed = true
-	case s.dashed:
-		cgLineDash(ctx, 0, nil, 0)
-		s.dashed = false
-	}
-	s.addPath(p)
-	cgStrokePath(ctx)
-}
-
-func (s *Surface) shadowBox(op *gfx.Op) {
-	ctx := s.ctx
-	x, y, w, h, r := op.A, op.B, op.C, op.D, op.E
-	sh := op.Shadow
-	var rr gfx.Path
-	rr.RoundRect(x, y, w, h, r)
-	if s.r.opts.LOD && s.scale < 0.5 {
-		sh.Color.A = 0 // a shadow under half scale is a smudge
-	}
-	if sh.Color.A > 0 && s.r.opts.ShadowSprite && w > 2*(r+1.5*sh.Blur) && h > 2*(r+1.5*sh.Blur) {
-		s.r.sprite(r, sh.Blur, sh.Color, s.scale, math.Max(math.Abs(sh.DX), math.Abs(sh.DY)), op.Color.A >= 1).draw(s, x+sh.DX, y+sh.DY, w, h)
-	} else if sh.Color.A > 0 {
-		col := cgColorCreate(sh.Color.R, sh.Color.G, sh.Color.B, sh.Color.A)
-		cgSaveGState(ctx)
-		// the shadow offset lives in unflipped device pixels, so y goes negative
-		cgSetShadow(ctx, cgSize{sh.DX * s.scale, -sh.DY * s.scale}, sh.Blur*s.scale, col)
-		cgFillColor(ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A)
-		s.addPath(&rr)
-		cgFillPath(ctx)
-		cgRestoreGSt(ctx)
-		cgColorRelase(col)
-		return
-	}
-	cgFillColor(ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A)
-	s.addPath(&rr)
-	cgFillPath(ctx)
 }
 
 // shadowSprite is a rounded-rectangle shadow cut into corner and edge pieces; a shadow of

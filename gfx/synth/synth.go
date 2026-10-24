@@ -20,12 +20,14 @@ const (
 
 type Box struct {
 	Node  *gfx.Node
+	X, Y  float64
 	W, H  float64
 	Conns []*Conn
 }
 
 type Conn struct {
 	Node   *gfx.Node
+	Shape  *gfx.Path
 	A, B   *Box
 	Vert   bool // bottom-to-top instead of right-to-left
 	Dashed bool
@@ -60,41 +62,67 @@ func New(n int, seed int64) *Doc {
 		w, h := 120+rng.Float64()*40, 56+rng.Float64()*24
 		x := float64(i%cols)*CellW + rng.Float64()*20
 		y := float64(i/cols)*CellH + rng.Float64()*20
-		b := &Box{W: w, H: h}
-		b.Node = &gfx.Node{ID: i, X: x, Y: y, Z: 1, Pic: boxPicture(i, w, h), Shape: roundRect(w, h), Hit: gfx.HitFill}
+		b := &Box{X: x, Y: y, W: w, H: h, Node: gfx.NewNode(i)}
 		d.Boxes = append(d.Boxes, b)
-		d.Scene.Add(b.Node)
 	}
-	for i, b := range d.Boxes {
-		if i%cols+1 < cols && i+1 < n {
-			d.Link(b, d.Boxes[i+1], false)
+	// connectors go in first, at Z 0, so that every Add appends to its parent's children
+	d.Scene.Update(func(tx *gfx.Tx) {
+		for i, b := range d.Boxes {
+			if i%cols+1 < cols && i+1 < n {
+				d.link(tx, b, d.Boxes[i+1], false)
+			}
+			if i+cols < n {
+				d.link(tx, b, d.Boxes[i+cols], true)
+			}
 		}
-		if i+cols < n {
-			d.Link(b, d.Boxes[i+cols], true)
+		for i, b := range d.Boxes {
+			tx.SetZ(b.Node, 1)
+			tx.Add(nil, b.Node)
+			tx.SetPicture(b.Node, boxPicture(i, b.W, b.H))
+			tx.SetShape(b.Node, roundRect(b.W, b.H), gfx.HitFill)
+			tx.Move(b.Node, b.X, b.Y)
 		}
-	}
+	})
+	d.Scene.Commit()
 	return d
 }
 
 // Link adds a connector from a to b.
 func (d *Doc) Link(a, b *Box, vert bool) *Conn {
+	var c *Conn
+	d.Scene.Update(func(tx *gfx.Tx) { c = d.link(tx, a, b, vert) })
+	d.Scene.Commit()
+	return c
+}
+
+func (d *Doc) link(tx *gfx.Tx, a, b *Box, vert bool) *Conn {
 	c := &Conn{A: a, B: b, Vert: vert, Dashed: len(d.Conns)%3 == 2}
 	pic, shape := c.build()
-	c.Node = &gfx.Node{ID: 1<<20 + len(d.Conns), Pic: pic, Shape: shape, Hit: gfx.HitStroke}
+	c.Node, c.Shape = gfx.NewNode(1<<20+len(d.Conns)), shape
+	tx.Add(nil, c.Node)
+	tx.SetPicture(c.Node, pic)
+	tx.SetShape(c.Node, shape, gfx.HitStroke)
 	a.Conns = append(a.Conns, c)
 	b.Conns = append(b.Conns, c)
 	d.Conns = append(d.Conns, c)
-	d.Scene.Add(c.Node)
 	return c
 }
 
 // MoveBox moves b to (x, y), rebuilds its connectors and returns the area that went stale.
 func (d *Doc) MoveBox(b *Box, x, y float64) gfx.Rect {
-	dirty := d.Scene.Update(b.Node, x, y, nil)
-	for _, c := range b.Conns {
-		pic, shape := c.build()
-		c.Node.Shape = shape
-		dirty = dirty.Union(d.Scene.Update(c.Node, 0, 0, pic))
+	b.X, b.Y = x, y
+	d.Scene.Update(func(tx *gfx.Tx) {
+		tx.Move(b.Node, x, y)
+		for _, c := range b.Conns {
+			pic, shape := c.build()
+			c.Shape = shape
+			tx.SetPicture(c.Node, pic)
+			tx.SetShape(c.Node, shape, gfx.HitStroke)
+		}
+	})
+	dirty := gfx.EmptyRect()
+	for _, r := range d.Scene.Commit() {
+		dirty = dirty.Union(r)
 	}
 	return dirty
 }
@@ -127,13 +155,13 @@ func boxPicture(i int, w, h float64) *gfx.Picture {
 func Curve(a, b *Box, vert bool) *gfx.Path {
 	var p0, p3, c1, c2 gfx.Point
 	if vert {
-		p0 = gfx.Point{X: a.Node.X + a.W/2, Y: a.Node.Y + a.H}
-		p3 = gfx.Point{X: b.Node.X + b.W/2, Y: b.Node.Y}
+		p0 = gfx.Point{X: a.X + a.W/2, Y: a.Y + a.H}
+		p3 = gfx.Point{X: b.X + b.W/2, Y: b.Y}
 		k := math.Max(40, math.Abs(p3.Y-p0.Y)/2)
 		c1, c2 = gfx.Point{X: p0.X, Y: p0.Y + k}, gfx.Point{X: p3.X, Y: p3.Y - k}
 	} else {
-		p0 = gfx.Point{X: a.Node.X + a.W, Y: a.Node.Y + a.H/2}
-		p3 = gfx.Point{X: b.Node.X, Y: b.Node.Y + b.H/2}
+		p0 = gfx.Point{X: a.X + a.W, Y: a.Y + a.H/2}
+		p3 = gfx.Point{X: b.X, Y: b.Y + b.H/2}
 		k := math.Max(40, math.Abs(p3.X-p0.X)/2)
 		c1, c2 = gfx.Point{X: p0.X + k, Y: p0.Y}, gfx.Point{X: p3.X - k, Y: p3.Y}
 	}

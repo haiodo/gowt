@@ -3,52 +3,497 @@ package gfx
 import (
 	"math"
 	"slices"
+	"sort"
+	"sync"
 )
 
 type HitMode uint8
 
 const (
 	HitBounds HitMode = iota // the node's bounds
-	HitFill                  // inside Shape
-	HitStroke                // within the tolerance of Shape
+	HitFill                  // inside the shape
+	HitStroke                // within the tolerance of the shape
+	HitNone                  // never a hit
 )
 
-// Node draws Pic (local coordinates) translated by (X, Y); higher Z draws later and is hit first.
-// Change a placed node only through Scene.Update so the index follows.
-type Node struct {
-	ID    int
-	X, Y  float64
-	Z     int
-	Pic   *Picture
-	Shape *Path // local coordinates, for HitFill and HitStroke
-	Hit   HitMode
+type ClipKind uint8
 
-	bounds Rect
-	c0, c1 [2]int32 // first and last grid cell, inclusive
-	placed bool
+const (
+	ClipNone ClipKind = iota
+	ClipRect
+	ClipRRect
+	ClipPath
+)
+
+// Node is one element of the scene tree. Its picture is drawn in the node's own coordinates:
+// the transform maps them into the parent's, and the parent's into the scene's. A clip applies to
+// the node's picture and to the whole subtree. Children draw after their parent, ordered by Z and
+// then by the order they were added; a higher Z draws later and is hit first.
+//
+// A node changes only through Scene.Update; the getters read the state as of the last Commit and are
+// safe on the goroutine that commits, or inside Scene.Read.
+type Node struct {
+	id       int
+	parent   *Node
+	kids     []*Node
+	seq      uint64
+	t        Affine
+	opacity  float64
+	z        int
+	pic      *Picture
+	shape    *Path // local coordinates, for HitFill and HitStroke
+	hit      HitMode
+	clipKind ClipKind
+	clipRect Rect // local
+	clipRad  float64
+	clipPath *Path // local
+
+	// derived by Commit
+	world    Affine
+	alpha    float64 // opacity times that of every ancestor
+	bounds   Rect    // visible bounds of the picture in scene coordinates
+	cbox     Rect    // scene area left by the clips of the ancestors and this node
+	hasClip  bool    // a clip of an ancestor or of this node applies
+	order    int
+	rev      uint64 // bumps when the node's own look changes other than by a plain move
+	deep     uint64 // bumps when something below the node changes
+	lifted   int    // lifted ancestors plus this node's own lift count
+	liftSelf int
+	depth    int
+	stamp    uint64
+	c0, c1   [2]int32
+	indexed  bool
+	scene    *Scene
 }
 
-// Bounds returns the node's picture bounds in scene coordinates.
+func NewNode(id int) *Node {
+	return &Node{id: id, t: Identity(), opacity: 1, world: Identity(), alpha: 1, bounds: EmptyRect(), cbox: infRect()}
+}
+
+func (n *Node) ID() int                      { return n.id }
+func (n *Node) Parent() *Node                { return n.parent }
+func (n *Node) Children() []*Node            { return n.kids }
+func (n *Node) Transform() Affine            { return n.t }
+func (n *Node) World() Affine                { return n.world }
+func (n *Node) Opacity() float64             { return n.opacity }
+func (n *Node) Z() int                       { return n.z }
+func (n *Node) Picture() *Picture            { return n.pic }
+func (n *Node) Shape() *Path                 { return n.shape }
+func (n *Node) Hit() HitMode                 { return n.hit }
+func (n *Node) Lifted() bool                 { return n.lifted > 0 }
+func (n *Node) Version() (self, deep uint64) { return n.rev, n.deep }
+
+// Bounds is the visible area of the node's own picture in scene coordinates, after the clips of
+// the ancestors; empty when the node has no picture or is clipped away.
 func (n *Node) Bounds() Rect { return n.bounds }
 
-// Scene is a flat set of nodes in a uniform grid; queries may run concurrently while nobody writes.
-// Ceiling: one level, no parent transforms or clips; a node tree needs bounds propagation.
+// SubtreeBounds is the union of Bounds over the node and everything below it.
+func (n *Node) SubtreeBounds() Rect {
+	r := n.bounds
+	for _, c := range n.kids {
+		r = r.Union(c.SubtreeBounds())
+	}
+	return r
+}
+
+// Scene is a tree of nodes with a uniform grid over the visible bounds of their pictures.
+// Changes are made in transactions with Update and applied by Commit, which the frame loop
+// calls; queries may run concurrently with each other and with Update.
 type Scene struct {
+	mu    sync.RWMutex
+	root  *Node
 	world Rect
 	cell  float64
 	nx    int
 	ny    int
 	grid  [][]*Node
-	nodes []*Node
+	ids   map[int]*Node
+	seq   uint64
+	pass  uint64
+	count int
+
+	structDirty bool
+
+	pmu     sync.Mutex
+	pending []*Tx
 }
 
 func NewScene(world Rect, cell float64) *Scene {
 	nx := max(int(math.Ceil(world.W()/cell)), 1)
 	ny := max(int(math.Ceil(world.H()/cell)), 1)
-	return &Scene{world: world, cell: cell, nx: nx, ny: ny, grid: make([][]*Node, nx*ny)}
+	s := &Scene{world: world, cell: cell, nx: nx, ny: ny, grid: make([][]*Node, nx*ny), ids: map[int]*Node{}}
+	s.root = NewNode(0)
+	s.root.scene = s
+	return s
 }
 
-func (s *Scene) Nodes() []*Node { return s.nodes }
+// Root is the node every top level node hangs under; it has no picture.
+func (s *Scene) Root() *Node { return s.root }
+
+// Len is the number of nodes in the scene, the root excluded.
+func (s *Scene) Len() int { s.mu.RLock(); defer s.mu.RUnlock(); return s.count }
+
+// Node returns the node with the given ID, or nil.
+func (s *Scene) Node(id int) *Node { s.mu.RLock(); defer s.mu.RUnlock(); return s.ids[id] }
+
+// Read runs f holding the read lock, so that the getters of nodes are safe on any goroutine.
+func (s *Scene) Read(f func()) { s.mu.RLock(); defer s.mu.RUnlock(); f() }
+
+type txKind uint8
+
+const (
+	txAdd txKind = iota
+	txRemove
+	txTransform
+	txOpacity
+	txZ
+	txPicture
+	txShape
+	txClip
+	txReparent
+)
+
+type txOp struct {
+	kind txKind
+	n, p *Node
+	m    Affine
+	f    float64
+	i    int
+	pic  *Picture
+	path *Path
+	r    Rect
+	ck   ClipKind
+}
+
+// Tx records changes to a scene. It is valid only inside the Update call that made it.
+type Tx struct{ ops []txOp }
+
+// Update runs f to record a transaction and queues it; Commit applies it whole, so a frame
+// shows either all of it or none. It is safe from any goroutine, and f runs before Update returns.
+func (s *Scene) Update(f func(tx *Tx)) {
+	tx := &Tx{}
+	f(tx)
+	if len(tx.ops) == 0 {
+		return
+	}
+	s.pmu.Lock()
+	s.pending = append(s.pending, tx)
+	s.pmu.Unlock()
+}
+
+// Pending reports whether a transaction waits for Commit.
+func (s *Scene) Pending() bool {
+	s.pmu.Lock()
+	defer s.pmu.Unlock()
+	return len(s.pending) > 0
+}
+
+// Add attaches n, with its subtree, under parent; a nil parent means the root.
+func (tx *Tx) Add(parent, n *Node) { tx.ops = append(tx.ops, txOp{kind: txAdd, n: n, p: parent}) }
+
+// Remove detaches n with its subtree and forgets the IDs.
+func (tx *Tx) Remove(n *Node) { tx.ops = append(tx.ops, txOp{kind: txRemove, n: n}) }
+
+// Reparent moves n under another parent, keeping its own transform.
+func (tx *Tx) Reparent(n, parent *Node) {
+	tx.ops = append(tx.ops, txOp{kind: txReparent, n: n, p: parent})
+}
+
+// SetTransform sets the transform of n relative to its parent.
+func (tx *Tx) SetTransform(n *Node, m Affine) {
+	tx.ops = append(tx.ops, txOp{kind: txTransform, n: n, m: m})
+}
+
+// Move sets the translation of n, keeping the rest of its transform.
+func (tx *Tx) Move(n *Node, x, y float64) {
+	tx.ops = append(tx.ops, txOp{kind: txTransform, n: n, i: 1, m: Affine{0, 0, 0, 0, x, y}})
+}
+
+func (tx *Tx) SetOpacity(n *Node, v float64) {
+	tx.ops = append(tx.ops, txOp{kind: txOpacity, n: n, f: v})
+}
+
+func (tx *Tx) SetZ(n *Node, z int) { tx.ops = append(tx.ops, txOp{kind: txZ, n: n, i: z}) }
+
+func (tx *Tx) SetPicture(n *Node, pic *Picture) {
+	tx.ops = append(tx.ops, txOp{kind: txPicture, n: n, pic: pic})
+}
+
+// SetShape sets the geometry hit-testing uses (local coordinates, kept by reference) and how.
+func (tx *Tx) SetShape(n *Node, shape *Path, hit HitMode) {
+	tx.ops = append(tx.ops, txOp{kind: txShape, n: n, path: shape, i: int(hit)})
+}
+
+// ClipRect clips n and its subtree to r (in n's coordinates).
+func (tx *Tx) ClipRect(n *Node, r Rect) {
+	tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipRect, r: r})
+}
+
+func (tx *Tx) ClipRRect(n *Node, r Rect, radius float64) {
+	tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipRRect, r: r, f: radius})
+}
+
+// ClipPath keeps p by reference.
+func (tx *Tx) ClipPath(n *Node, p *Path) {
+	tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipPath, path: p})
+}
+
+func (tx *Tx) NoClip(n *Node) { tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipNone}) }
+
+// Commit applies the queued transactions in order and returns the scene areas whose pixels
+// changed: the old and the new bounds of every node that moved or changed, lifted nodes aside.
+func (s *Scene) Commit() []Rect {
+	s.pmu.Lock()
+	txs := s.pending
+	s.pending = nil
+	s.pmu.Unlock()
+	if len(txs) == 0 {
+		return nil
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var dirty []*Node
+	var damage []Rect
+	for _, tx := range txs {
+		for i := range tx.ops {
+			s.apply(&tx.ops[i], &dirty, &damage)
+		}
+	}
+	// parents first, so that a node refreshed under a refreshed ancestor is not done twice
+	slices.SortStableFunc(dirty, func(a, b *Node) int { return a.depth - b.depth })
+	s.pass++
+	for _, n := range dirty {
+		if n.stamp != s.pass && n.scene == s {
+			s.refresh(n, &damage)
+		}
+	}
+	if s.structDirty {
+		s.structDirty = false
+		s.number()
+	}
+	return damage
+}
+
+func (s *Scene) attach(parent, n *Node, dirty *[]*Node) {
+	if parent == nil {
+		parent = s.root
+	}
+	n.parent = parent
+	s.seq++
+	n.seq = s.seq
+	i := sort.Search(len(parent.kids), func(i int) bool { return parent.kids[i].z > n.z })
+	parent.kids = slices.Insert(parent.kids, i, n)
+	s.bump(parent)
+	s.depthOf(n)
+	s.adopt(n)
+	s.structDirty = true
+	*dirty = append(*dirty, n)
+}
+
+func (s *Scene) adopt(n *Node) {
+	n.scene = s
+	if n.id != 0 || n.parent != nil {
+		if _, dup := s.ids[n.id]; !dup {
+			s.count++
+		}
+		s.ids[n.id] = n
+	}
+	for _, c := range n.kids {
+		s.adopt(c)
+	}
+}
+
+func (s *Scene) depthOf(n *Node) {
+	n.depth = n.parent.depth + 1
+	for _, c := range n.kids {
+		s.depthOf(c)
+	}
+}
+
+// bump marks every ancestor of n as changed below.
+func (s *Scene) bump(n *Node) {
+	for ; n != nil; n = n.parent {
+		n.deep++
+	}
+}
+
+func (s *Scene) detach(n *Node, damage *[]Rect) {
+	if n.parent != nil {
+		p := n.parent
+		if i := slices.Index(p.kids, n); i >= 0 {
+			p.kids = slices.Delete(p.kids, i, i+1)
+		}
+		s.bump(p)
+		n.parent = nil
+	}
+	s.forget(n, damage)
+	s.structDirty = true
+}
+
+func (s *Scene) forget(n *Node, damage *[]Rect) {
+	if n.indexed {
+		if n.lifted == 0 {
+			*damage = append(*damage, n.bounds)
+		}
+		s.remove(n)
+	}
+	if s.ids[n.id] == n {
+		delete(s.ids, n.id)
+		s.count--
+	}
+	n.scene = nil
+	for _, c := range n.kids {
+		s.forget(c, damage)
+	}
+}
+
+func (s *Scene) apply(op *txOp, dirty *[]*Node, damage *[]Rect) {
+	n := op.n
+	if n == nil {
+		return
+	}
+	if (op.kind == txRemove || op.kind == txReparent) && n.scene != s {
+		return // removed, or never added
+	}
+	switch op.kind {
+	case txAdd:
+		if n.scene == s || n == s.root {
+			return
+		}
+		s.attach(op.p, n, dirty)
+	case txRemove:
+		if n != s.root {
+			s.detach(n, damage)
+		}
+	case txReparent:
+		if n != s.root {
+			p := op.p
+			if p == nil {
+				p = s.root
+			}
+			for q := p; q != nil; q = q.parent {
+				if q == n {
+					return // into its own subtree
+				}
+			}
+			old := n.parent
+			if i := slices.Index(old.kids, n); i >= 0 {
+				old.kids = slices.Delete(old.kids, i, i+1)
+			}
+			s.bump(old)
+			n.parent = p
+			i := sort.Search(len(p.kids), func(i int) bool { return p.kids[i].z > n.z })
+			p.kids = slices.Insert(p.kids, i, n)
+			s.bump(p)
+			s.depthOf(n)
+			n.rev++
+			s.structDirty = true
+			*dirty = append(*dirty, n)
+		}
+	case txTransform:
+		m := op.m
+		if op.i == 1 {
+			m = n.t
+			m[4], m[5] = op.m[4], op.m[5]
+		}
+		if m == n.t {
+			return
+		}
+		if !m.SameLinear(n.t) {
+			n.rev++
+		}
+		n.t = m
+		s.bump(n.parent)
+		*dirty = append(*dirty, n)
+	case txOpacity:
+		if op.f != n.opacity {
+			n.opacity = op.f
+			n.rev++
+			s.bump(n.parent)
+			*dirty = append(*dirty, n)
+		}
+	case txZ:
+		if op.i != n.z {
+			n.z = op.i
+			if p := n.parent; p != nil {
+				i := slices.Index(p.kids, n)
+				p.kids = slices.Delete(p.kids, i, i+1)
+				j := sort.Search(len(p.kids), func(k int) bool { return p.kids[k].z > n.z })
+				p.kids = slices.Insert(p.kids, j, n)
+				s.bump(p)
+			}
+			s.structDirty = true
+		}
+	case txPicture:
+		n.pic = op.pic
+		n.rev++
+		s.bump(n.parent)
+		*dirty = append(*dirty, n)
+	case txShape:
+		n.shape, n.hit = op.path, HitMode(op.i)
+	case txClip:
+		n.clipKind, n.clipRect, n.clipRad, n.clipPath = op.ck, op.r, op.f, op.path
+		n.rev++
+		s.bump(n.parent)
+		*dirty = append(*dirty, n)
+	}
+}
+
+// refresh recomputes the derived state of n and its subtree and reindexes what moved.
+func (s *Scene) refresh(n *Node, damage *[]Rect) {
+	n.stamp = s.pass
+	p := n.parent
+	n.world = p.world.Mul(n.t)
+	n.alpha = p.alpha * n.opacity
+	n.lifted = p.lifted + n.liftSelf
+	n.cbox = p.cbox
+	n.hasClip = p.hasClip
+	switch n.clipKind {
+	case ClipRect, ClipRRect:
+		n.cbox = n.cbox.Intersect(n.world.Bounds(n.clipRect))
+		n.hasClip = true
+	case ClipPath:
+		n.cbox = n.cbox.Intersect(n.world.Bounds(n.clipPath.Bounds()))
+		n.hasClip = true
+	}
+	old, wasIndexed := n.bounds, n.indexed
+	nb := EmptyRect()
+	if n.pic != nil {
+		nb = n.world.Bounds(n.pic.Bounds).Intersect(n.cbox)
+	}
+	if wasIndexed {
+		s.remove(n)
+	}
+	n.bounds = nb
+	if !nb.Empty() {
+		s.insert(n)
+	}
+	if n.lifted == 0 {
+		if wasIndexed {
+			*damage = append(*damage, old)
+		}
+		if n.indexed {
+			*damage = append(*damage, nb)
+		}
+	}
+	for _, c := range n.kids {
+		s.refresh(c, damage)
+	}
+}
+
+// number assigns the paint order: depth first, a node before its children.
+func (s *Scene) number() {
+	i := 0
+	var walk func(n *Node)
+	walk = func(n *Node) {
+		n.order = i
+		i++
+		for _, c := range n.kids {
+			walk(c)
+		}
+	}
+	walk(s.root)
+}
 
 func (s *Scene) cellOf(p Point) [2]int32 {
 	x := int(math.Floor((p.X - s.world.Min.X) / s.cell))
@@ -57,7 +502,6 @@ func (s *Scene) cellOf(p Point) [2]int32 {
 }
 
 func (s *Scene) insert(n *Node) {
-	n.bounds = n.Pic.Bounds.Translate(Point{n.X, n.Y})
 	n.c0, n.c1 = s.cellOf(n.bounds.Min), s.cellOf(n.bounds.Max)
 	for y := n.c0[1]; y <= n.c1[1]; y++ {
 		for x := n.c0[0]; x <= n.c1[0]; x++ {
@@ -65,7 +509,7 @@ func (s *Scene) insert(n *Node) {
 			s.grid[i] = append(s.grid[i], n)
 		}
 	}
-	n.placed = true
+	n.indexed = true
 }
 
 func (s *Scene) remove(n *Node) {
@@ -83,32 +527,42 @@ func (s *Scene) remove(n *Node) {
 			}
 		}
 	}
-	n.placed = false
+	n.indexed = false
 }
 
-// Add places n in the scene; n.Pic must be set.
-func (s *Scene) Add(n *Node) {
-	s.nodes = append(s.nodes, n)
-	s.insert(n)
-}
+// Lift marks n and its subtree as drawn by the compositor's active layer: Collect leaves them
+// out and their changes make no damage. It returns the area the static tiles must redraw.
+func (s *Scene) Lift(n *Node) Rect { return s.liftBy(n, 1) }
 
-// Update moves n and/or swaps its picture and returns the union of its old and new bounds:
-// the area whose tiles are now stale.
-func (s *Scene) Update(n *Node, x, y float64, pic *Picture) Rect {
-	old := n.bounds
-	if n.placed {
-		s.remove(n)
+// Land undoes Lift and returns the area the static tiles must redraw now.
+func (s *Scene) Land(n *Node) Rect { return s.liftBy(n, -1) }
+
+func (s *Scene) liftBy(n *Node, d int) Rect {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if d < 0 && n.liftSelf == 0 {
+		return EmptyRect()
 	}
-	n.X, n.Y = x, y
-	if pic != nil {
-		n.Pic = pic
+	n.liftSelf += d
+	var walk func(m *Node)
+	walk = func(m *Node) {
+		m.lifted += d
+		for _, c := range m.kids {
+			walk(c)
+		}
 	}
-	s.insert(n)
-	return old.Union(n.bounds)
+	walk(n)
+	return n.SubtreeBounds()
 }
 
-// Query appends the nodes whose bounds meet r to dst in draw order (Z, then ID).
+// Query appends the nodes whose visible bounds meet r to dst in paint order.
 func (s *Scene) Query(r Rect, dst []*Node) []*Node {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.query(r, dst)
+}
+
+func (s *Scene) query(r Rect, dst []*Node) []*Node {
 	c0, c1 := s.cellOf(r.Min), s.cellOf(r.Max)
 	start := len(dst)
 	for y := c0[1]; y <= c1[1]; y++ {
@@ -124,32 +578,133 @@ func (s *Scene) Query(r Rect, dst []*Node) []*Node {
 			}
 		}
 	}
-	slices.SortFunc(dst[start:], func(a, b *Node) int {
-		if a.Z != b.Z {
-			return a.Z - b.Z
-		}
-		return a.ID - b.ID
-	})
+	slices.SortFunc(dst[start:], func(a, b *Node) int { return a.order - b.order })
 	return dst
 }
 
-// HitTest returns the topmost node under p. tol is the stroke tolerance and the bounds slack
-// in scene units (screen pixels divided by the zoom).
+// clipChain appends the clips of n and its ancestors, outermost first, in scene coordinates.
+func clipChain(n *Node, dst []Clip) []Clip {
+	start := len(dst)
+	for ; n != nil; n = n.parent {
+		if n.clipKind != ClipNone {
+			dst = append(dst, Clip{M: n.world, Kind: n.clipKind, Rect: n.clipRect, Radius: n.clipRad, Path: n.clipPath})
+		}
+	}
+	slices.Reverse(dst[start:])
+	return dst
+}
+
+// Items is a reusable buffer for Collect.
+type Items struct {
+	List  []Item
+	clips []Clip
+	nodes []*Node
+}
+
+func (b *Items) Reset() { b.List, b.clips, b.nodes = b.List[:0], b.clips[:0], b.nodes[:0] }
+
+func (b *Items) add(n *Node) {
+	it := Item{Pic: n.pic, M: n.world, Alpha: n.alpha}
+	if n.hasClip {
+		i := len(b.clips)
+		b.clips = clipChain(n, b.clips)
+		it.Clips = b.clips[i:len(b.clips):len(b.clips)]
+	}
+	b.List = append(b.List, it)
+}
+
+// Collect fills b with what is drawn inside r, in paint order, leaving out lifted nodes.
+// The items are valid until the next Collect into b, and need no lock to draw.
+func (s *Scene) Collect(r Rect, b *Items) {
+	b.Reset()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	b.nodes = s.query(r, b.nodes)
+	for _, n := range b.nodes {
+		if n.lifted == 0 {
+			b.add(n)
+		}
+	}
+}
+
+// CollectSubtree is Collect for root and its descendants only, lifted or not.
+func (s *Scene) CollectSubtree(root *Node, r Rect, b *Items) {
+	b.Reset()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	var walk func(n *Node)
+	walk = func(n *Node) {
+		if n.indexed && n.bounds.Intersects(r) {
+			b.add(n)
+		}
+		for _, c := range n.kids {
+			walk(c)
+		}
+	}
+	walk(root)
+}
+
+// inClip reports whether the scene point p is inside every clip of n and its ancestors.
+func inClip(n *Node, p Point) bool {
+	for ; n != nil; n = n.parent {
+		if n.clipKind == ClipNone {
+			continue
+		}
+		inv, ok := n.world.Invert()
+		if !ok {
+			return false
+		}
+		q := inv.Apply(p)
+		switch n.clipKind {
+		case ClipRect:
+			if !n.clipRect.Contains(q) {
+				return false
+			}
+		case ClipRRect:
+			var rr Path
+			rr.RoundRect(n.clipRect.Min.X, n.clipRect.Min.Y, n.clipRect.W(), n.clipRect.H(), n.clipRad)
+			if !rr.Contains(q, 0) {
+				return false
+			}
+		case ClipPath:
+			if !n.clipPath.Contains(q, 0) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// HitTest returns the topmost node under the scene point p. tol is the stroke tolerance and the
+// bounds slack in scene units (screen pixels divided by the zoom). Clips of the ancestors count.
 func (s *Scene) HitTest(p Point, tol float64) *Node {
-	r := Rect{p, p}.Expand(tol)
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	var buf [32]*Node
-	c := s.Query(r, buf[:0])
+	c := s.query(Rect{p, p}.Expand(tol), buf[:0])
 	for i := len(c) - 1; i >= 0; i-- {
 		n := c[i]
-		switch n.Hit {
-		case HitBounds:
+		if n.hit == HitNone {
+			continue
+		}
+		if n.hasClip && !inClip(n, p) {
+			continue
+		}
+		inv, ok := n.world.Invert()
+		if !ok {
+			continue
+		}
+		q := inv.Apply(p)
+		lt := tol * inv.Scale()
+		switch {
+		case n.hit == HitBounds || n.shape == nil:
 			return n
-		case HitFill:
-			if n.Shape.Contains(Point{p.X - n.X, p.Y - n.Y}, tol/2+0.01) {
+		case n.hit == HitFill:
+			if n.shape.Contains(q, lt/2+0.01) {
 				return n
 			}
-		case HitStroke:
-			if h, ok := n.Shape.Nearest(Point{p.X - n.X, p.Y - n.Y}); ok && h.Dist <= tol {
+		case n.hit == HitStroke:
+			if h, ok := n.shape.Nearest(q); ok && h.Dist <= lt {
 				return n
 			}
 		}

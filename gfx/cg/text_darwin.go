@@ -60,7 +60,7 @@ func (l Layout) Width() float64 {
 }
 
 func (s *Surface) text(str string, op *gfx.Op) {
-	if s.r.opts.LOD && op.Font.Size*s.scale < 4 {
+	if s.r.opts.LOD && op.Font.Size*s.eff < 4 {
 		return
 	}
 	r := s.r

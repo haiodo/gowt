@@ -12,7 +12,7 @@ func BenchmarkHitTest(b *testing.B) {
 		d := New(n, 1)
 		mid := d.Boxes[len(d.Boxes)/2]
 		boxPt := mid.Node.Bounds().Center()
-		cm := mid.Conns[0].Node.Shape.Measure(0.05)
+		cm := mid.Conns[0].Shape.Measure(0.05)
 		connPt, _ := cm.At(cm.Length() / 2)
 		miss := gfx.Point{X: -50, Y: -50}
 		for _, c := range []struct {
@@ -37,9 +37,12 @@ func BenchmarkIndexUpdate(b *testing.B) {
 				sel := d.Boxes[n/2 : n/2+count]
 				for i := 0; i < b.N; i++ {
 					dx := float64(i % 50)
-					for _, bx := range sel {
-						d.Scene.Update(bx.Node, bx.Node.X+dx-float64((i+49)%50), bx.Node.Y, nil)
-					}
+					d.Scene.Update(func(tx *gfx.Tx) {
+						for _, bx := range sel {
+							tx.Move(bx.Node, bx.X+dx, bx.Y)
+						}
+					})
+					d.Scene.Commit()
 				}
 			})
 		}
@@ -54,7 +57,7 @@ func BenchmarkMoveBox(b *testing.B) {
 	for len(bx.Conns) < 10 {
 		d.Link(bx, d.Boxes[5000+len(bx.Conns)], len(bx.Conns)%2 == 0)
 	}
-	x, y := bx.Node.X, bx.Node.Y
+	x, y := bx.X, bx.Y
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		d.MoveBox(bx, x+float64(i%40), y)

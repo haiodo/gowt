@@ -93,5 +93,26 @@ func (m Affine) Bounds(r Rect) Rect {
 	return out
 }
 
+// Det is the determinant of the linear part.
+func (m Affine) Det() float64 { return m[0]*m[3] - m[1]*m[2] }
+
+// Scale is the factor by which m scales lengths on average: sqrt(|det|).
+func (m Affine) Scale() float64 { return math.Sqrt(math.Abs(m.Det())) }
+
+// Invert returns the inverse transform; ok is false for a singular matrix.
+func (m Affine) Invert() (inv Affine, ok bool) {
+	d := m.Det()
+	if d == 0 || math.IsNaN(d) {
+		return Identity(), false
+	}
+	a, b, c, dd := m[3]/d, -m[1]/d, -m[2]/d, m[0]/d
+	return Affine{a, b, c, dd, -(a*m[4] + c*m[5]), -(b*m[4] + dd*m[5])}, true
+}
+
+// SameLinear reports whether m and n differ at most in translation.
+func (m Affine) SameLinear(n Affine) bool {
+	return m[0] == n[0] && m[1] == n[1] && m[2] == n[2] && m[3] == n[3]
+}
+
 // Color is non-premultiplied RGBA in 0..1.
 type Color struct{ R, G, B, A float64 }

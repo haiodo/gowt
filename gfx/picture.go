@@ -1,23 +1,32 @@
 package gfx
 
 import (
+	"encoding/binary"
 	"math"
-	"unicode/utf8"
 )
 
 type OpKind uint8
 
+// The operands of each kind are in the fields of Op named after it.
 const (
-	OpSave OpKind = iota
-	OpRestore
-	OpTranslate // A, B
-	OpScale     // A, B
-	OpRotate    // A
-	OpFill      // Idx path, Color
-	OpStroke    // Idx path, Style, Color
-	OpShadowBox // rounded rect A,B,C,D (x, y, w, h), E radius, Shadow, Color fill
-	OpText      // Idx string, Font, A,B baseline origin, Color
-	OpImage     // Idx image, A,B,C,D destination rect
+	OpSave       OpKind = iota
+	OpRestore           //
+	OpTranslate         // A, B
+	OpScale             // A, B
+	OpRotate            // A
+	OpTransform         // M
+	OpFill              // Path, Color
+	OpFillGrad          // Path, Grad
+	OpStroke            // Path, Style, Color
+	OpStrokeGrad        // Path, Style, Grad
+	OpShadowBox         // rounded rect A, B, C, D (x, y, w, h), E radius, Shadow, Color fill
+	OpText              // Text, Font, A, B baseline origin, Color
+	OpImage             // Image, A, B, C, D destination rect
+	OpClipRect          // A, B, C, D
+	OpClipRRect         // A, B, C, D, E radius
+	OpClipPath          // Path
+	OpBeginLayer        // A alpha: everything up to OpEndLayer is composited as one with this alpha
+	OpEndLayer          //
 )
 
 type Cap uint8
@@ -54,121 +63,505 @@ type Font struct {
 	Size float64
 }
 
-// Image is a raster a backend can draw; the concrete type belongs to the backend.
+// Image is a raster a backend can draw. *Raster is the portable one; a backend may add its own.
 type Image interface{ Size() (w, h float64) }
 
+// Op is one decoded command. Fields not named by the kind are stale; Path, Style and Grad
+// point into the Iter and are valid until its next Next.
 type Op struct {
-	Kind       OpKind
-	Idx        int32
-	Style      int32
-	A, B, C, D float64
-	E          float64
-	Color      Color
-	Shadow     Shadow
-	Font       Font
+	Kind          OpKind
+	A, B, C, D, E float64
+	M             Affine
+	Color         Color
+	Path          *Path
+	Style         *StrokeStyle
+	Grad          *Gradient
+	Shadow        Shadow
+	Text          string
+	Font          Font
+	Image         Image
 }
 
 // Picture is a recorded command list with its bounds in the coordinates it was recorded in.
-// It is immutable after Finish and safe to replay from several goroutines.
+// Commands live in one byte stream: a kind byte, then float32 coordinates, 8-bit colors and
+// varint indices. It is immutable after Finish and safe to replay from several goroutines.
 type Picture struct {
-	Ops    []Op
-	Paths  []*Path
-	Styles []StrokeStyle
-	Strs   []string
-	Images []Image
 	Bounds Rect
 	// Lod, when set, replaces this picture where its larger side is under LodBelow device pixels.
 	Lod      *Picture
 	LodBelow float64
+
+	data   []byte
+	strs   []string
+	fonts  []Font
+	images []Image
 }
 
-// Recorder builds a Picture and tracks its bounds through the transform stack.
+// Size is the memory the picture holds, without Lod and images.
+func (p *Picture) Size() int {
+	n := len(p.data) + len(p.fonts)*24 + len(p.images)*16
+	for _, s := range p.strs {
+		n += len(s) + 16
+	}
+	return n + 160
+}
+
+// Len is the number of bytes of the command stream.
+func (p *Picture) Len() int { return len(p.data) }
+
+// TextMetrics are the extents of a laid-out line in points; Ascent and Descent are positive.
+type TextMetrics struct{ Width, Ascent, Descent float64 }
+
+// TextMeasurer reports the size of text as the backend draws it.
+type TextMeasurer interface {
+	MeasureText(s string, f Font) TextMetrics
+}
+
+// EstimateText is the measurer used until a backend sets one: 0.6 em per rune, ascent 0.8 em, descent 0.25 em.
+type EstimateText struct{}
+
+func (EstimateText) MeasureText(s string, f Font) TextMetrics {
+	n := 0
+	for range s {
+		n++
+	}
+	return TextMetrics{float64(n) * f.Size * 0.6, f.Size * 0.8, f.Size * 0.25}
+}
+
+// DefaultMeasurer is what NewRecorder uses. A backend's NewRenderer replaces it with CoreText or
+// the like; set it once before recording.
+var DefaultMeasurer TextMeasurer = EstimateText{}
+
+// Recorder builds a Picture and tracks its bounds through the transform and clip stack.
 type Recorder struct {
 	pic   Picture
 	ctm   Affine
-	stack []Affine
+	clip  Rect // visible area in picture coordinates
+	stack []recState
+	m     TextMeasurer
+	ls    int // open layers
+}
+
+type recState struct {
+	ctm  Affine
+	clip Rect
 }
 
 func NewRecorder() *Recorder {
-	return &Recorder{pic: Picture{Bounds: EmptyRect()}, ctm: Identity()}
+	return &Recorder{pic: Picture{Bounds: EmptyRect()}, ctm: Identity(), clip: infRect(), m: DefaultMeasurer}
 }
 
-func (r *Recorder) add(o Op) { r.pic.Ops = append(r.pic.Ops, o) }
+// NewRecorderWith is NewRecorder with m measuring text bounds.
+func NewRecorderWith(m TextMeasurer) *Recorder {
+	r := NewRecorder()
+	r.m = m
+	return r
+}
 
+func infRect() Rect {
+	return Rect{Point{math.Inf(-1), math.Inf(-1)}, Point{math.Inf(1), math.Inf(1)}}
+}
+
+// Intersect returns the common area; the result is Empty when there is none.
+func (r Rect) Intersect(o Rect) Rect {
+	return Rect{Point{math.Max(r.Min.X, o.Min.X), math.Max(r.Min.Y, o.Min.Y)}, Point{math.Min(r.Max.X, o.Max.X), math.Min(r.Max.Y, o.Max.Y)}}
+}
+
+func (r *Recorder) op(k OpKind) { r.pic.data = append(r.pic.data, byte(k)) }
+
+func (r *Recorder) f32(vs ...float64) {
+	for _, v := range vs {
+		r.pic.data = binary.LittleEndian.AppendUint32(r.pic.data, math.Float32bits(float32(v)))
+	}
+}
+
+func (r *Recorder) uv(v int) { r.pic.data = binary.AppendUvarint(r.pic.data, uint64(v)) }
+
+func (r *Recorder) color(c Color) {
+	r.pic.data = append(r.pic.data, q8(c.R), q8(c.G), q8(c.B), q8(c.A))
+}
+
+func q8(v float64) byte { return byte(math.Round(math.Min(math.Max(v, 0), 1) * 255)) }
+
+func (r *Recorder) path(p *Path) {
+	r.uv(len(p.Verbs))
+	for _, v := range p.Verbs {
+		r.pic.data = append(r.pic.data, byte(v))
+	}
+	for _, q := range p.Pts {
+		r.f32(q.X, q.Y)
+	}
+}
+
+func (r *Recorder) style(st StrokeStyle) {
+	r.f32(st.Width, st.MiterLimit, st.DashPhase)
+	r.pic.data = append(r.pic.data, byte(st.Cap), byte(st.Join))
+	r.uv(len(st.Dash))
+	r.f32(st.Dash...)
+}
+
+func (r *Recorder) grad(g *Gradient) {
+	r.pic.data = append(r.pic.data, byte(g.Kind))
+	r.f32(g.P0.X, g.P0.Y, g.P1.X, g.P1.Y, g.R0, g.R1)
+	r.uv(len(g.Stops))
+	for _, s := range g.Stops {
+		r.f32(s.Offset)
+		r.color(s.Color)
+	}
+}
+
+// grow adds the local rectangle, as drawn through the current transform and clip, to the bounds.
 func (r *Recorder) grow(local Rect) {
-	r.pic.Bounds = r.pic.Bounds.Union(r.ctm.Bounds(local))
+	r.pic.Bounds = r.pic.Bounds.Union(r.ctm.Bounds(local).Intersect(r.clip))
 }
 
 func (r *Recorder) Save() {
-	r.stack = append(r.stack, r.ctm)
-	r.add(Op{Kind: OpSave})
+	r.stack = append(r.stack, recState{r.ctm, r.clip})
+	r.op(OpSave)
 }
 
 func (r *Recorder) Restore() {
 	if n := len(r.stack); n > 0 {
-		r.ctm = r.stack[n-1]
+		r.ctm, r.clip = r.stack[n-1].ctm, r.stack[n-1].clip
 		r.stack = r.stack[:n-1]
 	}
-	r.add(Op{Kind: OpRestore})
+	r.op(OpRestore)
 }
 
 func (r *Recorder) Translate(x, y float64) {
 	r.ctm = r.ctm.Mul(TranslateBy(x, y))
-	r.add(Op{Kind: OpTranslate, A: x, B: y})
+	r.op(OpTranslate)
+	r.f32(x, y)
 }
 
 func (r *Recorder) Scale(x, y float64) {
 	r.ctm = r.ctm.Mul(ScaleBy(x, y))
-	r.add(Op{Kind: OpScale, A: x, B: y})
+	r.op(OpScale)
+	r.f32(x, y)
 }
 
 func (r *Recorder) Rotate(a float64) {
 	r.ctm = r.ctm.Mul(RotateBy(a))
-	r.add(Op{Kind: OpRotate, A: a})
+	r.op(OpRotate)
+	r.f32(a)
 }
 
-func (r *Recorder) path(p *Path) int32 {
-	r.pic.Paths = append(r.pic.Paths, p)
-	return int32(len(r.pic.Paths) - 1)
+// Transform multiplies the current transform by m: m applies first.
+func (r *Recorder) Transform(m Affine) {
+	r.ctm = r.ctm.Mul(m)
+	r.op(OpTransform)
+	r.f32(m[:]...)
 }
 
-// FillPath keeps p by reference; the caller must not change it afterwards.
+// ClipRect limits what follows, until the enclosing Restore, to rc.
+func (r *Recorder) ClipRect(rc Rect) {
+	r.clip = r.clip.Intersect(r.ctm.Bounds(rc))
+	r.op(OpClipRect)
+	r.f32(rc.Min.X, rc.Min.Y, rc.W(), rc.H())
+}
+
+// ClipRRect is ClipRect with corners of the given radius.
+func (r *Recorder) ClipRRect(rc Rect, radius float64) {
+	r.clip = r.clip.Intersect(r.ctm.Bounds(rc))
+	r.op(OpClipRRect)
+	r.f32(rc.Min.X, rc.Min.Y, rc.W(), rc.H(), radius)
+}
+
+// ClipPath limits what follows to the inside of p (non-zero winding).
+func (r *Recorder) ClipPath(p *Path) {
+	r.clip = r.clip.Intersect(r.ctm.Bounds(p.Bounds()))
+	r.op(OpClipPath)
+	r.path(p)
+}
+
+// BeginLayer starts a group composited as one at the given alpha; end it with EndLayer.
+func (r *Recorder) BeginLayer(alpha float64) {
+	r.ls++
+	r.op(OpBeginLayer)
+	r.f32(alpha)
+}
+
+func (r *Recorder) EndLayer() {
+	if r.ls > 0 {
+		r.ls--
+		r.op(OpEndLayer)
+	}
+}
+
+// FillPath copies p into the picture.
 func (r *Recorder) FillPath(p *Path, c Color) {
 	r.grow(p.Bounds())
-	r.add(Op{Kind: OpFill, Idx: r.path(p), Color: c})
+	r.op(OpFill)
+	r.path(p)
+	r.color(c)
+}
+
+// FillGradient fills p with g.
+func (r *Recorder) FillGradient(p *Path, g *Gradient) {
+	r.grow(p.Bounds())
+	r.op(OpFillGrad)
+	r.path(p)
+	r.grad(g)
+}
+
+func (r *Recorder) strokeBounds(p *Path, st StrokeStyle) Rect {
+	return p.Bounds().Expand(st.Width / 2 * strokeReach(p, st))
 }
 
 func (r *Recorder) StrokePath(p *Path, st StrokeStyle, c Color) {
-	// a miter join reaches up to the miter limit times the half width
-	half := st.Width / 2 * math.Max(st.MiterLimit, 1.5)
-	r.grow(p.Bounds().Expand(half))
-	r.pic.Styles = append(r.pic.Styles, st)
-	r.add(Op{Kind: OpStroke, Idx: r.path(p), Style: int32(len(r.pic.Styles) - 1), Color: c})
+	r.grow(r.strokeBounds(p, st))
+	r.op(OpStroke)
+	r.path(p)
+	r.style(st)
+	r.color(c)
+}
+
+func (r *Recorder) StrokeGradient(p *Path, st StrokeStyle, g *Gradient) {
+	r.grow(r.strokeBounds(p, st))
+	r.op(OpStrokeGrad)
+	r.path(p)
+	r.style(st)
+	r.grad(g)
+}
+
+// strokeReach is how many half widths a stroke of p can reach beyond the path: the longest miter
+// spike, or the square cap diagonal.
+func strokeReach(p *Path, st StrokeStyle) float64 {
+	reach := 1.0
+	if st.Cap == CapSquare {
+		reach = math.Sqrt2
+	}
+	if st.Join != JoinMiter {
+		return reach
+	}
+	limit := st.MiterLimit
+	if limit <= 0 {
+		limit = 10
+	}
+	join := func(a, b *seg) {
+		// miter length over width is 1/sin(half the angle between the two legs)
+		cos := -a.tangent(1).Dot(b.tangent(0))
+		if cos >= 1 {
+			reach = math.Max(reach, limit)
+			return
+		}
+		if s := math.Sqrt((1 - cos) / 2); s > 0 {
+			reach = math.Max(reach, math.Min(1/s, limit))
+		}
+	}
+	var prev, first seg
+	have, sub, closed := false, -1, false
+	p.each(func(s *seg, sb int, closing bool) {
+		if sb != sub {
+			if closed && have {
+				join(&prev, &first)
+			}
+			sub, have, closed = sb, false, false
+		}
+		if have {
+			join(&prev, s)
+		} else {
+			first = *s
+		}
+		prev, have, closed = *s, true, closing
+	})
+	if closed && have {
+		join(&prev, &first)
+	}
+	return reach
 }
 
 // FillShadowRRect fills a rounded rectangle with a blurred drop shadow under it.
 func (r *Recorder) FillShadowRRect(x, y, w, h, radius float64, fill Color, sh Shadow) {
 	reach := 1.5*sh.Blur + math.Max(math.Abs(sh.DX), math.Abs(sh.DY))
 	r.grow(R(x, y, w, h).Expand(reach))
-	r.add(Op{Kind: OpShadowBox, A: x, B: y, C: w, D: h, E: radius, Color: fill, Shadow: sh})
+	r.op(OpShadowBox)
+	r.f32(x, y, w, h, radius, sh.DX, sh.DY, sh.Blur)
+	r.color(fill)
+	r.color(sh.Color)
 }
 
-// Text draws s with its baseline origin at (x, y). The bounds are an estimate (0.75 em per
-// rune); text measured by a backend is more exact but needs a font engine.
+// Text draws s with its baseline origin at (x, y); the bounds come from the recorder's measurer.
 func (r *Recorder) Text(s string, x, y float64, f Font, c Color) {
-	w := float64(utf8.RuneCountInString(s)) * f.Size * 0.75
-	r.grow(R(x, y-f.Size, w, f.Size*1.4))
-	r.pic.Strs = append(r.pic.Strs, s)
-	r.add(Op{Kind: OpText, Idx: int32(len(r.pic.Strs) - 1), A: x, B: y, Font: f, Color: c})
+	m := r.m.MeasureText(s, f)
+	// a glyph can lean a little past its advance
+	r.grow(R(x-f.Size*0.1, y-m.Ascent, m.Width+f.Size*0.2, m.Ascent+m.Descent))
+	r.pic.strs = append(r.pic.strs, s)
+	fi := -1
+	for i, ff := range r.pic.fonts {
+		if ff == f {
+			fi = i
+			break
+		}
+	}
+	if fi < 0 {
+		r.pic.fonts = append(r.pic.fonts, f)
+		fi = len(r.pic.fonts) - 1
+	}
+	r.op(OpText)
+	r.f32(x, y)
+	r.uv(len(r.pic.strs) - 1)
+	r.uv(fi)
+	r.color(c)
 }
 
 func (r *Recorder) DrawImage(img Image, x, y, w, h float64) {
 	r.grow(R(x, y, w, h))
-	r.pic.Images = append(r.pic.Images, img)
-	r.add(Op{Kind: OpImage, Idx: int32(len(r.pic.Images) - 1), A: x, B: y, C: w, D: h})
+	r.pic.images = append(r.pic.images, img)
+	r.op(OpImage)
+	r.f32(x, y, w, h)
+	r.uv(len(r.pic.images) - 1)
 }
 
+// Finish returns the picture; the Recorder must not be used afterwards.
 func (r *Recorder) Finish() *Picture {
+	for ; r.ls > 0; r.ls-- {
+		r.op(OpEndLayer)
+	}
 	p := r.pic
+	p.data = append([]byte(nil), p.data...) // drop the growth slack
+	p.strs = append([]string(nil), p.strs...)
 	return &p
 }
+
+// Iter decodes a Picture command by command. The zero Iter is ready after Reset; reusing one
+// keeps replays free of allocations.
+type Iter struct {
+	p     *Picture
+	pos   int
+	op    Op
+	path  Path
+	style StrokeStyle
+	grad  Gradient
+}
+
+func (it *Iter) Reset(p *Picture) {
+	it.p, it.pos = p, 0
+}
+
+func (it *Iter) f32() float64 {
+	v := math.Float32frombits(binary.LittleEndian.Uint32(it.p.data[it.pos:]))
+	it.pos += 4
+	return float64(v)
+}
+
+func (it *Iter) uv() int {
+	v, n := binary.Uvarint(it.p.data[it.pos:])
+	it.pos += n
+	return int(v)
+}
+
+func (it *Iter) color() Color {
+	d := it.p.data[it.pos : it.pos+4]
+	it.pos += 4
+	return Color{float64(d[0]) / 255, float64(d[1]) / 255, float64(d[2]) / 255, float64(d[3]) / 255}
+}
+
+func (it *Iter) readPath() *Path {
+	n := it.uv()
+	it.path.Verbs = it.path.Verbs[:0]
+	it.path.Pts = it.path.Pts[:0]
+	np := 0
+	for i := 0; i < n; i++ {
+		v := Verb(it.p.data[it.pos+i])
+		it.path.Verbs = append(it.path.Verbs, v)
+		switch v {
+		case MoveTo, LineTo:
+			np++
+		case QuadTo:
+			np += 2
+		case CubicTo:
+			np += 3
+		}
+	}
+	it.pos += n
+	for i := 0; i < np; i++ {
+		x := it.f32()
+		it.path.Pts = append(it.path.Pts, Point{x, it.f32()})
+	}
+	return &it.path
+}
+
+func (it *Iter) readStyle() *StrokeStyle {
+	st := &it.style
+	st.Width, st.MiterLimit, st.DashPhase = it.f32(), it.f32(), it.f32()
+	st.Cap, st.Join = Cap(it.p.data[it.pos]), Join(it.p.data[it.pos+1])
+	it.pos += 2
+	n := it.uv()
+	st.Dash = st.Dash[:0]
+	for i := 0; i < n; i++ {
+		st.Dash = append(st.Dash, it.f32())
+	}
+	return st
+}
+
+func (it *Iter) readGrad() *Gradient {
+	g := &it.grad
+	g.Kind = GradientKind(it.p.data[it.pos])
+	it.pos++
+	g.P0.X, g.P0.Y, g.P1.X, g.P1.Y, g.R0, g.R1 = it.f32(), it.f32(), it.f32(), it.f32(), it.f32(), it.f32()
+	n := it.uv()
+	g.Stops = g.Stops[:0]
+	for i := 0; i < n; i++ {
+		off := it.f32()
+		g.Stops = append(g.Stops, Stop{off, it.color()})
+	}
+	return g
+}
+
+// Next decodes the next command; it reports false at the end of the picture.
+func (it *Iter) Next() bool {
+	if it.pos >= len(it.p.data) {
+		return false
+	}
+	o := &it.op
+	o.Kind = OpKind(it.p.data[it.pos])
+	it.pos++
+	switch o.Kind {
+	case OpTranslate, OpScale:
+		o.A, o.B = it.f32(), it.f32()
+	case OpRotate, OpBeginLayer:
+		o.A = it.f32()
+	case OpTransform:
+		for i := range o.M {
+			o.M[i] = it.f32()
+		}
+	case OpFill:
+		o.Path = it.readPath()
+		o.Color = it.color()
+	case OpFillGrad:
+		o.Path = it.readPath()
+		o.Grad = it.readGrad()
+	case OpStroke:
+		o.Path = it.readPath()
+		o.Style = it.readStyle()
+		o.Color = it.color()
+	case OpStrokeGrad:
+		o.Path = it.readPath()
+		o.Style = it.readStyle()
+		o.Grad = it.readGrad()
+	case OpShadowBox:
+		o.A, o.B, o.C, o.D, o.E = it.f32(), it.f32(), it.f32(), it.f32(), it.f32()
+		o.Shadow.DX, o.Shadow.DY, o.Shadow.Blur = it.f32(), it.f32(), it.f32()
+		o.Color = it.color()
+		o.Shadow.Color = it.color()
+	case OpText:
+		o.A, o.B = it.f32(), it.f32()
+		o.Text = it.p.strs[it.uv()]
+		o.Font = it.p.fonts[it.uv()]
+		o.Color = it.color()
+	case OpImage:
+		o.A, o.B, o.C, o.D = it.f32(), it.f32(), it.f32(), it.f32()
+		o.Image = it.p.images[it.uv()]
+	case OpClipRect:
+		o.A, o.B, o.C, o.D = it.f32(), it.f32(), it.f32(), it.f32()
+	case OpClipRRect:
+		o.A, o.B, o.C, o.D, o.E = it.f32(), it.f32(), it.f32(), it.f32(), it.f32()
+	case OpClipPath:
+		o.Path = it.readPath()
+	}
+	return true
+}
+
+// Op returns the command Next decoded.
+func (it *Iter) Op() *Op { return &it.op }

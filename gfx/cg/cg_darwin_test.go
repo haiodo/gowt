@@ -96,7 +96,7 @@ func TestSceneRender(t *testing.T) {
 	defer s.Close()
 	s.Begin(1, 0, 0, gfx.Color{R: 1, G: 1, B: 1, A: 1})
 	for _, n := range d.Scene.Query(gfx.R(0, 0, 1000, 700), nil) {
-		s.Replay(n.Pic, n.X, n.Y)
+		s.Replay(n.Picture(), n.World()[4], n.World()[5])
 	}
 	nonWhite := 0
 	for i := 0; i < len(s.Pixels()); i += 4 {

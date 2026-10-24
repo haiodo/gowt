@@ -48,7 +48,7 @@ func BenchmarkBreakdown(b *testing.B) {
 				rect := gfx.Rect{Min: o, Max: gfx.Point{X: o.X + vpW, Y: o.Y + vpH}}
 				var use []*gfx.Node
 				for _, n := range d.Scene.Query(rect, nil) {
-					isConn := n.ID >= 1<<20
+					isConn := n.ID() >= 1<<20
 					if isConn && c.conns || !isConn && c.boxes {
 						use = append(use, n)
 					}
@@ -56,7 +56,7 @@ func BenchmarkBreakdown(b *testing.B) {
 				run := func() {
 					s.Begin(px, o.X, o.Y, white)
 					for _, n := range use {
-						s.Replay(n.Pic, n.X, n.Y)
+						s.Replay(n.Picture(), n.World()[4], n.World()[5])
 					}
 				}
 				run()

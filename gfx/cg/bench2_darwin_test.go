@@ -272,7 +272,7 @@ func BenchmarkDrag(b *testing.B) {
 		defer s.Close()
 		for i := 0; i < b.N; i++ {
 			s.Begin(2, bb.Min.X, bb.Min.Y, gfx.Color{})
-			s.Replay(mid.Node.Pic, mid.Node.X, mid.Node.Y)
+			s.Replay(mid.Node.Picture(), mid.Node.World()[4], mid.Node.World()[5])
 			s.Snapshot(bb.W(), bb.H()).Release()
 		}
 	})
@@ -287,7 +287,7 @@ func BenchmarkDrag(b *testing.B) {
 			b.Run(fmt.Sprintf("1node-10links/%dx/%s", int(px), mode), func(b *testing.B) {
 				s := r.NewSurface(int(vpW*px), int(vpH*px))
 				defer s.Close()
-				x0, y0 := mid.Node.X, mid.Node.Y
+				x0, y0 := mid.X, mid.Y
 				for i := 0; i < b.N; i++ {
 					dx := float64(i % 40)
 					dirty := d.MoveBox(mid, x0+dx, y0+dx/2)
@@ -322,7 +322,7 @@ func BenchmarkDrag(b *testing.B) {
 				defer s.Close()
 				orig := make([]gfx.Point, len(sel))
 				for i, bx := range sel {
-					orig[i] = gfx.Point{X: bx.Node.X, Y: bx.Node.Y}
+					orig[i] = gfx.Point{X: bx.X, Y: bx.Y}
 				}
 				for i := 0; i < b.N; i++ {
 					dx := float64(i % 40)
@@ -355,6 +355,6 @@ func drawActive(s *Surface, conns []*synth.Conn, dirty gfx.Rect, px float64, dir
 		s.Begin(px, o.X, o.Y, gfx.Color{})
 	}
 	for _, c := range conns {
-		s.Replay(c.Node.Pic, 0, 0)
+		s.Replay(c.Node.Picture(), 0, 0)
 	}
 }

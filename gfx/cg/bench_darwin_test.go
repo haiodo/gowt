@@ -70,7 +70,7 @@ func drawRegion(s *Surface, d *synth.Doc, o gfx.Point, devScale float64, buf []*
 	r := gfx.Rect{Min: o, Max: gfx.Point{X: o.X + float64(s.W)/devScale, Y: o.Y + float64(s.H)/devScale}}
 	buf = d.Scene.Query(r, buf[:0])
 	for _, n := range buf {
-		s.Replay(n.Pic, n.X, n.Y)
+		s.Replay(n.Picture(), n.World()[4], n.World()[5])
 	}
 	return buf, len(buf)
 }

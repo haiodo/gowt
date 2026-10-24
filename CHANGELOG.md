@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+Docs and tests
+- Docs: Linux targets a Wayland or X11 display; on a Wayland session GTK uses native Wayland and `GDK_BACKEND=x11` gives Xwayland. The README and platforms.md list `expected_windows_vm.txt` (0 fail, 6 flaky) and `expected_linux_desktop.txt` (Ubuntu 26.04 GNOME, Wayland); the stale "3741 passed, 64 failed" line is gone. `make docs-counts` checks both rows.
+- Tests: the root GUI tests close the window after the queued `Async` work has run (and `Pending` is zero), not after a fixed 10 ms; on macOS `TestSetTextLaysOut` found the loop not yet idle. The focus action test moved to `TestQATreeFocus` (`-tags gowtqa`), which `make check-gui` now runs as a second command.
+
+## v0.12.1 (2026-10-25)
+
 Behaviour change
 - Windows `Multiline()` has no vertical scroll bar: an edit control cannot hide it when there is nothing to scroll (a one-line `AutoGrow` composer showed a dead bar). `Scrollbars()` is accepted on `Text` and brings the always-visible bar back; the mouse wheel scrolls without it. GTK: the bar follows overflow only (policy automatic, overlay scrolling), as the macOS overlay scroller does.
 - Windows 11: `Text` gets the WinUI 3 text box frame, with or without `Border()`: 4 px radius, hairline, stronger bottom edge, 2 px accent line under it on focus, text inset 10/6 px, a single line centred in a 32 point minimum height. `NoBorder()` is now accepted on `Text` and keeps the plain edit. A multi-line `Text` gets `Inset(0, 5)` unless the app sets one.
@@ -14,10 +20,6 @@ Behaviour change
 Checked on Windows 11 arm64 (build 26100) at 100% and 150%, light theme, with screenshots; not checked: dark content, keyboard focus visuals of Table and Button, pressed state.
 
 Emoji: GDI font linking already gives monochrome Segoe UI Emoji in Label, Text, StyledText, Button, Table and GC.DrawText there, with a private font as well; colour needs DirectWrite and is not done.
-
-Docs and tests
-- Docs: Linux targets a Wayland or X11 display; on a Wayland session GTK uses native Wayland and `GDK_BACKEND=x11` gives Xwayland. The README and platforms.md list `expected_windows_vm.txt` (0 fail, 6 flaky) and `expected_linux_desktop.txt` (Ubuntu 26.04 GNOME, Wayland); the stale "3741 passed, 64 failed" line is gone. `make docs-counts` checks both rows.
-- Tests: the root GUI tests close the window after the queued `Async` work has run (and `Pending` is zero), not after a fixed 10 ms; on macOS `TestSetTextLaysOut` found the loop not yet idle. The focus action test moved to `TestQATreeFocus` (`-tags gowtqa`), which `make check-gui` now runs as a second command.
 
 ## v0.12.0 (2026-10-24)
 

@@ -3,6 +3,7 @@ package gowt
 import (
 	"unicode/utf16"
 
+	"github.com/haiodo/gowt/internal/fluent"
 	"github.com/haiodo/gowt/internal/win32"
 	"github.com/haiodo/gowt/swt"
 )
@@ -48,7 +49,7 @@ func nativeContentHeight(t *swt.Text, width, x, y int) int {
 	r.Right = swt.DPIUtilPointToPixel(int32(width-2*x), z)
 	u := append(utf16.Encode([]rune(s)), 0)
 	win32.OSDrawTextHDCLpStringNCountLpRectUFormat(hdc, u, -1, r, win32.OSDT_CALCRECT|win32.OSDT_WORDBREAK|win32.OSDT_EDITCONTROL|win32.OSDT_NOPREFIX)
-	return int(swt.DPIUtilPixelToPoint(r.Bottom-r.Top, z)) + 2*y
+	return int(swt.DPIUtilPixelToPoint(r.Bottom-r.Top, z)) + 2*y + fluent.ExtraHeight(t)
 }
 
 func nativeWidth(t *swt.Text) int { return int(t.GetClientArea().Width) }

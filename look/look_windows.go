@@ -4,6 +4,7 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/haiodo/gowt/internal/fluent"
 	"github.com/haiodo/gowt/internal/win32"
 	"github.com/haiodo/gowt/swt"
 )
@@ -88,15 +89,19 @@ func classic() {}
 
 func setFullSizeContent(*swt.Shell, bool) {}
 
-func setGlass(*swt.Composite, bool) {}
+func setGlass(c *swt.Composite, on bool) { fluent.Glass(c, on) }
 
-func setGlassRadius(*swt.Composite, float64) {}
+func setGlassRadius(c *swt.Composite, r float64) { fluent.GlassRadius(c, r) }
 
-func glassButton(*swt.Control) {}
+func glassButton(c *swt.Control) {
+	if b := fluent.ButtonOf(c); b != nil {
+		fluent.Button(b, false, false, false)
+	}
+}
 
-func setGlassBorder(*swt.Control, bool) {}
+func setGlassBorder(c *swt.Control, on bool) { fluent.GlassBorder(c, on) }
 
-func setGlassFocusRing(*swt.Control, bool) {}
+func setGlassFocusRing(c *swt.Control, on bool) { fluent.GlassFocusRing(c, on) }
 
 func setToolbar(*swt.Shell, []ToolbarItem) bool { return false }
 

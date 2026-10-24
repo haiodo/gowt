@@ -129,6 +129,7 @@ func Table(opts ...Option) Option {
 		t := swt.NewTable(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
 		t.SetHeaderVisible(true)
 		t.SetLinesVisible(true)
+		fluentTable(t)
 		return &TableView{base{&t.Control}, t}
 	})
 }

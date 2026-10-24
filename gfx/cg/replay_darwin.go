@@ -57,30 +57,27 @@ func (s *Surface) concat(m gfx.Affine) {
 }
 
 // Draw paints the items in order: each under its clips, through its transform, at its alpha.
+// Items that follow one another under the same clips share the clip state: a rounded or path clip
+// costs CoreGraphics a mask the size of the clip, which is too much to set again for every item.
 func (s *Surface) Draw(items []gfx.Item) {
 	ctx := s.ctx
+	var stack []gfx.Clip
 	for i := range items {
 		it := &items[i]
-		cgSaveGState(ctx)
-		for j := range it.Clips {
-			c := &it.Clips[j]
-			s.concat(c.M)
-			switch c.Kind {
-			case gfx.ClipRect:
-				cgClipRect(ctx, cgRect{c.Rect.Min.X, c.Rect.Min.Y, c.Rect.W(), c.Rect.H()})
-			case gfx.ClipRRect:
-				var rr gfx.Path
-				rr.RoundRect(c.Rect.Min.X, c.Rect.Min.Y, c.Rect.W(), c.Rect.H(), c.Radius)
-				s.addPath(&rr)
-				cgClip(ctx)
-			case gfx.ClipPath:
-				s.addPath(c.Path)
-				cgClip(ctx)
-			}
-			if inv, ok := c.M.Invert(); ok {
-				s.concat(inv)
-			}
+		p := 0
+		for p < len(stack) && p < len(it.Clips) && sameClip(&stack[p], &it.Clips[p]) {
+			p++
 		}
+		for len(stack) > p {
+			cgRestoreGSt(ctx)
+			stack = stack[:len(stack)-1]
+		}
+		for j := p; j < len(it.Clips); j++ {
+			cgSaveGState(ctx)
+			s.clip(&it.Clips[j])
+			stack = append(stack, it.Clips[j])
+		}
+		cgSaveGState(ctx)
 		s.concat(it.M)
 		s.eff = s.scale * it.M.Scale()
 		if it.Alpha < 1 {
@@ -93,7 +90,35 @@ func (s *Surface) Draw(items []gfx.Item) {
 		}
 		cgRestoreGSt(ctx)
 	}
+	for range stack {
+		cgRestoreGSt(ctx)
+	}
 	s.eff = s.scale
+}
+
+func sameClip(a, b *gfx.Clip) bool {
+	return a.M == b.M && a.Kind == b.Kind && a.Rect == b.Rect && a.Radius == b.Radius && a.Path == b.Path
+}
+
+// clip intersects the clip with c, leaving the transform as it was.
+func (s *Surface) clip(c *gfx.Clip) {
+	ctx := s.ctx
+	s.concat(c.M)
+	switch c.Kind {
+	case gfx.ClipRect:
+		cgClipRect(ctx, cgRect{c.Rect.Min.X, c.Rect.Min.Y, c.Rect.W(), c.Rect.H()})
+	case gfx.ClipRRect:
+		var rr gfx.Path
+		rr.RoundRect(c.Rect.Min.X, c.Rect.Min.Y, c.Rect.W(), c.Rect.H(), c.Radius)
+		s.addPath(&rr)
+		cgClip(ctx)
+	case gfx.ClipPath:
+		s.addPath(c.Path)
+		cgClip(ctx)
+	}
+	if inv, ok := c.M.Invert(); ok {
+		s.concat(inv)
+	}
 }
 
 // Replay draws p translated by (dx, dy).

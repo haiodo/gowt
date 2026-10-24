@@ -336,6 +336,7 @@ func (c *Compositor) stepLifts() {
 // and places every sprite.
 func (c *Compositor) refreshLifts(lifts []*lift) {
 	view := c.viewRect().Expand(64 / c.cam.Zoom)
+	wide := c.viewRect().Expand(max(c.vw, c.vh) / c.cam.Zoom / 4)
 	want := c.cam.Zoom * c.dpr
 	jobs := c.jobs[:0]
 	for _, l := range lifts {
@@ -357,12 +358,18 @@ func (c *Compositor) refreshLifts(lifts []*lift) {
 			continue
 		}
 		moved := w != l.w0
-		if l.has && rev == l.rev && deep == l.deep && w.SameLinear(l.w0) && !(l.clipped && moved) &&
+		// a sprite cut to the view stays good while the view is still inside what it drew
+		stale := l.clipped && moved && !l.rb.Translate(Point{w[4] - l.w0[4], w[5] - l.w0[5]}).covers(view)
+		if l.has && rev == l.rev && deep == l.deep && w.SameLinear(l.w0) && !stale &&
 			(c.zooming || math.Abs(l.scale-want) <= 1e-9*want) {
 			c.placeLift(l, w)
 			continue
 		}
 		area := sb.Intersect(view)
+		if w := sb.Intersect(wide); sb != area && w.W()*w.H()*want*want < maxSpritePx {
+			// draw beyond the view, so that a drag does not redraw the sprite at every step
+			area = w
+		}
 		if area.Empty() {
 			l.layer.SetHidden(true)
 			l.has = false
@@ -398,4 +405,11 @@ func (c *Compositor) placeLift(l *lift, w Affine) {
 	min = Point{c.px(min.X), c.px(min.Y)}
 	l.layer.Set(Rect{min, Point{min.X + float64(l.wpx)*k/c.dpr, min.Y + float64(l.hpx)*k/c.dpr}}, Point{}, Identity())
 	l.layer.SetHidden(false)
+}
+
+// maxSpritePx is the most device pixels a sprite is widened to beyond the view.
+const maxSpritePx = 16 << 20
+
+func (r Rect) covers(o Rect) bool {
+	return r.Min.X <= o.Min.X && r.Min.Y <= o.Min.Y && r.Max.X >= o.Max.X && r.Max.Y >= o.Max.Y
 }

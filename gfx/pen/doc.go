@@ -1,9 +1,24 @@
-// Package pen loads pen.dev design files (.pen, JSON) into gfx scene subtrees. It is a tool for
-// the demos and benchmarks, not a public API: the files it reads are never part of the repository.
+// Package pen loads pen.dev design files (.pen, JSON) into gfx scene subtrees. It is experimental
+// and uses only the public gfx API and the standard library, so it can be copied to another module.
 //
-// Supported: frame, rectangle, ellipse, path (SVG geometry), text, ref (component instances with
-// descendants overrides, library imports, theme variables), a subset of auto-layout, fills with
-// colors and linear gradients, strokes, outer shadows. Everything else is skipped silently.
+// Open reads a file and the libraries it imports; Screens lists the top level frames and instances
+// that are big enough to be screens; Build lays one out and adds its nodes to a gfx.Tx, so the screen
+// is a subtree that can be moved as a whole and whose elements can be hit-tested; Unsupported reports
+// what was left out. The auto-layout is in the autolayout subpackage.
+//
+// Supported: frame, rectangle, ellipse, path (SVG path data with a viewBox), text; ref instances of
+// components from the file or from imported libraries, with descendants overrides (properties, whole
+// node replacement, slot children); color variables with light and dark themes and a per-instance
+// theme; solid fills and linear gradients; strokes with inner or centered alignment; outer shadows;
+// uniform and per-corner radius; clip (kept only where it changes the picture); opacity; text with
+// family, size, weight, line height, fixed-width wrapping and center or right alignment, measured by
+// the Measurer given in Options. Fonts that are not installed fall back to the system font.
+//
+// Not supported: fill rules (paths are filled non-zero, evenodd icons render as solid blobs),
+// inner shadows, blur effects, radial and angular gradients (drawn linear), image fills, per-side
+// strokes, rotation, flip, text decoration and letter spacing, the guess for the gradient rotation
+// (CSS convention), min and max sizes and wrap in layouts, refs to missing components (skipped),
+// hug sizes of frames that hold fill children (the content size is used).
 package pen
 
 import (
@@ -11,6 +26,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/haiodo/gowt/gfx"
@@ -183,4 +199,15 @@ func (d *Doc) topSize(m map[string]any) (w, h float64) {
 		m = c
 	}
 	return
+}
+
+// Unsupported lists what the loader met and left out so far, one line per feature with a count,
+// sorted. It grows as screens are built.
+func (d *Doc) Unsupported() []string {
+	out := make([]string, 0, len(d.Skipped))
+	for k, n := range d.Skipped {
+		out = append(out, fmt.Sprintf("%s (%d)", k, n))
+	}
+	sort.Strings(out)
+	return out
 }

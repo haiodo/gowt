@@ -492,7 +492,7 @@ func (s *Scene) refresh(n *Node, damage *[]Rect) {
 	}
 	old, wasIndexed := n.bounds, n.indexed
 	nb := EmptyRect()
-	if n.pic != nil {
+	if n.pic != nil && !n.pic.Bounds.Empty() { // a picture that draws nothing has no bounds to map
 		nb = n.world.Bounds(n.pic.Bounds)
 		if n.cbox != nil {
 			nb = nb.Intersect(*n.cbox)

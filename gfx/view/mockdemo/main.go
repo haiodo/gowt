@@ -106,15 +106,22 @@ type phase struct {
 	started   bool
 }
 
+// A self-contained build (tag gfxmockpen, embed_pen.go) starts on its embedded design and stays open.
+var (
+	defaultSrc  = "synth"
+	defaultN    = 50
+	defaultStay = false
+)
+
 func main() {
-	n := flag.Int("n", 50, "number of screens")
-	src := flag.String("src", "synth", `"synth", or the path of a .pen file`)
+	n := flag.Int("n", defaultN, "number of screens")
+	src := flag.String("src", defaultSrc, `"synth", or the path of a .pen file`)
 	flag.Parse()
 	if *n < 1 {
 		fmt.Println("error: -n must be at least 1")
 		os.Exit(1)
 	}
-	stay := os.Getenv("GFXDEMO_STAY") != ""
+	stay := defaultStay || os.Getenv("GFXDEMO_STAY") != ""
 	if !stay {
 		time.AfterFunc(60*time.Second, func() { fmt.Println("error: timeout"); os.Exit(1) })
 	}

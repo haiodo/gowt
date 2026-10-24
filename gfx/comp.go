@@ -3,6 +3,7 @@ package gfx
 import (
 	"math"
 	"runtime"
+	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -61,6 +62,20 @@ type tile struct {
 	queued  bool
 	gen     atomic.Int32 // bumps when the scene changes under the tile
 	evicted atomic.Bool
+	rect    Rect  // in scene units
+	pend    Image // a finished image held back while a lift or landing is under way, see drain
+}
+
+// drop takes the tile out for good.
+func (t *tile) drop() {
+	t.evicted.Store(true)
+	if t.layer != nil {
+		t.layer.Remove()
+	}
+	if t.pend != nil {
+		Release(t.pend)
+		t.pend = nil
+	}
 }
 
 type tileSet struct {
@@ -106,7 +121,7 @@ type lift struct {
 	// hold: the sprite is drawn but hidden, and the node stays in the tiles, until the tiles under it
 	// are redrawn without it; then both change in one host transaction, so the node is on screen once
 	hold  bool
-	hrect Rect
+	hrect Rect // the area whose tiles change when the node leaves or returns
 }
 
 // scratch is a target and a collect buffer for drawing a sprite image; index 0 is the Frame
@@ -148,6 +163,7 @@ type Compositor struct {
 	lastZoom   float64
 	lastDPR    float64
 	layoutDrty bool
+	settled    bool // no tile under a lift in transition waits for a redraw, see drain
 	lastRange  [4]int32
 
 	lifts          []*lift
@@ -309,10 +325,7 @@ func (c *Compositor) dropSet(s *tileSet) {
 		return
 	}
 	for k, t := range s.tiles {
-		t.evicted.Store(true)
-		if t.layer != nil {
-			t.layer.Remove()
-		}
+		t.drop()
 		delete(s.tiles, k)
 	}
 }
@@ -404,10 +417,7 @@ func (c *Compositor) ensureTiles(moved bool) {
 		c.lastRange = rng
 		for k, t := range set.tiles {
 			if k[0] < x0-1 || k[0] > x1+1 || k[1] < y0-1 || k[1] > y1+1 {
-				t.evicted.Store(true)
-				if t.layer != nil {
-					t.layer.Remove()
-				}
+				t.drop()
 				delete(set.tiles, k)
 			}
 		}
@@ -425,7 +435,7 @@ func (c *Compositor) ensureTiles(moved bool) {
 				if skipNew {
 					continue
 				}
-				t = &tile{key: k, dirty: true}
+				t = &tile{key: k, dirty: true, rect: set.rect(k)}
 				set.tiles[k] = t
 			}
 			if t.dirty && !t.queued {
@@ -530,41 +540,81 @@ func (c *Compositor) worker() {
 	}
 }
 
-// drain puts the finished tile images on their layers.
+// drain puts the finished tile images on their layers. While a lift or a landing is under way, the
+// images of tiles under it are held back until every such tile is redrawn, and then applied in the
+// same transaction in which the sprites appear or go: a node is never seen in its sprite and in a
+// tile at once, and never in neither.
 func (c *Compositor) drain() {
-	if !c.readyN.Load() {
-		return
+	if c.readyN.Load() {
+		c.mu.Lock()
+		res := c.ready
+		c.ready = nil
+		c.readyN.Store(false)
+		c.mu.Unlock()
+		var trs []Rect
+		for _, l := range c.lifts {
+			if l.hold || l.landing {
+				trs = append(trs, l.hrect)
+			}
+		}
+		for _, r := range res {
+			t := r.t
+			t.queued = false
+			if r.gen < 0 {
+				continue
+			}
+			if t.evicted.Load() {
+				Release(r.img)
+				continue
+			}
+			t.dirty = r.gen != t.gen.Load()
+			if slices.ContainsFunc(trs, t.rect.Intersects) {
+				if t.pend != nil {
+					Release(t.pend)
+				}
+				t.pend = r.img
+				continue
+			}
+			c.show(t, r.img)
+		}
 	}
-	c.mu.Lock()
-	res := c.ready
-	c.ready = nil
-	c.readyN.Store(false)
-	c.mu.Unlock()
-	for _, r := range res {
-		t := r.t
-		t.queued = false
-		if r.gen < 0 {
-			continue
+	c.requeue()
+	c.settled = true
+	for _, l := range c.lifts {
+		if (l.hold || l.landing) && !c.clean(l.hrect) {
+			c.settled = false
+			break
 		}
-		if t.evicted.Load() {
-			Release(r.img)
-			continue
+	}
+	if c.settled {
+		for _, set := range []*tileSet{c.prev, c.cur} {
+			if set == nil {
+				continue
+			}
+			for _, t := range set.tiles {
+				if t.pend != nil {
+					c.show(t, t.pend)
+					t.pend = nil
+				}
+			}
 		}
-		if t.layer == nil {
-			t.layer = c.host.NewLayer(GroupTiles)
-		}
-		t.layer.SetImage(r.img)
-		Release(r.img)
-		t.has = true
-		t.dirty = r.gen != t.gen.Load()
-		c.stats.TilesApplied++
-		c.layoutDrty = true
 	}
 	if c.prev != nil && c.covered() {
 		c.dropSet(c.prev)
 		c.prev = nil
 	}
-	c.requeue()
+}
+
+// show puts a finished image on the layer of t and releases it.
+func (c *Compositor) show(t *tile, img Image) {
+	if t.layer == nil {
+		t.layer = c.host.NewLayer(GroupTiles)
+	}
+	t.layer.SetImage(img)
+	Release(img)
+	t.has = true
+	c.stats.TilesApplied++
+	c.layoutDrty = true
 }
 
 // requeue puts tiles that changed while they were being drawn back in line.
@@ -665,7 +715,9 @@ func (c *Compositor) Land(nodes ...*Node) {
 		for _, l := range c.lifts {
 			if l.node == n && !l.landing {
 				l.landing = true
-				dmg = append(dmg, c.scene.Land(n))
+				r := c.scene.Land(n)
+				l.hrect = l.hrect.Union(r)
+				dmg = append(dmg, r)
 				break
 			}
 		}
@@ -676,7 +728,7 @@ func (c *Compositor) Land(nodes ...*Node) {
 
 func (c *Compositor) anyLanding() bool {
 	for _, l := range c.lifts {
-		if l.landing {
+		if l.landing || l.hold {
 			return true
 		}
 	}

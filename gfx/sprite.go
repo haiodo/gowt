@@ -319,10 +319,9 @@ func (c *Compositor) drawJobs(jobs []liftJob) {
 func (c *Compositor) stepLifts() {
 	live := c.lifts[:0]
 	for _, l := range c.lifts {
-		var sb Rect
-		attached := false
-		c.scene.Read(func() { attached, sb = l.node.scene == c.scene, l.node.SubtreeBounds() })
-		if !attached || (l.landing && c.clean(sb)) {
+		var attached bool
+		c.scene.Read(func() { attached = l.node.scene == c.scene })
+		if !attached || (l.landing && c.settled) {
 			l.layer.Remove()
 			continue
 		}
@@ -340,7 +339,7 @@ func (c *Compositor) refreshLifts(lifts []*lift) {
 	jobs := c.jobs[:0]
 	for _, l := range lifts {
 		if l.hold {
-			if !c.clean(l.hrect) {
+			if !c.settled {
 				continue
 			}
 			l.hold = false

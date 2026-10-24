@@ -23,6 +23,7 @@ func init() { runtime.LockOSThread() }
 type App struct {
 	display *swt.Display
 	quit    atomic.Bool
+	ended   atomic.Bool // the event loop is over: Display release still runs queued callbacks, on disposed widgets
 	images  map[*Image]struct{}
 	fonts   map[Font]*sharedFont
 	clip    *Clipboard
@@ -53,6 +54,7 @@ func Run(setup func(*App)) (err error) {
 	defer catch(&err)
 	a := &App{display: swt.NewDisplay(), images: map[*Image]struct{}{}, fonts: map[Font]*sharedFont{}}
 	defer a.display.Dispose()
+	defer a.ended.Store(true)
 	a.jobs.init()
 	defer a.jobs.close()
 	toOnError := func(err error) { a.fail(err) }
@@ -156,14 +158,23 @@ func reportOn(c displayed, err error) {
 // and f never runs; f queued while Run is ending may not run either.
 func (a *App) Async(f func()) {
 	defer ignoreDisposed()
-	a.display.AsyncExec(jrt.NewRunnable(f))
+	a.display.AsyncExec(jrt.NewRunnable(a.live(f)))
 }
 
 // Sync runs f on the UI thread and waits; safe from any goroutine except while the UI thread is blocked on you.
 // Once Run has returned, Sync returns at once without running f.
 func (a *App) Sync(f func()) {
 	defer ignoreDisposed()
-	a.display.SyncExec(jrt.NewRunnable(f))
+	a.display.SyncExec(jrt.NewRunnable(a.live(f)))
+}
+
+// live skips f once the event loop is over.
+func (a *App) live(f func()) func() {
+	return func() {
+		if !a.ended.Load() {
+			f()
+		}
+	}
 }
 
 // ignoreDisposed swallows the exception that a call on the display raises after Run disposed it.
@@ -188,7 +199,7 @@ func (a *App) After(d time.Duration, f func()) {
 			inner()
 		}
 	}
-	a.display.TimerExec(int32(d.Milliseconds()), jrt.NewRunnable(f))
+	a.display.TimerExec(int32(d.Milliseconds()), jrt.NewRunnable(a.live(f)))
 }
 
 // Every runs f on the UI thread every d, the first time after d, until stop is called. stop is safe
@@ -202,7 +213,9 @@ func (a *App) Every(d time.Duration, f func()) (stop func()) {
 			return
 		}
 		a.display.TimerExec(ms, r) // before f, so that a panic in f does not end the ticks
-		f()
+		if !a.ended.Load() {
+			f()
+		}
 	}
 	a.display.TimerExec(ms, r)
 	return func() { stopped.Store(true) }
@@ -707,8 +720,16 @@ type TextView struct {
 	grow  *autoGrow
 }
 
-// Text returns the current content.
-func (t *TextView) Text() string { return t.t.GetText() }
+// Text returns the current content; line breaks are \n on every system (Windows stores \r\n).
+func (t *TextView) Text() string { return lf(t.t.GetText()) }
+
+// lf turns the \r\n of Windows into \n.
+func lf(s string) string {
+	if runtime.GOOS == "windows" {
+		return strings.ReplaceAll(s, "\r\n", "\n")
+	}
+	return s
+}
 
 // SetText replaces the content.
 func (t *TextView) SetText(s string) { t.t.SetText(s) }
@@ -726,7 +747,7 @@ func (t *TextView) Unwrap() *swt.Text { return t.t }
 
 // OnChange runs f with the new content after every edit.
 func (t *TextView) OnChange(f func(text string)) {
-	t.t.AddModifyListener(&modifier{func() { f(t.t.GetText()) }})
+	t.t.AddModifyListener(&modifier{func() { f(lf(t.t.GetText())) }})
 }
 
 // OnActivate runs f when the user presses Enter in a single-line field.

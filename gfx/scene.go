@@ -36,38 +36,48 @@ type Node struct {
 	id       int
 	parent   *Node
 	kids     []*Node
-	seq      uint64
 	t        Affine
 	opacity  float64
 	z        int
 	pic      *Picture
 	shape    *Path // local coordinates, for HitFill and HitStroke
+	clip     *nodeClip
 	hit      HitMode
-	clipKind ClipKind
-	clipRect Rect // local
-	clipRad  float64
-	clipPath *Path // local
+	hasClip  bool // a clip of an ancestor or of this node applies
+	indexed  bool
 
 	// derived by Commit
 	world    Affine
 	alpha    float64 // opacity times that of every ancestor
 	bounds   Rect    // visible bounds of the picture in scene coordinates
-	cbox     Rect    // scene area left by the clips of the ancestors and this node
-	hasClip  bool    // a clip of an ancestor or of this node applies
-	order    int
-	rev      uint64 // bumps when the node's own look changes other than by a plain move
-	deep     uint64 // bumps when something below the node changes
-	lifted   int    // lifted ancestors plus this node's own lift count
-	liftSelf int
-	depth    int
-	stamp    uint64
+	cbox     *Rect   // scene area left by the clips of the ancestors and this node; nil when unclipped
+	order    int32
+	depth    int32
+	lifted   int32 // lifted ancestors plus this node's own lift count
+	liftSelf int32
+	rev      uint32 // bumps when the node's own look changes other than by a plain move
+	deep     uint32 // bumps when something below the node changes
+	stamp    uint32
 	c0, c1   [2]int32
-	indexed  bool
 	scene    *Scene
 }
 
+type nodeClip struct {
+	kind ClipKind
+	rect Rect // local
+	rad  float64
+	path *Path // local
+}
+
+func (n *Node) ck() ClipKind {
+	if n.clip == nil {
+		return ClipNone
+	}
+	return n.clip.kind
+}
+
 func NewNode(id int) *Node {
-	return &Node{id: id, t: Identity(), opacity: 1, world: Identity(), alpha: 1, bounds: EmptyRect(), cbox: infRect()}
+	return &Node{id: id, t: Identity(), opacity: 1, world: Identity(), alpha: 1, bounds: EmptyRect()}
 }
 
 func (n *Node) ID() int                      { return n.id }
@@ -81,7 +91,7 @@ func (n *Node) Picture() *Picture            { return n.pic }
 func (n *Node) Shape() *Path                 { return n.shape }
 func (n *Node) Hit() HitMode                 { return n.hit }
 func (n *Node) Lifted() bool                 { return n.lifted > 0 }
-func (n *Node) Version() (self, deep uint64) { return n.rev, n.deep }
+func (n *Node) Version() (self, deep uint32) { return n.rev, n.deep }
 
 // Bounds is the visible area of the node's own picture in scene coordinates, after the clips of
 // the ancestors; empty when the node has no picture or is clipped away.
@@ -108,8 +118,7 @@ type Scene struct {
 	ny    int
 	grid  [][]*Node
 	ids   map[int]*Node
-	seq   uint64
-	pass  uint64
+	pass  uint32
 	count int
 
 	structDirty bool
@@ -260,7 +269,7 @@ func (s *Scene) Commit() []Rect {
 		}
 	}
 	// parents first, so that a node refreshed under a refreshed ancestor is not done twice
-	slices.SortStableFunc(dirty, func(a, b *Node) int { return a.depth - b.depth })
+	slices.SortStableFunc(dirty, func(a, b *Node) int { return int(a.depth - b.depth) })
 	s.pass++
 	for _, n := range dirty {
 		if n.stamp != s.pass && n.scene == s {
@@ -279,8 +288,6 @@ func (s *Scene) attach(parent, n *Node, dirty *[]*Node) {
 		parent = s.root
 	}
 	n.parent = parent
-	s.seq++
-	n.seq = s.seq
 	i := sort.Search(len(parent.kids), func(i int) bool { return parent.kids[i].z > n.z })
 	parent.kids = slices.Insert(parent.kids, i, n)
 	s.bump(parent)
@@ -432,7 +439,10 @@ func (s *Scene) apply(op *txOp, dirty *[]*Node, damage *[]Rect) {
 	case txShape:
 		n.shape, n.hit = op.path, HitMode(op.i)
 	case txClip:
-		n.clipKind, n.clipRect, n.clipRad, n.clipPath = op.ck, op.r, op.f, op.path
+		n.clip = nil
+		if op.ck != ClipNone {
+			n.clip = &nodeClip{op.ck, op.r, op.f, op.path}
+		}
 		n.rev++
 		s.bump(n.parent)
 		*dirty = append(*dirty, n)
@@ -448,18 +458,26 @@ func (s *Scene) refresh(n *Node, damage *[]Rect) {
 	n.lifted = p.lifted + n.liftSelf
 	n.cbox = p.cbox
 	n.hasClip = p.hasClip
-	switch n.clipKind {
-	case ClipRect, ClipRRect:
-		n.cbox = n.cbox.Intersect(n.world.Bounds(n.clipRect))
-		n.hasClip = true
-	case ClipPath:
-		n.cbox = n.cbox.Intersect(n.world.Bounds(n.clipPath.Bounds()))
+	switch n.ck() {
+	case ClipRect, ClipRRect, ClipPath:
+		local := n.clip.rect
+		if n.clip.kind == ClipPath {
+			local = n.clip.path.Bounds()
+		}
+		box := n.world.Bounds(local)
+		if p.cbox != nil {
+			box = box.Intersect(*p.cbox)
+		}
+		n.cbox = &box
 		n.hasClip = true
 	}
 	old, wasIndexed := n.bounds, n.indexed
 	nb := EmptyRect()
 	if n.pic != nil {
-		nb = n.world.Bounds(n.pic.Bounds).Intersect(n.cbox)
+		nb = n.world.Bounds(n.pic.Bounds)
+		if n.cbox != nil {
+			nb = nb.Intersect(*n.cbox)
+		}
 	}
 	if wasIndexed {
 		s.remove(n)
@@ -486,7 +504,7 @@ func (s *Scene) number() {
 	i := 0
 	var walk func(n *Node)
 	walk = func(n *Node) {
-		n.order = i
+		n.order = int32(i)
 		i++
 		for _, c := range n.kids {
 			walk(c)
@@ -537,7 +555,7 @@ func (s *Scene) Lift(n *Node) Rect { return s.liftBy(n, 1) }
 // Land undoes Lift and returns the area the static tiles must redraw now.
 func (s *Scene) Land(n *Node) Rect { return s.liftBy(n, -1) }
 
-func (s *Scene) liftBy(n *Node, d int) Rect {
+func (s *Scene) liftBy(n *Node, d int32) Rect {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if d < 0 && n.liftSelf == 0 {
@@ -578,7 +596,7 @@ func (s *Scene) query(r Rect, dst []*Node) []*Node {
 			}
 		}
 	}
-	slices.SortFunc(dst[start:], func(a, b *Node) int { return a.order - b.order })
+	slices.SortFunc(dst[start:], func(a, b *Node) int { return int(a.order - b.order) })
 	return dst
 }
 
@@ -586,8 +604,8 @@ func (s *Scene) query(r Rect, dst []*Node) []*Node {
 func clipChain(n *Node, dst []Clip) []Clip {
 	start := len(dst)
 	for ; n != nil; n = n.parent {
-		if n.clipKind != ClipNone {
-			dst = append(dst, Clip{M: n.world, Kind: n.clipKind, Rect: n.clipRect, Radius: n.clipRad, Path: n.clipPath})
+		if n.ck() != ClipNone {
+			dst = append(dst, Clip{M: n.world, Kind: n.ck(), Rect: n.clip.rect, Radius: n.clip.rad, Path: n.clip.path})
 		}
 	}
 	slices.Reverse(dst[start:])
@@ -647,7 +665,7 @@ func (s *Scene) CollectSubtree(root *Node, r Rect, b *Items) {
 // inClip reports whether the scene point p is inside every clip of n and its ancestors.
 func inClip(n *Node, p Point) bool {
 	for ; n != nil; n = n.parent {
-		if n.clipKind == ClipNone {
+		if n.ck() == ClipNone {
 			continue
 		}
 		inv, ok := n.world.Invert()
@@ -655,19 +673,19 @@ func inClip(n *Node, p Point) bool {
 			return false
 		}
 		q := inv.Apply(p)
-		switch n.clipKind {
+		switch n.ck() {
 		case ClipRect:
-			if !n.clipRect.Contains(q) {
+			if !n.clip.rect.Contains(q) {
 				return false
 			}
 		case ClipRRect:
 			var rr Path
-			rr.RoundRect(n.clipRect.Min.X, n.clipRect.Min.Y, n.clipRect.W(), n.clipRect.H(), n.clipRad)
+			rr.RoundRect(n.clip.rect.Min.X, n.clip.rect.Min.Y, n.clip.rect.W(), n.clip.rect.H(), n.clip.rad)
 			if !rr.Contains(q, 0) {
 				return false
 			}
 		case ClipPath:
-			if !n.clipPath.Contains(q, 0) {
+			if !n.clip.path.Contains(q, 0) {
 				return false
 			}
 		}

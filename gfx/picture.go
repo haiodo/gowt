@@ -91,19 +91,27 @@ type Picture struct {
 	Lod      *Picture
 	LodBelow float64
 
-	data   []byte
-	strs   []string
-	fonts  []Font
-	images []Image
+	data []byte
+	res  *picRes // nil for a picture without text or images
 }
 
 // Size is the memory the picture holds, without Lod and images.
 func (p *Picture) Size() int {
-	n := len(p.data) + len(p.fonts)*24 + len(p.images)*16
-	for _, s := range p.strs {
-		n += len(s) + 16
+	n := len(p.data) + 88
+	if p.res != nil {
+		n += 72 + len(p.res.fonts)*24 + len(p.res.images)*16
+		for _, s := range p.res.strs {
+			n += len(s) + 16
+		}
 	}
-	return n + 160
+	return n
+}
+
+// picRes holds what a command stream refers to by index.
+type picRes struct {
+	strs   []string
+	fonts  []Font
+	images []Image
 }
 
 // Len is the number of bytes of the command stream.
@@ -135,6 +143,7 @@ var DefaultMeasurer TextMeasurer = EstimateText{}
 // Recorder builds a Picture and tracks its bounds through the transform and clip stack.
 type Recorder struct {
 	pic   Picture
+	res   picRes
 	ctm   Affine
 	clip  Rect // visible area in picture coordinates
 	stack []recState
@@ -386,31 +395,31 @@ func (r *Recorder) Text(s string, x, y float64, f Font, c Color) {
 	m := r.m.MeasureText(s, f)
 	// a glyph can lean a little past its advance
 	r.grow(R(x-f.Size*0.1, y-m.Ascent, m.Width+f.Size*0.2, m.Ascent+m.Descent))
-	r.pic.strs = append(r.pic.strs, s)
+	r.res.strs = append(r.res.strs, s)
 	fi := -1
-	for i, ff := range r.pic.fonts {
+	for i, ff := range r.res.fonts {
 		if ff == f {
 			fi = i
 			break
 		}
 	}
 	if fi < 0 {
-		r.pic.fonts = append(r.pic.fonts, f)
-		fi = len(r.pic.fonts) - 1
+		r.res.fonts = append(r.res.fonts, f)
+		fi = len(r.res.fonts) - 1
 	}
 	r.op(OpText)
 	r.f32(x, y)
-	r.uv(len(r.pic.strs) - 1)
+	r.uv(len(r.res.strs) - 1)
 	r.uv(fi)
 	r.color(c)
 }
 
 func (r *Recorder) DrawImage(img Image, x, y, w, h float64) {
 	r.grow(R(x, y, w, h))
-	r.pic.images = append(r.pic.images, img)
+	r.res.images = append(r.res.images, img)
 	r.op(OpImage)
 	r.f32(x, y, w, h)
-	r.uv(len(r.pic.images) - 1)
+	r.uv(len(r.res.images) - 1)
 }
 
 // Finish returns the picture; the Recorder must not be used afterwards.
@@ -420,7 +429,9 @@ func (r *Recorder) Finish() *Picture {
 	}
 	p := r.pic
 	p.data = append([]byte(nil), p.data...) // drop the growth slack
-	p.strs = append([]string(nil), p.strs...)
+	if len(r.res.strs) > 0 || len(r.res.images) > 0 {
+		p.res = &picRes{append([]string(nil), r.res.strs...), append([]Font(nil), r.res.fonts...), append([]Image(nil), r.res.images...)}
+	}
 	return &p
 }
 
@@ -547,12 +558,12 @@ func (it *Iter) Next() bool {
 		o.Shadow.Color = it.color()
 	case OpText:
 		o.A, o.B = it.f32(), it.f32()
-		o.Text = it.p.strs[it.uv()]
-		o.Font = it.p.fonts[it.uv()]
+		o.Text = it.p.res.strs[it.uv()]
+		o.Font = it.p.res.fonts[it.uv()]
 		o.Color = it.color()
 	case OpImage:
 		o.A, o.B, o.C, o.D = it.f32(), it.f32(), it.f32(), it.f32()
-		o.Image = it.p.images[it.uv()]
+		o.Image = it.p.res.images[it.uv()]
 	case OpClipRect:
 		o.A, o.B, o.C, o.D = it.f32(), it.f32(), it.f32(), it.f32()
 	case OpClipRRect:

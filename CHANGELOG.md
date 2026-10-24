@@ -8,9 +8,12 @@ Behaviour change
 - Windows: `Border()` on a container, list, table, tree or `StyledText` is a flat 1 px hairline instead of the 3D `WS_EX_CLIENTEDGE` edge.
 - Windows: `Borderless()` is the WinUI "Subtle" button (no frame, hover and pressed fill), `Circle()` makes a push button round, `look.GlassButton()` the standard WinUI button fill and hairline, `look.GlassBorder()` adds the hairline to a subtle or round button. Hover, pressed, focus and disabled states are drawn by gowt; the colours are the WinUI 3 light and dark values with the system accent (`HKCU\Software\Microsoft\Windows\DWM\AccentColor`); dark follows `look.SetDarkContent`.
 - Windows and GTK: `look.SetGlass`, `SetGlassRadius`, `SetGlassBorder`, `SetGlassFocusRing` give a rounded input surface (radius in points, `look.Capsule` too) with a hairline and an accent ring on focus; the `Text` fields inside lose their own frame. Windows: call after the children exist. GTK: GTK CSS with Adwaita named colours.
-- Windows `Table`: one Explorer selection for the whole row (no seams between columns), no dotted focus rectangle after a mouse click (it returns on the first arrow key), images in right and centre aligned columns follow the alignment.
+- Windows: no dotted focus rectangle after a mouse click on a Link, Button, check box, radio button, Table or Tree: `App.Window` sets UISF_HIDEFOCUS on the window, a mouse press sets it again, Tab, an arrow key or Space clears it, so a focus visual shows for keyboard focus only. A SysLink draws its focused item whatever the UI state says, so a click takes the focus off the item.
+- Windows `Table`: one selection pill for the whole row (WinUI 3: accent tint when the table has the focus, grey otherwise, hover tint; no seams between columns) for the whole row (no seams between columns), no dotted focus rectangle after a mouse click (it returns on the first arrow key), images in right and centre aligned columns follow the alignment.
 
-Unverified: all Windows changes were written without a Windows 11 machine (the VM was down) and only cross-compiled.
+Checked on Windows 11 arm64 (build 26100) at 100% and 150%, light theme, with screenshots; not checked: dark content, keyboard focus visuals of Table and Button, pressed state.
+
+Emoji: GDI font linking already gives monochrome Segoe UI Emoji in Label, Text, StyledText, Button, Table and GC.DrawText there, with a private font as well; colour needs DirectWrite and is not done.
 
 ## v0.12.0 (2026-10-24)
 

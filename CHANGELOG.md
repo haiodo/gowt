@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+Behaviour change
+- Windows `Multiline()` has no vertical scroll bar: an edit control cannot hide it when there is nothing to scroll (a one-line `AutoGrow` composer showed a dead bar). `Scrollbars()` is accepted on `Text` and brings the always-visible bar back; the mouse wheel scrolls without it. GTK: the bar follows overflow only (policy automatic, overlay scrolling), as the macOS overlay scroller does.
+- Windows 11: `Text` gets the WinUI 3 text box frame, with or without `Border()`: 4 px radius, hairline, stronger bottom edge, 2 px accent line under it on focus, text inset 10/6 px, a single line centred in a 32 point minimum height. `NoBorder()` is now accepted on `Text` and keeps the plain edit. A multi-line `Text` gets `Inset(0, 5)` unless the app sets one.
+- Windows: `Border()` on a container, list, table, tree or `StyledText` is a flat 1 px hairline instead of the 3D `WS_EX_CLIENTEDGE` edge.
+- Windows: `Borderless()` is the WinUI "Subtle" button (no frame, hover and pressed fill), `Circle()` makes a push button round, `look.GlassButton()` the standard WinUI button fill and hairline, `look.GlassBorder()` adds the hairline to a subtle or round button. Hover, pressed, focus and disabled states are drawn by gowt; the colours are the WinUI 3 light and dark values with the system accent (`HKCU\Software\Microsoft\Windows\DWM\AccentColor`); dark follows `look.SetDarkContent`.
+- Windows and GTK: `look.SetGlass`, `SetGlassRadius`, `SetGlassBorder`, `SetGlassFocusRing` give a rounded input surface (radius in points, `look.Capsule` too) with a hairline and an accent ring on focus; the `Text` fields inside lose their own frame. Windows: call after the children exist. GTK: GTK CSS with Adwaita named colours.
+- Windows `Table`: one Explorer selection for the whole row (no seams between columns), no dotted focus rectangle after a mouse click (it returns on the first arrow key), images in right and centre aligned columns follow the alignment.
+
+Unverified: all Windows changes were written without a Windows 11 machine (the VM was down) and only cross-compiled.
+
 ## v0.12.0 (2026-10-24)
 
 Behaviour change

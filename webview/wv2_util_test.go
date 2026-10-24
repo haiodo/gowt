@@ -149,3 +149,12 @@ func TestSameDocument(t *testing.T) {
 		t.Fatal("sameDocument")
 	}
 }
+
+func TestIsMainDocument(t *testing.T) {
+	const data = "data:text/html;base64,PGI+"
+	if !isMainDocument(data, "about:blank", data) || isMainDocument("data:text/html;base64,PGk+", "about:blank", data) ||
+		isMainDocument("https://a/frame", "about:blank", data) || isMainDocument("https://a/frame", "https://a/", data) ||
+		!isMainDocument("https://a/#x", "https://a/", data) || isMainDocument("", "about:blank", "") {
+		t.Fatal("isMainDocument")
+	}
+}

@@ -372,7 +372,7 @@ func (e *wv2Engine) answerCall(args uintptr) bool {
 		return false
 	}
 	from := heap[uintptr]()
-	if vcall(args, 3, addr(from)) != sOK || !e.isMainDocument(takeString(*from)) { // get_Uri
+	if vcall(args, 3, addr(from)) != sOK || !isMainDocument(takeString(*from), e.url(), e.lastURL) { // get_Uri
 		// A subframe asked: answer empty so the marker prompt does not reach the user, and never call f.
 		empty := utf16Z("")
 		vcall(args, 9, addr(&empty[0]))
@@ -592,16 +592,6 @@ func (e *wv2Engine) url() string {
 		return e.lastURL
 	}
 	return takeString(*out)
-}
-
-// isMainDocument tells the main document's dialog Uri from a subframe's. NavigateToString content reports
-// get_Source about:blank but a data: Uri in the dialog event, so there the last main-frame navigation decides.
-func (e *wv2Engine) isMainDocument(uri string) bool {
-	cur := e.url()
-	if cur == "about:blank" {
-		cur = e.lastURL
-	}
-	return sameDocument(uri, cur)
 }
 
 func (e *wv2Engine) closeController() {

@@ -2,6 +2,7 @@ package view
 
 import (
 	"math"
+	"time"
 
 	g "github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/gfx"
@@ -163,10 +164,15 @@ type router struct {
 	origin   gfx.Point
 	coastOff bool    // momentum is dropped until the next finger scroll begins
 	prevZoom float64 // zoom before the last smart zoom
+
+	acc   scrollAcc
+	clock func() time.Duration // event clock; a test replaces it
 }
 
 func newRouter(cam camera, hit func(gfx.Point) *gfx.Node) *router {
-	return &router{cam: cam, hit: hit, minZ: 0.02, maxZ: 64}
+	t0 := time.Now()
+	// +1 keeps the first event off zero, which scrollAcc reads as "no event yet"
+	return &router{cam: cam, hit: hit, minZ: 0.02, maxZ: 64, clock: func() time.Duration { return time.Since(t0) + 1 }}
 }
 
 func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mods) {
@@ -262,7 +268,7 @@ func (r *router) scroll(pos gfx.Point, dx, dy float64, precise bool, phase, mome
 		r.zoom(math.Exp(dy*wheelZoomRate), pos)
 		return
 	}
-	r.pan(dx, dy)
+	r.acc.add(dx, dy, r.clock())
 }
 
 func (r *router) magnify(pos gfx.Point, delta float64, phase Phase, m g.Mods) {

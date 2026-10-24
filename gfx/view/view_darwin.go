@@ -7,6 +7,7 @@ package view
 
 import (
 	"sync/atomic"
+	"time"
 
 	g "github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/gfx"
@@ -34,7 +35,24 @@ type View struct {
 	onKey   func(*Key)
 	stops   []func()
 	cursor  map[Cursor]*swt.Cursor
+	report  func(FrameReport)
+	prevFi  time.Duration
 }
+
+// FrameReport describes one frame the view ran, for tuning: the numbers of the scroll path.
+type FrameReport struct {
+	Time     time.Duration // frame clock
+	Interval time.Duration // since the previous frame the view ran, 0 for the first
+	CPU      time.Duration // time the compositor took in Frame
+	Events   int           // scroll events taken in since the previous frame
+	DX, DY   float64       // pan applied by this frame, view points
+	Origin   gfx.Point     // camera origin after the frame
+	Zoom     float64
+	Tiles    int // tile images put on layers by this frame
+}
+
+// OnFrameReport sets f to run after every frame the view runs, on the UI goroutine.
+func (v *View) OnFrameReport(f func(FrameReport)) { v.report = f }
 
 // New returns an Option that creates the scene canvas in the widget tree, like g.Canvas does. init
 // runs on the UI goroutine once the view exists; it gets the View to set the camera and add overlay
@@ -64,7 +82,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	display := cv.Unwrap().GetDisplay()
 	link, err := cg.NewDisplayLink(func(fi gfx.FrameInfo) {
 		// runs on a Core Video thread: only decide, then hand over to the UI thread
-		if v.gone.Load() || !(v.comp.NeedsFrame() || v.resize.Load()) || !v.posted.CompareAndSwap(false, true) {
+		if v.gone.Load() || !(v.comp.NeedsFrame() || v.resize.Load() || v.r.acc.wake.Load()) || !v.posted.CompareAndSwap(false, true) {
 			return
 		}
 		defer func() { _ = recover() }() // the display may be gone as the window closes
@@ -100,7 +118,17 @@ func (v *View) frame(fi gfx.FrameInfo) {
 		}
 		v.comp.SetViewport(float64(w), float64(h), v.dpr)
 	}
+	dx, dy, events := v.r.tick(fi.Time)
 	v.comp.Frame(fi)
+	if v.report != nil {
+		st, cam := v.comp.Stats(), v.comp.Camera()
+		r := FrameReport{Time: fi.Time, CPU: st.FrameTime, Events: events, DX: dx, DY: dy, Origin: cam.Origin, Zoom: cam.Zoom, Tiles: st.TilesApplied}
+		if v.prevFi != 0 {
+			r.Interval = fi.Time - v.prevFi
+		}
+		v.prevFi = fi.Time
+		v.report(r)
+	}
 }
 
 // Canvas is the underlying gowt canvas: mouse listeners, focus, size.

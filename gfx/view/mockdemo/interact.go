@@ -118,5 +118,7 @@ func interactive(v *view.View, c *canvas) {
 		}
 	})
 	v.SetCursor(view.CursorGrab)
+	stats := &scrollStats{}
+	v.OnFrameReport(stats.add)
 	fmt.Println("interactive: two-finger scroll = pan, pinch = zoom, Cmd + scroll = zoom, two-finger double tap = zoom 1, drag empty space = pan, drag an element = move it, drag a screen background or hold Option = move the whole screen, keys 0 = - + arrows after a click")
 }

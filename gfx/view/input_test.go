@@ -2,7 +2,9 @@ package view
 
 import (
 	"math"
+	"math/rand"
 	"testing"
+	"time"
 
 	g "github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/gfx"
@@ -28,6 +30,7 @@ type rig struct {
 	cam  *fakeCam
 	node *gfx.Node
 	got  []*Pointer
+	tick time.Duration
 }
 
 func newRig(t *testing.T) *rig {
@@ -50,6 +53,14 @@ func newRig(t *testing.T) *rig {
 	rg.r = newRouter(cam, func(p gfx.Point) *gfx.Node { return s.HitTest(p, 0) })
 	rg.r.onPointer = func(p *Pointer) { rg.got = append(rg.got, p) }
 	return rg
+}
+
+// flush runs frames until the router has applied every collected scroll delta.
+func (rg *rig) flush() {
+	for i := 0; i < 5; i++ {
+		rg.tick += 100 * time.Millisecond
+		rg.r.tick(rg.tick)
+	}
 }
 
 func pt(x, y float64) gfx.Point { return gfx.Point{X: x, Y: y} }
@@ -111,10 +122,12 @@ func TestPointerCancel(t *testing.T) {
 func TestScrollPansByPointsAndLines(t *testing.T) {
 	rg := newRig(t)
 	rg.r.scroll(pt(0, 0), -30, 20, true, PhaseChanged, PhaseNone, g.Mods{})
+	rg.flush()
 	if o := rg.cam.c.Origin; o != pt(115, 40) {
 		t.Fatalf("precise delta moves by points over zoom: %v", o)
 	}
 	rg.r.scroll(pt(0, 0), 0, 1, false, PhaseNone, PhaseNone, g.Mods{})
+	rg.flush()
 	if o := rg.cam.c.Origin; o != pt(115, 40-lineStep/2) {
 		t.Fatalf("a wheel line moves by lineStep: %v", o)
 	}
@@ -144,20 +157,24 @@ func TestMomentumStopsOnPressAndTouch(t *testing.T) {
 	rg := newRig(t)
 	coast := func() { rg.r.scroll(pt(0, 0), 0, 10, true, PhaseNone, PhaseChanged, g.Mods{}) }
 	rg.r.scroll(pt(0, 0), 0, 10, true, PhaseBegan, PhaseNone, g.Mods{})
+	rg.flush()
 	y := rg.cam.c.Origin.Y
 	coast()
+	rg.flush()
 	if rg.cam.c.Origin.Y == y {
 		t.Fatal("momentum after a finger scroll must move the camera")
 	}
 	rg.r.pointer(PointerDown, pt(0, 0), 1, 1, g.Mods{})
 	y = rg.cam.c.Origin.Y
 	coast()
+	rg.flush()
 	if rg.cam.c.Origin.Y != y {
 		t.Fatal("a press stops the coasting")
 	}
 	rg.r.scroll(pt(0, 0), 0, 0, true, PhaseBegan, PhaseNone, g.Mods{})
 	rg.r.scroll(pt(0, 0), 0, 0, true, PhaseMayBegin, PhaseNone, g.Mods{})
 	coast()
+	rg.flush()
 	if rg.cam.c.Origin.Y != y {
 		t.Fatal("fingers resting on the trackpad stop the coasting")
 	}
@@ -250,4 +267,60 @@ func TestAbortCancelsDragOnce(t *testing.T) {
 	if rg.got[len(rg.got)-1].Aborted {
 		t.Fatal("a focus-loss cancel must not be Aborted")
 	}
+}
+
+// A trackpad sends events at about 60 Hz with jitter; the display runs at 120 Hz. The camera step
+// per frame must be even, and the total must be the sum of the deltas.
+func TestScrollStepsAreEvenPerFrame(t *testing.T) {
+	rg := newRig(t)
+	rg.cam.c.Zoom = 1
+	var now time.Duration
+	rg.r.clock = func() time.Duration { return now }
+	const frame = 8333 * time.Microsecond
+	rng := rand.New(rand.NewSource(1))
+	// 10 points per event, 16.7 ms apart with +-4 ms jitter
+	var events []time.Duration
+	for i := 1; i <= 60; i++ {
+		events = append(events, time.Duration(i)*16667*time.Microsecond+time.Duration(rng.Intn(8000)-4000)*time.Microsecond)
+	}
+	var steps, raw []float64
+	var total float64
+	next := 0
+	for f := 1; f <= 140; f++ {
+		now = time.Duration(f) * frame
+		n := 0
+		for next < len(events) && events[next] <= now {
+			rg.r.scroll(pt(0, 0), 0, 10, true, PhaseChanged, PhaseNone, g.Mods{})
+			next++
+			n++
+		}
+		_, dy, _ := rg.r.tick(now)
+		total += dy
+		if f > 8 && f < 110 {
+			raw = append(raw, float64(n)*10)
+			steps = append(steps, dy)
+		}
+	}
+	if math.Abs(total-600) > 1e-6 || math.Abs(rg.cam.c.Origin.Y-(50-600)) > 1e-6 {
+		t.Fatalf("applied %v, camera y %v, want 600 and %v", total, rg.cam.c.Origin.Y, 50-600)
+	}
+	if rg.r.acc.wake.Load() {
+		t.Fatal("nothing is left but the display link is still woken")
+	}
+	sd, rawSd := stddev(steps), stddev(raw)
+	if sd > rawSd/2 {
+		t.Fatalf("per-frame step deviation %.2f against %.2f for one camera move per event", sd, rawSd)
+	}
+}
+
+func stddev(v []float64) float64 {
+	var m, s float64
+	for _, x := range v {
+		m += x
+	}
+	m /= float64(len(v))
+	for _, x := range v {
+		s += (x - m) * (x - m)
+	}
+	return math.Sqrt(s / float64(len(v)))
 }

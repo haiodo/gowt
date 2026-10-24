@@ -1,5 +1,5 @@
 // Command doccounts checks that the test-count tables in README.md and docs/platforms.md
-// equal the counts in tests/expected*.txt and tests/expected_jface*.txt.
+// equal the counts in tests/expected*.txt (macOS, Windows under Wine and on the VM, Linux in Docker and on the desktop) and tests/expected_jface*.txt.
 // It prints the expected text and exits 1 on a mismatch.
 package main
 
@@ -64,9 +64,11 @@ func rowMatches(cells []string, c counts) bool {
 
 func main() {
 	perOS := map[string]counts{
-		"macOS":   read("tests/expected.txt"),
-		"Windows": read("tests/expected_windows.txt"),
-		"Linux":   read("tests/expected_linux.txt"),
+		"macOS":               read("tests/expected.txt"),
+		"Windows (":           read("tests/expected_windows.txt"),
+		"Windows 11 arm64 VM": read("tests/expected_windows_vm.txt"),
+		"Linux (":             read("tests/expected_linux.txt"),
+		"Linux desktop":       read("tests/expected_linux_desktop.txt"),
 	}
 	jm, jw, jl := read("tests/expected_jface.txt"), read("tests/expected_jface_windows.txt"), read("tests/expected_jface_linux.txt")
 	mac := perOS["macOS"]

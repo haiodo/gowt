@@ -62,8 +62,8 @@ widgets), qa and qa/qatest (driving an app from go test).
   - macOS 13 or later.
   - Windows 10 or later (the minimum is not verified); the manifest for visual styles and
     DPI awareness is linked by this package. The webview package needs the WebView2 Runtime.
-  - Linux: glibc (musl distributions such as Alpine are not supported), GTK 3 and an X11
-    or XWayland display; WebKitGTK 4.1 for webview.
+  - Linux: glibc (musl distributions such as Alpine are not supported), GTK 3 and a Wayland
+    or X11 display; WebKitGTK 4.1 for webview.
   - Go 1.27 or newer. Cross-compiling works from any host: GOOS=windows go build.
 
 # The SWT port

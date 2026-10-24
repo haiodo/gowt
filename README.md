@@ -105,9 +105,11 @@ SWT's own JUnit tests, translated to Go and run per OS by `make test-swt` agains
 |---|---|---|---|
 | macOS | 3818 | 4 (+3 flaky) | 69 |
 | Windows (`expected_windows.txt`, recorded under Wine) | 3728 | 70 (61 Browser tests, 9 others) (+7 flaky) | 89 |
+| Windows 11 arm64 VM (`expected_windows_vm.txt`) | 3799 | 0 (+6 flaky) | 89 |
 | Linux (Docker, Xvfb) | 3840 | 2 (+1 flaky) | 58 |
+| Linux desktop (`expected_linux_desktop.txt`, Ubuntu 26.04 GNOME, Wayland) | 3836 | 4 (+1 flaky) | 60 |
 
-3894 tests in all. On real Windows 11 arm64 (a UTM virtual machine) the run of 2026-10-22 gave 3741 passed, 64 failed, 89 skipped; the gate file was not re-recorded from it.
+3894 tests in all. The two rows from real machines are gate files recorded from two identical full runs: Windows 11 arm64 in a UTM virtual machine and Ubuntu 26.04.1 arm64 with GNOME on Wayland in a UTM virtual machine with a GPU.
 
 JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts are the `pass`, `fail`, `flaky` and `skip` lines of the expected files; every non-pass line carries a reason. The facade itself has `go test` examples and an API stability gate (`make api-check`).
 
@@ -117,12 +119,12 @@ JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts a
 |---|---|
 | macOS | 13 or later |
 | Windows | 10 or later (the minimum is not verified); WebView2 Runtime for the `webview` package (preinstalled on Windows 11); visual styles and DPI awareness come with the `gowt` facade (it imports `winmanifest`); a program on `swt` alone imports `_ "github.com/haiodo/gowt/winmanifest"` itself |
-| Linux | glibc (musl distributions such as Alpine are not supported); GTK 3 and an X11 or XWayland display; `librsvg2-common` on a minimal Debian or Ubuntu so that check marks draw; WebKitGTK 4.1 for `webview` |
+| Linux | glibc (musl distributions such as Alpine are not supported); GTK 3 and a Wayland or X11 display (on a Wayland session GTK uses native Wayland unless `GDK_BACKEND=x11` is set); `librsvg2-common` on a minimal Debian or Ubuntu so that check marks draw; WebKitGTK 4.1 for `webview` |
 
 ## Known gaps
 
 - Windows runs on a real Windows 11 arm64 (UTM virtual machine) and under Wine (CrossOver). Not checked: Mica, Acrylic and rounded corners by eye, a machine with two monitors (the VM has one display), the QA driver. Per-monitor DPI changes while running are not handled by the port itself; they use upstream SWT code and are untested.
-- CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb. macOS and Windows GUI tests are not in CI; they run locally and on the VM.
+- CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb; Linux was also run on a real GNOME Wayland desktop. macOS and Windows GUI tests are not in CI; they run locally and on the VM.
 - Linux: GTK 3 only.
 - `Browser` does not support the Authentication event; see [docs/webview-browser.md](docs/webview-browser.md) for the rest.
 - Clipboard, drag and drop and `StyledText` are in the facade (`App.Clipboard`, `DragFrom`/`DropOn`, `StyledText`). Not verified: drag and drop with a real mouse on any OS; cross-application clipboard transfer (the peer-process SWT tests are skipped); `StyledText` style rendering on macOS (upstream tests skipped). `Accessible` is a stub on all three OSes.

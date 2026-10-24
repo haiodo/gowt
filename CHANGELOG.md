@@ -4,8 +4,11 @@
 
 Behaviour change
 - Linux: the swt level no longer raises `OpenDocument`/`OpenUrl` from D-Bus or `QueryEndSession`/`EndSession`; the facade never exposed them. The two LGPL-2.1 upstream classes behind them (GDBus, SessionManagerDBus) are replaced by no-op stubs, so the repository is EPL-2.0 only. The "SWT SessionManagerDBus: Failed to connect" lines on stderr are gone.
+- Linux: the GTK libraries load on the first call into them, not when the program starts. Without GTK installed a program no longer dies with a raw panic and exit 2 before `main`: importing `gowt` (a `go test` of a package that only imports it) works, `gowt.Run` returns the "GTK 3 is not installed" error, and a plain `swt` program gets the same error as a panic from `NewDisplay`.
 
 Fixes
+- The README hello checks the error of `gowt.Run`; without a display the program exited 0 and printed nothing.
+- `examples/catalog` passed `Border()` to `Table` and `Tree`, which have a border already and reject the option (two logged stack traces on Windows). `examples/graphics` stops its timer when the canvas is disposed, instead of logging "Widget is disposed" on exit.
 - Windows `webview`: `window.gowt.call` showed the native "This page says" prompt instead of reaching the handler. WebView2 raises `ScriptDialogOpening` only when `AreDefaultScriptDialogsEnabled` is false, and nothing set it. The engine now turns the default dialogs off, so the event fires for every dialog: the call prompt goes to the handler, and the page's own `alert`, `confirm`, `prompt` and `beforeunload` get a gowt message box or input box.
 
 ## v0.11.0 (2026-10-24)

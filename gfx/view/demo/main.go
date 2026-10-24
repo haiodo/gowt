@@ -130,6 +130,7 @@ func run(w *g.Window, v *view.View, doc *synth.Doc) {
 				return
 			}
 			cur = phases[idx]
+			fmt.Println("phase:", cur.name) // shows where a stalled run stopped
 			cur.t0, cur.started = t, false
 			cur.rastered = c.Stats().Rastered
 			switch idx {

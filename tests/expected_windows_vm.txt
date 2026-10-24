@@ -1,7 +1,6 @@
-# Regression gate for make test-swt (cmd/swttest -expected). Recorded on real Windows 11 arm64 (UTM VM, build 26100, WebView2 Runtime 155), 3 full runs.
-# Runs 1-2: e6a6556, run 3: e91fc93 (WebView2 dialog fix 1057baa). A Browser test counts by run 3 where only the fix changed it; flaky = the runs disagree otherwise.
+# Regression gate for make test-swt (cmd/swttest -expected). Recorded on real Windows 11 arm64 (UTM VM, build 26100, WebView2 Runtime 155).
+# Two full runs of the same build (wt/win-parity-2): flaky = the runs disagree, or the line was already flaky in earlier runs and both passed.
 # Compare with tests/expected_windows.txt (recorded under CrossOver/Wine) before using it as a gate.
-# Updated after da73123 (call prompt on NavigateToString pages, LF in Text.Text) from one full run plus a re-run of every failure alone: flaky = fails in the full run, passes alone.
 pass	Test_org_eclipse_swt_accessibility_Accessible.test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener
 pass	Test_org_eclipse_swt_accessibility_Accessible.test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener
 pass	Test_org_eclipse_swt_accessibility_Accessible.test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener
@@ -14,10 +13,10 @@ pass	Test_org_eclipse_swt_accessibility_AccessibleTextEvent.test_ConstructorLjav
 pass	Test_org_eclipse_swt_accessibility_AccessibleTextEvent.test_toString
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableBeforePageScripts_concurrentInit_issue20
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableBeforePageScripts_issue20
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableOnLoad_concurrentInstances_issue20	VM: panic: the page did not answer; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
+pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_availableOnLoad_concurrentInstances_issue20
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_afterPageReload
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_stackedCalls	VM: Java failed to get a callback from javascript. Test timed out
+pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_stackedCalls
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_String
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_boolean
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_integer
@@ -26,7 +25,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_jav
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_callback_with_multipleValues
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_createFunctionInsideCallback
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_disposedFunctionRemovedAfterNavigation
-fail	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multipleFunctionsDuringConcurrentInit_issue20	VM: panic: the page did not answer; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
+pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multipleFunctionsDuringConcurrentInit_issue20
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_multiprocess
 pass	Test_org_eclipse_swt_browser_Browser.test_BrowserFunction_redefineSameNameSurvivesNavigation
 pass	Test_org_eclipse_swt_browser_Browser.test_ClearAllSessionCookies
@@ -41,7 +40,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_Constructor_multipleInstantiation
 pass	Test_org_eclipse_swt_browser_Browser.test_Constructor_multipleInstantiationsInDifferentThreads
 pass	Test_org_eclipse_swt_browser_Browser.test_EdgeAsyncFocusHandling
 pass	Test_org_eclipse_swt_browser_Browser.test_ExceptionsThrownInDisposeListenerDontPreventDisposal
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_LocationListener_ordered_changing	VM: expected: <true> but was: <false>
+pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_LocationListener_ordered_changing
 pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_ProgressListener_canceledLoad
 pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_ProgressListener_noExtraEvents
 pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_adapter_closeShell
@@ -51,21 +50,21 @@ pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changed
 pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changed_twoSetTextCycles
 pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changing
 pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_changingAndOnlyThenChanged
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_evaluateInCallback	VM: panic: the page did not answer
+pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_evaluateInCallback
 pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_removeWithNullArg
-fail	Test_org_eclipse_swt_browser_Browser.test_LocationListener_then_ProgressListener	VM: no message in the log (timeout or abort)
+pass	Test_org_eclipse_swt_browser_Browser.test_LocationListener_then_ProgressListener
 pass	Test_org_eclipse_swt_browser_Browser.test_NoExceptionsThrownInFillLayout
 pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_addWithNulArg
 pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_closeShell
-flaky	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_evaluateInCallback	VM: panic: the page did not answer (full run only, passes alone)
-flaky	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_openHasValidEventDetails	VM: expected: <true> but was: <false> (full run only, passes alone)
-flaky	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_open_ChildPopup	VM: Test timed out. (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_evaluateInCallback
+pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_openHasValidEventDetails
+pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_open_ChildPopup
 pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindowListener_removeWithNullArg
-flaky	Test_org_eclipse_swt_browser_Browser.test_OpenWindow_Progress_Listener_ValidateEventOrder	VM: no message in the log (timeout or abort) (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_OpenWindow_Progress_Listener_ValidateEventOrder
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_addWithNullArg
-flaky	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_completed_Called	VM: Browser text before completed: (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_completed_Called
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newListener_closeShell
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newProgressAdapter
 pass	Test_org_eclipse_swt_browser_Browser.test_ProgressListener_newProgressAdapter_closeShell
@@ -75,7 +74,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_addWithNull
 skip	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_hoverMouseOverLink	Assumption failed: no API in Edge for this
 pass	Test_org_eclipse_swt_browser_Browser.test_StatusTextListener_removeWithNullArg
 skip	Test_org_eclipse_swt_browser_Browser.test_TabTraversalOutOfBrowser	@Disabled: Too fragile on CI, Display.getDefault().post(event) does not work reliably
-flaky	Test_org_eclipse_swt_browser_Browser.test_TimerRegression_Issue2806	VM: timeout after 30s, run aborted (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_TimerRegression_Issue2806
 pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addListener_closeShell
 pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_addwithNull
@@ -84,7 +83,7 @@ pass	Test_org_eclipse_swt_browser_Browser.test_TitleListener_removeWithNullArg
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_addAndRemove
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_addWithNull
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_eventSize
-pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_multiple_shells
+flaky	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_multiple_shells	VM: process died: exit status 2 (runs: pass/fail)
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newAdapter
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newAdapter_closeShell
 pass	Test_org_eclipse_swt_browser_Browser.test_VisibilityWindowListener_newListener_closeShell
@@ -115,20 +114,20 @@ pass	Test_org_eclipse_swt_browser_Browser.test_computeSizeII
 pass	Test_org_eclipse_swt_browser_Browser.test_computeSizeIIZ
 pass	Test_org_eclipse_swt_browser_Browser.test_computeTrimIIII
 pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_OpeningNewWindow
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_mixedTypes	VM: panic: the page did not answer; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_numbers	VM: Javascript did not call java; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_strings	VM: Expected an array of strings, but did not receive array or got the wrong result.; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_boolean	VM: expected: <true> but was: <false>; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-flaky	Test_org_eclipse_swt_browser_Browser.test_evaluate_evaluation_failed_exception	VM: Javascript did not throw an error. Test timed out (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_mixedTypes
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_numbers
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_array_strings
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_boolean
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_evaluation_failed_exception
 pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_invalid_return_value
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_null	VM: expected: <true> but was: <false>; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_big	VM: expected: <true> but was: <false>; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_negative	VM: expected: <true> but was: <false>; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_normal	VM: expected: <true> but was: <false>; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_returnMoved	VM: expected: <true> but was: <false>; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_evaluate_string	VM: expected: <true> but was: <false>; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-flaky	Test_org_eclipse_swt_browser_Browser.test_evalute_Cookies	VM: panic: the page did not answer (full run only, passes alone)
-flaky	Test_org_eclipse_swt_browser_Browser.test_execute_and_closeListener	VM: Either browser.execute() did not work (if you still see the html page) or closeListener Was not triggered if browser looks disposed, but test still fails. (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_null
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_big
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_negative
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_number_normal
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_returnMoved
+pass	Test_org_eclipse_swt_browser_Browser.test_evaluate_string
+pass	Test_org_eclipse_swt_browser_Browser.test_evalute_Cookies
+pass	Test_org_eclipse_swt_browser_Browser.test_execute_and_closeListener
 pass	Test_org_eclipse_swt_browser_Browser.test_execute_withNullArg
 pass	Test_org_eclipse_swt_browser_Browser.test_forward
 pass	Test_org_eclipse_swt_browser_Browser.test_getAccessible
@@ -141,14 +140,14 @@ pass	Test_org_eclipse_swt_browser_Browser.test_getLocation
 pass	Test_org_eclipse_swt_browser_Browser.test_getMonitor
 pass	Test_org_eclipse_swt_browser_Browser.test_getParent
 pass	Test_org_eclipse_swt_browser_Browser.test_getShell
-fail	Test_org_eclipse_swt_browser_Browser.test_getText	VM: Test timed out; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_getText_doctype	VM: Test timed out
-fail	Test_org_eclipse_swt_browser_Browser.test_getText_html	VM: Test timed out; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_getText_javascriptDisabled	VM: Test timed out; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
-fail	Test_org_eclipse_swt_browser_Browser.test_getText_script	VM: Test timed out; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
+pass	Test_org_eclipse_swt_browser_Browser.test_getText
+pass	Test_org_eclipse_swt_browser_Browser.test_getText_doctype
+pass	Test_org_eclipse_swt_browser_Browser.test_getText_html
+pass	Test_org_eclipse_swt_browser_Browser.test_getText_javascriptDisabled
+pass	Test_org_eclipse_swt_browser_Browser.test_getText_script
 pass	Test_org_eclipse_swt_browser_Browser.test_getUrl
 pass	Test_org_eclipse_swt_browser_Browser.test_getVerticalBar
-flaky	Test_org_eclipse_swt_browser_Browser.test_get_set_Cookies	VM: expected: <value1> but was: <null> (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_get_set_Cookies
 pass	Test_org_eclipse_swt_browser_Browser.test_isBackEnabled
 pass	Test_org_eclipse_swt_browser_Browser.test_isDisposed
 pass	Test_org_eclipse_swt_browser_Browser.test_isEnabled
@@ -185,8 +184,8 @@ pass	Test_org_eclipse_swt_browser_Browser.test_setFontLorg_eclipse_swt_graphics_
 skip	Test_org_eclipse_swt_browser_Browser.test_setForegroundAlphaLorg_eclipse_swt_graphics_Color	Assumption failed: Alpha support for foreground colors does not exist on Win32
 pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color
 pass	Test_org_eclipse_swt_browser_Browser.test_setForegroundLorg_eclipse_swt_graphics_Color
-flaky	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled	VM: expected: <true> but was: <false> (full run only, passes alone)
-fail	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled_multipleInstances	VM: 3) Test timed out. Debug Info:; cause: the listener runs inside the WebView2 NavigationCompleted handler and its Evaluate/getText nested loop never gets the script result; passes when OnNavigationFinished is posted with AsyncExec
+pass	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled
+pass	Test_org_eclipse_swt_browser_Browser.test_setJavascriptEnabled_multipleInstances
 pass	Test_org_eclipse_swt_browser_Browser.test_setLayoutDataLjava_lang_Object
 pass	Test_org_eclipse_swt_browser_Browser.test_setLocationII
 pass	Test_org_eclipse_swt_browser_Browser.test_setLocationLorg_eclipse_swt_graphics_Point
@@ -196,24 +195,24 @@ pass	Test_org_eclipse_swt_browser_Browser.test_setRedrawZ
 pass	Test_org_eclipse_swt_browser_Browser.test_setSizeII
 pass	Test_org_eclipse_swt_browser_Browser.test_setSizeLorg_eclipse_swt_graphics_Point
 pass	Test_org_eclipse_swt_browser_Browser.test_setTabList$Lorg_eclipse_swt_widgets_Control
-flaky	Test_org_eclipse_swt_browser_Browser.test_setText	VM: expected: <true> but was: <false> (full run only, passes alone)
-flaky	Test_org_eclipse_swt_browser_Browser.test_setTextContainingScript_applicationLayerProgressListenerMustSeeUpToDateDom	VM: expected: <true> but was: <false> (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_setText
+pass	Test_org_eclipse_swt_browser_Browser.test_setTextContainingScript_applicationLayerProgressListenerMustSeeUpToDateDom
 pass	Test_org_eclipse_swt_browser_Browser.test_setTextDirection
 pass	Test_org_eclipse_swt_browser_Browser.test_setTextNull
 pass	Test_org_eclipse_swt_browser_Browser.test_setToolTipTextLjava_lang_String
 pass	Test_org_eclipse_swt_browser_Browser.test_setUrlWithNullArg
 skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_invalid_url_local	Assumption failed: Handling of invalid URLs is platform dependent
 skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_invalid_url_remote	Assumption failed: Handling of invalid URLs is platform dependent
-flaky	Test_org_eclipse_swt_browser_Browser.test_setUrl_local	VM: expected: <true> but was: <false> (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_setUrl_local
 skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_connection_closes_prematurely	Assumption failed: Handling POST in Linux is handled by SWT, so we need extra testing for the SWT code.
 skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_file_url	Assumption failed: Handling of invalid URLs is platform dependent
 skip	Test_org_eclipse_swt_browser_Browser.test_setUrl_post_invalid_url	Assumption failed: Handling of invalid URLs is platform dependent
-flaky	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote	VM: expected: <true> but was: <false> (full run only, passes alone)
-flaky	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post	VM: expected: <true> but was: <false> (full run only, passes alone)
-flaky	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post_no_content_type	VM: expected: <true> but was: <false> (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote
+pass	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post
+pass	Test_org_eclipse_swt_browser_Browser.test_setUrl_remote_with_post_no_content_type
 pass	Test_org_eclipse_swt_browser_Browser.test_setVisibility_and_sizing
 pass	Test_org_eclipse_swt_browser_Browser.test_setVisibleZ
-flaky	Test_org_eclipse_swt_browser_Browser.test_stop	VM: expected: <true> but was: <false> (full run only, passes alone)
+pass	Test_org_eclipse_swt_browser_Browser.test_stop
 pass	Test_org_eclipse_swt_browser_Browser.test_toControlII
 pass	Test_org_eclipse_swt_browser_Browser.test_toControlLorg_eclipse_swt_graphics_Point
 pass	Test_org_eclipse_swt_browser_Browser.test_toDisplayII
@@ -895,7 +894,7 @@ skip	Test_org_eclipse_swt_dnd_FileTransfer.test_nativeToJava	@DisabledOnOs: AWT'
 skip	Test_org_eclipse_swt_dnd_HTMLTransfer.test_javaToNative	Assumption failed: no remote clipboard peer: the Swing/RMI process of the SWT tests is not ported
 pass	Test_org_eclipse_swt_dnd_HTMLTransfer.test_Validate
 pass	Test_org_eclipse_swt_dnd_HTMLTransfer.test_internalClone
-pass	Test_org_eclipse_swt_dnd_HTMLTransfer.test_isSupportedType
+flaky	Test_org_eclipse_swt_dnd_HTMLTransfer.test_isSupportedType	VM: panic: j2go: unsupported native PathToPIDL (runs: fail/pass)
 skip	Test_org_eclipse_swt_dnd_HTMLTransfer.test_nativeToJava[1]	Assumption failed: no remote clipboard peer: the Swing/RMI process of the SWT tests is not ported
 skip	Test_org_eclipse_swt_dnd_HTMLTransfer.test_nativeToJava[2]	Assumption failed: no remote clipboard peer: the Swing/RMI process of the SWT tests is not ported
 skip	Test_org_eclipse_swt_dnd_HTMLTransfer.test_nativeToJava[3]	Assumption failed: no remote clipboard peer: the Swing/RMI process of the SWT tests is not ported
@@ -1070,7 +1069,7 @@ pass	Test_org_eclipse_swt_graphics_GC.test_getAdvanceWidthC
 pass	Test_org_eclipse_swt_graphics_GC.test_getCharWidthC
 pass	Test_org_eclipse_swt_graphics_GC.test_getClipping
 pass	Test_org_eclipse_swt_graphics_GC.test_getFontMetrics
-fail	Test_org_eclipse_swt_graphics_GC.test_getFontMetrics_notAffectedByTransform	VM: panic: No more handles; cause: GdipFont_new returns 0 for a face GDI+ does not know, where the C++ Font object is non-null and not IsAvailable, so GCCreateGdipFont raises ERROR_NO_HANDLES instead of falling back to the default family (internal/win32/gdip_manual.go)
+pass	Test_org_eclipse_swt_graphics_GC.test_getFontMetrics_notAffectedByTransform
 pass	Test_org_eclipse_swt_graphics_GC.test_getStyle
 pass	Test_org_eclipse_swt_graphics_GC.test_hashCode
 pass	Test_org_eclipse_swt_graphics_GC.test_isClipped

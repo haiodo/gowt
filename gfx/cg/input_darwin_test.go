@@ -52,3 +52,33 @@ func TestMonitorInstall(t *testing.T) {
 	stop = OnWindowChange(0, func() {})
 	stop()
 }
+
+func TestMouseUpAndSmartMagnify(t *testing.T) {
+	initInput()
+	var create func(src uintptr, typ uint32, p cgPoint, button uint32) uintptr
+	var fromCG func(recv, sel, cg uintptr) uintptr
+	purego.RegisterLibFunc(&create, purego.RTLD_DEFAULT, "CGEventCreateMouseEvent")
+	purego.RegisterLibFunc(&fromCG, purego.RTLD_DEFAULT, "objc_msgSend")
+	cases := []struct {
+		typ, cgButton uint32
+		want          int
+	}{{2, 0, 1}, {4, 1, 3}} // left up, right up
+	for _, c := range cases {
+		cg := create(0, c.typ, cgPoint{10, 20}, c.cgButton)
+		ev := fromCG(clsNSEvent, uintptr(cocoa.OSSel_registerName("eventWithCGEvent:")), cg)
+		if ev == 0 {
+			t.Skip("no NSEvent")
+		}
+		e, _, ok := readInput(ev)
+		if !ok || e.Kind != InputMouseUp || e.Button != c.want {
+			t.Errorf("type %d: %+v ok=%v, want button %d", c.typ, e, ok, c.want)
+		}
+	}
+
+	view := send0(send0(uintptr(cocoa.OSObjc_lookUpClass("NSView")), sels.alloc), sels.init)
+	sel := uintptr(cocoa.OSSel_registerName("smartMagnifyWithEvent:"))
+	enableSmartMagnify(view)
+	if !nsBool(msgInt(view, isel.respondsTo, sel)) {
+		t.Error("the view must respond to smartMagnifyWithEvent: after enableSmartMagnify")
+	}
+}

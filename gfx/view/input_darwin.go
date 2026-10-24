@@ -66,6 +66,11 @@ func (v *View) native(e cg.InputEvent) bool {
 		v.r.magnify(pos, e.Magnification, phaseOf(e.Phase), m)
 	case cg.InputSmartMagnify:
 		v.r.smartZoom(pos, m)
+	case cg.InputMouseUp:
+		// SWT queues the release and may not deliver it when it happens outside the window; the
+		// router drops the SWT one that follows
+		v.r.pointer(PointerUp, pos, e.Button, 0, m)
+		return false
 	}
 	return true
 }

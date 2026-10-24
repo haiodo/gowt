@@ -131,7 +131,8 @@ v.Pan(dx, dy); v.SetZoomLimits(0.02, 64)
 ```
 
 - **Capture.** After a press the moves and the release keep coming outside the view (AppKit keeps the
-  mouse-down view as the target) until the last button is up. If the view loses focus with a button held, a
+  mouse-down view as the target) until the last button is up. The release is also read from the NSEvent,
+  because SWT queues it and it can be late or lost outside the window; the SWT one that follows is dropped. If the view loses focus with a button held, a
   `PointerCancel` arrives: land what you lifted. A macOS Ctrl-click is Button 1 with `Mods.Ctrl`.
 - **Scroll.** `Precise` deltas (trackpad, Magic Mouse) are view points, a wheel gives lines (16 points each
   in the built-in pan). `Phase` is the finger phase, `Momentum` the phase of the coasting after the fingers
@@ -142,6 +143,9 @@ v.Pan(dx, dy); v.SetZoomLimits(0.02, 64)
 - **Keys** need the view focused; a press on the view focuses it.
 - **Screen change.** A window moved to a screen with another backing scale is noticed through the window
   notifications, and the next frame re-rasters at the new scale.
+- **Smart zoom** arrives only if Trackpad > Smart zoom is on in System Settings, and AppKit sends it only to a
+  view that implements `smartMagnifyWithEvent:`; the view adds that method to its class. There is no other
+  two-finger double-click event: an app that wants a fallback uses `Pointer.Count == 2`.
 - Scroll, pinch and smart-zoom events are consumed by the view, so a `MouseWheel` or `Gesture` listener on
   the canvas does not see them. Diagonal resize cursors are not offered (AppKit has no public ones).
 

@@ -104,8 +104,7 @@ func interactive(v *view.View, doc *synth.Doc) {
 		}
 	})
 	v.SetCursor(view.CursorGrab)
-	fmt.Println("interactive: two-finger scroll pans, pinch zooms, Cmd+scroll zooms, double tap toggles zoom 1;")
-	fmt.Println("             drag empty space to pan, drag a box to move it with its links; keys 0 = - and arrows (click the view first)")
+	fmt.Println("interactive: two-finger scroll = pan, pinch = zoom, hold Cmd and two-finger scroll up/down = zoom, two-finger double tap = zoom 1, drag empty space = pan, drag a box = move it, keys 0 = - + arrows after a click")
 }
 
 // boxOf maps a hit node to its box: boxes carry their index as the node id, connectors do not.

@@ -199,3 +199,13 @@ func TestPhaseOf(t *testing.T) {
 		}
 	}
 }
+
+func TestReleaseReportedOnce(t *testing.T) {
+	rg := newRig(t)
+	rg.r.pointer(PointerDown, pt(20, 10), 1, 1, g.Mods{})
+	rg.r.pointer(PointerUp, pt(-900, 10), 1, 0, g.Mods{}) // seen first by the native monitor
+	rg.r.pointer(PointerUp, pt(-900, 10), 1, 0, g.Mods{}) // then queued by SWT
+	if len(rg.got) != 2 || rg.got[1].Kind != PointerUp || !rg.got[1].Drag {
+		t.Fatalf("%d events, want the press and one release", len(rg.got))
+	}
+}

@@ -181,6 +181,9 @@ func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mo
 	case PointerMove:
 		p.Button, p.Drag = lowestButton(r.held), r.held != 0
 	case PointerUp:
+		if r.held&(1<<button) == 0 {
+			return // the release was already reported
+		}
 		p.Drag = r.held != 0
 		r.held &^= 1 << button
 	case PointerCancel:

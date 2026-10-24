@@ -24,7 +24,7 @@ var (
 	isel      struct {
 		typ, window, locationInWindow, scrollingDeltaX, scrollingDeltaY, hasPrecise, phase, momentumPhase,
 		magnification, modifierFlags, convertPoint, isFlipped, bounds, addMonitor, removeMonitor, defaultCenter,
-		addObserver, removeObserver, object, cursorByName uintptr
+		addObserver, removeObserver, object, buttonNumber, respondsTo uintptr
 	}
 	clsNSEvent, clsNotifCenter, clsNSCursor uintptr
 )
@@ -42,7 +42,7 @@ func initInput() {
 		isel.convertPoint, isel.isFlipped, isel.bounds = s("convertPoint:fromView:"), s("isFlipped"), s("bounds")
 		isel.addMonitor, isel.removeMonitor = s("addLocalMonitorForEventsMatchingMask:handler:"), s("removeMonitor:")
 		isel.defaultCenter, isel.addObserver, isel.removeObserver = s("defaultCenter"), s("addObserverForName:object:queue:usingBlock:"), s("removeObserver:")
-		isel.object = s("object")
+		isel.object, isel.buttonNumber, isel.respondsTo = s("object"), s("buttonNumber"), s("respondsToSelector:")
 		clsNSEvent = uintptr(cocoa.OSObjc_lookUpClass("NSEvent"))
 		clsNotifCenter = uintptr(cocoa.OSObjc_lookUpClass("NSNotificationCenter"))
 		clsNSCursor = uintptr(cocoa.OSObjc_lookUpClass("NSCursor"))
@@ -56,6 +56,9 @@ const (
 	InputScroll InputKind = iota
 	InputMagnify
 	InputSmartMagnify
+	// InputMouseUp reports a button release anywhere, also outside the view and the window; it is
+	// never consumed. X, Y may lie outside the view.
+	InputMouseUp
 )
 
 // InputEvent is a scroll, pinch or smart-zoom (two-finger double tap) event over a view.
@@ -73,18 +76,35 @@ type InputEvent struct {
 	// Magnification: the relative zoom change of this pinch event.
 	Magnification float64
 	Flags         uint64 // NSEventModifierFlags
+	Button        int    // InputMouseUp: SWT numbering, 1 left, 2 middle, 3 right
 }
 
 // NSEventType values and masks.
 const (
+	nsLeftMouseUp  = 2
+	nsRightMouseUp = 4
+	nsOtherMouseUp = 25
 	nsScrollWheel  = 22
 	nsMagnify      = 30
 	nsSmartMagnify = 32
-	nsMonitorMasks = 1<<nsScrollWheel | 1<<nsMagnify | 1<<nsSmartMagnify
+	nsMonitorMasks = 1<<nsScrollWheel | 1<<nsMagnify | 1<<nsSmartMagnify | 1<<nsLeftMouseUp | 1<<nsRightMouseUp | 1<<nsOtherMouseUp
 	notifUTF8      = 0x08000100
 	notifBacking   = "NSWindowDidChangeBackingPropertiesNotification"
 	notifChangeScr = "NSWindowDidChangeScreenNotification"
 )
+
+// swtButton maps NSEvent.buttonNumber (0 left, 1 right, 2 middle) to SWT's numbering.
+func swtButton(n int) int {
+	switch n {
+	case 0:
+		return 1
+	case 1:
+		return 3
+	case 2:
+		return 2
+	}
+	return n + 1
+}
 
 func nsBool(v uintptr) bool { return v&0xff != 0 }
 
@@ -102,6 +122,9 @@ func readInput(ev uintptr) (e InputEvent, win cgPoint, ok bool) {
 		e.Phase = uint64(send0(ev, isel.phase))
 	case nsSmartMagnify:
 		e.Kind = InputSmartMagnify
+	case nsLeftMouseUp, nsRightMouseUp, nsOtherMouseUp:
+		e.Kind = InputMouseUp
+		e.Button = swtButton(int(send0(ev, isel.buttonNumber)))
 	default:
 		return e, win, false
 	}
@@ -123,16 +146,21 @@ func viewPoint(view uintptr, win cgPoint) (x, y float64, in bool) {
 // fn returns true to consume the event, so SWT does not also send its own MouseWheel or Gesture.
 func MonitorInput(view uintptr, fn func(InputEvent) bool) (stop func()) {
 	initInput()
+	enableSmartMagnify(view)
 	block := objc.NewBlock(func(_ objc.Block, ev objc.ID) objc.ID {
 		e, win, ok := readInput(uintptr(ev))
 		if !ok || send0(uintptr(ev), isel.window) != send0(view, isel.window) {
 			return ev
 		}
 		x, y, in := viewPoint(view, win)
+		e.X, e.Y = x, y
+		if e.Kind == InputMouseUp {
+			fn(e)
+			return ev
+		}
 		if !in {
 			return ev
 		}
-		e.X, e.Y = x, y
 		if fn(e) {
 			return 0
 		}
@@ -184,3 +212,27 @@ func SystemCursor(name string) uintptr {
 	}
 	return send0(clsNSCursor, sel)
 }
+
+// enableSmartMagnify makes the view's class respond to smartMagnifyWithEvent:. AppKit sends the
+// two finger double tap only to a responder that implements it; SWT's view classes do not. The
+// monitor sees the event first, so the method itself does nothing.
+func enableSmartMagnify(view uintptr) {
+	sel := uintptr(cocoa.OSSel_registerName("smartMagnifyWithEvent:"))
+	if view == 0 || nsBool(msgInt(view, isel.respondsTo, sel)) {
+		return
+	}
+	smartOnce.Do(func() {
+		purego.RegisterLibFunc(&objectGetClass, purego.RTLD_DEFAULT, "object_getClass")
+		purego.RegisterLibFunc(&classAddMethod, purego.RTLD_DEFAULT, "class_addMethod")
+		smartIMP = purego.NewCallback(func(self, sel, ev uintptr) {})
+	})
+	types := []byte("v@:@\x00")
+	classAddMethod(objectGetClass(view), sel, smartIMP, &types[0])
+}
+
+var (
+	smartOnce      sync.Once
+	smartIMP       uintptr
+	objectGetClass func(obj uintptr) uintptr
+	classAddMethod func(cls, sel, imp uintptr, types *byte) bool
+)

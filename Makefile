@@ -64,6 +64,7 @@ docs-counts:
 # one after another, since parallel ones fight over focus on the one X screen.
 check-gui:
 	GOWT_GUI_TEST=1 go test -count=1 -p 1 $$(git ls-files '*_test.go' | xargs grep -l GOWT_GUI_TEST | xargs -n1 dirname | sort -u | sed 's|^|./|')
+	GOWT_GUI_TEST=1 go test -count=1 -tags gowtqa -run 'TestQATreeFocus' .
 
 # Platform-neutral code must build for every OS and must not import a platform's PI package; the
 # platform-specific rest (swt, cmd, ...) builds only where that platform's port exists. jface is one source for every OS: it builds on all three.

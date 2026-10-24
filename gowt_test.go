@@ -60,7 +60,7 @@ func TestRun(t *testing.T) {
 			w.Show()
 			txt.SetText("abc")
 			btn.Unwrap().NotifyListeners(swt.Selection, swt.NewEvent())
-			app.After(10*time.Millisecond, func() { w.Close() })
+			closeWhenSettled(app, w)
 		})
 	})
 	if err != nil || clicks != 1 || changed != "abc" {
@@ -97,6 +97,21 @@ func TestRunDisplayDisposedInLoop(t *testing.T) {
 	}
 }
 
+// closeWhenSettled closes w once the queued Async work has run and Pending is zero (5 s at most).
+// A fixed delay loses: on macOS Async runs only when the loop goes idle, 50-70 ms after Show.
+func closeWhenSettled(app *App, w *Window) {
+	deadline := time.Now().Add(5 * time.Second)
+	var poll func()
+	poll = func() {
+		if app.Pending() > 0 && time.Now().Before(deadline) {
+			app.After(5*time.Millisecond, poll)
+			return
+		}
+		app.Async(w.Close)
+	}
+	app.Async(poll)
+}
+
 func guiRun(t *testing.T, setup func(app *App, w *Window)) {
 	t.Helper()
 	if os.Getenv("GOWT_GUI_TEST") == "" {
@@ -108,7 +123,7 @@ func guiRun(t *testing.T, setup func(app *App, w *Window)) {
 			w := app.Window("t")
 			setup(app, w)
 			w.Show()
-			app.After(10*time.Millisecond, w.Close)
+			closeWhenSettled(app, w)
 		})
 	})
 	if err != nil {

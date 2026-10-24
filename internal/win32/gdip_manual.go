@@ -136,8 +136,14 @@ func GdipFont_new(hdc int64, hfont int64) int64 {
 	if r == 0 {
 		return 0
 	}
-	return gpOut("GdipCreateFontFromLogfontW", uintptr(hdc), uintptr(unsafe.Pointer(&lf)))
+	if f := gpOut("GdipCreateFontFromLogfontW", uintptr(hdc), uintptr(unsafe.Pointer(&lf))); f != 0 {
+		return f
+	}
+	// C++ Font is non-null but not IsAvailable for a face GDI+ does not know; callers fall back to a family.
+	return gdipFontUnavailable
 }
+
+const gdipFontUnavailable int64 = -1
 
 func GdipFont_newFamilyEmSizeStyleUnit(family int64, emSize float32, style int32, unit int32) int64 {
 	return gpOut("GdipCreateFont", cell(family), f32(emSize), uintptr(style), uintptr(unit))
@@ -146,13 +152,22 @@ func GdipFont_newFamilyEmSizeStyleUnit(family int64, emSize float32, style int32
 func GdipFont_newFamilyNameEmSizeStyleUnitFontCollection(familyName []uint16, emSize float32, style int32, unit int32, fontCollection int64) int64 {
 	fam := gpOut("GdipCreateFontFamilyFromName", uintptr(unsafe.Pointer(&familyName[0])), uintptr(fontCollection))
 	if fam == 0 {
-		return 0
+		// The C++ Font constructor takes the generic sans serif family for a name GDI+ does not know.
+		fam = gpOut("GdipGetGenericFontFamilySansSerif")
+		if fam == 0 {
+			return 0
+		}
+	} else {
+		defer gp("GdipDeleteFontFamily", uintptr(fam)) // the generic families are shared, not deleted
 	}
-	defer gp("GdipDeleteFontFamily", uintptr(fam))
 	return gpOut("GdipCreateFont", uintptr(fam), f32(emSize), uintptr(style), uintptr(unit))
 }
 
-func GdipFont_delete(font int64) { gp("GdipDeleteFont", uintptr(font)) }
+func GdipFont_delete(font int64) {
+	if font != gdipFontUnavailable {
+		gp("GdipDeleteFont", uintptr(font))
+	}
+}
 
 func GdipFont_GetFamily(font int64, family int64) int32 {
 	fam := gpOut("GdipGetFamily", uintptr(font))
@@ -175,7 +190,7 @@ func GdipFont_GetLogFontW(font int64, g int64, logfontW int64) int32 {
 	return gp("GdipGetLogFontW", uintptr(font), uintptr(g), uintptr(logfontW))
 }
 
-func GdipFont_IsAvailable(font int64) bool { return font != 0 }
+func GdipFont_IsAvailable(font int64) bool { return font != 0 && font != gdipFontUnavailable }
 
 func GdipFontFamily_new() int64 { return gdipAlloc(8) }
 

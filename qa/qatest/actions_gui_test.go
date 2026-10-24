@@ -142,15 +142,20 @@ func TestScroll(t *testing.T) {
 	if inView("row-50") {
 		t.Fatal("row-50 is in view before any scroll")
 	}
+	// OnScroll coalesces scrolls within a frame; a fast local round trip (Windows) would merge the three.
+	frame := func() { time.Sleep(50 * time.Millisecond) }
 	app.Find(qa.ID("feed")).ScrollTo(qa.ID("row-50"))
+	frame()
 	if !inView("row-50") {
 		t.Error("row-50 is not in view after ScrollTo")
 	}
 	app.Find(qa.ID("feed")).ScrollBy(0, -100000)
+	frame()
 	if !inView("row-0") {
 		t.Error("row-0 is not in view after ScrollBy to the top")
 	}
 	app.Find(qa.ID("row-30")).ScrollIntoView()
+	frame()
 	if !inView("row-30") {
 		t.Error("row-30 is not in view after ScrollIntoView")
 	}

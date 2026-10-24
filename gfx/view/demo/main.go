@@ -37,7 +37,11 @@ type phase struct {
 }
 
 func main() {
-	time.AfterFunc(40*time.Second, func() { fmt.Println("error: timeout"); os.Exit(1) })
+	// GFXDEMO_STAY=1 keeps the window open after the phases, to look at it; it closes with the window
+	stay := os.Getenv("GFXDEMO_STAY") != ""
+	if !stay {
+		time.AfterFunc(40*time.Second, func() { fmt.Println("error: timeout"); os.Exit(1) })
+	}
 	doc := synth.New(10000, 1)
 	var v *view.View
 	err := g.Run(func(app *g.App) {
@@ -45,7 +49,7 @@ func main() {
 		w := app.Window("gfx compositor", view.New(doc.Scene, func(vv *view.View) { v = vv }, g.Grow()))
 		w.SetSize(1440, 900)
 		w.Show()
-		app.After(200*time.Millisecond, func() { run(w, v, doc) })
+		app.After(200*time.Millisecond, func() { run(w, v, doc, stay) })
 	})
 	if err != nil {
 		fmt.Println("error:", err)
@@ -53,7 +57,7 @@ func main() {
 	}
 }
 
-func run(w *g.Window, v *view.View, doc *synth.Doc) {
+func run(w *g.Window, v *view.View, doc *synth.Doc, stay bool) {
 	c := v.Compositor()
 	start := gfx.Point{X: float64(doc.Cols)*synth.CellW/2 - 720, Y: float64(doc.Rows)*synth.CellH/2 - 450}
 	c.SetCamera(gfx.Camera{Origin: start, Zoom: 1})
@@ -126,7 +130,9 @@ func run(w *g.Window, v *view.View, doc *synth.Doc) {
 				finished = true
 				end = t
 				report(phases, firstDone, c, v, end)
-				w.Close()
+				if !stay {
+					w.Close()
+				}
 				return
 			}
 			cur = phases[idx]

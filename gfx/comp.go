@@ -117,6 +117,7 @@ type Compositor struct {
 	vw, vh, dpr float64
 	cam         Camera
 	camDirty    atomic.Bool
+	ticking     atomic.Bool // OnFrame is set: frames run on every display tick
 
 	cur, prev  *tileSet
 	zoomT      time.Duration
@@ -237,8 +238,12 @@ func (c *Compositor) ZoomAt(f float64, p Point) {
 }
 
 // OnFrame sets f to run at the start of every Frame with the frame clock, before the scene's
-// transactions are applied: the place to advance model animations.
-func (c *Compositor) OnFrame(f func(FrameInfo)) { c.onFrame = f }
+// transactions are applied: the place to advance model animations. While f is set, NeedsFrame is
+// true and the display link runs a frame on every tick; OnFrame(nil) lets an idle scene stop ticking.
+func (c *Compositor) OnFrame(f func(FrameInfo)) {
+	c.onFrame = f
+	c.ticking.Store(f != nil)
+}
 
 // FrameTime is the clock of the Frame being or last run.
 func (c *Compositor) FrameTime() FrameInfo { return c.fi }
@@ -254,7 +259,7 @@ func (c *Compositor) Stats() Stats {
 // NeedsFrame reports whether a Frame would change anything: safe from any goroutine, cheap enough
 // for a display-link callback to call on every tick.
 func (c *Compositor) NeedsFrame() bool {
-	return c.camDirty.Load() || c.readyN.Load() || c.busy || c.scene.Pending()
+	return c.ticking.Load() || c.camDirty.Load() || c.readyN.Load() || c.busy || c.scene.Pending()
 }
 
 func (c *Compositor) viewRect() Rect {

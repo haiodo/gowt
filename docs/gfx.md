@@ -88,7 +88,8 @@ comp.Frame(frameInfo) // on the UI goroutine, once per display frame
   `FadeTo`, `RotateTo`, `ScaleTo` with `Linear`, `EaseIn`, `EaseOut`, `EaseInOut` or `CubicBezier`,
   and `FlyAlong(path, duration, ease, orient, done)` for a cursor along a cubic path. Set a goal
   once from any goroutine; no code runs per frame in the application.
-- `comp.OnFrame(f)` runs first in every frame with the frame clock, for model animations.
+- `comp.OnFrame(f)` runs first in every frame with the frame clock, for model animations. While f is set the view
+  gets a frame on every display tick; `OnFrame(nil)` lets an idle scene stop.
   `comp.NeedsFrame()` is cheap and goroutine-safe; the macOS widget polls it from the display link.
 
 ## The widget (macOS)

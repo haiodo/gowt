@@ -433,3 +433,25 @@ func TestZoomAtKeepsPoint(t *testing.T) {
 		t.Errorf("ViewAt %v", v)
 	}
 }
+
+// An OnFrame callback drives model animations, so it must keep frames coming on an idle scene.
+func TestOnFrameKeepsTicking(t *testing.T) {
+	g := newRig(t, Options{})
+	g.settle()
+	if g.c.NeedsFrame() {
+		t.Fatal("idle compositor needs a frame")
+	}
+	n := 0
+	g.c.OnFrame(func(FrameInfo) { n++ })
+	if !g.c.NeedsFrame() {
+		t.Fatal("NeedsFrame is false while OnFrame is set")
+	}
+	g.frame()
+	if n != 1 {
+		t.Fatalf("OnFrame ran %d times, want 1", n)
+	}
+	g.c.OnFrame(nil)
+	if g.c.NeedsFrame() {
+		t.Fatal("NeedsFrame stays true after OnFrame(nil)")
+	}
+}

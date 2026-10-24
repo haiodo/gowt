@@ -148,10 +148,14 @@ func boxPicture(i int, w, h float64) *gfx.Picture {
 	r.Text(fmt.Sprintf("Button %d", i), 10, 22, gfx.Font{Name: "Helvetica Neue", Size: 13}, ink)
 	r.Text("Primary action label", 10, 42, gfx.Font{Name: "Helvetica Neue", Size: 11}, muted)
 	pic := r.Finish()
-	body := &gfx.Path{}
-	body.Rect(0, 0, w, h)
+	// the substitute keeps fill, border, dot and text lines and drops the shadow: it looks like
+	// the full picture where it takes over, and costs less to replay
 	lr := gfx.NewRecorder()
-	lr.FillPath(body, border)
+	lr.FillPath(roundRect(w, h), fill)
+	lr.StrokePath(roundRect(w, h), gfx.StrokeStyle{Width: 1, MiterLimit: 10}, border)
+	lr.FillPath(dot, accent)
+	lr.Text(fmt.Sprintf("Button %d", i), 10, 22, gfx.Font{Name: "Helvetica Neue", Size: 13}, ink)
+	lr.Text("Primary action label", 10, 42, gfx.Font{Name: "Helvetica Neue", Size: 11}, muted)
 	pic.Lod, pic.LodBelow = lr.Finish(), lodBelow
 	return pic
 }
@@ -205,9 +209,5 @@ func (c *Conn) build() (pic *gfx.Picture, curve *gfx.Path, o gfx.Point) {
 	r := gfx.NewRecorder()
 	r.StrokePath(body, st, link)
 	r.FillPath(head, link)
-	pic = r.Finish()
-	lr := gfx.NewRecorder()
-	lr.StrokePath(curve, gfx.StrokeStyle{Width: 1}, link)
-	pic.Lod, pic.LodBelow = lr.Finish(), lodBelow
-	return pic, curve, o
+	return r.Finish(), curve, o
 }

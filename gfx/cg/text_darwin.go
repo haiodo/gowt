@@ -3,6 +3,7 @@
 package cg
 
 import (
+	"math"
 	"unsafe"
 
 	"github.com/haiodo/gowt/gfx"
@@ -59,9 +60,35 @@ func (l Layout) Width() float64 {
 	return ctLineTypographicBounds(l.line, &a, &d, &g)
 }
 
+// Under LOD, text smaller than skeletonHi device pixels turns into a rounded bar the size of the
+// line, in skeletonInk of the text color: the block keeps its outline and its weight. Between
+// skeletonLo and skeletonHi the glyphs and the bar cross-fade.
+const (
+	skeletonHi  = 6.0
+	skeletonLo  = 4.0
+	skeletonH   = 0.5  // bar height, in em
+	skeletonMid = 0.3  // bar center above the baseline, in em
+	skeletonInk = 0.45 // bar alpha against the text color
+)
+
+func (s *Surface) skeleton(str string, op *gfx.Op, a float64) {
+	m := s.r.MeasureText(str, op.Font)
+	h := skeletonH * op.Font.Size
+	var bar gfx.Path
+	bar.RoundRect(op.A, op.B-skeletonMid*op.Font.Size-h/2, m.Width, h, h/2)
+	cgFillColor(s.ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A*skeletonInk*a)
+	s.addPath(&bar)
+	cgFillPath(s.ctx)
+}
+
 func (s *Surface) text(str string, op *gfx.Op) {
-	if s.r.opts.LOD && op.Font.Size*s.eff < 4 {
-		return
+	alpha := 1.0
+	if px := op.Font.Size * s.eff; s.r.opts.LOD && px < skeletonHi {
+		alpha = math.Max(0, (px-skeletonLo)/(skeletonHi-skeletonLo))
+		s.skeleton(str, op, 1-alpha)
+		if alpha == 0 {
+			return
+		}
 	}
 	r := s.r
 	font := r.font(op.Font)
@@ -86,7 +113,7 @@ func (s *Surface) text(str string, op *gfx.Op) {
 	cgSaveGState(ctx)
 	cgTranslate(ctx, op.A, op.B)
 	cgScale(ctx, 1, -1) // the surface is y-down, glyphs are y-up
-	cgFillColor(ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A)
+	cgFillColor(ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A*alpha)
 	cgSetTextPos(ctx, 0, 0)
 	ctLineDraw(line, ctx)
 	cgRestoreGSt(ctx)

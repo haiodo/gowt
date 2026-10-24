@@ -41,6 +41,9 @@ func (r *Renderer) MeasureText(s string, f gfx.Font) gfx.TextMetrics {
 	return m
 }
 
+// lodFadeBand is how far above LodBelow a Lod picture still shows through, as a factor of LodBelow.
+const lodFadeBand = 1.3
+
 func isTranslation(m gfx.Affine) bool { return m[0] == 1 && m[1] == 0 && m[2] == 0 && m[3] == 1 }
 
 func (s *Surface) concat(m gfx.Affine) {
@@ -110,10 +113,29 @@ func (s *Surface) replay(p *gfx.Picture) {
 			cgFillRect(ctx, cgRect{p.Bounds.Min.X, p.Bounds.Min.Y, math.Max(p.Bounds.W(), 1/s.eff), math.Max(p.Bounds.H(), 1/s.eff)})
 			return
 		}
-		if p.Lod != nil && math.Max(p.Bounds.W(), p.Bounds.H())*s.eff < p.LodBelow {
-			p = p.Lod
+		if p.Lod != nil {
+			// the substitute fades out over the band above LodBelow, so the look does not jump
+			size := math.Max(p.Bounds.W(), p.Bounds.H()) * s.eff
+			switch {
+			case size < p.LodBelow:
+				p = p.Lod
+			case size < p.LodBelow*lodFadeBand:
+				s.replayOps(p.Lod)
+				cgSaveGState(ctx)
+				cgSetAlpha(ctx, (size-p.LodBelow)/(p.LodBelow*(lodFadeBand-1)))
+				cgBeginLayer(ctx, 0)
+				s.replayOps(p)
+				cgEndLayer(ctx)
+				cgRestoreGSt(ctx)
+				return
+			}
 		}
 	}
+	s.replayOps(p)
+}
+
+func (s *Surface) replayOps(p *gfx.Picture) {
+	ctx := s.ctx
 	cgSaveGState(ctx)
 	s.dashed = false
 	layers := 0
@@ -283,14 +305,21 @@ func (s *Surface) addPath(p *gfx.Path) {
 	}
 }
 
-func (s *Surface) strokeStyle(st *gfx.StrokeStyle) {
+// strokeStyle sets the stroke state and returns the share of the line that stays inked: a dash
+// dropped for being unreadable is paid for by that share of the alpha.
+func (s *Surface) strokeStyle(st *gfx.StrokeStyle) float64 {
 	ctx := s.ctx
-	cgLineWidth(ctx, st.Width)
+	w := st.Width
+	if s.r.opts.LOD && w*s.eff < 1 {
+		w = 1 / s.eff // hairline floor: a thin line stays one device pixel wide instead of washing out
+	}
+	cgLineWidth(ctx, w)
 	cgLineCap(ctx, int32(st.Cap))
 	cgLineJoin(ctx, int32(st.Join))
 	if st.MiterLimit > 0 {
 		cgMiterLimit(ctx, st.MiterLimit)
 	}
+	duty := 1.0
 	switch {
 	case len(st.Dash) > 0 && !(s.r.opts.LOD && s.eff < 0.4):
 		cgLineDash(ctx, st.DashPhase, &st.Dash[0], uintptr(len(st.Dash)))
@@ -299,11 +328,33 @@ func (s *Surface) strokeStyle(st *gfx.StrokeStyle) {
 		cgLineDash(ctx, 0, nil, 0)
 		s.dashed = false
 	}
+	if len(st.Dash) > 0 && !s.dashed {
+		duty = dashDuty(st.Dash)
+	}
+	return duty
+}
+
+// dashDuty is the inked share of a dash pattern; CoreGraphics repeats an odd pattern with on and off swapped.
+func dashDuty(d []float64) float64 {
+	var on, all float64
+	for i, v := range d {
+		all += v
+		if i%2 == 0 {
+			on += v
+		}
+	}
+	if len(d)%2 == 1 {
+		return 0.5
+	}
+	if all <= 0 {
+		return 1
+	}
+	return on / all
 }
 
 func (s *Surface) stroke(p *gfx.Path, st *gfx.StrokeStyle, c gfx.Color) {
-	cgStrokeColor(s.ctx, c.R, c.G, c.B, c.A)
-	s.strokeStyle(st)
+	duty := s.strokeStyle(st)
+	cgStrokeColor(s.ctx, c.R, c.G, c.B, c.A*duty)
 	s.addPath(p)
 	cgStrokePath(s.ctx)
 }
@@ -315,7 +366,7 @@ func (s *Surface) shadowBox(op *gfx.Op) {
 	var rr gfx.Path
 	rr.RoundRect(x, y, w, h, r)
 	if s.r.opts.LOD && s.eff < 0.5 {
-		sh.Color.A = 0 // a shadow under half scale is a smudge
+		sh.Color.A *= math.Max(0, s.eff*4-1) // a shadow under half scale is a smudge: fade it out to a quarter
 	}
 	if sh.Color.A > 0 && s.r.opts.ShadowSprite && w > 2*(r+1.5*sh.Blur) && h > 2*(r+1.5*sh.Blur) {
 		s.r.sprite(r, sh.Blur, sh.Color, s.eff, math.Max(math.Abs(sh.DX), math.Abs(sh.DY)), op.Color.A >= 1).draw(s, x+sh.DX, y+sh.DY, w, h)

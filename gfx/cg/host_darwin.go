@@ -4,6 +4,7 @@ package cg
 
 import (
 	"sync"
+	"unsafe"
 
 	"github.com/ebitengine/purego"
 
@@ -27,9 +28,10 @@ var (
 	sels     struct {
 		alloc, init, release, addSublayer, removeFromSuperlayer, setFrame, setBounds, setPosition, setAnchorPoint,
 		setAffineTransform, setOpacity, setHidden, setContents, setContentsScale, begin, commit, setDisableActions,
-		frame, affineTransform, opacity, contents, isHidden, setActions uintptr
+		frame, affineTransform, opacity, contents, isHidden, setActions, setMinFilter, minFilter uintptr
 	}
 	clsLayer, clsTransaction uintptr
+	filterTrilinear          uintptr // kCAFilterTrilinear
 )
 
 func initHost() {
@@ -50,6 +52,12 @@ func initHost() {
 		sels.begin, sels.commit, sels.setDisableActions = s("begin"), s("commit"), s("setDisableActions:")
 		sels.frame, sels.affineTransform, sels.opacity, sels.contents, sels.isHidden = s("frame"), s("affineTransform"), s("opacity"), s("contents"), s("isHidden")
 		sels.setActions = s("setActions:")
+		sels.setMinFilter, sels.minFilter = s("setMinificationFilter:"), s("minificationFilter")
+		a, err := purego.Dlsym(purego.RTLD_DEFAULT, "kCAFilterTrilinear")
+		if err != nil {
+			panic("gfx/cg: dlsym kCAFilterTrilinear: " + err.Error())
+		}
+		filterTrilinear = *(*uintptr)(*(*unsafe.Pointer)(unsafe.Pointer(&a)))
 		clsLayer = uintptr(cocoa.OSObjc_lookUpClass("CALayer"))
 		clsTransaction = uintptr(cocoa.OSObjc_lookUpClass("CATransaction"))
 	})
@@ -121,6 +129,10 @@ func (h *Host) Commit() { send0(clsTransaction, sels.commit) }
 func (h *Host) NewLayer(g gfx.Group) gfx.Layer {
 	l := send0(send0(clsLayer, sels.alloc), sels.init)
 	msgF64(l, sels.setContentsScale, h.scale)
+	if g == gfx.GroupTiles {
+		// a tile shown smaller than it was drawn, during a pinch, is mip-mapped: thin lines do not alias away
+		msgInt(l, sels.setMinFilter, filterTrilinear)
+	}
 	msgInt(h.groups[g], sels.addSublayer, l)
 	return &layer{ref: l}
 }

@@ -139,7 +139,7 @@ v.Pan(dx, dy); v.SetZoomLimits(0.02, 64)
 - **Capture.** After a press the moves and the release keep coming outside the view (AppKit keeps the
   mouse-down view as the target) until the last button is up. The release is also read from the NSEvent,
   because SWT queues it and it can be late or lost outside the window; the SWT one that follows is dropped. If the view loses focus with a button held, a
-  `PointerCancel` arrives: land what you lifted. A macOS Ctrl-click is Button 1 with `Mods.Ctrl`.
+  `PointerCancel` arrives: land what you lifted. Escape during a press is a `PointerCancel` with `Aborted` set: put back what the drag moved. While a button is held the view also polls the hardware button state every 20 ms and reports the release if no event brought it. A macOS Ctrl-click is Button 1 with `Mods.Ctrl`.
 - **Scroll.** `Precise` deltas (trackpad, Magic Mouse) are view points, a wheel gives lines (16 points each
   in the built-in pan). `Phase` is the finger phase, `Momentum` the phase of the coasting after the fingers
   lift; both are `PhaseNone` for a wheel. A press or resting fingers (`PhaseMayBegin`) drop the momentum

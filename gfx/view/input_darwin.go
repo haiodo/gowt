@@ -7,6 +7,7 @@ import (
 	"github.com/haiodo/gowt/gfx"
 	"github.com/haiodo/gowt/gfx/cg"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -21,9 +22,19 @@ func (v *View) wireInput() {
 			c.SetFocus()
 		}
 	}
+	if cg.Tracing {
+		v.r.trace = cg.Tracef
+	}
 	pt := func(m g.Mouse) gfx.Point { return gfx.Point{X: float64(m.X), Y: float64(m.Y)} }
-	v.cv.OnMouseDown(func(m g.Mouse) { v.r.pointer(PointerDown, pt(m), m.Button, m.Count, m.Mods) })
-	v.cv.OnMouseUp(func(m g.Mouse) { v.r.pointer(PointerUp, pt(m), m.Button, 0, m.Mods) })
+	v.cv.OnMouseDown(func(m g.Mouse) {
+		cg.Tracef("swt MouseDown (%d,%d) button=%d", m.X, m.Y, m.Button)
+		v.r.pointer(PointerDown, pt(m), m.Button, m.Count, m.Mods)
+		v.pollRelease()
+	})
+	v.cv.OnMouseUp(func(m g.Mouse) {
+		cg.Tracef("swt MouseUp (%d,%d) button=%d", m.X, m.Y, m.Button)
+		v.r.pointer(PointerUp, pt(m), m.Button, 0, m.Mods)
+	})
 	v.cv.OnMouseMove(func(m g.Mouse) { v.r.pointer(PointerMove, pt(m), 0, 0, m.Mods) })
 
 	c := v.cv.Unwrap()
@@ -34,6 +45,11 @@ func (v *View) wireInput() {
 	}))
 	key := func(down bool) func(*swt.KeyEvent) {
 		return func(e *swt.KeyEvent) {
+			cg.Tracef("swt key down=%v code=%d", down, e.KeyCode)
+			if down && e.KeyCode == int32(swt.ESC) && v.r.held != 0 {
+				v.r.abort()
+				return
+			}
 			if v.onKey != nil {
 				v.onKey(&Key{Down: down, Code: int(e.KeyCode), Char: rune(e.Character), Mods: modsOfMask(e.StateMask)})
 			}
@@ -46,6 +62,35 @@ func (v *View) wireInput() {
 		cg.MonitorInput(v.nsview, v.native),
 		cg.OnWindowChange(v.nsview, func() { v.resize.Store(true) }),
 	)
+}
+
+// pollRelease watches the hardware button state while a button is held and reports the release
+// when no event brought it. 20 ms is the latency ceiling of that fallback.
+func (v *View) pollRelease() {
+	if v.polling || v.r.held == 0 {
+		return
+	}
+	v.polling = true
+	display := v.cv.Unwrap().GetDisplay()
+	var tick jrt.Runnable
+	tick = jrt.NewRunnable(func() {
+		if v.gone.Load() {
+			return
+		}
+		v.r.settle(func(b int) bool {
+			down := cg.ButtonDown(b)
+			if !down {
+				cg.Tracef("poll: button %d is up while held, releasing", b)
+			}
+			return down
+		})
+		if v.r.held == 0 {
+			v.polling = false
+			return
+		}
+		display.TimerExec(20, tick)
+	})
+	display.TimerExec(20, tick)
 }
 
 func modsOfMask(m int32) g.Mods {

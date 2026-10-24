@@ -44,7 +44,8 @@ const (
 	PointerDown PointerKind = iota
 	PointerMove
 	PointerUp
-	// PointerCancel ends a drag that lost its release: the view lost focus with a button held.
+	// PointerCancel ends a drag that lost its release: the view lost focus with a button held, or
+	// Escape was pressed (Aborted).
 	PointerCancel
 )
 
@@ -64,6 +65,8 @@ type Pointer struct {
 	Mods  g.Mods
 	// Drag is set on moves, releases and cancels that belong to a press.
 	Drag bool
+	// Aborted is set on the PointerCancel that Escape caused: the app puts back what the drag moved.
+	Aborted bool
 	// Target and Origin are the node and the scene point under the press that began the drag.
 	Target *gfx.Node
 	Origin gfx.Point
@@ -152,6 +155,8 @@ type router struct {
 	onMagnify func(*Magnify) bool
 	onSmart   func(*SmartZoom) bool
 
+	trace    func(format string, a ...any) // nil unless tracing
+	aborting bool
 	last     gfx.Point // view point of the last pointer event
 	held     uint8     // bit b set while button b is down
 	target   *gfx.Node
@@ -168,6 +173,9 @@ func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mo
 	p := &Pointer{Kind: k, Pos: pos, Scene: r.cam.SceneAt(pos), Button: button, Count: count, Mods: m}
 	p.Node = r.hit(p.Scene)
 	r.last = pos
+	if r.trace != nil {
+		r.trace("router kind=%d pos=(%.0f,%.0f) button=%d held=%b", k, pos.X, pos.Y, button, r.held)
+	}
 	switch k {
 	case PointerDown:
 		if r.held == 0 {
@@ -182,12 +190,15 @@ func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mo
 		p.Button, p.Drag = lowestButton(r.held), r.held != 0
 	case PointerUp:
 		if r.held&(1<<button) == 0 {
+			if r.trace != nil {
+				r.trace("router: release of button %d dropped, already reported", button)
+			}
 			return // the release was already reported
 		}
 		p.Drag = r.held != 0
 		r.held &^= 1 << button
 	case PointerCancel:
-		p.Drag = r.held != 0
+		p.Drag, p.Aborted = r.held != 0, r.aborting
 		r.held = 0
 	}
 	if p.Drag || k == PointerDown {
@@ -198,6 +209,25 @@ func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mo
 	}
 	if r.onPointer != nil {
 		r.onPointer(p)
+	}
+}
+
+// settle reports the release of every held button that down says is no longer pressed. The release
+// event may never reach the app, e.g. after a drag that ended over another application.
+func (r *router) settle(down func(button int) bool) {
+	for b := 1; b < 8; b++ {
+		if r.held&(1<<b) != 0 && !down(b) {
+			r.pointer(PointerUp, r.last, b, 0, g.Mods{})
+		}
+	}
+}
+
+// abort ends the drag as Escape does: a PointerCancel with Aborted set.
+func (r *router) abort() {
+	if r.held != 0 {
+		r.aborting = true
+		r.pointer(PointerCancel, r.last, 0, 0, g.Mods{})
+		r.aborting = false
 	}
 }
 

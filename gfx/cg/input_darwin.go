@@ -3,7 +3,10 @@
 package cg
 
 import (
+	"fmt"
+	"os"
 	"sync"
+	"time"
 
 	"github.com/ebitengine/purego"
 	"github.com/ebitengine/purego/objc"
@@ -24,7 +27,7 @@ var (
 	isel      struct {
 		typ, window, locationInWindow, scrollingDeltaX, scrollingDeltaY, hasPrecise, phase, momentumPhase,
 		magnification, modifierFlags, convertPoint, isFlipped, bounds, addMonitor, removeMonitor, defaultCenter,
-		addObserver, removeObserver, object, buttonNumber, respondsTo uintptr
+		addObserver, removeObserver, object, buttonNumber, respondsTo, windowNumber, pressedButtons uintptr
 	}
 	clsNSEvent, clsNotifCenter, clsNSCursor uintptr
 )
@@ -43,6 +46,7 @@ func initInput() {
 		isel.addMonitor, isel.removeMonitor = s("addLocalMonitorForEventsMatchingMask:handler:"), s("removeMonitor:")
 		isel.defaultCenter, isel.addObserver, isel.removeObserver = s("defaultCenter"), s("addObserverForName:object:queue:usingBlock:"), s("removeObserver:")
 		isel.object, isel.buttonNumber, isel.respondsTo = s("object"), s("buttonNumber"), s("respondsToSelector:")
+		isel.windowNumber, isel.pressedButtons = s("windowNumber"), s("pressedMouseButtons")
 		clsNSEvent = uintptr(cocoa.OSObjc_lookUpClass("NSEvent"))
 		clsNotifCenter = uintptr(cocoa.OSObjc_lookUpClass("NSNotificationCenter"))
 		clsNSCursor = uintptr(cocoa.OSObjc_lookUpClass("NSCursor"))
@@ -83,11 +87,13 @@ type InputEvent struct {
 const (
 	nsLeftMouseUp  = 2
 	nsRightMouseUp = 4
-	nsOtherMouseUp = 25
+	nsOtherMouseUp = 26
 	nsScrollWheel  = 22
 	nsMagnify      = 30
 	nsSmartMagnify = 32
 	nsMonitorMasks = 1<<nsScrollWheel | 1<<nsMagnify | 1<<nsSmartMagnify | 1<<nsLeftMouseUp | 1<<nsRightMouseUp | 1<<nsOtherMouseUp
+	// the traced types: press and drag of the three buttons
+	nsTraceMasks   = 1<<1 | 1<<3 | 1<<25 | 1<<6 | 1<<7 | 1<<27
 	notifUTF8      = 0x08000100
 	notifBacking   = "NSWindowDidChangeBackingPropertiesNotification"
 	notifChangeScr = "NSWindowDidChangeScreenNotification"
@@ -104,6 +110,45 @@ func swtButton(n int) int {
 		return 2
 	}
 	return n + 1
+}
+
+// Tracing is set by GFXDEMO_TRACE: the monitor and the view print every mouse event they see.
+var Tracing = os.Getenv("GFXDEMO_TRACE") != ""
+
+// Tracef prints a line to stderr when Tracing is set.
+func Tracef(format string, a ...any) {
+	if Tracing {
+		fmt.Fprintf(os.Stderr, "trace %s %s\n", time.Now().Format("15:04:05.000"), fmt.Sprintf(format, a...))
+	}
+}
+
+var dragTrace int
+
+func traceEvent(ev, view uintptr) {
+	t := send0(ev, isel.typ)
+	if t == 6 || t == 7 || t == 27 {
+		if dragTrace++; dragTrace%10 != 1 {
+			return
+		}
+	}
+	loc := msgPtRet(ev, isel.locationInWindow)
+	Tracef("nsevent type=%d win=%d viewwin=%d loc=(%.0f,%.0f) button=%d pressed=%b", t,
+		int64(send0(ev, isel.windowNumber)), int64(send0(send0(view, isel.window), isel.windowNumber)),
+		loc.X, loc.Y, int64(send0(ev, isel.buttonNumber)), send0(clsNSEvent, isel.pressedButtons))
+}
+
+// ButtonDown reports whether the mouse button b (SWT numbering) is held right now, whatever
+// events reached the app.
+func ButtonDown(b int) bool {
+	initInput()
+	n := b - 1
+	switch b {
+	case 3:
+		n = 1
+	case 2:
+		n = 2
+	}
+	return send0(clsNSEvent, isel.pressedButtons)>>uint(n)&1 != 0
 }
 
 func nsBool(v uintptr) bool { return v&0xff != 0 }
@@ -148,6 +193,9 @@ func MonitorInput(view uintptr, fn func(InputEvent) bool) (stop func()) {
 	initInput()
 	enableSmartMagnify(view)
 	block := objc.NewBlock(func(_ objc.Block, ev objc.ID) objc.ID {
+		if Tracing {
+			traceEvent(uintptr(ev), view)
+		}
 		e, win, ok := readInput(uintptr(ev))
 		if !ok || send0(uintptr(ev), isel.window) != send0(view, isel.window) {
 			return ev
@@ -166,7 +214,11 @@ func MonitorInput(view uintptr, fn func(InputEvent) bool) (stop func()) {
 		}
 		return ev
 	})
-	mon := msg2(clsNSEvent, isel.addMonitor, nsMonitorMasks, uintptr(block))
+	masks := uintptr(nsMonitorMasks)
+	if Tracing {
+		masks |= nsTraceMasks
+	}
+	mon := msg2(clsNSEvent, isel.addMonitor, masks, uintptr(block))
 	return func() {
 		if mon != 0 {
 			msgInt(clsNSEvent, isel.removeMonitor, mon)

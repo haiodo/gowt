@@ -62,7 +62,7 @@ func TestMouseUpAndSmartMagnify(t *testing.T) {
 	cases := []struct {
 		typ, cgButton uint32
 		want          int
-	}{{2, 0, 1}, {4, 1, 3}} // left up, right up
+	}{{2, 0, 1}, {4, 1, 3}, {26, 2, 2}} // left, right, middle up
 	for _, c := range cases {
 		cg := create(0, c.typ, cgPoint{10, 20}, c.cgButton)
 		ev := fromCG(clsNSEvent, uintptr(cocoa.OSSel_registerName("eventWithCGEvent:")), cg)

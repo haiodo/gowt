@@ -26,12 +26,14 @@ type View struct {
 	nsview uintptr
 	posted atomic.Bool
 	gone   atomic.Bool
-	dpr    float64
-	resize atomic.Bool
-	r      *router
-	onKey  func(*Key)
-	stops  []func()
-	cursor map[Cursor]*swt.Cursor
+	// polling is set while pollRelease has a timer running; UI thread only
+	polling bool
+	dpr     float64
+	resize  atomic.Bool
+	r       *router
+	onKey   func(*Key)
+	stops   []func()
+	cursor  map[Cursor]*swt.Cursor
 }
 
 // New returns an Option that creates the scene canvas in the widget tree, like g.Canvas does. init

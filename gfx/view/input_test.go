@@ -209,3 +209,45 @@ func TestReleaseReportedOnce(t *testing.T) {
 		t.Fatalf("%d events, want the press and one release", len(rg.got))
 	}
 }
+
+// A release that no event brought: the hardware says the button is up.
+func TestSettleReleasesLostButton(t *testing.T) {
+	rg := newRig(t)
+	rg.r.pointer(PointerDown, pt(20, 10), 1, 1, g.Mods{})
+	rg.r.pointer(PointerMove, pt(-900, 10), 0, 0, g.Mods{})
+	rg.r.settle(func(int) bool { return true })
+	if len(rg.got) != 2 {
+		t.Fatalf("a held button reported released: %d events", len(rg.got))
+	}
+	rg.r.settle(func(int) bool { return false })
+	if n := len(rg.got); n != 3 || rg.got[2].Kind != PointerUp || !rg.got[2].Drag || rg.got[2].Pos != pt(-900, 10) {
+		t.Fatalf("want one release at the last position, got %d events", n)
+	}
+	rg.r.settle(func(int) bool { return false })
+	if len(rg.got) != 3 {
+		t.Fatal("a second settle reported again")
+	}
+}
+
+func TestAbortCancelsDragOnce(t *testing.T) {
+	rg := newRig(t)
+	rg.r.abort()
+	if len(rg.got) != 0 {
+		t.Fatal("abort without a button held must report nothing")
+	}
+	rg.r.pointer(PointerDown, pt(20, 10), 1, 1, g.Mods{})
+	rg.r.abort()
+	c := rg.got[1]
+	if c.Kind != PointerCancel || !c.Aborted || !c.Drag || c.Origin != rg.got[0].Scene {
+		t.Fatalf("%+v", c)
+	}
+	rg.r.pointer(PointerUp, pt(20, 10), 1, 0, g.Mods{}) // the release that follows is dropped
+	if len(rg.got) != 2 {
+		t.Fatal("release after abort was reported")
+	}
+	rg.r.pointer(PointerDown, pt(20, 10), 1, 1, g.Mods{})
+	rg.r.pointer(PointerCancel, pt(20, 10), 0, 0, g.Mods{})
+	if rg.got[len(rg.got)-1].Aborted {
+		t.Fatal("a focus-loss cancel must not be Aborted")
+	}
+}

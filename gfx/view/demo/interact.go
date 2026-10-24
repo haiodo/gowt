@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/haiodo/gowt/gfx"
+	"github.com/haiodo/gowt/gfx/cg"
 	"github.com/haiodo/gowt/gfx/synth"
 	"github.com/haiodo/gowt/gfx/view"
 	"github.com/haiodo/gowt/swt"
@@ -43,6 +44,9 @@ func interactive(v *view.View, doc *synth.Doc) {
 		mode = modeNone
 	}
 	v.OnPointer(func(p *view.Pointer) {
+		if cg.Tracing {
+			cg.Tracef("demo pointer kind=%d mode=%d drag=%v aborted=%v", p.Kind, mode, p.Drag, p.Aborted)
+		}
 		switch p.Kind {
 		case view.PointerDown:
 			if p.Button != 1 {
@@ -76,6 +80,10 @@ func interactive(v *view.View, doc *synth.Doc) {
 				cursor(view.CursorGrab)
 			}
 		case view.PointerUp, view.PointerCancel:
+			if p.Aborted && mode == modeDrag {
+				x, y := p.Origin.X+grab.X, p.Origin.Y+grab.Y
+				doc.Scene.Update(func(tx *gfx.Tx) { doc.Move(tx, box, x, y) })
+			}
 			land()
 			cursor(view.CursorGrab)
 		}
@@ -104,7 +112,7 @@ func interactive(v *view.View, doc *synth.Doc) {
 		}
 	})
 	v.SetCursor(view.CursorGrab)
-	fmt.Println("interactive: two-finger scroll = pan, pinch = zoom, hold Cmd and two-finger scroll up/down = zoom, two-finger double tap = zoom 1, drag empty space = pan, drag a box = move it, keys 0 = - + arrows after a click")
+	fmt.Println("interactive: two-finger scroll = pan, pinch = zoom, hold Cmd and two-finger scroll up/down = zoom, two-finger double tap = zoom 1, drag empty space = pan, drag a box = move it, Escape while dragging = put it back, keys 0 = - + arrows after a click")
 }
 
 // boxOf maps a hit node to its box: boxes carry their index as the node id, connectors do not.

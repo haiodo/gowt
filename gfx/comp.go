@@ -122,6 +122,10 @@ type lift struct {
 	// are redrawn without it; then both change in one host transaction, so the node is on screen once
 	hold  bool
 	hrect Rect // the area whose tiles change when the node leaves or returns
+	// pending: the node is still in the tiles, scene.Lift has not run: the first sprite is being drawn
+	// on a worker. drawing: a worker draws an image for this lift, the old one (if any) stays placed.
+	pending, drawing bool
+	dead             bool // removed from c.lifts: a finished image is dropped
 }
 
 // scratch is a target and a collect buffer for drawing a sprite image; index 0 is the Frame
@@ -172,6 +176,7 @@ type Compositor struct {
 	pendingSprites []*Sprite
 	scr            []scratch
 	jobs           []liftJob
+	liftReady      []liftJob // images drawn on workers, guarded by mu
 	onFrame        func(FrameInfo)
 	fi             FrameInfo
 	busy           bool
@@ -182,6 +187,7 @@ type Compositor struct {
 	ready   []result
 	closed  bool
 	readyN  atomic.Bool
+	liftN   atomic.Bool // liftReady has something
 	snap    atomic.Pointer[camSnap]
 	pending atomic.Int32
 	wg      sync.WaitGroup
@@ -230,6 +236,10 @@ func (c *Compositor) Close() {
 		Release(r.img)
 	}
 	c.ready = nil
+	for _, j := range c.liftReady {
+		Release(j.img)
+	}
+	c.liftReady = nil
 	c.mu.Unlock()
 	for i := range c.scr {
 		if c.scr[i].t != nil {
@@ -300,7 +310,7 @@ func (c *Compositor) Stats() Stats {
 // NeedsFrame reports whether a Frame would change anything: safe from any goroutine, cheap enough
 // for a display-link callback to call on every tick.
 func (c *Compositor) NeedsFrame() bool {
-	return c.ticking.Load() || c.camDirty.Load() || c.readyN.Load() || c.busy || c.scene.Pending()
+	return c.ticking.Load() || c.camDirty.Load() || c.readyN.Load() || c.liftN.Load() || c.busy || c.scene.Pending()
 }
 
 func (c *Compositor) viewRect() Rect {
@@ -350,6 +360,7 @@ func (c *Compositor) Frame(fi FrameInfo) {
 	if len(damage) > 0 {
 		c.invalidate(damage)
 	}
+	c.applyLifts()
 	c.ensureTiles(camMoved || len(damage) > 0)
 	c.drain()
 	c.stepSprites(fi, camMoved)
@@ -540,6 +551,10 @@ func (c *Compositor) worker() {
 	}
 }
 
+// pendingTileBudget is the most tile images a frame applies while a sprite is drawn: the host
+// commit costs about 0.15 ms per tile.
+const pendingTileBudget = 8
+
 // drain puts the finished tile images on their layers. While a lift or a landing is under way, the
 // images of tiles under it are held back until every such tile is redrawn, and then applied in the
 // same transaction in which the sprites appear or go: a node is never seen in its sprite and in a
@@ -557,7 +572,20 @@ func (c *Compositor) drain() {
 				trs = append(trs, l.hrect)
 			}
 		}
-		for _, r := range res {
+		// while a first sprite is drawn the node moves in the tiles, which redraw every frame: apply
+		// only what fits the budget, the rest waits for the next frame
+		budget := len(res)
+		if slices.ContainsFunc(c.lifts, func(l *lift) bool { return l.pending }) {
+			budget = pendingTileBudget
+		}
+		for i, r := range res {
+			if i >= budget {
+				c.mu.Lock()
+				c.ready = append(res[i:len(res):len(res)], c.ready...)
+				c.readyN.Store(true)
+				c.mu.Unlock()
+				break
+			}
 			t := r.t
 			t.queued = false
 			if r.gen < 0 {
@@ -690,11 +718,19 @@ func (c *Compositor) Lift(nodes ...*Node) {
 	c.host.Begin()
 	fresh := make([]*lift, 0, len(nodes))
 	for _, n := range nodes {
-		r := c.scene.Lift(n)
-		dmg = append(dmg, r)
-		fresh = append(fresh, &lift{node: n, layer: c.host.NewLayer(GroupActive), hrect: r})
+		l := &lift{node: n, layer: c.host.NewLayer(GroupActive)}
+		c.lifts = append(c.lifts, l)
+		// a sprite too big to draw within a frame is drawn on a worker first; the node stays in the
+		// tiles until it is ready (applyLifts)
+		if c.bigSprite(l) {
+			l.pending = true
+			c.drawAsync(l)
+			continue
+		}
+		l.hrect = c.scene.Lift(n)
+		dmg = append(dmg, l.hrect)
+		fresh = append(fresh, l)
 	}
-	c.lifts = append(c.lifts, fresh...)
 	c.invalidate(dmg)
 	// draw now, before the frame applies the moves that follow the lift
 	c.refreshLifts(fresh)
@@ -714,6 +750,12 @@ func (c *Compositor) Land(nodes ...*Node) {
 	for _, n := range nodes {
 		for _, l := range c.lifts {
 			if l.node == n && !l.landing {
+				if l.pending {
+					// never left the tiles: nothing to return
+					l.dead = true
+					c.dropLift(l)
+					break
+				}
 				l.landing = true
 				r := c.scene.Land(n)
 				l.hrect = l.hrect.Union(r)

@@ -2,6 +2,7 @@ package gfx
 
 import (
 	"math"
+	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -322,6 +323,7 @@ func (c *Compositor) stepLifts() {
 		var attached bool
 		c.scene.Read(func() { attached = l.node.scene == c.scene })
 		if !attached || (l.landing && c.settled) {
+			l.dead = true
 			l.layer.Remove()
 			continue
 		}
@@ -331,14 +333,144 @@ func (c *Compositor) stepLifts() {
 	c.refreshLifts(live)
 }
 
-// refreshLifts draws again the sprites whose node changed, all at once on the worker goroutines,
-// and places every sprite.
-func (c *Compositor) refreshLifts(lifts []*lift) {
+// dropLift removes l from the active layer.
+func (c *Compositor) dropLift(l *lift) {
+	l.layer.Remove()
+	c.lifts = slices.DeleteFunc(c.lifts, func(x *lift) bool { return x == l })
+}
+
+// spriteArea is the scene area a sprite of a node with bounds sb draws at this scale: the view, or
+// more of the node beyond it when that fits maxSpritePx. wpx is -1 when the image is too large.
+func (c *Compositor) spriteArea(sb Rect, want float64) (area Rect, wpx, hpx int) {
 	view := c.viewRect().Expand(64 / c.cam.Zoom)
 	wide := c.viewRect().Expand(max(c.vw, c.vh) / c.cam.Zoom / 4)
+	area = sb.Intersect(view)
+	if w := sb.Intersect(wide); sb != area && w.W()*w.H()*want*want < maxSpritePx {
+		// draw beyond the view, so that a drag does not redraw the sprite at every step
+		area = w
+	}
+	if area.Empty() {
+		return area, 0, 0
+	}
+	wpx, hpx = int(math.Ceil(area.W()*want))+1, int(math.Ceil(area.H()*want))+1
+	if wpx > 1<<14 || hpx > 1<<14 {
+		wpx = -1
+	}
+	return area, wpx, hpx
+}
+
+// asyncSpritePx is the image size above which a sprite is drawn on a worker: at the speed of
+// the CoreGraphics raster that is about what a frame can afford.
+const asyncSpritePx = 1 << 18
+
+// bigSprite reports whether the first image of l is too big to draw within a frame.
+func (c *Compositor) bigSprite(l *lift) bool {
+	var sb Rect
+	c.scene.Read(func() { sb = l.node.SubtreeBounds() })
+	_, wpx, hpx := c.spriteArea(sb, c.cam.Zoom*c.dpr)
+	return wpx > 0 && wpx*hpx > asyncSpritePx
+}
+
+// drawAsync draws the image of l on a goroutine of its own and queues it for applyLifts. The area
+// is chosen under the scene lock together with the transform, so that image and transform match
+// however the node moves meanwhile.
+func (c *Compositor) drawAsync(l *lift) {
+	l.drawing = true
+	want := c.cam.Zoom * c.dpr
+	c.wg.Add(1)
+	go func() {
+		defer c.wg.Done()
+		j := liftJob{l: l, want: want}
+		var items Items
+		c.scene.Read(func() {
+			sb := l.node.SubtreeBounds()
+			j.w, j.rev, j.deep = l.node.world, l.node.rev, l.node.deep
+			j.area, j.wpx, j.hpx = c.spriteArea(sb, want)
+			if j.wpx > 0 {
+				j.clipped = j.area != sb
+				collectSubtree(l.node, j.area, &items)
+			}
+		})
+		if j.wpx > 0 {
+			t := c.r.NewTarget(j.wpx, j.hpx)
+			t.Begin(want, j.area.Min, Color{})
+			t.Draw(items.List)
+			j.img = t.Snapshot(float64(j.wpx)/c.dpr, float64(j.hpx)/c.dpr)
+			t.Close()
+		}
+		c.mu.Lock()
+		c.liftReady = append(c.liftReady, j)
+		c.liftN.Store(true)
+		c.mu.Unlock()
+	}()
+}
+
+// applyLifts shows the images the workers have finished. A first image also lifts its node, in the
+// same host transaction: the node leaves the tiles once and the sprite stays hidden until the tiles
+// under it are redrawn (hold), like for a lift drawn at once.
+func (c *Compositor) applyLifts() {
+	if !c.liftN.Load() {
+		return
+	}
+	c.mu.Lock()
+	done := c.liftReady
+	c.liftReady = nil
+	c.liftN.Store(false)
+	c.mu.Unlock()
+	for i := range done {
+		j := &done[i]
+		l := j.l
+		l.drawing = false
+		if l.dead || j.img == nil {
+			Release(j.img)
+			if l.pending && !l.dead {
+				// nothing to draw in the view: show the node lifted without an image
+				c.liftNow(l)
+			}
+			continue
+		}
+		l.layer.SetImage(j.img)
+		Release(j.img)
+		l.rb, l.clipped, l.w0, l.rev, l.deep, l.scale, l.has = j.area, j.clipped, j.w, j.rev, j.deep, j.want, true
+		l.wpx, l.hpx = j.wpx, j.hpx
+		c.stats.SpriteDraws++
+		if l.pending {
+			c.liftNow(l)
+			continue
+		}
+		var w Affine
+		c.scene.Read(func() { w = l.node.world })
+		c.placeLift(l, w)
+	}
+}
+
+// liftNow takes the node of a pending lift out of the tiles.
+func (c *Compositor) liftNow(l *lift) {
+	l.pending = false
+	l.hrect = c.scene.Lift(l.node)
+	c.invalidate([]Rect{l.hrect})
+	if l.has && c.cur != nil {
+		l.hold = true
+		l.layer.SetHidden(true)
+	} else if l.has {
+		var w Affine
+		c.scene.Read(func() { w = l.node.world })
+		c.placeLift(l, w)
+	}
+	c.busy = true
+}
+
+// refreshLifts draws again the sprites whose node changed, all at once on the worker goroutines,
+// and places every sprite. Images too big for a frame are drawn in the background, and the old
+// image stays where it is until the new one is ready.
+func (c *Compositor) refreshLifts(lifts []*lift) {
+	view := c.viewRect().Expand(64 / c.cam.Zoom)
 	want := c.cam.Zoom * c.dpr
 	jobs := c.jobs[:0]
 	for _, l := range lifts {
+		if l.pending {
+			continue
+		}
 		if l.hold {
 			if !c.settled {
 				continue
@@ -356,6 +488,12 @@ func (c *Compositor) refreshLifts(lifts []*lift) {
 			l.layer.SetHidden(true)
 			continue
 		}
+		if l.drawing || (l.landing && l.has) {
+			if l.has {
+				c.placeLift(l, w)
+			}
+			continue
+		}
 		moved := w != l.w0
 		// a sprite cut to the view stays good while the view is still inside what it drew
 		stale := l.clipped && moved && !l.rb.Translate(Point{w[4] - l.w0[4], w[5] - l.w0[5]}).covers(view)
@@ -364,18 +502,20 @@ func (c *Compositor) refreshLifts(lifts []*lift) {
 			c.placeLift(l, w)
 			continue
 		}
-		area := sb.Intersect(view)
-		if w := sb.Intersect(wide); sb != area && w.W()*w.H()*want*want < maxSpritePx {
-			// draw beyond the view, so that a drag does not redraw the sprite at every step
-			area = w
-		}
+		area, wpx, hpx := c.spriteArea(sb, want)
 		if area.Empty() {
 			l.layer.SetHidden(true)
 			l.has = false
 			continue
 		}
-		wpx, hpx := int(math.Ceil(area.W()*want))+1, int(math.Ceil(area.H()*want))+1
-		if wpx > 1<<14 || hpx > 1<<14 {
+		if wpx < 0 {
+			continue
+		}
+		if wpx*hpx > asyncSpritePx {
+			c.drawAsync(l)
+			if l.has {
+				c.placeLift(l, w)
+			}
 			continue
 		}
 		jobs = append(jobs, liftJob{l: l, area: area, wpx: wpx, hpx: hpx, want: want, w: w, rev: rev, deep: deep, clipped: area != sb})

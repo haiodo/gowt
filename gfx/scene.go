@@ -666,9 +666,14 @@ func (s *Scene) Collect(r Rect, b *Items) {
 
 // CollectSubtree is Collect for root and its descendants only, lifted or not.
 func (s *Scene) CollectSubtree(root *Node, r Rect, b *Items) {
-	b.Reset()
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+	collectSubtree(root, r, b)
+}
+
+// collectSubtree is CollectSubtree for a caller that holds the scene lock.
+func collectSubtree(root *Node, r Rect, b *Items) {
+	b.Reset()
 	var walk func(n *Node)
 	walk = func(n *Node) {
 		if n.indexed && n.bounds.Intersects(r) {

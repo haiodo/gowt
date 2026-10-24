@@ -2,6 +2,7 @@
 //go:build windows
 
 // Helpers the committed shared files need and only the reference platform defines in them.
+
 package swt
 
 func isCompositeToShell(x *Composite) (*Shell, bool) {

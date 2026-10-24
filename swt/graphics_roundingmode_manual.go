@@ -1,5 +1,6 @@
 // Hand-written stub for org.eclipse.swt.graphics.RoundingMode (manual.txt): the translator has
 // no rule for Java enums in v0. Zero value is ROUND, matching the Java field defaults j2go drops.
+
 package swt
 
 import "math"

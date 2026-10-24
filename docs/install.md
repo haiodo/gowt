@@ -19,12 +19,16 @@ The default application name is the executable's base name (without `.exe`); `go
 | Windows | Windows 10 or later (amd64 or arm64; run under Wine and on Windows 11 arm64; the minimum is not verified); comctl32 v6 comes from the manifest, see below. WebView2 Runtime (Evergreen; preinstalled on Windows 11) for the `webview` package; no `WebView2Loader.dll` is needed | `webview.New` returns an error naming the runtime and its download page |
 | Linux | GTK 3 (`libgtk-3.so.0` and its dependencies: gdk, cairo, pango, fontconfig, libX11) and an X11 or XWayland display | no GTK: an error naming the missing library and install commands. No display: an error ending in `No more handles [gtk_init_check() failed]`. Both are panics with an `error` value inside; `gowt.Run` recovers them and returns them wrapped (`gowt: ...`) |
 
-Linux packages: Debian/Ubuntu `libgtk-3-0`, Fedora `gtk3`, Arch `gtk3`, Alpine `gtk+3.0`. The `webview` package on Linux also needs WebKitGTK 4.1 (`libwebkit2gtk-4.1-0` on Debian/Ubuntu); the exact package names per distribution were not verified here.
+Linux packages: Debian/Ubuntu `libgtk-3-0`, Fedora `gtk3`, Arch `gtk3`. Distributions on musl (Alpine) are not supported: the binary needs glibc (`/lib/ld-linux-*.so.1`), and on Alpine it stops with `not found`; with `gcompat` it crashes in GLib.
+
+On a minimal Debian or Ubuntu (`apt install --no-install-recommends libgtk-3-0`) also install `librsvg2-common`. It provides the SVG loader of gdk-pixbuf (`libpixbufloader-svg.so`, checked on ubuntu:24.04: absent without it); without it GTK cannot load the SVG that draws the check mark, so check boxes render empty and GTK prints `Could not load a pixbuf from .../Adwaita/assets/check-symbolic.svg`. A full desktop install has it.
+
+The `webview` package on Linux also needs WebKitGTK 4.1: `libwebkit2gtk-4.1-0` on Debian and Ubuntu. Installing it and loading the `webview` example worked on ubuntu:24.04 (WebKitGTK 2.52.6) and debian:12 (2.50.6). Package names on other distributions were not checked. Without WebKitGTK the other widgets work and `webview.New` returns an error naming the missing library.
 
 ## Windows: the manifest
 
 Without a manifest Windows loads the classic common controls (no visual styles, no `SysLink`) and a bitmap-scaled, DPI-unaware process.
-Import the manifest package once from the main program:
+A program built on the `gowt` facade needs nothing: `manifest_windows.go` in package `gowt` imports `winmanifest`. A program that uses package `swt` without `gowt` imports it once from the main program:
 
 ```go
 import _ "github.com/haiodo/gowt/winmanifest"
@@ -32,7 +36,7 @@ import _ "github.com/haiodo/gowt/winmanifest"
 
 It links `manifest_windows_{amd64,arm64}.syso` with comctl32 v6 and per-monitor DPI awareness (v2, falling back to per-monitor, then system).
 The objects are made by `make winmanifest` (`tooling/mksyso`, pure Go, from `winmanifest/app.manifest`). Another `.syso` with its own
-manifest in the same executable makes the linker fail with a duplicate resource; use one or the other. UTF-8 as the process code page is
+manifest in the same executable makes the linker fail with a duplicate resource; use one or the other (a program with its own manifest uses `swt` and does not import `gowt`). UTF-8 as the process code page is
 not requested: the Windows port calls the wide API, so it would change nothing for it.
 
 ## macOS: app bundle

@@ -1,6 +1,7 @@
 // Round 6 manual stubs: classes Display references only off the Shell+Button path (dialogs,
 // tray, dock menu, combo tracking, font metrics), the org.eclipse.swt.internal helpers whose
 // static members Display/Shell/Item/SWT call, and the Callback bridge (see README "Callback design").
+
 package swt
 
 import (

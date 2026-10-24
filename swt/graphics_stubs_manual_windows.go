@@ -1,5 +1,6 @@
 // Hand-written stand-ins for the helpers the translated graphics classes call but that are not
 // ported: DPIUtil's scaling math, image loading (ImageLoader + codecs), strict checks.
+
 package swt
 
 import (

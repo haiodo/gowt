@@ -1,5 +1,6 @@
 // Group.computeTrim measures the NSBox natively on every call (port.sh rewrites the call site to
 // frameFromContentFrame); the frame-minus-content offset only depends on the title text and font.
+
 package swt
 
 import "github.com/haiodo/gowt/internal/cocoa"

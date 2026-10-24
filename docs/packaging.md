@@ -58,7 +58,7 @@ The `Info.plist` that `mkapp.sh` writes has these keys; copy the script and edit
 
 ## Linux
 
-- **Libraries.** GTK 3 (`libgtk-3.so.0` and its dependencies) and an X11 or XWayland display. The `webview` package also needs WebKitGTK 4.1 (`libwebkit2gtk-4.1-0` on Debian and Ubuntu). Packages per distribution are in [install.md](install.md); the WebKitGTK package names were not verified for every distribution. Without GTK the program returns an error naming the missing library; without a display `gowt.Run` returns an error ending in `No more handles [gtk_init_check() failed]`.
+- **Libraries.** GTK 3 (`libgtk-3.so.0` and its dependencies) and an X11 or XWayland display. The `webview` package also needs WebKitGTK 4.1 (`libwebkit2gtk-4.1-0` on Debian and Ubuntu). Packages per distribution are in [install.md](install.md); WebKitGTK was checked on ubuntu:24.04 and debian:12 only. Without GTK the program returns an error naming the missing library; without a display `gowt.Run` returns an error ending in `No more handles [gtk_init_check() failed]`.
 - **Desktop file.** The system menu lists a program from a `.desktop` file, for example `~/.local/share/applications/myapp.desktop`:
 
 ```ini
@@ -73,4 +73,4 @@ StartupWMClass=myapp
 
 `gowt.SetAppName("myapp")` sets the name the window manager sees as the WM class; `StartupWMClass` must match it for the menu entry and the window to group together. The same name names the launcher entry that `app.SetBadge` updates (`application://myapp.desktop`), so the badge count shows only when the desktop file is `myapp.desktop`; without `SetAppName` the name is the executable's file name. gowt does not use `GApplication`, so there is no application id other than this name. Icons go to `~/.local/share/icons/hicolor/<size>/apps/myapp.png`. This was not tried on a real desktop; the stand is Xvfb with openbox.
 - **Wayland.** The port uses GTK 3 over X11 or XWayland.
-- **glibc.** A Linux build is a dynamically linked ELF that needs `libc.so.6` and a glibc dynamic loader (`readelf -d` on the Docker stand's build shows `libc.so.6` as the only `NEEDED` entry). GTK itself is loaded with `dlopen` at start, so it is not a link-time dependency. A musl system such as Alpine was not checked.
+- **glibc.** A Linux build is a dynamically linked ELF that needs `libc.so.6` and a glibc dynamic loader (`readelf -d` on the Docker stand's build shows `libc.so.6` as the only `NEEDED` entry). GTK itself is loaded with `dlopen` at start, so it is not a link-time dependency. A musl system such as Alpine is not supported: the binary stops with `not found` there.

@@ -4,6 +4,8 @@ Example: [`examples/catalog`](../examples/catalog). `go run ./examples/catalog` 
 
 Every widget is created by a constructor function (`gowt.Label(text)`) that is passed to its parent, see [widgets.md](widgets.md) for options and methods. The pictures are `docs/img/<widget>-<os>.png` with `<os>` one of `macos`, `windows`, `linux`; they are written by `make docs-shots`, `win-docs-shots`, `linux-docs-shots` ([screenshots.md](screenshots.md)). A picture that is not in the repository yet has not been generated for that OS.
 
+<!-- TODO(orchestrator): img/switch-macos.png is missing; take it on the Mac: make docs-shots, or GOWT_SNAP=docs/img/switch-macos.png go run ./examples/catalog switch -->
+
 | Widget | Constructor | What it is | Linux | macOS | Windows |
 |---|---|---|---|---|---|
 | Label | `Label(text, opts...)` | static text | ![](img/label-linux.png) | ![](img/label-macos.png) | ![](img/label-windows.png) |

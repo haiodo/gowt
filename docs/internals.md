@@ -21,7 +21,7 @@ gowt is Eclipse SWT translated from Java to Go by a translator in this repositor
 | `webview/` | Hand-written system web view (WKWebView, WebKitGTK 4.1, WebView2) |
 | `browser/` | SWT's `Browser`, translated, with `webview` as the engine (`webbrowser_manual.go`) |
 | `jface/` | A slice of JFace (layout and widget factories), translated from `eclipse.platform.ui`; one source for every OS |
-| `winmanifest/` | The Windows manifest as `.syso` objects; import it for visual styles and DPI awareness |
+| `winmanifest/` | The Windows manifest as `.syso` objects; the `gowt` facade imports it on Windows, a program on `swt` alone imports it for visual styles and DPI awareness |
 | `examples/<topic>/` | Small programs backing the documentation pages |
 | `examples/controlexample/` | SWT's ControlExample, translated into its own package on top of `swt` |
 | `cmd/` | Demos and tools. Demos written with the facade: `gowtdemo`, `hellogowt`, `icondemo`, `glassdemo`, `backdropdemo`, `finderdemo`, `themecheck`, `webviewdemo`, `minibrowser`, `form`, `paint`, `stack`, `tree`, `widgets2`. On `swt`: `hello`, `images`, `jfacedemo`, `controlexample`. Tools: `swttest` (runs the translated tests), `snapcheck` (compares snapshots), `winprobe` (Windows: checks that every DLL function the bindings call resolves, opens no window), `fieldcheck` (runs the suites on a real machine into one zip, [field-check.md](field-check.md); `tooling/fieldreport` compares those zips) |

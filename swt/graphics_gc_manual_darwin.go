@@ -1,5 +1,6 @@
 // GC.GCTextData.Key/Cache (manual.txt): a record key and a size-bounded LinkedHashMap whose
 // removeEldestEntry releases the evicted text layout.
+
 package swt
 
 import "unsafe"

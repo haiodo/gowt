@@ -2,6 +2,7 @@
 // EventTable from panics raised inside a user Listener. Like the real class it offers each
 // exception to the current Display's handler first; it keeps the first one that handler rethrows
 // (no addSuppressed) and re-raises it on Close.
+
 package swt
 
 import (

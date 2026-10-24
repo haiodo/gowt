@@ -31,7 +31,7 @@ for e in $(ls examples | grep -vx -e controlexample -e catalog); do
 done
 
 go build -o "$bin/catalog$ext" ./examples/catalog || exit 1
-for w in $(sed -n 's/^	{"\([a-z]*\)", func.*/\1/p' examples/catalog/main.go); do
+for w in $(sed -n 's/^	{"\([a-z]*\)", .*/\1/p' examples/catalog/main.go); do
 	shoot "$w-$label.png" "$(pwd)/$bin/catalog$ext" "$w"
 done
 exit $fail

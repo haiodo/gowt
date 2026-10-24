@@ -4,6 +4,7 @@
 // See tooling/j2go/README.md "Round 9 images" for why, and the differences this leaves from real
 // SWT's own decoders. ImageLoader/ImageData/ImageLoaderEvent/ImageLoaderListener translate for
 // real; this file only replaces their FileFormat/NativeImageLoader/ImageDataLoader entry points.
+
 package swt
 
 import (

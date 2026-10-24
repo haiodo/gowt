@@ -1,5 +1,6 @@
 // Hand-written opaque stubs for Accessible and WidgetSpy (manual.txt): no input method and no
 // accessibility tree are built. Methods are added as the translated gtk widgets call them.
+
 package swt
 
 // Accessible: what Control.java calls on a control that has no screen-reader Accessible attached.

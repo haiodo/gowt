@@ -1,5 +1,6 @@
 // Button.setBounds and setFont set the push bezel on every layout (port.sh limits them to
 // ownBezel), so a glass or circular bezel from look.GlassButton or gowt.Circle survives.
+
 package swt
 
 import "github.com/haiodo/gowt/internal/cocoa"

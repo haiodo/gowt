@@ -63,6 +63,7 @@ type ListView struct {
 func List(items []string, opts ...Option) Option {
 	return leaf("List", sMultiSelect|sNoBorder, opts, func(p *swt.Composite) Widget {
 		l := swt.NewList(p, resolve(swt.V_SCROLL|swt.BORDER, opts))
+		scrollOverlay(l)
 		if len(items) > 0 {
 			l.SetItems(items)
 		}
@@ -127,6 +128,7 @@ type TableView struct {
 func Table(opts ...Option) Option {
 	return leaf("Table", sCheck|sMultiSelect|sNoBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTable(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
+		scrollOverlay(t)
 		t.SetHeaderVisible(true)
 		t.SetLinesVisible(true)
 		fluentTable(t)
@@ -407,6 +409,7 @@ type TreeView struct {
 func Tree(opts ...Option) Option {
 	return leaf("Tree", sCheck|sMultiSelect|sNoBorder|sCellSelect, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTree(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
+		scrollOverlay(t)
 		// The natural height follows the visible rows: lay out again after an expand or collapse.
 		t.AddTreeListener(swt.TreeListenerTreeExpandedAdapter(func(*swt.TreeEvent) { contentChanged(&t.Control) }))
 		t.AddTreeListener(swt.TreeListenerTreeCollapsedAdapter(func(*swt.TreeEvent) { contentChanged(&t.Control) }))

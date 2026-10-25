@@ -17,7 +17,9 @@ func WindowPNG(widget int64, path string) error {
 	if win == 0 {
 		return fmt.Errorf("no GdkWindow")
 	}
-	w, h := gtk.GDKGdk_window_get_width(win), gtk.GDKGdk_window_get_height(win)
+	// The window size is in logical points, the pixbuf copies device pixels: at scale 2 the logical size reads a quarter.
+	scale := gtk.GTKGtk_widget_get_scale_factor(widget)
+	w, h := gtk.GDKGdk_window_get_width(win)*scale, gtk.GDKGdk_window_get_height(win)*scale
 	pb := gtk.GDKGdk_pixbuf_get_from_window(win, 0, 0, w, h)
 	if pb == 0 {
 		return fmt.Errorf("gdk_pixbuf_get_from_window failed")

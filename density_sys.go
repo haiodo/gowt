@@ -1,7 +1,6 @@
 package gowt
 
 import (
-	"os/exec"
 	"runtime"
 	"strings"
 )
@@ -45,15 +44,6 @@ func (a *App) firstInstalled(families ...string) string {
 		}
 	}
 	return families[len(families)-1]
-}
-
-// gsettingsMono reads the GNOME monospace font family, "Monospace" (fontconfig's alias) without GNOME.
-func gsettingsMono() string {
-	out, err := exec.Command("gsettings", "get", "org.gnome.desktop.interface", "monospace-font-name").Output()
-	if err != nil {
-		return "Monospace"
-	}
-	return monoFamily(string(out))
 }
 
 // monoFamily turns "'Ubuntu Sans Mono 13'" into "Ubuntu Sans Mono": the quotes and a trailing size go.

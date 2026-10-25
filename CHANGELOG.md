@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+Linux look (GTK)
+- A default stylesheet is installed by `Run` at GTK application priority (below any app CSS): flat table and tree headers without column dividers, roomier rows (`-GtkTreeView-vertical-separator: 6`), and `Group` as a card with its title above it instead of in the frame line. Theme named colours only, so Adwaita, Yaru, light and dark follow.
+- `look.SetSidebar` marks the sidebar `gowt-sidebar`: a selected row in a List, Table or Tree there is a neutral rounded fill with the normal text colour instead of the accent bar; other lists keep the accent. The rule outranks the portal accent rule. Row insets are not possible with GTK 3 CSS.
+- New: `App.SetLinkColor(*Adaptive)` sets the link colour of every `Link` (light and dark, existing and later ones, follows a theme switch); nil restores the system colour. Works wherever SWT `Link.SetLinkForeground` does.
+- `Type.Mono` and the system monospace font now come from GSettings in process (no `gsettings` binary needed); "Monospace" without the schema.
+- `List`, `Table`, `Tree` and `Scroll` show overlay scroll bars on overflow only, as `Text` with `Multiline` does.
+- Fix: a `Text` without a frame was white in a dark window when the portal switched the theme after the display existed: SWT baked the light colour read at creation into the entry CSS. The entry now uses `@theme_base_color`.
+- Fix: `GOWT_SNAP` at scale 2 captured only the top-left quarter; the window is read at width and height times the scale factor.
+- Known: `List`, `Tree` and `Table` still get their minimum width as natural size, so a window packed around them shows "al..." (cause: the cell renderers end text with an ellipsis, which makes GtkTreeView report the ellipsis width as the column minimum); a `Button` with `Check()` or `Radio()` can lose its last letter (measured and allocated size agree, cause not found).
+
 ## v0.12.2 (2026-10-25)
 
 Fixes

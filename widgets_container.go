@@ -20,6 +20,7 @@ func Group(title string, opts ...Option) Option {
 	return &node{"Group", func(h host) Widget {
 		g := swt.NewGroup(h.into(), swt.NONE)
 		g.SetText(title)
+		groupCard(g)
 		gap, pad := spacingOf(opts, Spacing.SM)
 		g.SetLayout(newBox(false, gap, pad))
 		w := &GroupView{newPanel(&g.Composite), g}
@@ -208,6 +209,7 @@ func Scroll(opts ...Option) Option {
 		body := swt.NewCompositeParentStyle(s, swt.NONE)
 		gap, pad := spacingOf(opts, 0)
 		body.SetLayout(newBox(false, gap, pad))
+		scrollOverlay(s)
 		s.SetContent(body)
 		s.SetExpandHorizontal(true)
 		s.SetExpandVertical(true)

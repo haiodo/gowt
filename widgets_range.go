@@ -193,6 +193,9 @@ type LinkView struct {
 func Link(text string, opts ...Option) Option {
 	return leaf("Link", 0, opts, func(p *swt.Composite) Widget {
 		l := swt.NewLink(p, resolve(swt.NONE, opts))
+		if a := appOf(l); a != nil {
+			a.trackLink(l)
+		}
 		l.SetText(text)
 		return &LinkView{base{&l.Control}, l}
 	})

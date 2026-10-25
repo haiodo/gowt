@@ -5,6 +5,9 @@ package gtk
 // USER, because SWT's per-widget colour providers sit at APPLICATION and would win over these rules.
 const cssPriorityApplication = 800
 
+// GTK_STYLE_PROVIDER_PRIORITY_APPLICATION: above the theme, below USER, so an app's own provider can override.
+const cssPriorityDefaults = 600
+
 func newProvider(css string) int64 {
 	p := GTKGtk_css_provider_new()
 	GTK3Gtk_css_provider_load_from_data(p, cs(css), -1, nil)
@@ -12,8 +15,10 @@ func newProvider(css string) int64 {
 }
 
 // AddGlobalCSS applies css to every widget of the default screen.
-func AddGlobalCSS(css string) {
-	GTK3Gtk_style_context_add_provider_for_screen(GDKGdk_screen_get_default(), newProvider(css), cssPriorityApplication)
+func AddGlobalCSS(css string) int64 {
+	p := newProvider(css)
+	GTK3Gtk_style_context_add_provider_for_screen(GDKGdk_screen_get_default(), p, cssPriorityApplication)
+	return p
 }
 
 // SetWidgetCSS loads css for the widget alone; the returned provider can be passed back to replace it.
@@ -44,4 +49,20 @@ func Parent(widget int64) int64 { return GTKGtk_widget_get_parent(widget) }
 func SetScrollPolicyAutomatic(scrolled int64) {
 	GTKGtk_scrolled_window_set_policy(scrolled, GTKGTK_POLICY_AUTOMATIC, GTKGTK_POLICY_AUTOMATIC)
 	GTKGtk_scrolled_window_set_overlay_scrolling(scrolled, true)
+}
+
+// AddOverrideCSS loads css above USER, where the portal accent rule sits: GTK lets a provider of a higher
+// priority win over a lower one whatever the selectors, and the later of two equal ones.
+func AddOverrideCSS(css string) int64 {
+	p := newProvider(css)
+	GTK3Gtk_style_context_add_provider_for_screen(GDKGdk_screen_get_default(), p, cssPriorityApplication+100)
+	return p
+}
+
+// AddDefaultCSS loads css for the default screen below the priority of AddGlobalCSS; the provider is
+// returned so the rules can be replaced.
+func AddDefaultCSS(css string) int64 {
+	p := newProvider(css)
+	GTK3Gtk_style_context_add_provider_for_screen(GDKGdk_screen_get_default(), p, cssPriorityDefaults)
+	return p
 }

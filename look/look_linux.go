@@ -25,7 +25,10 @@ func setGlassGroup(*swt.Composite, float64) {}
 
 func sidebarInset() int32 { return 0 }
 
-func setSidebarChrome(*swt.Shell, *swt.Composite, *swt.Control) {}
+// setSidebarChrome tags the sidebar for the neutral selection rule of the gowt style (style_linux.go).
+func setSidebarChrome(_ *swt.Shell, sb *swt.Composite, _ *swt.Control) {
+	gtk.AddStyleClass(sb.Handle, "gowt-sidebar")
+}
 
 func syncSidebar(*swt.Shell, *swt.Composite, [4]int32, bool) {}
 

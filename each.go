@@ -24,7 +24,7 @@ func Rows[T, K comparable](list rx.Reader[[]T], key func(T) K, fill func(r *Tabl
 			return fmt.Errorf("gowt: Rows applies to Table, not to %s; a Tree takes Nodes", nameOf(w.control()))
 		}
 		l := &flatList[T, K, *swt.TableItem]{key: key, view: &tableRows[T]{t.t, fill}}
-		Watch(w, list, l.sync)
+		Watch(w, list, func(v []T) { l.sync(v); refitColumns(w.control()) })
 		return nil
 	})
 }
@@ -42,7 +42,7 @@ func Nodes[T, K comparable](list rx.Reader[[]T], key func(T) K, children func(T)
 			return fmt.Errorf("gowt: Nodes applies to Tree, not to %s; a Table takes Rows", nameOf(w.control()))
 		}
 		l := &treeList[T, K, *swt.TreeItem]{key: key, children: children, view: &treeNodes[T]{t.t, fill}}
-		Watch(w, list, l.sync)
+		Watch(w, list, func(v []T) { l.sync(v); refitColumns(w.control()) })
 		return nil
 	})
 }

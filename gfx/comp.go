@@ -197,6 +197,7 @@ type Compositor struct {
 	stats    Stats
 }
 
+// NewCompositor returns a compositor that draws s with r onto h. Most apps get one from view.New.
 func NewCompositor(s *Scene, r Renderer, h Host, o Options) *Compositor {
 	o.fill()
 	c := &Compositor{scene: s, r: r, host: h, o: o, dpr: 1, vw: 800, vh: 600, cam: Camera{Zoom: 1}, lastZoom: -1, scr: make([]scratch, 1)}
@@ -256,6 +257,7 @@ func (c *Compositor) SetViewport(w, h, dpr float64) {
 	}
 }
 
+// SetCamera moves and zooms the view; Zoom is view points per scene unit.
 func (c *Compositor) SetCamera(cam Camera) {
 	if cam.Zoom <= 0 {
 		return
@@ -269,6 +271,7 @@ func (c *Compositor) SetCamera(cam Camera) {
 // Workers is the number of tile rasterizer goroutines.
 func (c *Compositor) Workers() int { return c.o.Workers }
 
+// Camera returns the current camera.
 func (c *Compositor) Camera() Camera { return c.cam }
 
 // SceneAt maps a view point to a scene point.
@@ -299,6 +302,7 @@ func (c *Compositor) OnFrame(f func(FrameInfo)) {
 // FrameTime is the clock of the Frame being or last run.
 func (c *Compositor) FrameTime() FrameInfo { return c.fi }
 
+// Stats returns the counters of the last frame and the totals so far.
 func (c *Compositor) Stats() Stats {
 	s := c.stats
 	s.Rastered = c.rastered.Load()
@@ -742,7 +746,7 @@ func (c *Compositor) Lift(nodes ...*Node) {
 			c.drawAsync(l)
 			continue
 		}
-		l.hrect = c.scene.Lift(n)
+		l.hrect = c.scene.liftNode(n)
 		dmg = append(dmg, l.hrect)
 		fresh = append(fresh, l)
 	}
@@ -772,7 +776,7 @@ func (c *Compositor) Land(nodes ...*Node) {
 					break
 				}
 				l.landing = true
-				r := c.scene.Land(n)
+				r := c.scene.landNode(n)
 				l.hrect = l.hrect.Union(r)
 				dmg = append(dmg, r)
 				break

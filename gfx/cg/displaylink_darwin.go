@@ -123,6 +123,7 @@ func NewDisplayLink(fn func(gfx.FrameInfo)) (*DisplayLink, error) {
 	return d, nil
 }
 
+// Start begins calling back on every display refresh.
 func (d *DisplayLink) Start() error {
 	if d.running {
 		return nil
@@ -134,6 +135,7 @@ func (d *DisplayLink) Start() error {
 	return nil
 }
 
+// Stop ends the callbacks; Start may run again.
 func (d *DisplayLink) Stop() {
 	if d.running {
 		dlStop(d.ref)

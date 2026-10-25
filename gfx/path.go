@@ -2,8 +2,10 @@ package gfx
 
 import "math"
 
+// Verb is one drawing step of a Path.
 type Verb uint8
 
+// The verbs of a Path.
 const (
 	MoveTo Verb = iota
 	LineTo
@@ -21,30 +23,37 @@ type Path struct {
 	EvenOdd bool
 }
 
+// MoveTo starts a new subpath at (x, y).
 func (p *Path) MoveTo(x, y float64) {
 	p.Verbs = append(p.Verbs, MoveTo)
 	p.Pts = append(p.Pts, Point{x, y})
 }
 
+// LineTo adds a straight line to (x, y).
 func (p *Path) LineTo(x, y float64) {
 	p.Verbs = append(p.Verbs, LineTo)
 	p.Pts = append(p.Pts, Point{x, y})
 }
 
+// QuadTo adds a quadratic curve with control point (cx, cy) ending at (x, y).
 func (p *Path) QuadTo(cx, cy, x, y float64) {
 	p.Verbs = append(p.Verbs, QuadTo)
 	p.Pts = append(p.Pts, Point{cx, cy}, Point{x, y})
 }
 
+// CubicTo adds a cubic curve with two control points ending at (x, y).
 func (p *Path) CubicTo(c1x, c1y, c2x, c2y, x, y float64) {
 	p.Verbs = append(p.Verbs, CubicTo)
 	p.Pts = append(p.Pts, Point{c1x, c1y}, Point{c2x, c2y}, Point{x, y})
 }
 
+// Close ends the subpath with a line back to its start.
 func (p *Path) Close() { p.Verbs = append(p.Verbs, ClosePath) }
 
+// Empty reports whether p has no verbs.
 func (p *Path) Empty() bool { return len(p.Verbs) == 0 }
 
+// Reset removes every verb, keeping the memory.
 func (p *Path) Reset() { p.Verbs, p.Pts = p.Verbs[:0], p.Pts[:0] }
 
 // Clone returns a deep copy.
@@ -52,6 +61,7 @@ func (p *Path) Clone() *Path {
 	return &Path{append([]Verb(nil), p.Verbs...), append([]Point(nil), p.Pts...), p.EvenOdd}
 }
 
+// Rect adds a closed rectangle.
 func (p *Path) Rect(x, y, w, h float64) {
 	p.MoveTo(x, y)
 	p.LineTo(x+w, y)
@@ -212,4 +222,42 @@ func (p *Path) each(fn func(s *seg, sub int, closing bool)) {
 			}
 		}
 	}
+}
+
+// RectPath returns a closed path around r; it is also the hit shape of a plain box.
+func RectPath(r Rect) *Path {
+	p := &Path{}
+	p.Rect(r.Min.X, r.Min.Y, r.W(), r.H())
+	return p
+}
+
+// RoundRectPath returns RectPath with the corners rounded by radius.
+func RoundRectPath(r Rect, radius float64) *Path {
+	p := &Path{}
+	p.RoundRect(r.Min.X, r.Min.Y, r.W(), r.H(), radius)
+	return p
+}
+
+// EllipsePath returns the ellipse that fits in r.
+func EllipsePath(r Rect) *Path {
+	p := &Path{}
+	c := r.Center()
+	p.Ellipse(c.X, c.Y, r.W()/2, r.H()/2)
+	return p
+}
+
+// PolygonPath returns the closed path through pts, in order.
+func PolygonPath(pts ...Point) *Path {
+	p := &Path{}
+	for i, q := range pts {
+		if i == 0 {
+			p.MoveTo(q.X, q.Y)
+		} else {
+			p.LineTo(q.X, q.Y)
+		}
+	}
+	if len(pts) > 0 {
+		p.Close()
+	}
+	return p
 }

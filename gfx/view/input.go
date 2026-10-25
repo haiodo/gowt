@@ -12,6 +12,7 @@ import (
 // Phase is where a trackpad gesture or a scroll stands.
 type Phase uint8
 
+// The phases of a trackpad gesture.
 const (
 	PhaseNone     Phase = iota // a mouse wheel, or no momentum
 	PhaseMayBegin              // fingers rest on the trackpad: coasting content should stop
@@ -42,6 +43,7 @@ func phaseOf(mask uint64) Phase {
 // PointerKind tells what a Pointer event is.
 type PointerKind uint8
 
+// The kinds of Pointer event.
 const (
 	PointerDown PointerKind = iota
 	PointerMove
@@ -109,8 +111,9 @@ type SmartZoom struct {
 	Mods  g.Mods
 }
 
-// Key is a key press or release on the focused view. Code is SWT's key code and Char the character
-// typed, 0 for none.
+// Key is a key press or release on the focused view. Code is SWT's key code (the constants of
+// package swt) and Char the character typed, 0 for none. For shortcuts use Window.OnKey("Cmd+Z", f)
+// of the gowt facade: it also works while the view has the focus.
 type Key struct {
 	Down bool
 	Code int
@@ -121,6 +124,7 @@ type Key struct {
 // Cursor is a mouse cursor shape.
 type Cursor uint8
 
+// The cursor shapes of View.SetCursor.
 const (
 	CursorArrow Cursor = iota
 	CursorHand
@@ -173,6 +177,7 @@ type router struct {
 	coastOff bool    // momentum is dropped until the next finger scroll begins
 	prevZoom float64 // zoom before the last smart zoom
 
+	drag  *drag
 	acc   scrollAcc
 	clock func() time.Duration // event clock; a test replaces it
 }
@@ -226,6 +231,7 @@ func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mo
 		r.stopAuto()
 		defer func() { r.target = nil }()
 	}
+	r.stepDrag(p)
 	if r.onPointer != nil {
 		r.onPointer(p)
 	}

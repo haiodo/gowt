@@ -46,7 +46,7 @@ func TestBuildRefsAndLayout(t *testing.T) {
 	if sc := d.Screens(); len(sc) != 1 || sc[0].W != 600 || sc[0].H != 400 {
 		t.Fatalf("screens %+v", sc)
 	}
-	s := gfx.NewScene(gfx.R(0, 0, 1000, 1000), 128)
+	s := gfx.NewScene()
 	var scr *Screen
 	var err error
 	s.Update(func(tx *gfx.Tx) { scr, err = d.Build(tx, nil, 0) })
@@ -126,7 +126,7 @@ func TestPrivateFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	s := gfx.NewScene(gfx.R(0, 0, 1e5, 1e5), 256)
+	s := gfx.NewScene()
 	for _, in := range d.Screens() {
 		var sc *Screen
 		s.Update(func(tx *gfx.Tx) { sc, err = d.Build(tx, nil, in.Index) })

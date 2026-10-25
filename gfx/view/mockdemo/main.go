@@ -73,7 +73,7 @@ func build(src string, n int) (*canvas, error) {
 	cols, rows := synth.Grid(n, synth.ScreenW, synth.ScreenH)
 	c := &canvas{cols: cols, rows: rows}
 	px, py := c.pitch()
-	c.scene = gfx.NewScene(gfx.R(-synth.ScreenGap, -synth.ScreenGap, float64(cols)*px+synth.ScreenGap, float64(rows)*py+synth.ScreenGap), 256)
+	c.scene = gfx.NewScene()
 	var berr error
 	c.scene.Update(func(tx *gfx.Tx) {
 		for i := 0; i < n && berr == nil; i++ {

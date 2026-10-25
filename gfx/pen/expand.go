@@ -368,10 +368,10 @@ func (e *expander) newRN(m map[string]any, typ, mode string) *rn {
 func parseSize(v any) al.Size {
 	switch x := v.(type) {
 	case float64:
-		return al.Size{Kind: al.Fixed, V: x}
+		return al.Fixed(x)
 	case string:
 		if strings.HasPrefix(x, "fill_container") {
-			return al.Size{Kind: al.Fill}
+			return al.Fill
 		}
 	}
 	return al.Size{}

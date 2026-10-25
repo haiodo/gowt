@@ -47,6 +47,12 @@ type lineKey struct {
 	s    string
 }
 
+// The measurer of recordings made before any renderer exists (see gfx.DefaultMeasurer).
+func init() {
+	gfx.DefaultMeasurer = gfx.LazyMeasurer(func() (gfx.TextMeasurer, error) { return NewRenderer(Options{}), nil })
+}
+
+// NewRenderer returns the CoreGraphics and CoreText renderer. It needs no window.
 func NewRenderer(o Options) *Renderer {
 	bind()
 	if o.FontDir == "" {
@@ -56,9 +62,6 @@ func NewRenderer(o Options) *Renderer {
 		_, _ = RegisterFonts(o.FontDir) // a missing directory leaves the system fonts
 	}
 	r := &Renderer{opts: o, cs: cgColorSpaceCreateDeviceRGB()}
-	if _, ok := gfx.DefaultMeasurer.(gfx.EstimateText); ok {
-		gfx.DefaultMeasurer = r // recordings from now on get CoreText bounds
-	}
 	return r
 }
 
@@ -68,6 +71,7 @@ type Image struct {
 	w, h float64
 }
 
+// Size returns the size of the image in points.
 func (i *Image) Size() (float64, float64) { return i.w, i.h }
 
 // Ref is the CGImageRef, for handing to CALayer.contents.
@@ -79,6 +83,7 @@ func ColorRef(c gfx.Color) uintptr {
 	return cgColorCreate(c.R, c.G, c.B, c.A)
 }
 
+// Release drops the CGImage.
 func (i *Image) Release() {
 	if i.ref != 0 {
 		cgImageRelease(i.ref)
@@ -100,6 +105,7 @@ type Surface struct {
 	layers int
 }
 
+// NewSurface returns a bitmap surface of wpx by hpx pixels.
 func (r *Renderer) NewSurface(wpx, hpx int) *Surface {
 	ctx := cgBitmapContextCreate(0, uintptr(wpx), uintptr(hpx), 8, uintptr(wpx*4), r.cs, bitmapInfoBGRA)
 	if ctx == 0 {
@@ -112,6 +118,7 @@ func (r *Renderer) NewSurface(wpx, hpx int) *Surface {
 	return s
 }
 
+// Close frees the bitmap.
 func (s *Surface) Close() {
 	if s.ctx != 0 {
 		cgContextRelease(s.ctx)

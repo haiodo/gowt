@@ -7,7 +7,7 @@ import (
 
 // A picture that draws nothing has empty bounds; mapping them through the transform gave NaN.
 func TestEmptyPictureBounds(t *testing.T) {
-	s := NewScene(R(0, 0, 100, 100), 32)
+	s := NewScene()
 	n := NewNode(1)
 	s.Update(func(tx *Tx) {
 		tx.Add(nil, n)

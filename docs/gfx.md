@@ -1,5 +1,46 @@
 # gfx: retained 2D canvas (experimental)
 
+## Quick start
+
+A scene in a window: scrolling pans, pinching zooms, a press drags a node (Escape puts it back).
+
+```go
+scene := gfx.NewScene()
+rec := gfx.NewRecorder()
+rec.FillRRect(gfx.R(0, 0, 160, 80), 10, gfx.RGB(30, 120, 220))
+rec.Text("Hello", 14, 46, gfx.Font{Size: 16}, gfx.White) // x, y: the baseline origin
+card := gfx.NewNode(1)
+scene.Update(func(tx *gfx.Tx) {
+	tx.Add(nil, card) // nil: under the root
+	tx.SetPicture(card, rec.Finish())
+	tx.Move(card, 40, 40)
+})
+
+gowt.Run(func(app *gowt.App) {
+	w := app.Window("Canvas", view.New(scene, func(v *view.View) {
+		v.OnPointer(func(p *view.Pointer) {
+			if p.Kind == view.PointerDown && p.Node != nil {
+				v.Drag(p, p.Node)
+			}
+		})
+	}, gowt.Grow()))
+	w.OnKey("Cmd+W", w.Close) // shortcuts are the facade's
+	w.Show()
+})
+```
+
+The same scene as a PNG, with no window, on macOS, Linux and Windows:
+
+```go
+png, err := offscreen.PNG(scene, card, 2, gfx.White) // nil instead of card: the whole scene
+```
+
+`Update` queues a change and `Commit` applies it; a window commits every frame, so without one call
+`scene.Commit()` before `HitTest` or before reading a node (`offscreen.PNG` commits for you). Complete
+programs: `examples/gfxcanvas` (the window above), `examples/gfxpng`, and `examples/gfxeditor` (a mind-map
+core: `gfx/layout`, hit-testing, a selection outline and a remote cursor as overlay sprites,
+animations, dragging).
+
 `gowt/gfx` is a scene of nodes drawn from cached tiles, for editors with many shapes: diagrams, UI
 mockups. It is **experimental**: the API may change without notice. macOS has the full backend
 (CoreGraphics, CoreText, CALayer); Linux has cairo and Pango with a CPU compositor in a GTK 3 canvas;
@@ -23,7 +64,7 @@ Packages:
 ## Scene
 
 ```go
-scene := gfx.NewScene(gfx.R(-1000, -1000, 20000, 20000), 256) // world bounds, grid cell
+scene := gfx.NewScene() // no bounds to give: nodes may lie anywhere
 
 n := gfx.NewNode(1)
 scene.Update(func(tx *gfx.Tx) { // any goroutine; applied whole by the next frame
@@ -55,8 +96,9 @@ scene.Update(func(tx *gfx.Tx) { // any goroutine; applied whole by the next fram
 `StrokeGradient` (linear, radial), `FillShadowRRect`, `Text`, `DrawImage`, `BeginLayer`/`EndLayer`
 (group alpha). The result is an immutable `*Picture` in a compact byte stream (about 0.3 KB for
 a box with shadow, border and two labels), with bounds that follow transforms, clips and strokes.
-Text bounds are measured by CoreText when `cg.NewRenderer` ran before recording
-(`gfx.DefaultMeasurer`), else estimated. `Picture.Lod` replaces a picture when it is small on screen.
+Text bounds are measured by the backend that is linked in (`gfx.DefaultMeasurer`: CoreText, Pango or
+DirectWrite, through `gfx/view` or `gfx/offscreen`), whatever the order of recording and of creating a
+renderer; without a backend they are estimated. `Picture.Lod` replaces a picture when it is small on screen.
 
 Output without a window:
 
@@ -220,19 +262,19 @@ mirrors its own tree, calls `Layout` on the root and reads `RX, RY, RW, RH` (rel
 | Property | Fields |
 |---|---|
 | Direction | `Dir`: `Row` (default), `Column`, `Abs` (all children at their own `X, Y`) |
-| Spacing | `Gap`, `Pad` (top, right, bottom, left) |
+| Spacing | `Gap`, `Pad` (`layout.All(8)`, `layout.XY(x, y)`, or `layout.Insets{top, right, bottom, left}`) |
 | Alignment | `Align` (cross axis), `Justify` (main axis; `Start`, `Center`, `End`, `SpaceBetween`) |
-| Size | `W`, `H`: `Size{Fixed, v}`, `Hug` (zero value), `Fill`; `MinW, MaxW, MinH, MaxH` (zero Max: no limit) |
+| Size | `W`, `H`: `layout.Fixed(v)`, `layout.Hug` (zero value), `layout.Fill`; `MinW, MaxW, MinH, MaxH` (zero Max: no limit) |
 | Wrap | `Wrap`, `LineGap`: children are cut into lines when they exceed the main axis |
 | Absolute | `Absolute`, `X`, `Y`: leaves the flow of a Row or a Column; takes no gap, share or hug size |
 | Content | `LeafW()` the one-line width, `LeafH(w)` the height at width `w` (text wrapping) |
 | App link | `Tag any` |
 
 ```go
-bar := &layout.Node{Wrap: true, Gap: 6, LineGap: 4, W: layout.Size{Kind: layout.Fixed, V: 100}, Kids: chips}
+bar := &layout.Node{Wrap: true, Gap: 6, LineGap: 4, W: layout.Fixed(100), Kids: chips}
 bar.Layout()
 scene.Update(func(tx *gfx.Tx) {
-	layout.Apply(tx, bar, func(n *layout.Node) *gfx.Node { g, _ := n.Tag.(*gfx.Node); return g })
+	layout.Apply(tx, bar, nil) // nil: Tag holds the *gfx.Node; nodes without one pass their offset on
 })
 ```
 

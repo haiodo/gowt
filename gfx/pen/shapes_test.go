@@ -27,7 +27,7 @@ func TestShapesAndUnsupported(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	s := gfx.NewScene(gfx.R(0, 0, 1000, 1000), 128)
+	s := gfx.NewScene()
 	var sc *Screen
 	s.Update(func(tx *gfx.Tx) { sc, err = d.Build(tx, nil, 0) })
 	if err != nil {

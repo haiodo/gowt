@@ -7,6 +7,7 @@ import (
 	"sync"
 )
 
+// HitMode says what part of a node a hit test accepts.
 type HitMode uint8
 
 const (
@@ -16,8 +17,10 @@ const (
 	HitNone                  // never a hit
 )
 
+// ClipKind is the shape of a node clip.
 type ClipKind uint8
 
+// The kinds of node clip.
 const (
 	ClipNone ClipKind = iota
 	ClipRect
@@ -76,21 +79,46 @@ func (n *Node) ck() ClipKind {
 	return n.clip.kind
 }
 
+// NewNode returns a detached node. id is the key for Scene.Node; 0 leaves the node unnamed, and
+// with a repeated id Scene.Node returns the last one added.
 func NewNode(id int) *Node {
 	return &Node{id: id, t: Identity(), opacity: 1, world: Identity(), alpha: 1, bounds: EmptyRect()}
 }
 
-func (n *Node) ID() int                      { return n.id }
-func (n *Node) Parent() *Node                { return n.parent }
-func (n *Node) Children() []*Node            { return n.kids }
-func (n *Node) Transform() Affine            { return n.t }
-func (n *Node) World() Affine                { return n.world }
-func (n *Node) Opacity() float64             { return n.opacity }
-func (n *Node) Z() int                       { return n.z }
-func (n *Node) Picture() *Picture            { return n.pic }
-func (n *Node) Shape() *Path                 { return n.shape }
-func (n *Node) Hit() HitMode                 { return n.hit }
-func (n *Node) Lifted() bool                 { return n.lifted > 0 }
+// ID returns the id given to NewNode.
+func (n *Node) ID() int { return n.id }
+
+// Parent returns the parent node, the scene root for a top level node.
+func (n *Node) Parent() *Node { return n.parent }
+
+// Children returns the child nodes in paint order.
+func (n *Node) Children() []*Node { return n.kids }
+
+// Transform returns the transform to the parent as of the last Commit.
+func (n *Node) Transform() Affine { return n.t }
+
+// World returns the transform to scene coordinates as of the last Commit.
+func (n *Node) World() Affine { return n.world }
+
+// Opacity returns the node's own opacity.
+func (n *Node) Opacity() float64 { return n.opacity }
+
+// Z returns the order among siblings.
+func (n *Node) Z() int { return n.z }
+
+// Picture returns the picture of the node, or nil.
+func (n *Node) Picture() *Picture { return n.pic }
+
+// Shape returns the hit shape, or nil.
+func (n *Node) Shape() *Path { return n.shape }
+
+// Hit returns the hit mode.
+func (n *Node) Hit() HitMode { return n.hit }
+
+// Lifted reports whether the node, or an ancestor, is on the active layer.
+func (n *Node) Lifted() bool { return n.lifted > 0 }
+
+// Version returns counters that change when the node, or something below it, changes; for caches.
 func (n *Node) Version() (self, deep uint32) { return n.rev, n.deep }
 
 // Bounds is the visible area of the node's own picture in scene coordinates, after the clips of
@@ -112,11 +140,8 @@ func (n *Node) SubtreeBounds() Rect {
 type Scene struct {
 	mu    sync.RWMutex
 	root  *Node
-	world Rect
-	cell  float64
-	nx    int
-	ny    int
-	grid  [][]*Node
+	grid  map[[2]int32][]*Node
+	big   []*Node // nodes that span more than bigSpan cells on a side
 	ids   map[int]*Node
 	pass  uint32
 	count int
@@ -127,10 +152,9 @@ type Scene struct {
 	pending []*Tx
 }
 
-func NewScene(world Rect, cell float64) *Scene {
-	nx := max(int(math.Ceil(world.W()/cell)), 1)
-	ny := max(int(math.Ceil(world.H()/cell)), 1)
-	s := &Scene{world: world, cell: cell, nx: nx, ny: ny, grid: make([][]*Node, nx*ny), ids: map[int]*Node{}}
+// NewScene returns an empty scene. It has no bounds: nodes may lie anywhere.
+func NewScene() *Scene {
+	s := &Scene{grid: map[[2]int32][]*Node{}, ids: map[int]*Node{}}
 	s.root = NewNode(0)
 	s.root.scene = s
 	return s
@@ -219,12 +243,16 @@ func (tx *Tx) Move(n *Node, x, y float64) {
 	tx.ops = append(tx.ops, txOp{kind: txTransform, n: n, i: 1, m: Affine{0, 0, 0, 0, x, y}})
 }
 
+// SetOpacity sets the opacity of n, 0 to 1; it multiplies down the subtree.
 func (tx *Tx) SetOpacity(n *Node, v float64) {
 	tx.ops = append(tx.ops, txOp{kind: txOpacity, n: n, f: v})
 }
 
+// SetZ sets the order of n among its siblings; a higher Z draws later and is hit first.
 func (tx *Tx) SetZ(n *Node, z int) { tx.ops = append(tx.ops, txOp{kind: txZ, n: n, i: z}) }
 
+// SetPicture sets what n draws, in its own coordinates. A picture equal to the current one changes
+// nothing.
 func (tx *Tx) SetPicture(n *Node, pic *Picture) {
 	tx.ops = append(tx.ops, txOp{kind: txPicture, n: n, pic: pic})
 }
@@ -239,6 +267,7 @@ func (tx *Tx) ClipRect(n *Node, r Rect) {
 	tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipRect, r: r})
 }
 
+// ClipRRect clips n and its subtree to a rounded rectangle in the coordinates of n.
 func (tx *Tx) ClipRRect(n *Node, r Rect, radius float64) {
 	tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipRRect, r: r, f: radius})
 }
@@ -248,10 +277,14 @@ func (tx *Tx) ClipPath(n *Node, p *Path) {
 	tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipPath, path: p})
 }
 
+// NoClip removes the clip of n.
 func (tx *Tx) NoClip(n *Node) { tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipNone}) }
 
 // Commit applies the queued transactions in order and returns the scene areas whose pixels
 // changed: the old and the new bounds of every node that moved or changed, lifted nodes aside.
+// A window's frame loop calls it. Without one (a test, a program that renders to PNG) call it after
+// Update before reading nodes or hit-testing: until then HitTest, Query and the getters of Node
+// still show the scene as it was. RenderSubtree and offscreen.PNG commit by themselves.
 func (s *Scene) Commit() []Rect {
 	s.pmu.Lock()
 	txs := s.pending
@@ -315,10 +348,8 @@ func (s *Scene) attach(parent, n *Node, dirty *[]*Node) {
 
 func (s *Scene) adopt(n *Node) {
 	n.scene = s
-	if n.id != 0 || n.parent != nil {
-		if _, dup := s.ids[n.id]; !dup {
-			s.count++
-		}
+	s.count++
+	if n.id != 0 {
 		s.ids[n.id] = n
 	}
 	for _, c := range n.kids {
@@ -360,9 +391,11 @@ func (s *Scene) forget(n *Node, damage *[]Rect) {
 		}
 		s.remove(n)
 	}
-	if s.ids[n.id] == n {
-		delete(s.ids, n.id)
+	if n.scene == s {
 		s.count--
+	}
+	if n.id != 0 && s.ids[n.id] == n {
+		delete(s.ids, n.id)
 	}
 	n.scene = nil
 	for _, c := range n.kids {
@@ -532,47 +565,66 @@ func (s *Scene) number() {
 	walk(s.root)
 }
 
-func (s *Scene) cellOf(p Point) [2]int32 {
-	x := int(math.Floor((p.X - s.world.Min.X) / s.cell))
-	y := int(math.Floor((p.Y - s.world.Min.Y) / s.cell))
-	return [2]int32{int32(min(max(x, 0), s.nx-1)), int32(min(max(y, 0), s.ny-1))}
+const (
+	cellSize = 256 // scene units per grid cell
+	cellMax  = 1 << 30
+	// bigSpan is the side, in cells, above which a node is kept in one list instead of in every cell
+	// it covers, so that a backdrop the size of the world does not fill the grid.
+	bigSpan = 32
+)
+
+func cellOf(p Point) [2]int32 {
+	f := func(v float64) int32 { return int32(min(max(math.Floor(v/cellSize), -cellMax), cellMax)) }
+	return [2]int32{f(p.X), f(p.Y)}
 }
 
 func (s *Scene) insert(n *Node) {
-	n.c0, n.c1 = s.cellOf(n.bounds.Min), s.cellOf(n.bounds.Max)
+	n.c0, n.c1 = cellOf(n.bounds.Min), cellOf(n.bounds.Max)
+	n.indexed = true
+	if n.c1[0]-n.c0[0] >= bigSpan || n.c1[1]-n.c0[1] >= bigSpan {
+		s.big = append(s.big, n)
+		return
+	}
 	for y := n.c0[1]; y <= n.c1[1]; y++ {
 		for x := n.c0[0]; x <= n.c1[0]; x++ {
-			i := int(y)*s.nx + int(x)
-			s.grid[i] = append(s.grid[i], n)
+			k := [2]int32{x, y}
+			s.grid[k] = append(s.grid[k], n)
 		}
 	}
-	n.indexed = true
 }
 
 func (s *Scene) remove(n *Node) {
+	n.indexed = false
+	if n.c1[0]-n.c0[0] >= bigSpan || n.c1[1]-n.c0[1] >= bigSpan {
+		s.big = slices.DeleteFunc(s.big, func(m *Node) bool { return m == n })
+		return
+	}
 	for y := n.c0[1]; y <= n.c1[1]; y++ {
 		for x := n.c0[0]; x <= n.c1[0]; x++ {
-			i := int(y)*s.nx + int(x)
-			c := s.grid[i]
-			for k, m := range c {
+			k := [2]int32{x, y}
+			c := s.grid[k]
+			for i, m := range c {
 				if m == n {
-					c[k] = c[len(c)-1]
+					c[i] = c[len(c)-1]
 					c[len(c)-1] = nil
-					s.grid[i] = c[:len(c)-1]
+					if c = c[:len(c)-1]; len(c) == 0 {
+						delete(s.grid, k)
+					} else {
+						s.grid[k] = c
+					}
 					break
 				}
 			}
 		}
 	}
-	n.indexed = false
 }
 
-// Lift marks n and its subtree as drawn by the compositor's active layer: Collect leaves them
+// liftNode marks n and its subtree as drawn by the compositor's active layer: Collect leaves them
 // out and their changes make no damage. It returns the area the static tiles must redraw.
-func (s *Scene) Lift(n *Node) Rect { return s.liftBy(n, 1) }
+func (s *Scene) liftNode(n *Node) Rect { return s.liftBy(n, 1) }
 
-// Land undoes Lift and returns the area the static tiles must redraw now.
-func (s *Scene) Land(n *Node) Rect { return s.liftBy(n, -1) }
+// landNode undoes liftNode and returns the area the static tiles must redraw now.
+func (s *Scene) landNode(n *Node) Rect { return s.liftBy(n, -1) }
 
 func (s *Scene) liftBy(n *Node, d int32) Rect {
 	s.mu.Lock()
@@ -600,19 +652,32 @@ func (s *Scene) Query(r Rect, dst []*Node) []*Node {
 }
 
 func (s *Scene) query(r Rect, dst []*Node) []*Node {
-	c0, c1 := s.cellOf(r.Min), s.cellOf(r.Max)
+	c0, c1 := cellOf(r.Min), cellOf(r.Max)
 	start := len(dst)
-	for y := c0[1]; y <= c1[1]; y++ {
-		for x := c0[0]; x <= c1[0]; x++ {
-			for _, n := range s.grid[int(y)*s.nx+int(x)] {
-				// report a node once, in the first cell it shares with the query
-				if int32(max(n.c0[0], c0[0])) != x || int32(max(n.c0[1], c0[1])) != y {
-					continue
-				}
-				if n.bounds.Intersects(r) {
-					dst = append(dst, n)
-				}
+	// report a node once, in the first cell it shares with the query
+	visit := func(x, y int32, cell []*Node) {
+		for _, n := range cell {
+			if max(n.c0[0], c0[0]) == x && max(n.c0[1], c0[1]) == y && n.bounds.Intersects(r) {
+				dst = append(dst, n)
 			}
+		}
+	}
+	if span := int64(c1[0]-c0[0]+1) * int64(c1[1]-c0[1]+1); span > int64(len(s.grid)) {
+		for k, cell := range s.grid { // fewer occupied cells than cells in the query
+			if k[0] >= c0[0] && k[0] <= c1[0] && k[1] >= c0[1] && k[1] <= c1[1] {
+				visit(k[0], k[1], cell)
+			}
+		}
+	} else {
+		for y := c0[1]; y <= c1[1]; y++ {
+			for x := c0[0]; x <= c1[0]; x++ {
+				visit(x, y, s.grid[[2]int32{x, y}])
+			}
+		}
+	}
+	for _, n := range s.big {
+		if n.bounds.Intersects(r) {
+			dst = append(dst, n)
 		}
 	}
 	slices.SortFunc(dst[start:], func(a, b *Node) int { return int(a.order - b.order) })
@@ -638,6 +703,7 @@ type Items struct {
 	nodes []*Node
 }
 
+// Reset empties b, keeping its memory.
 func (b *Items) Reset() { b.List, b.clips, b.nodes = b.List[:0], b.clips[:0], b.nodes[:0] }
 
 func (b *Items) add(n *Node) {
@@ -717,8 +783,9 @@ func inClip(n *Node, p Point) bool {
 	return true
 }
 
-// HitTest returns the topmost node under the scene point p. tol is the stroke tolerance and the
-// bounds slack in scene units (screen pixels divided by the zoom). Clips of the ancestors count.
+// HitTest returns the topmost node under the scene point p, or nil. tol is the stroke tolerance and
+// the bounds slack in scene units (screen pixels divided by the zoom). Clips of the ancestors count.
+// It sees the scene as of the last Commit.
 func (s *Scene) HitTest(p Point, tol float64) *Node {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

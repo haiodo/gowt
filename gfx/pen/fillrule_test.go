@@ -22,7 +22,7 @@ func TestPathFillRule(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	s := gfx.NewScene(gfx.R(0, 0, 200, 200), 128)
+	s := gfx.NewScene()
 	var sc *Screen
 	s.Update(func(tx *gfx.Tx) { sc, err = d.Build(tx, nil, 0) })
 	if err != nil {

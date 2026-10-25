@@ -32,6 +32,20 @@ Linux look (GTK)
 - Fix: `GOWT_SNAP` at scale 2 captured only the top-left quarter; the window is read at width and height times the scale factor.
 - Known: `List`, `Tree` and `Table` still get their minimum width as natural size, so a window packed around them shows "al..." (cause: the cell renderers end text with an ellipsis, which makes GtkTreeView report the ellipsis width as the column minimum); a `Button` with `Check()` or `Radio()` can lose its last letter (measured and allocated size agree, cause not found).
 
+gfx: retained 2D canvas, still experimental (docs/gfx.md has a quick start)
+- New: `gfx`, a scene of nodes drawn from cached tiles for editors and mockups, with a macOS (CoreGraphics), Linux (cairo, Pango) and Windows (Direct2D) backend, `gfx/view` as the gowt widget, `gfx/offscreen` for PNG without a window, `gfx/layout` for auto-layout and `gfx/pen` for `.pen` designs.
+- Changed: `gfx.NewScene()` takes no arguments. The grid is sparse and has no world; the old `NewScene(world, cell)` allocated 1.4 GB for a world of 2e6 units and walked every cell of a huge query. Migration: `gfx.NewScene(gfx.R(...), 256)` becomes `gfx.NewScene()`.
+- Changed: `gfx.NewNode(0)` makes an unnamed node: it counts in `Scene.Len` and is not found by `Scene.Node`. Before, every node with id 0 shared one slot.
+- Changed: `Scene.Lift` and `Scene.Land` are private. They bypassed the compositor's sprites and made nodes vanish; use `Compositor.Lift` and `Compositor.Land`, or `View.Drag`.
+- Changed: `layout.Size{Kind: layout.Fixed, V: v}` is `layout.Fixed(v)`, `layout.Size{Kind: layout.Fill}` is `layout.Fill`, `layout.Hug` is a value; the kinds are `layout.KindHug`, `KindFixed`, `KindFill`. `Node.Pad` is `layout.Insets` (`layout.All(8)`, `layout.XY(x, y)`); a `[4]float64` still assigns.
+- Changed: `layout.Apply` places a scene node relative to its nearest ancestor that has a scene node, so a nested layout over a flat scene lands right; a nil `target` reads `Tag` as the `*gfx.Node`.
+- Changed: text bounds come from the linked backend whatever the order of recording and of creating a renderer. Before, a picture recorded before `cg.NewRenderer` (or `view.New`) kept estimated bounds, so the text was cut at the edge of a tile or of a PNG.
+- Changed: `RenderSubtree` and `WriteSubtreeSVG` take a nil root for the whole scene; errors say why nothing was rendered and what the size limit is.
+- New: `offscreen.PNG(scene, node, scale, bg)` and `offscreen.Default()`.
+- New: `View.Drag(p, nodes...)` lifts, moves, drops (clamped into the view when released outside) and lands nodes, and puts them back on Escape; the demo's 40 lines of drag code.
+- New: `gfx.RGB`, `RGBA`, `Color.WithAlpha`, `White`, `Black`; `RectPath`, `RoundRectPath`, `EllipsePath`, `PolygonPath`; `Recorder.FillRect`, `FillRRect`, `FillEllipse`, `StrokeRect`, `StrokeRRect`, `StrokeEllipse`; `gfx.LazyMeasurer`.
+- Docs: every exported symbol of `gfx` has a doc comment, each package has Example functions, and `examples/gfxcanvas`, `examples/gfxpng` and `examples/gfxeditor` show a window, a PNG and an editor core.
+
 ## v0.12.2 (2026-10-25)
 
 Fixes

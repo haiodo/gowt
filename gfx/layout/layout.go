@@ -40,6 +40,7 @@ import "math"
 // Dir is how a node places its children.
 type Dir uint8
 
+// The directions of a Node: children left to right, top to bottom, or each at its own X, Y.
 const (
 	Row Dir = iota
 	Column
@@ -49,21 +50,42 @@ const (
 // Kind is how a size is decided.
 type Kind uint8
 
+// The kinds of Size. Use Fixed, Hug and Fill to make one.
 const (
-	Hug Kind = iota
-	Fixed
-	Fill
+	KindHug Kind = iota
+	KindFixed
+	KindFill
 )
 
-// Size is a width or a height. The zero value is Hug.
+// Size is a width or a height: Fixed(v), Hug or Fill. The zero value is Hug.
 type Size struct {
 	Kind Kind
 	V    float64 // the number of a Fixed size
 }
 
+// Fixed is a size of v points.
+func Fixed(v float64) Size { return Size{KindFixed, v} }
+
+var (
+	// Hug is the size of the content plus padding.
+	Hug = Size{}
+	// Fill is an equal share of the free space of the parent's main axis, the whole cross axis.
+	Fill = Size{Kind: KindFill}
+)
+
+// Insets are the four paddings of a Node: top, right, bottom, left.
+type Insets [4]float64
+
+// All is the same padding v on every side.
+func All(v float64) Insets { return Insets{v, v, v, v} }
+
+// XY is x on the left and the right, y on the top and the bottom.
+func XY(x, y float64) Insets { return Insets{y, x, y, x} }
+
 // Align places children on an axis. SpaceBetween is for Justify only.
 type Align uint8
 
+// The alignments. SpaceBetween is for Justify only.
 const (
 	Start Align = iota
 	Center
@@ -82,7 +104,7 @@ type Node struct {
 
 	Dir     Dir
 	Gap     float64
-	Pad     [4]float64 // top, right, bottom, left
+	Pad     Insets
 	Align   Align
 	Justify Align
 
@@ -149,11 +171,11 @@ func (n *Node) forget() {
 func (n *Node) Layout() {
 	n.forget()
 	w := n.intrinsicW()
-	if n.W.Kind == Fixed {
+	if n.W.Kind == KindFixed {
 		w = n.clampW(n.W.V)
 	}
 	h := -1.0
-	if n.H.Kind == Fixed {
+	if n.H.Kind == KindFixed {
 		h = n.H.V
 	}
 	n.layout(w, h)
@@ -161,7 +183,7 @@ func (n *Node) Layout() {
 }
 
 func (n *Node) intrinsicW() float64 {
-	if n.W.Kind == Fixed {
+	if n.W.Kind == KindFixed {
 		return n.clampW(n.W.V)
 	}
 	if n.iwOK {
@@ -181,7 +203,7 @@ func (n *Node) intrinsicW() float64 {
 		for _, k := range kids {
 			w = math.Max(w, k.X+k.intrinsicW())
 		}
-	case n.Dir == Column && n.Wrap && n.H.Kind == Fixed:
+	case n.Dir == Column && n.Wrap && n.H.Kind == KindFixed:
 		w = n.wrappedColumnsW(kids)
 	case n.Dir == Row:
 		w = n.Pad[1] + n.Pad[3] + gapsOf(n.Gap, len(kids))
@@ -206,7 +228,7 @@ func (n *Node) wrappedColumnsW(kids []*Node) float64 {
 	w, colW, colH, cols := 0.0, 0.0, 0.0, 0
 	for i, k := range kids {
 		kh := -1.0
-		if k.H.Kind == Fixed {
+		if k.H.Kind == KindFixed {
 			kh = k.H.V
 		}
 		k.layout(k.intrinsicW(), kh)
@@ -225,9 +247,9 @@ func (n *Node) wrappedColumnsW(kids []*Node) float64 {
 
 func (n *Node) kidW(avail float64) float64 {
 	switch n.W.Kind {
-	case Fixed:
+	case KindFixed:
 		return n.clampW(n.W.V)
-	case Fill:
+	case KindFill:
 		return n.clampW(avail)
 	}
 	return n.intrinsicW()
@@ -261,9 +283,9 @@ func (n *Node) layoutAbs(w, h float64) {
 	for _, k := range n.Kids {
 		kh := -1.0
 		switch k.H.Kind {
-		case Fixed:
+		case KindFixed:
 			kh = k.H.V
-		case Fill:
+		case KindFill:
 			kh = h
 		}
 		k.layout(k.kidW(w), kh)
@@ -284,9 +306,9 @@ func (n *Node) layoutAbsolute() {
 		}
 		kh := -1.0
 		switch k.H.Kind {
-		case Fixed:
+		case KindFixed:
 			kh = k.H.V
-		case Fill:
+		case KindFill:
 			kh = n.RH
 		}
 		k.layout(k.kidW(n.RW), kh)
@@ -310,7 +332,7 @@ func (n *Node) layoutFlow(w, h float64) {
 	if n.Dir == Row {
 		fixed, nfill := 0.0, 0
 		for _, k := range kids {
-			if k.W.Kind == Fill {
+			if k.W.Kind == KindFill {
 				nfill++
 			} else {
 				fixed += k.kidW(0)
@@ -324,9 +346,9 @@ func (n *Node) layoutFlow(w, h float64) {
 		for _, k := range kids {
 			kh := -1.0
 			switch k.H.Kind {
-			case Fixed:
+			case KindFixed:
 				kh = k.H.V
-			case Fill:
+			case KindFill:
 				kh = innerH
 			}
 			k.layout(k.kidW(share), kh)
@@ -335,7 +357,7 @@ func (n *Node) layoutFlow(w, h float64) {
 		if h < 0 {
 			h, innerH = n.hugH(contentH)
 			for _, k := range kids {
-				if k.H.Kind == Fill {
+				if k.H.Kind == KindFill {
 					k.layout(k.RW, innerH)
 				}
 			}
@@ -346,12 +368,12 @@ func (n *Node) layoutFlow(w, h float64) {
 	}
 	sum, nfill := 0.0, 0
 	for _, k := range kids {
-		if k.H.Kind == Fill && innerH >= 0 {
+		if k.H.Kind == KindFill && innerH >= 0 {
 			nfill++
 			continue
 		}
 		kh := -1.0
-		if k.H.Kind == Fixed {
+		if k.H.Kind == KindFixed {
 			kh = k.H.V
 		}
 		k.layout(k.kidW(innerW), kh)
@@ -360,7 +382,7 @@ func (n *Node) layoutFlow(w, h float64) {
 	if nfill > 0 {
 		share := math.Max((innerH-sum-gaps)/float64(nfill), 0)
 		for _, k := range kids {
-			if k.H.Kind == Fill {
+			if k.H.Kind == KindFill {
 				k.layout(k.kidW(innerW), share)
 				sum += k.RH
 			}
@@ -418,12 +440,12 @@ func (n *Node) layoutWrap(kids []*Node, w, h float64) {
 	}
 	growsMain := func(k *Node) bool {
 		if horiz {
-			return k.W.Kind == Fill
+			return k.W.Kind == KindFill
 		}
-		return k.H.Kind == Fill
+		return k.H.Kind == KindFill
 	}
 	fixedH := func(k *Node) float64 {
-		if k.H.Kind == Fixed {
+		if k.H.Kind == KindFixed {
 			return k.H.V
 		}
 		return -1
@@ -474,9 +496,9 @@ func (n *Node) layoutWrap(kids []*Node, w, h float64) {
 		}
 		for _, k := range ln.kids {
 			switch {
-			case horiz && k.H.Kind == Fill:
+			case horiz && k.H.Kind == KindFill:
 				k.layout(k.RW, ln.cross)
-			case !horiz && k.W.Kind == Fill:
+			case !horiz && k.W.Kind == KindFill:
 				k.layout(ln.cross, fixedH(k))
 			}
 		}

@@ -65,7 +65,7 @@ func TestPenDiff(t *testing.T) {
 		if err := json.Unmarshal(raw, &rows); err != nil {
 			t.Fatal(err)
 		}
-		s := gfx.NewScene(gfx.R(-100, -100, 6000, 20000), 256)
+		s := gfx.NewScene()
 		var sc *pen.Screen
 		s.Update(func(tx *gfx.Tx) { sc, err = d.BuildNode(tx, nil, in.ID) })
 		if err != nil {

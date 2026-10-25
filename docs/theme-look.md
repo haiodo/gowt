@@ -1,5 +1,7 @@
 # Theme and platform look
 
+<img src="img/art/theme-look.png" alt="Gopher at a light switch between a day room and a night room" width="256" align="right">
+
 Example: [`examples/theme`](../examples/theme).
 
 ## Light and dark

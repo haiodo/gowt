@@ -1,5 +1,7 @@
 # Web view and Browser
 
+<img src="img/art/webview-browser.png" alt="Gopher in a porthole with web pages around" width="256" align="right">
+
 Examples: [`examples/webview`](../examples/webview), [`examples/browser`](../examples/browser).
 
 Two packages put a web page next to native widgets. Both use the system engine, so no browser is bundled.

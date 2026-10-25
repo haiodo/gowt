@@ -1,5 +1,7 @@
 # Events and the UI thread
 
+<img src="img/art/events.png" alt="Gopher dispatching a train of envelopes on one track" width="256" align="right">
+
 Examples: [`examples/events`](../examples/events), [`examples/rows`](../examples/rows) (rows bound to state), [`examples/boundary`](../examples/boundary) (errors shown in place).
 
 ## Callbacks

@@ -1,5 +1,7 @@
 # Platforms
 
+<img src="img/art/platforms.png" alt="Gopher jumping between floating islands with an apple tree, a house and a penguin" width="256" align="right">
+
 ## For app authors
 
 Same Go program, three native back ends. What differs:

@@ -1,5 +1,7 @@
 # Installing gowt
 
+<img src="img/art/install.png" alt="Gopher in a hard hat unpacking an app from a box" width="256" align="right">
+
 Next: the [getting started](index.md) page. A quick hello is in [`examples/hello`](../examples/hello).
 
 ```

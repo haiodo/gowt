@@ -1,5 +1,7 @@
 # gowt internals: repository map, translator, ports
 
+<img src="img/art/internals.png" alt="Gopher mechanic with a wrench inside a machine" width="256" align="right">
+
 How the repository is laid out and how the SWT port is built. To use gowt see [index.md](index.md). Platform status and test numbers: [platforms.md](platforms.md).
 
 gowt is Eclipse SWT translated from Java to Go by a translator in this repository (`tooling/j2go`, built on Eclipse JDT), with hand-written code where translation does not apply. The generated Go is committed, so users need neither Java nor the SWT sources. Three platform ports exist: macOS (SWT's `cocoa`), Windows (`win32`) and Linux (`gtk`, GTK 3). Everything builds with `CGO_ENABLED=0`; the OS libraries are loaded at run time.

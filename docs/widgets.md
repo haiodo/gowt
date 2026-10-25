@@ -1,5 +1,7 @@
 # Widgets
 
+<img src="img/art/widgets.png" alt="Gopher juggling a button, a checkbox, a slider and a switch" width="256" align="right">
+
 Example: [`examples/widgets`](../examples/widgets) (three tabs: input, lists, ranges).
 
 Every widget has a constructor function that returns a description (`gowt.Option`): `gowt.Label(text, opts...)`, `gowt.Button(text, opts...)`. A description becomes a widget when it is passed to its parent: as a child of a container constructor (`gowt.VBox`, `gowt.Group`, `gowt.Split`, ...), to `app.Window(title, children...)` or to `Add(children...)` of a live container. Events, initial values and rx bindings are options too (see below), and data shared between widgets lives in `rx` state ([events.md](events.md)). For imperative work on a widget (filling a Table, `Pages.Show`, `Canvas.Redraw`) declare `var x *gowt.LabelView` and pass `gowt.Ref(&x)`, or run the code in `gowt.Init(func(x *gowt.LabelView) {...})`; both run once the widget and its children exist, `Ref` sets `x` for the code after the `Add` or `app.Window` call. The widget types carry a `View` suffix (`*gowt.LabelView`, `*gowt.TableView`, ...) and have plain Go methods: no `Get` prefix, `int` for sizes, `time.Time` for dates.

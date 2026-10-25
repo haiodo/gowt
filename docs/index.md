@@ -1,5 +1,7 @@
 # gowt documentation
 
+<img src="img/art/index.png" alt="Gopher waving in front of three app windows" width="256" align="right">
+
 gowt is a native GUI toolkit for Go without cgo. The windows, buttons, tables and menus on screen are the operating system's own (AppKit on macOS, Win32 on Windows, GTK 3 on Linux). The Go API is a thin layer over Eclipse SWT, translated from Java to Go; you do not need to know SWT or Java to use it.
 
 This documentation covers the `gowt` facade package. Every page has a runnable program in [`examples/`](../examples).

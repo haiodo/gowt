@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/png"
 	"os"
+	"slices"
 
 	"github.com/haiodo/gowt/internal/gtk"
 )
@@ -38,6 +39,10 @@ func WindowPNG(widget int64, path string) error {
 				img.Pix[dst+3] = byte(buf[src+3])
 			}
 		}
+	}
+	// A Wayland window that was not painted yet reads back as all transparent; do not write that as a result.
+	if !slices.ContainsFunc(img.Pix[3:], func(b byte) bool { return b != 0 }) {
+		return fmt.Errorf("empty capture")
 	}
 	f, err := os.Create(path)
 	if err != nil {

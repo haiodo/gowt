@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.12.2 (2026-10-25)
 
 Fixes
 - Windows: closing a window that used `look.SetGlass` no longer panics with "comparing uncomparable type fluent.listener": the fluent listeners are pointers, so `Display.RemoveFilter` can compare them.

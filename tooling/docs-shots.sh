@@ -5,7 +5,9 @@
 # A catalog sample comes out at the outer size from examples/catalog/main.go (2 px per point, title bar included);
 # tooling/docs-shots-vm.sh does the same on Windows and Linux, `make shot-sizes` compares the three.
 # GOWT_SNAP_NOFOCUS=1 takes the focus ring off the first control before the capture.
-# Usage: [GOOS=windows] [RUN="wine --bottle gowt"] [EXT=.exe] [PATHPFX=Z:] tooling/docs-shots.sh <label>
+# ONLY=apps shoots just the seven apps of examples/apps (docs/img/app-<name>-<label>.png), as the glass of the sidebars needs
+# GOWT_SNAP_SCREEN=1 they open as real windows; window size comes from examples/apps/internal/kit (GOWT_SNAP_SIZE, 2x export).
+# Usage: [ONLY=apps] [GOOS=windows] [RUN="wine --bottle gowt"] [EXT=.exe] [PATHPFX=Z:] tooling/docs-shots.sh <label>
 # Run it from the repository root. RUN prefixes the executable, PATHPFX the output path as the program sees it.
 set -uo pipefail
 label=$1
@@ -28,6 +30,7 @@ shoot() { # <png name> <executable> [args...]
 	fi
 }
 
+if [ "${ONLY:-}" != apps ]; then
 for e in $(ls examples | grep -vx -e controlexample -e catalog -e apps); do
 	go build -o "$bin/$e$ext" "./examples/$e" || { fail=1; continue; }
 	# The snapshot waits for a web view to finish loading by itself; the glass of theme only shows in a window server capture.
@@ -37,5 +40,11 @@ done
 go build -o "$bin/catalog$ext" ./examples/catalog || exit 1
 for w in $(sed -n 's/^	{"\([a-z]*\)", .*/\1/p' examples/catalog/main.go); do
 	shoot "$w-$label.png" "$(pwd)/$bin/catalog$ext" "$w"
+done
+fi
+
+for a in $(ls examples/apps | grep -vx internal); do
+	go build -o "$bin/app-$a$ext" "./examples/apps/$a" || { fail=1; continue; }
+	GOWT_APPEARANCE=light GOWT_SNAP_DELAY=1500 GOWT_SNAP_SCREEN=1 shoot "app-$a-$label.png" "$(pwd)/$bin/app-$a$ext"
 done
 exit $fail

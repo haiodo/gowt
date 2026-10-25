@@ -53,6 +53,18 @@ The images of one catalog sample have the same pixel size on macOS, Windows and 
 
 `tooling/docs-shots-vm.sh windows|linux` (`ONLY="coolbar example-hello"` shoots a few) copies the programs to the VM, runs them one after another and fetches the PNGs; `source-<os>.txt` records the stand, commit and date. The web view examples are shot through Xwayland because native Wayland reads a WebKitGTK window back empty; under Xwayland the window has no frame, so those two images lack the title bar. `GOWT_SNAP_FULL=1` (Windows) copies with `PrintWindow(PW_RENDERFULLCONTENT)` so WebView2 shows; `GOWT_SNAP_NOFOCUS=1` (macOS) takes the focus ring off before the capture, `tooling/docs-shots.sh` sets it.
 
-All three run `tooling/docs-shots.sh <os>`: it builds each program in `examples/` except `controlexample` and `catalog`, runs it with `GOWT_SNAP=docs/img/example-<name>-<os>.png`, then runs `examples/catalog <widget>` for every sample, writing `docs/img/<widget>-<os>.png` (the [widget catalog](widget-catalog.md)). Windows open one after another and close by themselves; a program that does not produce a file within 60 seconds is killed and reported as `FAILED`. The script exits non-zero if any shot failed. Use another stand container with `make linux-docs-shots LINUX_CTR=name LINUX_PORT=6090`.
+All three run `tooling/docs-shots.sh <os>`: it builds each program in `examples/` except `controlexample` and `catalog`, runs it with `GOWT_SNAP=docs/img/example-<name>-<os>.png`, then runs `examples/catalog <widget>` for every sample, writing `docs/img/<widget>-<os>.png` (the [components](components.md)). Windows open one after another and close by themselves; a program that does not produce a file within 60 seconds is killed and reported as `FAILED`. The script exits non-zero if any shot failed. Use another stand container with `make linux-docs-shots LINUX_CTR=name LINUX_PORT=6090`.
 
 To add a widget to the catalog, add a line to `samples` in `examples/catalog/main.go`; the script reads the names from there.
+
+## App shots
+
+`docs/img/app-<name>-<os>.png` for the seven apps of `examples/apps` (shown on [apps.md](apps.md)). Under `GOWT_SNAP` the apps open at `kit.SnapWidth` x `kit.SnapHeight` points (examples/apps/internal/kit) and set `GOWT_SNAP_SIZE`, so every shot is 2080x1200, light appearance (`GOWT_APPEARANCE=light`). `make shot-sizes` checks them with the catalog samples.
+
+| OS | Command |
+|---|---|
+| macOS (opens a window per app, `GOWT_SNAP_SCREEN=1` so the glass shows) | `make docs-shots-apps` (= `ONLY=apps tooling/docs-shots.sh macos`) |
+| Windows 11 VM | `ONLY=apps make vm-docs-shots-windows` |
+| Ubuntu GNOME VM | `ONLY=apps make vm-docs-shots-linux` |
+
+`WINWD` (single backslashes, e.g. `C:\gowt\orch\gallery`) moves the work folder on the Windows VM. The PNGs are not quantised, about 5 MB for the 14 VM shots.

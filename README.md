@@ -8,7 +8,29 @@ Native GUI for Go, without cgo. Windows, tables, menus and dialogs are the opera
 |---|---|---|
 | ![Table, macOS](docs/img/table-macos.png) | ![Table, Windows](docs/img/table-windows.png) | ![Table, Linux](docs/img/table-linux.png) |
 
-A `gowt.Table` sample ([widget catalog](docs/widget-catalog.md)). Windows is a Windows 11 virtual machine, Linux an Ubuntu GNOME desktop on Wayland in a virtual machine, see [docs/screenshots.md](docs/screenshots.md).
+A `gowt.Table` sample ([components](docs/components.md)). Windows is a Windows 11 virtual machine, Linux an Ubuntu GNOME desktop on Wayland in a virtual machine, see [docs/screenshots.md](docs/screenshots.md).
+
+## Demo apps
+
+Seven apps in [`examples/apps`](examples/apps), macOS shown first; the same window on [Windows](docs/apps.md) and Linux is one click away, all three side by side on [docs/apps.md](docs/apps.md).
+
+<table>
+<tr>
+<td align="center"><a href="docs/apps.md#chat"><img src="docs/img/app-chat-macos.png" width="400" alt="chat, macOS"></a><br><a href="examples/apps/chat"><code>chat</code></a> &middot; <a href="docs/img/app-chat-windows.png">Windows</a> &middot; <a href="docs/img/app-chat-linux.png">Linux</a></td>
+<td align="center"><a href="docs/apps.md#dashboard"><img src="docs/img/app-dashboard-macos.png" width="400" alt="dashboard, macOS"></a><br><a href="examples/apps/dashboard"><code>dashboard</code></a> &middot; <a href="docs/img/app-dashboard-windows.png">Windows</a> &middot; <a href="docs/img/app-dashboard-linux.png">Linux</a></td>
+</tr>
+<tr>
+<td align="center"><a href="docs/apps.md#editor"><img src="docs/img/app-editor-macos.png" width="400" alt="editor, macOS"></a><br><a href="examples/apps/editor"><code>editor</code></a> &middot; <a href="docs/img/app-editor-windows.png">Windows</a> &middot; <a href="docs/img/app-editor-linux.png">Linux</a></td>
+<td align="center"><a href="docs/apps.md#files"><img src="docs/img/app-files-macos.png" width="400" alt="files, macOS"></a><br><a href="examples/apps/files"><code>files</code></a> &middot; <a href="docs/img/app-files-windows.png">Windows</a> &middot; <a href="docs/img/app-files-linux.png">Linux</a></td>
+</tr>
+<tr>
+<td align="center"><a href="docs/apps.md#mail"><img src="docs/img/app-mail-macos.png" width="400" alt="mail, macOS"></a><br><a href="examples/apps/mail"><code>mail</code></a> &middot; <a href="docs/img/app-mail-windows.png">Windows</a> &middot; <a href="docs/img/app-mail-linux.png">Linux</a></td>
+<td align="center"><a href="docs/apps.md#settings"><img src="docs/img/app-settings-macos.png" width="400" alt="settings, macOS"></a><br><a href="examples/apps/settings"><code>settings</code></a> &middot; <a href="docs/img/app-settings-windows.png">Windows</a> &middot; <a href="docs/img/app-settings-linux.png">Linux</a></td>
+</tr>
+<tr>
+<td align="center"><a href="docs/apps.md#tracker"><img src="docs/img/app-tracker-macos.png" width="400" alt="tracker, macOS"></a><br><a href="examples/apps/tracker"><code>tracker</code></a> &middot; <a href="docs/img/app-tracker-windows.png">Windows</a> &middot; <a href="docs/img/app-tracker-linux.png">Linux</a></td>
+</tr>
+</table>
 
 <!-- SCREENSHOTS (facade demo, to be taken with the user's consent; run each, wait 3-4 s, then capture):
 macOS:   go build -o bin/gowtdemo ./cmd/gowtdemo && ./bin/gowtdemo &   then   screencapture -o -w docs/img/gowtdemo-macos.png   (click the window)
@@ -66,7 +88,7 @@ func main() {
 
 <img src="docs/img/art/readme-docs.png" alt="Gopher reading on a pile of books" width="160" align="right">
 
-Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable program:
+Start at [docs/README.md](docs/README.md). Each topic has a page and a runnable program:
 
 | Topic | Page | Example |
 |---|---|---|

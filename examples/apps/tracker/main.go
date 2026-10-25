@@ -35,7 +35,7 @@ func main() {
 		app.SetDensity(gowt.DensityNative)
 		kit.Appearance(app)
 		w := app.Window("Issues")
-		w.SetSize(kit.Width, kit.Height)
+		kit.Size(w)
 		w.SetMinSize(900, 500)
 
 		var content, insp *gowt.Panel

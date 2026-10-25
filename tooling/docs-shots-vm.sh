@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Writes docs/img/<name>-<label>.png (the names docs-shots.sh writes) on the real stands: the Windows 11 arm64 UTM VM
 # (.work/winvm/vm.sh) or the Ubuntu 26.04 GNOME Wayland UTM VM (.work/ubvm/vm.sh). Not Wine, not Xvfb.
-# Usage: [VMTAG=catalog] [VM=path/to/vm.sh] [SCALE=2] [ONLY="coolbar example-hello"] tooling/docs-shots-vm.sh windows|linux
+# Usage: [VMTAG=catalog] [WINWD=C:\gowt\orch\gallery] [VM=path/to/vm.sh] [SCALE=2] [ONLY="coolbar example-hello app-chat"] (ONLY=apps: the seven apps) tooling/docs-shots-vm.sh windows|linux
 # Run it from the repository root. The programs are cross-built for arm64, copied to the VM, run one after another in
 # the logged-on desktop session and the PNGs copied back. Theme and window frame are the VM's own (Linux: light
 # theme, native Wayland). A web view example is shot after its load finished (GOWT_SNAP waits for it).
@@ -12,6 +12,7 @@ set -uo pipefail
 label=${1:-}
 export VMTAG=${VMTAG:-catalog}
 tag=$VMTAG
+wd=${WINWD:-C:\\gowt\\$tag} # WINWD: another work folder on the Windows VM, single backslashes
 case $label in
 windows) vm=${VM:-.work/winvm/vm.sh}; goos=windows; ext=.exe; script=run.cmd ;;
 linux) vm=${VM:-.work/ubvm/vm.sh}; goos=linux; ext=; script=run.sh ;;
@@ -33,10 +34,16 @@ for e in $(ls examples | grep -vx -e controlexample -e catalog -e apps); do
 done
 GOOS=$goos GOARCH=arm64 go build -o "$bin/catalog$ext" ./examples/catalog || exit 1
 for w in $(sed -n 's/^	{"\([a-z]*\)", .*/\1/p' examples/catalog/main.go); do jobs+=("$w catalog $w"); done
+# examples/apps: app-<name>, light appearance, opened at kit.SnapWidth x kit.SnapHeight (examples/apps/internal/kit).
+for a in $(ls examples/apps | grep -vx internal); do
+	GOOS=$goos GOARCH=arm64 go build -o "$bin/app-$a$ext" "./examples/apps/$a" || exit 1
+	jobs+=("app-$a app-$a")
+done
+[ "${ONLY:-}" = apps ] && ONLY=$(printf 'app-%s ' $(ls examples/apps | grep -vx internal))
 
 {
 	if [ "$label" = windows ]; then
-		echo '@echo off'; echo "cd /d C:\\gowt\\$tag"; echo 'if not exist out mkdir out';
+		echo '@echo off'; echo "cd /d $wd"; echo 'if not exist out mkdir out';
 	else
 		echo 'mkdir -p out; rm -f out/*'
 	fi
@@ -45,23 +52,26 @@ for w in $(sed -n 's/^	{"\([a-z]*\)", .*/\1/p' examples/catalog/main.go); do job
 		if [ "$label" = windows ]; then
 			[ -n "${ONLY:-}" ] && [[ " $ONLY " != *" $1 "* ]] && continue
 			[ -n "${RAWSIZE:-}" ] && echo "set GOWT_SNAP_SIZE=0x0"
-			echo "set GOWT_SNAP=C:\\gowt\\$tag\\out\\$1-$label.png"
+			case $1 in app-*) echo "set GOWT_APPEARANCE=light";; *) echo "set GOWT_APPEARANCE=";; esac
+			echo "set GOWT_SNAP=$wd\\out\\$1-$label.png"
 			echo "$2.exe ${3:-} 2>out\\$1.log"
 		else
 			[ -n "${ONLY:-}" ] && [[ " $ONLY " != *" $1 "* ]] && continue
 			# Native Wayland reads a WebKitGTK window back as empty; the web view examples are shot through Xwayland.
-			x=${RAWSIZE:+GOWT_SNAP_SIZE=0x0}; case $2 in browser|webview) x="$x GDK_BACKEND=x11 GDK_SCALE=$scale";; esac
+			x=${RAWSIZE:+GOWT_SNAP_SIZE=0x0}; case $2 in browser|webview) x="$x GDK_BACKEND=x11 GDK_SCALE=$scale";; app-*) x="$x GOWT_APPEARANCE=light";; esac
 			# GTK_THEME pins the light theme whatever the desktop's setting is; an empty capture (window not painted yet) is an error and is shot again later.
-			echo "for d in 1000 3000 6000; do $x GTK_THEME=Adwaita:light GOWT_SNAP_DELAY=\$d GOWT_SNAP=\$PWD/out/$1-$label.png timeout 90 ./$2 ${3:-} >out/$1.log 2>&1; [ -s out/$1-$label.png ] && break; done"
+			# The apps lay out slower than a catalog sample: at 1000 ms three of them were still at their minimum size.
+			delays="1000 3000 6000"; case $1 in app-*) delays="3000 6000";; esac
+			echo "for d in $delays; do $x GTK_THEME=Adwaita:light GOWT_SNAP_DELAY=\$d GOWT_SNAP=\$PWD/out/$1-$label.png timeout 90 ./$2 ${3:-} >out/$1.log 2>&1; [ -s out/$1-$label.png ] && break; done"
 		fi
 	done
 } >"$bin/$script"
 
 if [ "$label" = windows ]; then
-	"$vm" ssh "Remove-Item -Recurse -Force C:\\gowt\\$tag\\out -ErrorAction SilentlyContinue; New-Item -ItemType Directory -Force C:\\gowt\\$tag | Out-Null"
-	"$vm" put "$bin"/*.exe "$bin/$script" "C:\\gowt\\$tag"
-	"$vm" gui "cd /d C:\\gowt\\$tag && call $script" 3000 || exit 1
-	"$vm" get "C:/gowt/$tag/out" "$bin/got"
+	"$vm" ssh "Remove-Item -Recurse -Force $wd\\out -ErrorAction SilentlyContinue; New-Item -ItemType Directory -Force $wd | Out-Null"
+	"$vm" put "$bin"/*.exe "$bin/$script" "$wd"
+	"$vm" gui "cd /d $wd && call $script" 3000 || exit 1
+	"$vm" get "${wd//\\//}/out" "$bin/got"
 else
 	"$vm" ssh 'rm -rf out'
 	"$vm" put "$bin"/* "~/gowt/$tag/"

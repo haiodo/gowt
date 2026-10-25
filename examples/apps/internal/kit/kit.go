@@ -5,6 +5,7 @@ package kit
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/icons"
@@ -26,6 +27,35 @@ const (
 	Width  = 1280
 	Height = 800
 )
+
+// Snap size: with GOWT_SNAP set the window opens at this outer size in points on every OS.
+// It fits the 1728x1044 Windows VM at 150%; the PNG is exactly 2x, so the shots of an app compare.
+const (
+	SnapWidth  = 1040
+	SnapHeight = 600
+)
+
+// Size sets Width x Height, or the snap size when GOWT_SNAP is set.
+// The slack is what a platform's window rect hides (see examples/catalog frameSlack).
+func Size(w *gowt.Window) {
+	if os.Getenv("GOWT_SNAP") == "" {
+		w.SetSize(Width, Height)
+		return
+	}
+	sw, sh := 0, 0
+	switch runtime.GOOS {
+	case "windows":
+		sw, sh = 14, 7
+		// A new window cascades down from the corner, so a large one runs off the 1728x1044 screen of the VM.
+		w.Unwrap().SetLocation(0, 0)
+	case "linux":
+		sw, sh = 6, -8
+	}
+	if os.Getenv("GOWT_SNAP_SIZE") == "" {
+		os.Setenv("GOWT_SNAP_SIZE", fmt.Sprintf("%dx%d", SnapWidth, SnapHeight))
+	}
+	w.SetSize(SnapWidth+sw, SnapHeight+sh)
+}
 
 // Appearance forces the scheme named by GOWT_APPEARANCE ("dark" or "light") for screenshots; unset
 // follows the system. Call it right after SetDensity, before any window.

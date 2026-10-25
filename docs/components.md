@@ -1,10 +1,8 @@
-# Widget catalog
+# Components
 
 Example: [`examples/catalog`](../examples/catalog). `go run ./examples/catalog` shows every sample in tabs; `go run ./examples/catalog table` opens one.
 
-Every widget is created by a constructor function (`gowt.Label(text)`) that is passed to its parent, see [widgets.md](widgets.md) for options and methods. The pictures are `docs/img/<widget>-<os>.png` with `<os>` one of `macos`, `windows`, `linux`; they are written by `make docs-shots` (macOS), `vm-docs-shots-windows` (Windows 11 virtual machine) and `vm-docs-shots-linux` (Ubuntu GNOME on Wayland, light theme); [screenshots.md](screenshots.md) says which stand made which picture. A picture that is not in the repository yet has not been generated for that OS.
-
-<!-- TODO(orchestrator): img/switch-macos.png is missing; take it on the Mac: make docs-shots, or GOWT_SNAP=docs/img/switch-macos.png go run ./examples/catalog switch -->
+Every widget is created by a constructor function (`gowt.Label(text)`) that is passed to its parent, see [widgets.md](widgets.md) for options and methods. The pictures are `docs/img/<widget>-<os>.png` with `<os>` one of `macos`, `windows`, `linux`; they are written by `make docs-shots` (macOS), `vm-docs-shots-windows` (Windows 11 virtual machine) and `vm-docs-shots-linux` (Ubuntu GNOME on Wayland, light theme); [screenshots.md](screenshots.md) says which stand made which picture.
 
 | Widget | Constructor | What it is | Linux | macOS | Windows |
 |---|---|---|---|---|---|
@@ -32,5 +30,7 @@ Every widget is created by a constructor function (`gowt.Label(text)`) that is p
 | CoolBar | `CoolBar(opts...)` | draggable bands, one per child; the macOS picture has the bands locked (`SetLocked`), the Cocoa port draws SWT's classic grip bars otherwise | ![](img/coolbar-linux.png) | ![](img/coolbar-macos.png) | ![](img/coolbar-windows.png) |
 | Sash | `Sash(opts...)` | draggable divider; `OnMove` | ![](img/sash-linux.png) | ![](img/sash-macos.png) | ![](img/sash-windows.png) |
 | Canvas | `Canvas(onPaint, opts...)` | surface you draw on with a `*GC`, see [graphics.md](graphics.md) | ![](img/canvas-linux.png) | ![](img/canvas-macos.png) | ![](img/canvas-windows.png) |
+
+Whole windows built from these widgets are on [apps.md](apps.md). Not in the table (no sample in `examples/catalog` yet): `StyledText`, `Section`, `Fields`, `Grid`, `Flow`, `Fill`, `Form`, `Pages`, `Boundary`, `Separator`, `Spacer`; `StyledText` and `Section` show in the apps.
 
 Outside the table: `Window.MenuBar()` and `PopupMenu` ([dialogs-menus.md](dialogs-menus.md)), `App.Tray`, and the `webview` and `browser` packages ([webview-browser.md](webview-browser.md)). The Sash picture shows two labels: the sash itself is not visible in the Linux picture.

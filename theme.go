@@ -2,9 +2,49 @@ package gowt
 
 import "github.com/haiodo/gowt/swt"
 
-// Dark reports whether the system is in dark mode (macOS appearance, Windows apps theme, Linux
-// xdg-desktop-portal color-scheme). Run keeps the app following it; call from the UI thread.
-func (a *App) Dark() bool { return systemDark() }
+// Appearance is the colour scheme of the app's windows and of the Adaptive colours.
+type Appearance int
+
+// The appearances. AppearanceSystem follows the OS and is the default.
+const (
+	AppearanceSystem Appearance = iota
+	AppearanceDark
+	AppearanceLight
+)
+
+// SetAppearance makes the app dark or light whatever the OS is set to, or follows the OS again with
+// AppearanceSystem. Dark reports the forced value, Adaptive colours switch and OnThemeChange runs.
+// What changes:
+//   - macOS: NSApp.appearance, so the whole UI (controls, title bars, sheets) switches live.
+//   - Linux: gtk-application-prefer-dark-theme, and the portal no longer overrides it; the theme must
+//     have a dark variant (Adwaita and Yaru do). Switches live.
+//   - Windows: title bars switch live. The content (scroll bars, tables, trees, buttons) is the dark
+//     controls theme, which does not switch live: call SetAppearance before creating the windows, as for
+//     look.SetDarkContent, which it replaces. Text fields, labels and the owner-drawn buttons, Progress
+//     and Scale of gowt follow the scheme; native controls that Windows themes itself may stay light.
+//
+// Call it on the UI thread, usually first in the setup function.
+func (a *App) SetAppearance(m Appearance) {
+	a.appearance = m
+	a.display.ForceColorScheme(int32(m))
+	a.display.SendEvent(swt.Settings, swt.NewEvent()) // Windows sends none; elsewhere the system's own follows
+}
+
+// Appearance returns what SetAppearance set.
+func (a *App) Appearance() Appearance { return a.appearance }
+
+// Dark reports whether the app is dark: the forced Appearance, else the system's dark mode (macOS
+// appearance, Windows apps theme, Linux xdg-desktop-portal color-scheme). Run keeps the app following
+// the system; call from the UI thread.
+func (a *App) Dark() bool {
+	switch a.appearance {
+	case AppearanceDark:
+		return true
+	case AppearanceLight:
+		return false
+	}
+	return systemDark()
+}
 
 // OnThemeChange runs f on the UI thread when the system switches between light and dark.
 // Cached widget colors and the Adaptive and SecondaryText colours of widgets are already refreshed

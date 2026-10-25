@@ -21,6 +21,7 @@ type surface struct {
 	border bool
 	ring   bool
 	hooked bool
+	labels map[uintptr]bool // adopted STATIC children
 }
 
 var surfaces = map[*swt.Composite]*surface{}
@@ -95,14 +96,14 @@ func (s *surface) hook() {
 	s.hooked = true
 	// A plain Composite sends no Paint events, so the surface is the erased background.
 	attach(uintptr(s.c.Handle), s.proc)
-	s.c.AddListener(swt.Resize, listener(func(*swt.Event) { s.c.Redraw() }))
+	s.c.AddListener(swt.Resize, newListener(func(*swt.Event) { s.redraw() }))
 	d := s.c.GetDisplay()
 	// The focus control is the new one only after the event: look at it on the next turn.
-	f := listener(func(*swt.Event) {
+	f := newListener(func(*swt.Event) {
 		if s.ring {
 			d.AsyncExec(jrt.NewRunnable(func() {
 				if !s.c.IsDisposed() {
-					s.c.Redraw()
+					s.redraw()
 				}
 			}))
 		}
@@ -123,18 +124,87 @@ func (s *surface) adoptChildren() {
 	var walk func(cc *swt.Composite)
 	walk = func(cc *swt.Composite) {
 		for _, ch := range cc.GetChildren() {
-			if ch.GetName() == "Text" {
+			switch ch.GetName() {
+			case "Text":
 				Unframe(ch, s)
 				if !ch.HasCustomBackground() || frames[uintptr(ch.Handle)] != nil {
 					ch.SetBackgroundWithColor(col)
 				}
+			case "Label":
+				s.adoptLabel(ch)
 			}
 		}
 	}
 	walk(s.c)
 }
 
+// adoptLabel makes a STATIC child erase with the slice of the surface under it; proc draws its
+// text on a transparent background (WM_CTLCOLORSTATIC).
+func (s *surface) adoptLabel(l *swt.Control) {
+	if s.labels == nil {
+		s.labels = map[uintptr]bool{}
+	}
+	s.labels[uintptr(l.Handle)] = true
+	attach(uintptr(l.Handle), func(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, bool) {
+		if msg != wmEraseBkgnd || !s.on || wp == 0 {
+			return 0, false
+		}
+		var cr rect
+		call(pGetClientRect, hwnd, uintptr(unsafe.Pointer(&cr)))
+		if cr.right <= 0 || cr.bottom <= 0 {
+			return 1, true
+		}
+		drawBuffered(s.c.GetDisplay(), wp, cr.right, cr.bottom, func(p *painter) { s.paintSlice(p, hwnd, cr.right, cr.bottom) })
+		return 1, true
+	})
+	l.Redraw()
+}
+
+// redraw repaints the surface and its children, which paint a slice of it.
+func (s *surface) redraw() {
+	s.c.Redraw()
+	for _, ch := range s.c.GetChildren() {
+		ch.Redraw()
+	}
+}
+
+// surfaceOver is the glass surface that is the parent of c, or nil.
+func surfaceOver(c *swt.Control) *surface {
+	p := c.GetParent()
+	if p == nil {
+		return nil
+	}
+	if s := surfaces[p]; s != nil && s.on {
+		return s
+	}
+	return nil
+}
+
+// paintSlice paints the part of the surface under the w by h client area of the child hwnd.
+func (s *surface) paintSlice(p *painter, hwnd uintptr, w, h int32) {
+	var sr rect
+	so, org := point{}, point{}
+	sh := uintptr(s.c.Handle)
+	call(pGetClientRect, sh, uintptr(unsafe.Pointer(&sr)))
+	call(pClientToScreen, sh, uintptr(unsafe.Pointer(&so)))
+	call(pClientToScreen, hwnd, uintptr(unsafe.Pointer(&org)))
+	s.paint(p, w, h, org.x-so.x, org.y-so.y, sr.right, sr.bottom)
+}
+
 func (s *surface) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, bool) {
+	if msg == wmPaint && s.on && !s.c.IsListening(swt.Paint) {
+		// SWT's default paint overwrites the erased surface between the children with the parent colour.
+		var ps [72]byte // PAINTSTRUCT
+		call(pBeginPaint, hwnd, uintptr(unsafe.Pointer(&ps[0])))
+		call(pEndPaint, hwnd, uintptr(unsafe.Pointer(&ps[0])))
+		return 0, true
+	}
+	if msg == wmCtlColorStatic && s.on && s.labels[lp] {
+		// SWT sets the text colour; the background stays as the child erased it.
+		def()
+		call(pSetBkMode, wp, 1)               // TRANSPARENT
+		return call(pGetStockObject, 5), true // NULL_BRUSH
+	}
 	if msg != wmEraseBkgnd || !s.on || wp == 0 {
 		return 0, false
 	}
@@ -151,21 +221,21 @@ func (s *surface) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, 
 // draw paints the surface of size cw by ch into a w by h buffer on dst, the buffer's origin at (ox, oy)
 // of the surface: a Text inside it paints its non-client area from the same shape.
 func (s *surface) draw(dst uintptr, w, h, ox, oy, cw, ch int32) {
-	d := s.c.GetDisplay()
-	pal := Current(d)
+	drawBuffered(s.c.GetDisplay(), dst, w, h, func(p *painter) { s.paint(p, w, h, ox, oy, cw, ch) })
+}
+
+func (s *surface) paint(p *painter, w, h, ox, oy, cw, ch int32) {
+	pal := Current(s.c.GetDisplay())
 	bg := parentBackground(&s.c.Control)
 	r := s.radiusPx()
-	ring := s.ring && s.hasFocus()
-	drawBuffered(d, dst, w, h, func(p *painter) {
-		p.fillRect(bg, 0, 0, w, h)
-		p.fillRound(pal.Fill, -ox, -oy, cw, ch, r)
-		if s.border {
-			p.strokeRound(pal.StrongStroke(bg).over(0.5, pal.Stroke(bg)), -ox, -oy, cw, ch, r, 1)
-		}
-		if ring {
-			p.strokeRound(pal.Accent, 1-ox, 1-oy, cw-2, ch-2, max(r-1, 0), 2)
-		}
-	})
+	p.fillRect(bg, 0, 0, w, h)
+	p.fillRound(pal.Fill, -ox, -oy, cw, ch, r)
+	if s.border {
+		p.strokeRound(pal.StrongStroke(bg).over(0.5, pal.Stroke(bg)), -ox, -oy, cw, ch, r, 1)
+	}
+	if s.ring && s.hasFocus() {
+		p.strokeRound(pal.Accent, 1-ox, 1-oy, cw-2, ch-2, max(r-1, 0), 2)
+	}
 }
 
 // radiusPx is the corner radius in device pixels; Capsule is half the shorter side.

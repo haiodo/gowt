@@ -110,6 +110,10 @@ func (l *buttonLook) draw(hwnd, hdc uintptr, w, h int32) {
 	pal := Current(d)
 	dpi := dpiOf(hwnd)
 	bg := parentBackground(&l.b.Control)
+	surf := surfaceOver(&l.b.Control)
+	if surf != nil {
+		bg = pal.Fill
+	}
 	enabled := l.b.IsEnabled()
 	pushed := call(pSendMessage, hwnd, bmGetState, 0, 0)&bstPushed != 0
 	tint := RGB{249, 249, 249}
@@ -152,7 +156,11 @@ func (l *buttonLook) draw(hwnd, hdc uintptr, w, h int32) {
 	}
 	p := newPainter(d, hdc)
 	defer p.done()
-	p.fillRect(bg, 0, 0, w, h)
+	if surf != nil {
+		surf.paintSlice(p, hwnd, w, h)
+	} else {
+		p.fillRect(bg, 0, 0, w, h)
+	}
 	if filled {
 		p.fillRound(fill, 0, 0, w, h, r)
 	}

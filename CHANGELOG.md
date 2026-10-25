@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+Fixes
+- Windows: closing a window that used `look.SetGlass` no longer panics with "comparing uncomparable type fluent.listener": the fluent listeners are pointers, so `Display.RemoveFilter` can compare them.
+- Windows: a glass surface is one continuous shape. A push button inside it (`Borderless()`, `Circle()`) and a `Label` paint the slice of the surface under them instead of the parent colour, and the surface is no longer overpainted with the parent colour between its children, so the composer capsule keeps its right end and the send button sits inside it.
+
 Docs and tests
 - Docs: Linux targets a Wayland or X11 display; on a Wayland session GTK uses native Wayland and `GDK_BACKEND=x11` gives Xwayland. The README and platforms.md list `expected_windows_vm.txt` (0 fail, 6 flaky) and `expected_linux_desktop.txt` (Ubuntu 26.04 GNOME, Wayland); the stale "3741 passed, 64 failed" line is gone. `make docs-counts` checks both rows.
 - Tests: the root GUI tests close the window after the queued `Async` work has run (and `Pending` is zero), not after a fixed 10 ms; on macOS `TestSetTextLaysOut` found the loop not yet idle. The focus action test moved to `TestQATreeFocus` (`-tags gowtqa`), which `make check-gui` now runs as a second command.

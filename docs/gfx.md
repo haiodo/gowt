@@ -12,6 +12,8 @@ Packages:
 | `gfx` | paths and curve geometry, `Picture`, `Scene`, `Compositor`, animations, SVG, offscreen rendering |
 | `gfx/cg` | macOS: `Renderer` (CoreGraphics + CoreText), `Host` (CALayer), `DisplayLink` (CVDisplayLink) |
 | `gfx/view` | the gowt widget: `view.New(scene, init, opts...)` |
+| `gfx/layout` | auto-layout: row/column, gap, padding, align, justify, wrap, hug/fill/fixed with min/max, absolute children; `layout.Apply` moves scene nodes |
+| `gfx/pen` | importer of `.pen` designs into a scene; a client of `gfx/layout` |
 | `gfx/synth` | a synthetic 10k-box document for benchmarks |
 
 ## Scene
@@ -172,6 +174,41 @@ v.Pan(dx, dy); v.SetZoomLimits(0.02, 64)
   two-finger double-click event: an app that wants a fallback uses `Pointer.Count == 2`.
 - Scroll, pinch and smart-zoom events are consumed by the view, so a `MouseWheel` or `Gesture` listener on
   the canvas does not see them. Diagonal resize cursors are not offered (AppKit has no public ones).
+
+## Auto-layout
+
+`gfx/layout` resolves the frames of a tree of boxes. It has no `.pen` concepts and imports only the
+standard library, except `scene.go` (`Apply`), which imports `gfx`. An app builds a `layout.Node` tree that
+mirrors its own tree, calls `Layout` on the root and reads `RX, RY, RW, RH` (relative to the parent).
+
+| Property | Fields |
+|---|---|
+| Direction | `Dir`: `Row` (default), `Column`, `Abs` (all children at their own `X, Y`) |
+| Spacing | `Gap`, `Pad` (top, right, bottom, left) |
+| Alignment | `Align` (cross axis), `Justify` (main axis; `Start`, `Center`, `End`, `SpaceBetween`) |
+| Size | `W`, `H`: `Size{Fixed, v}`, `Hug` (zero value), `Fill`; `MinW, MaxW, MinH, MaxH` (zero Max: no limit) |
+| Wrap | `Wrap`, `LineGap`: children are cut into lines when they exceed the main axis |
+| Absolute | `Absolute`, `X`, `Y`: leaves the flow of a Row or a Column; takes no gap, share or hug size |
+| Content | `LeafW()` the one-line width, `LeafH(w)` the height at width `w` (text wrapping) |
+| App link | `Tag any` |
+
+```go
+bar := &layout.Node{Wrap: true, Gap: 6, LineGap: 4, W: layout.Size{Kind: layout.Fixed, V: 100}, Kids: chips}
+bar.Layout()
+scene.Update(func(tx *gfx.Tx) {
+	layout.Apply(tx, bar, func(n *layout.Node) *gfx.Node { g, _ := n.Tag.(*gfx.Node); return g })
+})
+```
+
+`Apply` moves the scene node of every layout node to its resolved position in one transaction; sizes stay in
+the layout tree. Rules worth knowing:
+
+- A Row wraps at its width (give it a Fixed or Fill width, or a MaxW; a Hug width is one line). A Column
+  wraps at its height, which must be known (Fixed, or Fill under a parent of known height).
+- A Fill child of a wrapping node starts from its content size and takes (or gives back) an equal share of its
+  line's free space. A Fill child clamped by Max does not pass the remainder on to its siblings.
+- Min wins over Max. Widths are decided top down, heights bottom up from the widths.
+- Not supported: per-child align overrides, percentages, content alignment of wrapped lines.
 
 ## Measured (M4 Max, macOS 26, CoreGraphics, no window)
 

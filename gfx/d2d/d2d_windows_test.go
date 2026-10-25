@@ -3,8 +3,10 @@
 package d2d
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"image/png"
 	"math"
 	"os"
 	"path/filepath"
@@ -469,9 +471,50 @@ func TestGallery(t *testing.T) {
 	t.Logf("gallery png sha256 %s (%d bytes)", hex.EncodeToString(sum[:]), len(png))
 }
 
+func TestWICPNG(t *testing.T) {
+	r := renderGallery(t)
+	data, err := EncodePNG(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	img, err := png.Decode(bytes.NewReader(data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := gfx.RasterFrom(img)
+	if got.W != r.W || got.H != r.H || !bytes.Equal(got.Pix, r.Pix) {
+		t.Error("the WIC PNG decodes to other pixels than the raster")
+	}
+	again, err := EncodePNG(r)
+	if err != nil || !bytes.Equal(again, data) {
+		t.Errorf("WIC PNG is not deterministic: err %v", err)
+	}
+}
+
+// TestHashAcrossRuns keeps the hash of the gallery PNG in the temp directory: the first run writes it,
+// every later run on the machine must produce the same bytes.
+func TestHashAcrossRuns(t *testing.T) {
+	data, err := renderGallery(t).PNG()
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(data)
+	got := hex.EncodeToString(sum[:])
+	file := filepath.Join(os.TempDir(), "gfx-d2d-gallery.sha256")
+	prev, err := os.ReadFile(file)
+	if err != nil {
+		t.Logf("first run: recording %s", got)
+		if err := os.WriteFile(file, []byte(got), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		return
+	}
+	if string(prev) != got {
+		t.Errorf("gallery hash changed between runs: was %s, now %s", prev, got)
+	}
+}
+
 func TestDeterministic(t *testing.T) {
-	hash := func(r *gfx.Renderer) string { return "" }
-	_ = hash
 	a, b := renderGallery(t), renderGallery(t)
 	pa, _ := a.PNG()
 	pb, _ := b.PNG()
@@ -498,6 +541,56 @@ func TestDeterministic(t *testing.T) {
 	pd, _ := d.PNG()
 	if sha256.Sum256(pc) != sha256.Sum256(pd) {
 		t.Error("two devices draw different pixels")
+	}
+}
+
+func TestConcurrentTargets(t *testing.T) {
+	want, _ := renderGallery(t).PNG()
+	ref := sha256.Sum256(want)
+	errs := make(chan string, 8)
+	for g := 0; g < 8; g++ {
+		go func() {
+			for i := 0; i < 4; i++ {
+				p, _ := renderGallery(t).PNG()
+				if sha256.Sum256(p) != ref {
+					errs <- "concurrent render differs"
+					return
+				}
+			}
+			errs <- ""
+		}()
+	}
+	for g := 0; g < 8; g++ {
+		if e := <-errs; e != "" {
+			t.Error(e)
+		}
+	}
+}
+
+func TestRenderSubtree(t *testing.T) {
+	scene := gfx.NewScene(gfx.R(-100, -100, 1000, 1000), 64)
+	frame, box := gfx.NewNode(1), gfx.NewNode(2)
+	scene.Update(func(tx *gfx.Tx) {
+		tx.Add(nil, frame)
+		tx.Add(frame, box)
+		tx.SetPicture(frame, record(func(r *gfx.Recorder) { r.FillPath(rectPath(0, 0, 100, 60), blue) }))
+		tx.SetPicture(box, record(func(r *gfx.Recorder) { r.FillPath(rectPath(0, 0, 20, 20), red) }))
+		tx.Move(frame, 50, 50)
+		tx.Move(box, 10, 10)
+		tx.ClipRRect(frame, gfx.R(0, 0, 100, 60), 8)
+	})
+	ras, err := gfx.RenderSubtree(shared, scene, frame, gfx.Rect{}, 2, white)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ras.W != 200 || ras.H != 120 {
+		t.Fatalf("size %dx%d", ras.W, ras.H)
+	}
+	want(t, "child over parent", px(ras, 40, 40), [4]byte{255, 0, 0, 255}, 0)
+	want(t, "parent", px(ras, 100, 80), [4]byte{0, 0, 255, 255}, 0)
+	want(t, "rounded corner clipped", px(ras, 0, 0), [4]byte{255, 255, 255, 255}, 0)
+	if _, err := ras.PNG(); err != nil {
+		t.Error(err)
 	}
 }
 

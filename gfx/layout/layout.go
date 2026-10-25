@@ -1,4 +1,4 @@
-// Package autolayout is a small flexbox-like layout for design mockups: rows and columns with gap,
+// Package layout is a small flexbox-like layout for design mockups: rows and columns with gap,
 // padding, alignment, justification and fixed, hug and fill sizes. It knows nothing of drawing: leaves
 // that depend on content (text) report their size through two callbacks. It uses the standard library
 // only, so it can be copied into another module as is.
@@ -19,7 +19,7 @@
 //
 // Not supported: wrap, min and max sizes, per-child align overrides, percentages, Fill sizes with a
 // fallback value.
-package autolayout
+package layout
 
 import "math"
 

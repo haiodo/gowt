@@ -1,4 +1,4 @@
-package autolayout
+package layout
 
 import "testing"
 

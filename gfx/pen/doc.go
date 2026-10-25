@@ -4,7 +4,7 @@
 // Open reads a file and the libraries it imports; Screens lists the top level frames and instances
 // that are big enough to be screens; Build lays one out and adds its nodes to a gfx.Tx, so the screen
 // is a subtree that can be moved as a whole and whose elements can be hit-tested; Unsupported reports
-// what was left out. The auto-layout is in the autolayout subpackage.
+// what was left out. The auto-layout is in gfx/layout.
 //
 // Supported: frame, rectangle, ellipse, path (SVG path data with a viewBox), text; ref instances of
 // components from the file or from imported libraries, with descendants overrides (properties, whole

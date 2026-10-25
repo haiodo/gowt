@@ -67,7 +67,7 @@ check-gui:
 
 # Platform-neutral code must build for every OS and must not import a platform's PI package; the
 # platform-specific rest (swt, cmd, ...) builds only where that platform's port exists. jface is one source for every OS: it builds on all three.
-XCHECK_PKGS := ./gfx ./gfx/cg ./gfx/pen ./gfx/pen/autolayout ./gfx/synth ./gfx/view ./internal/jrt ./internal/junit ./internal/snapcmp ./cmd/snapcheck ./tooling/apidump ./tooling/fieldreport ./examples/controlexample/res ./qa/qatest
+XCHECK_PKGS := ./gfx ./gfx/cg ./gfx/pen ./gfx/layout ./gfx/synth ./gfx/view ./internal/jrt ./internal/junit ./internal/snapcmp ./cmd/snapcheck ./tooling/apidump ./tooling/fieldreport ./examples/controlexample/res ./qa/qatest
 xcheck:
 	@for os in windows linux; do GOOS=$$os go build $(XCHECK_PKGS) || exit 1; done
 	@for os in darwin windows linux; do GOOS=$$os go build ./jface ./browser ./webview ./look ./icons ./rx || exit 1; done

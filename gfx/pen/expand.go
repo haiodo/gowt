@@ -1,7 +1,7 @@
 package pen
 
 import (
-	al "github.com/haiodo/gowt/gfx/pen/autolayout"
+	al "github.com/haiodo/gowt/gfx/layout"
 	"strconv"
 	"strings"
 

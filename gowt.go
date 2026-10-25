@@ -26,6 +26,9 @@ type App struct {
 	ended   atomic.Bool // the event loop is over: Display release still runs queued callbacks, on disposed widgets
 	images  map[*Image]struct{}
 	fonts   map[Font]*sharedFont
+	pxFonts map[*swt.Font]float64 // the Px of the native fonts made from one, to keep their size on a later SetFont
+	bodyPx  float64               // the body size SetDensity chose; 0 keeps the system font
+	body    *Font                 // the font new widgets get when it differs from the system font
 	clip    *Clipboard
 	onError func(error)
 	dark    bool                      // the theme the Adaptive colours were last applied for
@@ -52,7 +55,7 @@ func Run(setup func(*App)) (err error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	defer catch(&err)
-	a := &App{display: swt.NewDisplay(), images: map[*Image]struct{}{}, fonts: map[Font]*sharedFont{}}
+	a := &App{display: swt.NewDisplay(), images: map[*Image]struct{}{}, fonts: map[Font]*sharedFont{}, pxFonts: map[*swt.Font]float64{}}
 	defer a.display.Dispose()
 	defer a.ended.Store(true)
 	a.jobs.init()
@@ -71,6 +74,8 @@ func Run(setup func(*App)) (err error) {
 	})()
 	a.display.FollowSystemTheme()
 	a.followTheme()
+	densityChosen, densityFactor = Density{}, 1
+	Type, _, _, _ = resolveTokens(a.systemInfo(), DensityNative)
 	setup(a)
 	snapTick := func() {}
 	if p := os.Getenv("GOWT_SNAP"); p != "" {

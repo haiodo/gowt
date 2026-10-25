@@ -19,6 +19,7 @@ gowt App.Pending() int
 gowt App.Quit()
 gowt App.ScreenSize() (width int, height int)
 gowt App.SetBadge(text string)
+gowt App.SetDensity(d Density)
 gowt App.Sync(f func())
 gowt App.SystemFont() Font
 gowt App.Track(name string) (done func())
@@ -161,6 +162,7 @@ gowt DateTimeView.SetVisible(v bool)
 gowt DateTimeView.Unwrap() *github.com/haiodo/gowt/swt.DateTime
 gowt DateTimeView.Value() time.Time
 gowt DateTimeView.Visible() bool
+gowt Density.Legacy() bool
 gowt Drag.Files field func() []string
 gowt Drag.Image field func() *Image
 gowt Drag.OnDone field func(op Op)
@@ -185,6 +187,7 @@ gowt FileFilter.Pattern field string
 gowt Font.Bold field bool
 gowt Font.Italic field bool
 gowt Font.Name field string
+gowt Font.Px field float64
 gowt Font.Scale field float64
 gowt Font.Size field int
 gowt Font.Weight field Weight
@@ -505,10 +508,15 @@ gowt SliderView.SetVisible(v bool)
 gowt SliderView.Unwrap() *github.com/haiodo/gowt/swt.Slider
 gowt SliderView.Value() int
 gowt SliderView.Visible() bool
+gowt SpacingScale.ControlHeight field int
+gowt SpacingScale.InspectorWidth field int
 gowt SpacingScale.LG field int
 gowt SpacingScale.MD field int
 gowt SpacingScale.PageMargin field int
+gowt SpacingScale.RowHeight field int
 gowt SpacingScale.SM field int
+gowt SpacingScale.SidebarRow field int
+gowt SpacingScale.SidebarWidth field int
 gowt SpacingScale.XL field int
 gowt SpacingScale.XS field int
 gowt SpinnerView.Dispose()
@@ -789,6 +797,13 @@ gowt TreeView.ShowHeader(v bool)
 gowt TreeView.ShowRowLines(v bool)
 gowt TreeView.Unwrap() *github.com/haiodo/gowt/swt.Tree
 gowt TreeView.Visible() bool
+gowt TypeScale.Body field Font
+gowt TypeScale.BodyStrong field Font
+gowt TypeScale.Caption field Font
+gowt TypeScale.LargeTitle field Font
+gowt TypeScale.Mono field Font
+gowt TypeScale.Subtitle field Font
+gowt TypeScale.Title field Font
 gowt Widget.Dispose()
 gowt Widget.Enabled() bool
 gowt Widget.Focus() bool
@@ -892,12 +907,14 @@ gowt func CellSelect() Option
 gowt func Center() Option
 gowt func Check() Option
 gowt func Checked(on bool) Option
+gowt func ChosenDensity() Density
 gowt func Circle() Option
 gowt func Closable() Option
 gowt func Combo(items []string, opts ...Option) Option
 gowt func CoolBar(opts ...Option) Option
 gowt func Custom(f func(*github.com/haiodo/gowt/swt.Control)) Option
 gowt func DateTime(opts ...Option) Option
+gowt func DensityFactor(f float64) Density
 gowt func Disabled() Option
 gowt func DragFrom(w Widget, d Drag) *DragHandle
 gowt func DropDown() Option
@@ -953,6 +970,7 @@ gowt func Run(setup func(*App)) (err error)
 gowt func Same[T Widget](w *T, offset int) Edge
 gowt func Sash(opts ...Option) Option
 gowt func Scale(min int, max int, opts ...Option) Option
+gowt func Scaled(n int) int
 gowt func Scroll(opts ...Option) Option
 gowt func Scrollbars() Option
 gowt func Search() Option
@@ -997,6 +1015,7 @@ gowt type Column struct
 gowt type ComboView struct
 gowt type CoolBarView struct
 gowt type DateTimeView struct
+gowt type Density struct
 gowt type Drag struct
 gowt type DragHandle struct
 gowt type Drop struct
@@ -1054,10 +1073,14 @@ gowt type ToolItem struct
 gowt type TrayIcon struct
 gowt type TreeClick struct
 gowt type TreeView struct
+gowt type TypeScale struct
 gowt type Weight int
 gowt type Widget
 gowt type Window struct
+gowt var DensityNative Density
+gowt var DensitySame Density
 gowt var Spacing SpacingScale
+gowt var Type TypeScale
 gowt/icons func Color(c github.com/haiodo/gowt.RGB) Option
 gowt/icons func FromSVG(a *github.com/haiodo/gowt.App, data []byte, size int, c github.com/haiodo/gowt.RGB) *github.com/haiodo/gowt.Image
 gowt/icons func Get(a *github.com/haiodo/gowt.App, name string, opts ...Option) *github.com/haiodo/gowt.Image

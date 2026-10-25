@@ -289,9 +289,15 @@ const (
 // system UI font (SF Pro, Segoe UI, the GTK UI font) at the given weight. Scale sizes the font
 // relative to the system font when Size is 0: Font{Scale: 1.2, Weight: Semibold} is a heading that
 // grows with the system font on every OS.
+//
+// Px sizes the font in logical pixels with a fraction, the unit of Spacing: 13.5 is 13.5 pixels
+// tall on every OS, converted to the native unit when the font is made (1 pt = 1 px on macOS, 3/4 pt
+// on Windows, the screen resolution on GTK). It replaces Size and Scale; use the Type tokens
+// rather than numbers, see docs/cross-platform-look.md.
 type Font struct {
 	Name         string
 	Size         int
+	Px           float64
 	Scale        float64
 	Weight       Weight
 	Bold, Italic bool
@@ -302,6 +308,15 @@ type Font struct {
 func (f Font) from(cur *swt.Font, d *swt.Display) Font {
 	name, size := fontData(cur)
 	_, sys := fontData(d.GetSystemFont())
+	if v, ok := apps.Load(d); ok && f.Px == 0 && f.Size == 0 {
+		a := v.(*App)
+		switch {
+		case f.Scale != 0 && a.bodyPx > 0:
+			f.Px = a.bodyPx * f.Scale
+		case f.Scale == 0 && a.pxFonts[cur] > 0:
+			f.Px = a.pxFonts[cur]
+		}
+	}
 	return f.resolve(name, size, sys)
 }
 
@@ -316,7 +331,10 @@ func (f Font) resolve(name string, size, system int) Font {
 	if f.Name == "" {
 		f.Name = name
 	}
-	if f.Size == 0 {
+	if f.Px > 0 {
+		f.Size, f.Scale = 0, 0
+	}
+	if f.Size == 0 && f.Px == 0 {
 		f.Size = size
 		if f.Scale != 0 {
 			f.Size = max(1, int(math.Round(float64(system)*f.Scale)))
@@ -331,6 +349,16 @@ func (f Font) resolve(name string, size, system int) Font {
 
 // swtFont creates the native font for f on display d; the caller owns it.
 func (f Font) swtFont(d swt.DeviceLike) *swt.Font {
+	if f.Px > 0 {
+		w := int32(f.Weight)
+		if w == 0 {
+			w = int32(Regular)
+			if f.Bold {
+				w = int32(Bold)
+			}
+		}
+		return swt.NewFontDevicePx(d, f.Name, float32(f.Px), w, f.Italic)
+	}
 	if f.Weight != 0 {
 		return swt.NewFontDeviceNameHeightWeight(d, f.Name, int32(f.Size), int32(f.Weight), f.Italic)
 	}

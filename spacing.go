@@ -9,15 +9,22 @@ type SpacingScale struct {
 	XS, SM, MD, LG, XL int
 	// PageMargin is the margin between a window or page edge and its content.
 	PageMargin int
+	// RowHeight is the height of a list, table or tree row, ControlHeight that of a button, text field
+	// or combo, SidebarRow that of a sidebar row; SidebarWidth and InspectorWidth are the usual widths
+	// of look.SetSidebar and look.SetInspector.
+	RowHeight, ControlHeight, SidebarRow int
+	SidebarWidth, InspectorWidth         int
 }
 
-// Spacing is the application-wide scale: the default Gap is Spacing.SM and the default Padding of a
+// Spacing is the application-wide scale. Until App.SetDensity picks DensityNative or a factor, the
+// values are the same on every OS (PageMargin 16 on macOS and 12 elsewhere); SetDensity replaces them
+// with the values of density.go. The default Gap is Spacing.SM and the default Padding of a
 // Window and a Tab is Spacing.PageMargin; Gap(gowt.Spacing.LG) picks another step.
 // An application tunes it once at startup; a change applies to containers created afterwards, never to existing ones.
 var Spacing = defaultSpacing()
 
 func defaultSpacing() SpacingScale {
-	s := SpacingScale{XS: 4, SM: 8, MD: 12, LG: 16, XL: 32}
+	s := baseSpace
 	s.PageMargin = s.MD
 	if runtime.GOOS == "darwin" {
 		s.PageMargin = s.LG

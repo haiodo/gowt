@@ -1,0 +1,4 @@
+stand: Windows in a UTM virtual machine: Microsoft Windows 11 Home build 26100 ARM 64-bit Processor; WebView2 for the web examples; BitBlt capture, PrintWindow for web views
+source: tooling/docs-shots-vm.sh windows
+commit: 0bdb16e
+date: 2026-10-25

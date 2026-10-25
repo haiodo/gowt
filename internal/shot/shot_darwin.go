@@ -18,7 +18,12 @@ type nsRect struct {
 // tree with cacheDisplayInRect:toBitmapImageRep:; screencapture needs Screen Recording permission.
 // GOWT_SNAP_LAYERS=1 renders the layer tree instead (layerPNG); the reference images keep the default.
 func WindowPNG(view int64, path string) error {
-	v := objc.ID(view).Send(objc.RegisterName("window")).Send(objc.RegisterName("contentView")).Send(objc.RegisterName("superview"))
+	win := objc.ID(view).Send(objc.RegisterName("window"))
+	v := win.Send(objc.RegisterName("contentView")).Send(objc.RegisterName("superview"))
+	if os.Getenv("GOWT_SNAP_NOFOCUS") == "1" {
+		// The window takes the first responder, so no control draws a focus ring (Full Keyboard Access).
+		win.Send(objc.RegisterName("makeFirstResponder:"), objc.ID(0))
+	}
 	if os.Getenv("GOWT_SNAP_SCREEN") == "1" {
 		return screenPNG(v, path)
 	}

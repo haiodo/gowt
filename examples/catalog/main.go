@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"slices"
 	"time"
 
@@ -23,20 +24,20 @@ var samples = []sample{
 	{"button", gowt.VBox(gowt.Button("Push"), gowt.Button("Check", gowt.Check(), gowt.Checked(true)), gowt.Button("Radio", gowt.Radio()))},
 	{"switch", gowt.VBox(gowt.Switch("Wi-Fi", gowt.Checked(true)), gowt.Switch("Bluetooth"))},
 	{"text", gowt.VBox(
-		gowt.Text(gowt.Border(), gowt.Value("Edit me")),
-		gowt.Text(gowt.Password(), gowt.Border(), gowt.Value("secret")),
-		gowt.Text(gowt.Multiline(), gowt.Border(), gowt.Size(0, 60), gowt.Value("Several\nlines")))},
+		gowt.Text(gowt.Border(), gowt.Value("Edit me"), gowt.Size(200, 0)),
+		gowt.Text(gowt.Password(), gowt.Border(), gowt.Value("secret"), gowt.Size(200, 0)),
+		gowt.Text(gowt.Multiline(), gowt.Border(), gowt.Size(200, 60), gowt.Value("Several\nlines")))},
 	{"link", gowt.Link(`Read the <a href="https://example.com">terms</a>`, gowt.OnClick(func(string) {}))},
-	{"combo", gowt.Combo([]string{"One", "Two", "Three"}, gowt.ReadOnly(), gowt.Selected(1))},
-	{"list", gowt.List([]string{"alpha", "beta", "gamma", "delta"}, gowt.Selected(1))},
+	{"combo", gowt.Combo([]string{"One", "Two", "Three"}, gowt.ReadOnly(), gowt.Selected(1), gowt.Size(160, 0))},
+	{"list", gowt.List([]string{"alpha", "beta", "gamma", "delta"}, gowt.Selected(1), gowt.Size(160, 0))},
 	{"table", gowt.Table(gowt.Init(func(t *gowt.TableView) {
-		t.Column("File", 120)
-		t.Column("Size", 70, gowt.Right())
+		t.Column("File", 160)
+		t.Column("Size", 80, gowt.Right())
 		t.Row("main.go", "2 KB")
 		t.Row("go.mod", "1 KB")
 		t.Row("README.md", "5 KB")
 	}))},
-	{"tree", gowt.Tree(gowt.Init(func(t *gowt.TreeView) {
+	{"tree", gowt.Tree(gowt.Size(180, 100), gowt.Init(func(t *gowt.TreeView) {
 		src := t.Node("src")
 		src.Node("main.go")
 		src.Node("util.go")
@@ -49,35 +50,47 @@ var samples = []sample{
 	{"progress", gowt.VBox(gowt.Progress(100, gowt.Value(60)), gowt.Progress(100, gowt.Smooth(), gowt.Value(30)))},
 	{"datetime", gowt.DateTime(gowt.AsCalendar(), gowt.Value(time.Date(2026, 10, 3, 0, 0, 0, 0, time.Local)))},
 	{"group", gowt.Group("Options", gowt.Button("First", gowt.Check()), gowt.Button("Second", gowt.Check()))},
-	{"panel", gowt.HBox(gowt.Border(), gowt.Label("Name"), gowt.Text(gowt.Border()))},
-	{"tabs", gowt.Tabs(gowt.Grow(), gowt.Tab("General", gowt.Label("First page")), gowt.Tab("Advanced", gowt.Label("Second page")))},
-	{"ctabs", gowt.CTabs(gowt.Grow(),
+	{"panel", gowt.HBox(gowt.Label("Name"), gowt.Text(gowt.Border(), gowt.Size(180, 0)))},
+	{"tabs", gowt.Tabs(gowt.Grow(), gowt.Size(0, 110), gowt.Tab("General", gowt.Label("First page")), gowt.Tab("Advanced", gowt.Label("Second page")))},
+	{"ctabs", gowt.CTabs(gowt.Grow(), gowt.Size(0, 110),
 		gowt.Tab("main.go", gowt.Closable(), gowt.Label("package main")),
 		gowt.Tab("util.go", gowt.Closable(), gowt.Label("package util")))},
-	{"split", gowt.Split(gowt.Grow(), gowt.Init(func(s *gowt.SplitView) { s.SetWeights(1, 2) }),
+	{"split", gowt.Split(gowt.Grow(), gowt.Size(0, 110), gowt.Init(func(s *gowt.SplitView) { s.SetWeights(1, 2) }),
 		gowt.List([]string{"inbox", "sent", "drafts"}),
 		gowt.Text(gowt.Multiline(), gowt.Border(), gowt.Value("Message text")))},
 	{"scroll", gowt.Scroll(lines(20)...)},
 	{"toolbar", gowt.ToolBar(gowt.Flat(), gowt.Init(func(t *gowt.ToolBarView) {
-		t.Item("New", nil)
-		t.Item("Open", nil)
+		t.Item("New", noop)
+		t.Item("Open", noop)
 		t.Separator()
-		t.Item("Save", nil)
+		t.Item("Save", noop)
 	}))},
-	{"coolbar", gowt.CoolBar(
+	{"coolbar", gowt.CoolBar(coolbarInit(),
 		gowt.ToolBar(gowt.Flat(), gowt.Init(func(t *gowt.ToolBarView) {
-			t.Item("Cut", nil)
-			t.Item("Copy", nil)
+			t.Item("Cut", noop)
+			t.Item("Copy", noop)
+			t.Item("Paste", noop)
 		})),
-		gowt.ToolBar(gowt.Flat(), gowt.Init(func(t *gowt.ToolBarView) { t.Item("Undo", nil) })))},
+		gowt.ToolBar(gowt.Flat(), gowt.Init(func(t *gowt.ToolBarView) {
+			t.Item("Undo", noop)
+			t.Item("Redo", noop)
+		})))},
 	{"sash", sash()},
 	{"canvas", gowt.Canvas(func(g *gowt.GC) {
+		g.Text("Canvas", 100, 100) // Text paints over the fill color: draw it before the blue one is set
 		g.SetFill(gowt.RGB{R: 30, G: 120, B: 220})
 		g.FillOval(10, 10, 80, 80)
 		g.SetColor(gowt.RGB{R: 40, G: 40, B: 40})
 		g.Rect(100, 10, 80, 80)
-		g.Text("Canvas", 100, 100)
 	}, gowt.Size(200, 130))},
+}
+
+func noop() {}
+
+// coolbarInit locks the bands on macOS: the Cocoa port draws SWT's classic grip bars, which look broken
+// next to native controls. Unlocked bands can be dragged.
+func coolbarInit() gowt.Option {
+	return gowt.Init(func(c *gowt.CoolBarView) { c.Unwrap().SetLocked(runtime.GOOS == "darwin") })
 }
 
 func lines(n int) []gowt.Option {
@@ -94,10 +107,12 @@ func sash() gowt.Option {
 		c.Top, c.Bottom = gowt.Percent(0, 0), gowt.Percent(100, 0)
 		return gowt.Anchor(c)
 	}
-	return gowt.Form(gowt.Grow(),
-		gowt.Label("left", full(gowt.FormCell{Left: gowt.Percent(0, 0), Right: gowt.Percent(50, 0)})),
+	// The panes are tinted so that the sash, which draws nothing by itself, has something to divide.
+	pane := gowt.Background(gowt.Adaptive{Light: gowt.RGB{R: 226, G: 234, B: 247}, Dark: gowt.RGB{R: 50, G: 56, B: 70}})
+	return gowt.Form(gowt.Grow(), gowt.Size(0, 90),
+		gowt.Label("left", pane, full(gowt.FormCell{Left: gowt.Percent(0, 0), Right: gowt.Percent(50, 0)})),
 		gowt.Sash(gowt.Vertical(), gowt.Ref(&sash), full(gowt.FormCell{Left: gowt.Percent(50, 0), Width: 5})),
-		gowt.Label("right", full(gowt.FormCell{Left: gowt.Beside(&sash, 0), Right: gowt.Percent(100, 0)})))
+		gowt.Label("right", pane, full(gowt.FormCell{Left: gowt.Beside(&sash, 0), Right: gowt.Percent(100, 0)})))
 }
 
 func main() {
@@ -109,7 +124,8 @@ func main() {
 				log.Fatalf("unknown widget %q", os.Args[1])
 			}
 			w.SetTitle(samples[i].name)
-			w.Add(samples[i].ui)
+			// Without a width hint the window packs to the widget and the title bar cuts its title.
+			w.Add(gowt.VBox(gowt.Grow(), gowt.Size(300, 0), samples[i].ui))
 		} else {
 			tabs := []gowt.Option{gowt.Grow()}
 			for _, s := range samples {

@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: check-gui check-gui-listdocs-counts docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: check-gui check-gui-list docs-counts docs-shots vm-docs-shots-windows vm-docs-shots-linux win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -206,6 +206,13 @@ win-snap-update: win-build snapcheck
 # CrossOver bottle; the Linux run needs the stand (LINUX_CTR and LINUX_PORT can be overridden).
 docs-shots:
 	tooling/docs-shots.sh macos
+
+# The pictures of docs/img come from these two: real Windows 11 and Ubuntu GNOME VMs (tooling/docs-shots-vm.sh), not Wine or Xvfb.
+vm-docs-shots-windows:
+	tooling/docs-shots-vm.sh windows
+
+vm-docs-shots-linux:
+	tooling/docs-shots-vm.sh linux
 
 win-docs-shots:
 	GOOS=windows GOARCH=amd64 EXT=.exe RUN="$(WINE) --bottle $(WINBOTTLE)" PATHPFX=Z: tooling/docs-shots.sh windows

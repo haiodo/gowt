@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/haiodo/gowt/internal/shot"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -70,7 +71,29 @@ func New(parent Container, opts Options) (*WebView, error) {
 		return nil, err
 	}
 	w.e = e
+	shot.WebViewCreated()
 	return w, nil
+}
+
+func (w *WebView) navStarted(url string) {
+	shot.NavStarted()
+	if w.OnNavigationStarted != nil {
+		w.OnNavigationStarted(url)
+	}
+}
+
+func (w *WebView) navFinished(url string) {
+	shot.NavDone()
+	if w.OnNavigationFinished != nil {
+		w.OnNavigationFinished(url)
+	}
+}
+
+func (w *WebView) navFailed(url string, err error) {
+	shot.NavDone()
+	if w.OnNavigationFailed != nil {
+		w.OnNavigationFailed(url, err)
+	}
 }
 
 // Control is the Composite hosting the view: set its layout data, size and visibility.

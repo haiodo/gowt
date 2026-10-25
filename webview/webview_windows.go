@@ -290,9 +290,7 @@ func (e *wv2Engine) hookEvents() {
 			vcall(args, 8, 1) // put_Cancel
 			return
 		}
-		if w.OnNavigationStarted != nil {
-			w.OnNavigationStarted(e.lastURL)
-		}
+		w.navStarted(e.lastURL)
 	})
 	add(17, e.view, func(_, args uintptr) { // FrameNavigationStarting
 		if e.policy != nil && !e.policy(str(args, 3), false) {
@@ -320,11 +318,9 @@ func (e *wv2Engine) hookEvents() {
 		}
 		u := e.url()
 		if *ok != 0 {
-			if w.OnNavigationFinished != nil {
-				e.host.GetDisplay().AsyncExec(jrt.NewRunnable(func() { w.OnNavigationFinished(u) }))
-			}
-		} else if w.OnNavigationFailed != nil {
-			w.OnNavigationFailed(u, fmt.Errorf("webview: navigation failed (COREWEBVIEW2_WEB_ERROR_STATUS %d)", *status))
+			e.host.GetDisplay().AsyncExec(jrt.NewRunnable(func() { w.navFinished(u) }))
+		} else {
+			w.navFailed(u, fmt.Errorf("webview: navigation failed (COREWEBVIEW2_WEB_ERROR_STATUS %d)", *status))
 		}
 	})
 	add(46, e.view, func(_, _ uintptr) { // DocumentTitleChanged
@@ -471,9 +467,7 @@ func (e *wv2Engine) control() *swt.Composite { return e.host }
 
 func (e *wv2Engine) navigationFailed(url string) func(error) {
 	return func(err error) {
-		if e.w.OnNavigationFailed != nil {
-			e.w.OnNavigationFailed(url, err)
-		}
+		e.w.navFailed(url, err)
 	}
 }
 

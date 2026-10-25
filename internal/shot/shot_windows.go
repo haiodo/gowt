@@ -53,7 +53,12 @@ func WindowPNG(hwnd int64, path string) error {
 	defer gdi32.NewProc("DeleteObject").Call(bmp)
 	gdi32.NewProc("SelectObject").Call(mem, bmp)
 	// SRCCOPY. PrintWindow(PW_RENDERFULLCONTENT) left Wine blocked in the next DispatchMessage.
-	if r, _, _ := gdi32.NewProc("BitBlt").Call(mem, 0, 0, uintptr(ww), uintptr(wh), dc, 0, 0, 0x00CC0020); r == 0 {
+	if os.Getenv("GOWT_SNAP_FULL") == "1" {
+		// PW_RENDERFULLCONTENT: DWM composes the child windows too, which a window DC BitBlt leaves out (WebView2).
+		if r, _, _ := user32.NewProc("PrintWindow").Call(uintptr(hwnd), mem, 2); r == 0 {
+			return fmt.Errorf("PrintWindow failed")
+		}
+	} else if r, _, _ := gdi32.NewProc("BitBlt").Call(mem, 0, 0, uintptr(ww), uintptr(wh), dc, 0, 0, 0x00CC0020); r == 0 {
 		return fmt.Errorf("BitBlt failed")
 	}
 	hdr := bmi{Size: uint32(unsafe.Sizeof(bmi{})), W: int32(ww), H: -int32(wh), Planes: 1, BitCount: 32}

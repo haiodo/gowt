@@ -4,9 +4,9 @@ Native GUI for Go, without cgo. Windows, tables, menus and dialogs are the opera
 
 | macOS | Windows | Linux |
 |---|---|---|
-| ![Table tab, macOS](tests/snapshots/Table.png) | ![Table tab, Windows](tests/snapshots_windows/Table.png) | ![Table tab, Linux](tests/snapshots_linux/Table.png) |
+| ![Table, macOS](docs/img/table-macos.png) | ![Table, Windows](docs/img/table-windows.png) | ![Table, Linux](docs/img/table-linux.png) |
 
-The pictures above are the regression references of SWT's ControlExample (Table tab) taken by `make snap-update` on each OS (the Windows one under Wine, the Linux one in Docker with Xvfb). They show the translated SWT layer, not a program written with the `gowt` facade.
+A `gowt.Table` sample ([widget catalog](docs/widget-catalog.md)). Windows is a Windows 11 virtual machine, Linux an Ubuntu GNOME desktop on Wayland in a virtual machine, see [docs/screenshots.md](docs/screenshots.md).
 
 <!-- SCREENSHOTS (facade demo, to be taken with the user's consent; run each, wait 3-4 s, then capture):
 macOS:   go build -o bin/gowtdemo ./cmd/gowtdemo && ./bin/gowtdemo &   then   screencapture -o -w docs/img/gowtdemo-macos.png   (click the window)

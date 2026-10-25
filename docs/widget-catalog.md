@@ -2,7 +2,7 @@
 
 Example: [`examples/catalog`](../examples/catalog). `go run ./examples/catalog` shows every sample in tabs; `go run ./examples/catalog table` opens one.
 
-Every widget is created by a constructor function (`gowt.Label(text)`) that is passed to its parent, see [widgets.md](widgets.md) for options and methods. The pictures are `docs/img/<widget>-<os>.png` with `<os>` one of `macos`, `windows`, `linux`; they are written by `make docs-shots`, `win-docs-shots`, `linux-docs-shots` ([screenshots.md](screenshots.md)). A picture that is not in the repository yet has not been generated for that OS.
+Every widget is created by a constructor function (`gowt.Label(text)`) that is passed to its parent, see [widgets.md](widgets.md) for options and methods. The pictures are `docs/img/<widget>-<os>.png` with `<os>` one of `macos`, `windows`, `linux`; they are written by `make docs-shots` (macOS), `vm-docs-shots-windows` (Windows 11 virtual machine) and `vm-docs-shots-linux` (Ubuntu GNOME on Wayland, light theme); [screenshots.md](screenshots.md) says which stand made which picture. A picture that is not in the repository yet has not been generated for that OS.
 
 <!-- TODO(orchestrator): img/switch-macos.png is missing; take it on the Mac: make docs-shots, or GOWT_SNAP=docs/img/switch-macos.png go run ./examples/catalog switch -->
 
@@ -29,7 +29,7 @@ Every widget is created by a constructor function (`gowt.Label(text)`) that is p
 | Split | `Split(opts...)` | children separated by draggable sashes; `SetWeights` | ![](img/split-linux.png) | ![](img/split-macos.png) | ![](img/split-windows.png) |
 | Scroll | `Scroll(opts...)` | scrollable area; its children stack as in a VBox | ![](img/scroll-linux.png) | ![](img/scroll-macos.png) | ![](img/scroll-windows.png) |
 | ToolBar | `ToolBar(opts...)` | buttons in a row, `Item`, `Separator` | ![](img/toolbar-linux.png) | ![](img/toolbar-macos.png) | ![](img/toolbar-windows.png) |
-| CoolBar | `CoolBar(opts...)` | draggable bands, one per child | ![](img/coolbar-linux.png) | ![](img/coolbar-macos.png) | ![](img/coolbar-windows.png) |
+| CoolBar | `CoolBar(opts...)` | draggable bands, one per child; the macOS picture has the bands locked (`SetLocked`), the Cocoa port draws SWT's classic grip bars otherwise | ![](img/coolbar-linux.png) | ![](img/coolbar-macos.png) | ![](img/coolbar-windows.png) |
 | Sash | `Sash(opts...)` | draggable divider; `OnMove` | ![](img/sash-linux.png) | ![](img/sash-macos.png) | ![](img/sash-windows.png) |
 | Canvas | `Canvas(onPaint, opts...)` | surface you draw on with a `*GC`, see [graphics.md](graphics.md) | ![](img/canvas-linux.png) | ![](img/canvas-macos.png) | ![](img/canvas-windows.png) |
 

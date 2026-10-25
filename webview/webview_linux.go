@@ -99,19 +99,13 @@ func (e *wkEngine) start() *webkit.View {
 		}
 	}
 	v.NavStarted = func(u string) {
-		if w.OnNavigationStarted != nil {
-			w.OnNavigationStarted(u)
-		}
+		w.navStarted(u)
 	}
 	v.NavFinished = func(u string) {
-		if w.OnNavigationFinished != nil {
-			w.OnNavigationFinished(u)
-		}
+		w.navFinished(u)
 	}
 	v.NavFailed = func(u, msg string) {
-		if w.OnNavigationFailed != nil {
-			w.OnNavigationFailed(u, errors.New(msg))
-		}
+		w.navFailed(u, errors.New(msg))
 	}
 	v.TitleChanged = func(t string) {
 		if w.OnTitleChanged != nil {

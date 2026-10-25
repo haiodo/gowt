@@ -10,7 +10,7 @@ import (
 )
 
 // armSnap implements GOWT_SNAP=<file.png>: after GOWT_SNAP_DELAY milliseconds (default 800) of the
-// event loop it writes the first window as a PNG and quits. It returns the tick Run calls between
+// event loop, and once every web view has finished loading, it writes the first window as a PNG and quits. It returns the tick Run calls between
 // events; the capture runs there, not in a timer callback, because Wine blocked on a capture taken
 // from WM_TIMER.
 func (a *App) armSnap(path string, errp *error) func() {
@@ -21,6 +21,9 @@ func (a *App) armSnap(path string, errp *error) func() {
 		}
 	}
 	due := time.Now().Add(delay)
+	// A web view paints after its load finishes: wait for that, not for a longer fixed delay.
+	limit := due.Add(30 * time.Second)
+	var settledAt time.Time
 	go func() {
 		defer func() { recover() }() // Wake panics once the display is disposed
 		for !a.display.IsDisposed() {
@@ -29,8 +32,24 @@ func (a *App) armSnap(path string, errp *error) func() {
 		}
 	}()
 	return func() {
-		if a.quit.Load() || time.Now().Before(due) {
+		now := time.Now()
+		if a.quit.Load() || now.Before(due) {
 			return
+		}
+		if now.Before(limit) {
+			if !shot.Settled() {
+				return
+			}
+			if settledAt.IsZero() {
+				settledAt = now
+			}
+			hold := 500 * time.Millisecond
+			if shot.HasWebView() {
+				hold = 2 * time.Second
+			}
+			if now.Sub(settledAt) < hold {
+				return
+			}
 		}
 		shells := a.display.GetShells()
 		if len(shells) == 0 {

@@ -1,4 +1,4 @@
-//go:build darwin && gfxdemo
+//go:build (darwin || linux) && gfxdemo
 
 // Command demo is the windowed measurement of the gfx compositor on the synthetic 10k document:
 // first frame, pan with a flying cursor, zoom gesture, drag of 1 node with its links and of 100
@@ -30,6 +30,7 @@ type phase struct {
 	dur       time.Duration
 	intervals []float64 // ms between processed frames
 	cpu       []float64 // ms the compositor took in Frame
+	paint     []float64 // ms the last widget paint took (Linux, CPU compositing), empty on macOS
 	model     []float64 // ms spent in the scene update of the drag step
 	rastered  uint64
 	t0        time.Duration
@@ -93,7 +94,7 @@ func run(w *g.Window, v *view.View, doc *synth.Doc, stay bool) {
 	var cur *phase
 	idx := -1
 	var base [1]gfx.Point
-	var prevCPU time.Duration
+	var prevCPU, prevPaint time.Duration
 	var end time.Duration
 	finished := false
 
@@ -109,11 +110,13 @@ func run(w *g.Window, v *view.View, doc *synth.Doc, stay bool) {
 			if cur.started {
 				cur.intervals = append(cur.intervals, float64(fi.Time-last)/1e6)
 				cur.cpu = append(cur.cpu, float64(prevCPU)/1e6)
+				cur.paint = append(cur.paint, float64(prevPaint)/1e6)
 			}
 			cur.started = true
 		}
 		last = fi.Time
 		prevCPU = c.Stats().FrameTime
+		prevPaint = v.PaintTime()
 
 		// advance the phase
 		if cur == nil || t-cur.t0 >= cur.dur {
@@ -247,6 +250,9 @@ func report(ph []*phase, first time.Duration, c *gfx.Compositor, v *view.View, t
 		fmt.Printf("%-32s frames %4d  interval ms p50 %5.2f p95 %5.2f p99 %5.2f max %6.2f  (%d over 12 ms)  frame cpu ms p50 %5.2f p99 %5.2f max %5.2f  tiles %d",
 			p.name, len(p.intervals), pct(p.intervals, .5), pct(p.intervals, .95), pct(p.intervals, .99), pct(p.intervals, 1), over,
 			pct(p.cpu, .5), pct(p.cpu, .99), pct(p.cpu, 1), p.rastered)
+		if m := pct(p.paint, 1); m > 0 {
+			fmt.Printf("  paint ms p50 %5.2f p99 %5.2f max %5.2f", pct(p.paint, .5), pct(p.paint, .99), m)
+		}
 		if len(p.model) > 0 {
 			fmt.Printf("  model ms p50 %5.2f max %5.2f", pct(p.model, .5), pct(p.model, 1))
 		}

@@ -1,4 +1,4 @@
-//go:build darwin && gfxmock
+//go:build (darwin || linux) && gfxmock
 
 package main
 
@@ -7,7 +7,6 @@ import (
 	"math"
 	"time"
 
-	"github.com/haiodo/gowt/gfx/cg"
 	"github.com/haiodo/gowt/gfx/view"
 )
 
@@ -19,7 +18,7 @@ type scrollStats struct {
 }
 
 func (s *scrollStats) add(r view.FrameReport) {
-	cg.Tracef("frame t=%.1fms int=%.2f cpu=%.2f ev=%d d=(%.2f,%.2f) origin=(%.1f,%.1f) z=%.3f tiles=%d",
+	view.Tracef("frame t=%.1fms int=%.2f cpu=%.2f ev=%d d=(%.2f,%.2f) origin=(%.1f,%.1f) z=%.3f tiles=%d",
 		float64(r.Time)/1e6, ms(r.Interval), ms(r.CPU), r.Events, r.DX, r.DY, r.Origin.X, r.Origin.Y, r.Zoom, r.Tiles)
 	if s.since.IsZero() {
 		s.since = time.Now()

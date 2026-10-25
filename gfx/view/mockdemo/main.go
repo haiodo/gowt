@@ -1,4 +1,4 @@
-//go:build darwin && gfxmock
+//go:build (darwin || linux) && gfxmock
 
 // Command mockdemo is the windowed measurement of the gfx compositor on a canvas of UI mockup
 // screens: N screens of 1920 x 1080 on a grid, from the synthetic generator or from a .pen file.
@@ -24,7 +24,7 @@ import (
 
 	g "github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/gfx"
-	"github.com/haiodo/gowt/gfx/cg"
+	"github.com/haiodo/gowt/gfx/offscreen"
 	"github.com/haiodo/gowt/gfx/pen"
 	"github.com/haiodo/gowt/gfx/synth"
 	"github.com/haiodo/gowt/gfx/view"
@@ -58,7 +58,10 @@ func build(src string, n int) (*canvas, error) {
 		}
 		return c, nil
 	}
-	r := cg.NewRenderer(cg.Options{TextCache: true, ShadowSprite: true, LOD: true})
+	r, err := offscreen.New(offscreen.Options{LOD: true})
+	if err != nil {
+		return nil, err
+	}
 	d, err := pen.Open(src, pen.Options{Measurer: r})
 	if err != nil {
 		return nil, err
@@ -100,6 +103,7 @@ type phase struct {
 	dur       time.Duration
 	intervals []float64 // ms between processed frames
 	cpu       []float64 // ms the compositor took in Frame
+	paint     []float64 // ms the last widget paint took (Linux, CPU compositing), empty on macOS
 	model     []float64 // ms of the scene update of the drag step
 	rastered  uint64
 	t0        time.Duration
@@ -119,7 +123,7 @@ func main() {
 	fonts := flag.String("fonts", "", "directory with IBM Plex Sans .otf or .ttf files, registered for this process only")
 	flag.Parse()
 	if *fonts != "" {
-		if _, err := cg.RegisterFonts(*fonts); err != nil {
+		if _, err := offscreen.RegisterFonts(*fonts); err != nil {
 			fmt.Println("error:", err)
 			os.Exit(1)
 		}
@@ -205,7 +209,7 @@ func run(w *g.Window, v *view.View, c *canvas, n int, src string, stay bool) {
 		{name: "drag element in screen", dur: 2 * time.Second},
 	}
 	var cursor *gfx.Sprite
-	var firstDone, clockStart, last, prevCPU time.Duration
+	var firstDone, clockStart, last, prevCPU, prevPaint time.Duration
 	var cur *phase
 	idx := -1
 	var base gfx.Point
@@ -224,11 +228,13 @@ func run(w *g.Window, v *view.View, c *canvas, n int, src string, stay bool) {
 			if cur.started {
 				cur.intervals = append(cur.intervals, float64(fi.Time-last)/1e6)
 				cur.cpu = append(cur.cpu, float64(prevCPU)/1e6)
+				cur.paint = append(cur.paint, float64(prevPaint)/1e6)
 			}
 			cur.started = true
 		}
 		last = fi.Time
 		prevCPU = comp.Stats().FrameTime
+		prevPaint = v.PaintTime()
 
 		if cur == nil || t-cur.t0 >= cur.dur {
 			if cur != nil {
@@ -329,6 +335,9 @@ func report(ph []*phase, first time.Duration, c *gfx.Compositor, n int, src stri
 		fmt.Printf("%-32s frames %4d  interval ms p50 %5.2f p95 %5.2f p99 %5.2f max %6.2f  (%d over 12 ms)  frame cpu ms p50 %5.2f p99 %5.2f max %5.2f  tiles %d",
 			p.name, len(p.intervals), pct(p.intervals, .5), pct(p.intervals, .95), pct(p.intervals, .99), pct(p.intervals, 1), over,
 			pct(p.cpu, .5), pct(p.cpu, .99), pct(p.cpu, 1), p.rastered)
+		if m := pct(p.paint, 1); m > 0 {
+			fmt.Printf("  paint ms p50 %5.2f p99 %5.2f max %5.2f", pct(p.paint, .5), pct(p.paint, .99), m)
+		}
 		if len(p.model) > 0 {
 			fmt.Printf("  model ms p50 %5.2f max %5.2f", pct(p.model, .5), pct(p.model, 1))
 		}

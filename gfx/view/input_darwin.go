@@ -97,10 +97,6 @@ func (v *View) pollRelease() {
 	display.TimerExec(20, tick)
 }
 
-func modsOfMask(m int32) g.Mods {
-	return g.Mods{Ctrl: m&swt.CTRL != 0, Shift: m&swt.SHIFT != 0, Alt: m&swt.ALT != 0, Cmd: m&swt.COMMAND != 0}
-}
-
 // modsOfFlags reads NSEventModifierFlags: shift 1<<17, control 1<<18, option 1<<19, command 1<<20.
 func modsOfFlags(f uint64) g.Mods {
 	return g.Mods{Shift: f&(1<<17) != 0, Ctrl: f&(1<<18) != 0, Alt: f&(1<<19) != 0, Cmd: f&(1<<20) != 0}
@@ -123,40 +119,6 @@ func (v *View) native(e cg.InputEvent) bool {
 	}
 	return true
 }
-
-// OnPointer sets f to run for every press, move, release and cancel, with the scene point and the
-// node under the pointer. While a button is held the moves and the release keep coming outside
-// the view. A Ctrl-click is Button 1 with Mods.Ctrl.
-func (v *View) OnPointer(f func(*Pointer)) { v.r.onPointer = f }
-
-// AutoScroll pans the camera each frame while the pointer is in the edge band or outside the view;
-// call it from the PointerDown that starts a drag. After each step the view repeats the last
-// position as a PointerMove, so the app re-places the dragged content. It ends on release, on
-// cancel or when stop is called. The drop rule on a release with Outside set is the app's.
-func (v *View) AutoScroll(o AutoScrollOptions) (stop func()) { return v.r.startAuto(o) }
-
-// OnScroll sets f to run for scroll gestures and wheel events. f returns true when it used the
-// event; otherwise the view pans (zooms with Cmd or Ctrl held).
-func (v *View) OnScroll(f func(*Scroll) bool) { v.r.onScroll = f }
-
-// OnMagnify sets f to run for pinch steps. f returns true when it used the event; otherwise the
-// view zooms about the pointer.
-func (v *View) OnMagnify(f func(*Magnify) bool) { v.r.onMagnify = f }
-
-// OnSmartZoom sets f to run for the two finger double tap. f returns true when it used the event;
-// otherwise the view toggles between zoom 1 and the zoom before.
-func (v *View) OnSmartZoom(f func(*SmartZoom) bool) { v.r.onSmart = f }
-
-// OnKey sets f to run for key presses and releases while the view has the keyboard focus. A press
-// on the view gives it the focus.
-func (v *View) OnKey(f func(*Key)) { v.onKey = f }
-
-// Pan moves the content by (dx, dy) view points.
-func (v *View) Pan(dx, dy float64) { v.r.pan(dx, dy) }
-
-// SetZoomLimits bounds the zoom the built-in pinch, wheel zoom and smart zoom reach. The default
-// is 0.02 to 64.
-func (v *View) SetZoomLimits(lo, hi float64) { v.r.minZ, v.r.maxZ = lo, hi }
 
 var cursorNames = [...]string{
 	CursorArrow:      "arrowCursor",

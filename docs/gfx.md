@@ -1,9 +1,10 @@
 # gfx: retained 2D canvas (experimental)
 
 `gowt/gfx` is a scene of nodes drawn from cached tiles, for editors with many shapes: diagrams, UI
-mockups. It is **experimental**: the API may change without notice, and only macOS has a backend so
-far (CoreGraphics, CoreText, CALayer). The scene, pictures, geometry, SVG and the compositor logic are
-pure Go and build on every OS; Windows and Linux backends plug in behind `gfx.Renderer` and `gfx.Host`.
+mockups. It is **experimental**: the API may change without notice. macOS has the full backend
+(CoreGraphics, CoreText, CALayer); Linux has cairo and Pango with a CPU compositor in a GTK 3 canvas;
+Windows is in progress. The scene, pictures, geometry, SVG and the compositor logic are pure Go and
+build on every OS; backends plug in behind `gfx.Renderer` and `gfx.Host`.
 
 Packages:
 
@@ -11,6 +12,8 @@ Packages:
 |---|---|
 | `gfx` | paths and curve geometry, `Picture`, `Scene`, `Compositor`, animations, SVG, offscreen rendering |
 | `gfx/cg` | macOS: `Renderer` (CoreGraphics + CoreText), `Host` (CALayer), `DisplayLink` (CVDisplayLink) |
+| `gfx/cairo` | Linux: `Renderer` (cairo image surfaces, Pango text), `Host` (CPU compositing into a cairo context); no GTK, no display needed |
+| `gfx/offscreen` | `offscreen.New`: the headless `gfx.Renderer` of the running OS (cg on macOS, cairo on Linux, an error elsewhere), no build tags for the caller |
 | `gfx/view` | the gowt widget: `view.New(scene, init, opts...)` |
 | `gfx/layout` | auto-layout: row/column, gap, padding, align, justify, wrap, hug/fill/fixed with min/max, absolute children; `layout.Apply` moves scene nodes |
 | `gfx/pen` | importer of `.pen` designs into a scene; a client of `gfx/layout` |
@@ -57,7 +60,7 @@ Text bounds are measured by CoreText when `cg.NewRenderer` ran before recording
 Output without a window:
 
 ```go
-r := cg.NewRenderer(cg.Options{TextCache: true, ShadowSprite: true, LOD: true})
+r, err := offscreen.New(offscreen.Options{LOD: true}) // or cg.NewRenderer / cairo.NewRenderer
 raster, err := gfx.RenderSubtree(r, scene, node, gfx.Rect{}, 2, gfx.Color{R: 1, G: 1, B: 1, A: 1})
 png, _ := raster.PNG()
 gfx.WriteSubtreeSVG(w, scene, node, gfx.Rect{}, 1) // pure Go, no renderer
@@ -100,7 +103,7 @@ comp.Frame(frameInfo) // on the UI goroutine, once per display frame
   gets a frame on every display tick; `OnFrame(nil)` lets an idle scene stop.
   `comp.NeedsFrame()` is cheap and goroutine-safe; the macOS widget polls it from the display link.
 
-## The widget (macOS)
+## The widget
 
 ```go
 var doc *synth.Doc // or your own scene
@@ -114,7 +117,19 @@ app.Window("title", view.New(scene, func(v *view.View) {
 frames are posted to the UI thread only while `NeedsFrame` is true. Elsewhere `view.New` gives a
 plain canvas and never calls `init`.
 
+On Linux the same call builds a `cairo.Host` that composites the tiles on the CPU in the paint
+callback of the canvas, and runs frames from the GTK frame clock (`gtk_widget_add_tick_callback`) while
+`NeedsFrame` is true. Text is Pango; a font name is a PostScript name that fontconfig knows (the
+`.pen` importer's `IBMPlexSans-SmBld`) or a family, with `-Bold`, `-Medium`, `-Light` read as weights.
+Register fonts for the process with `offscreen.RegisterFonts` or `GFX_FONT_DIR`. The `cairo` package
+needs only libcairo, libpango, libpangocairo, libgobject and libfontconfig; it runs on a server with no display.
+Output of one scene is byte-identical between runs on one machine, not across cairo or Pango versions.
+
 ### Input (macOS)
+
+On Linux (GTK 3) the view takes the pointer, keys and focus from SWT, wheel and touchpad scrolls
+from the `scroll-event` signal (a touchpad gives precise deltas with begin and end phases, a wheel gives
+lines; no momentum), and pinch from a `GtkGestureZoom`.
 
 The view reads the canvas mouse, key and focus events from SWT and the scroll, pinch and smart-zoom
 events from the NSEvent itself (SWT hands scrolls on as integers without phase or momentum). All
@@ -221,7 +236,19 @@ The headless run is `go test ./gfx/cg -run CompositorHeadless -v`. Windowed numb
   drag of 100 nodes with their links p50 1.0 ms, p99 1.8 ms (was 5.4 and 7.1); the Lift call that
   draws about 150 sprites takes 4 ms (was a 13 ms frame).
 
+## Measured (Linux, Ubuntu 26.04 arm64 VM, GNOME, 75 Hz, no GPU compositing by gfx)
+
+CPU tiles with cairo, composited on the CPU into the GTK canvas; windowed, 1440x900, 6 workers. `paint`
+is the compositing of the tiles in the paint callback, measured by `View.PaintTime`.
+
+- 10k boxes (`gfx/view/demo`): first frame 56 ms; Frame CPU p99 0.2 ms in pan and zoom; paint p50 0.6 ms
+  in pan, 1.9 ms in a zoom gesture; drag of 1 node paint 0.7 ms; drag of 100 nodes Frame CPU p50 2.2 ms,
+  p99 5.9 ms.
+- 50 mockup screens from a `.pen` file (`gfx/view/mockdemo`): first frame 62 ms; paint p99 3-4 ms in
+  pan, zoom and drags, one 12-16 ms outlier in a run. The intervals show 13.3 ms (the 75 Hz display) with
+  a tail of 26 ms intervals (a skipped display tick); the cause is not isolated.
+
 ## Not there yet
 
-Rotation and swipe gestures, text input (IME) in the canvas, the Windows and Linux backends, shadows
+Rotation and swipe gestures, text input (IME) in the canvas, the Windows backend, a GL compositor on Linux, shadows
 blur on the overlay, group opacity for node subtrees, accessibility of the canvas.

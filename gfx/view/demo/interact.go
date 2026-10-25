@@ -1,4 +1,4 @@
-//go:build darwin && gfxdemo
+//go:build (darwin || linux) && gfxdemo
 
 package main
 
@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/haiodo/gowt/gfx"
-	"github.com/haiodo/gowt/gfx/cg"
 	"github.com/haiodo/gowt/gfx/synth"
 	"github.com/haiodo/gowt/gfx/view"
 	"github.com/haiodo/gowt/swt"
@@ -52,8 +51,8 @@ func interactive(v *view.View, doc *synth.Doc) {
 		mode = modeNone
 	}
 	v.OnPointer(func(p *view.Pointer) {
-		if cg.Tracing {
-			cg.Tracef("demo pointer kind=%d mode=%d drag=%v aborted=%v", p.Kind, mode, p.Drag, p.Aborted)
+		if view.Tracing {
+			view.Tracef("demo pointer kind=%d mode=%d drag=%v aborted=%v", p.Kind, mode, p.Drag, p.Aborted)
 		}
 		switch p.Kind {
 		case view.PointerDown:

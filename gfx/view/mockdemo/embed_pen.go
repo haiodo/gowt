@@ -1,4 +1,4 @@
-//go:build darwin && gfxmock && gfxmockpen
+//go:build (darwin || linux) && gfxmock && gfxmockpen
 
 package main
 
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/haiodo/gowt/gfx/cg"
+	"github.com/haiodo/gowt/gfx/offscreen"
 )
 
 // embedded/ (git-ignored) holds .pen files and, optionally, fonts/ with the .otf files and their
@@ -55,7 +55,7 @@ func registerFonts(dst string) {
 			return
 		}
 	}
-	_, _ = cg.RegisterFonts(dst)
+	_, _ = offscreen.RegisterFonts(dst)
 }
 
 func copyOut(src, dst string) error {

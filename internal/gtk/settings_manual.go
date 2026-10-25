@@ -41,16 +41,6 @@ func GSettingsString(schema, key string) (value string, ok bool) {
 	return ConverterCCharPtrToJavaString(int64(p), false), true
 }
 
-// PangoFamily is the family of a Pango font description string such as "Ubuntu Sans Mono 11".
-func PangoFamily(desc string) string {
-	d := OSPango_font_description_from_string(cs(desc))
-	if d == 0 {
-		return ""
-	}
-	defer OSPango_font_description_free(d)
-	return ConverterCCharPtrToJavaString(OSPango_font_description_get_family(d), false)
-}
-
 var gtkFrameSetLabelAlign = lz[func(uintptr, float32, float32)]{sym: "gtk_frame_set_label_align"}
 
 // SetFrameLabelAlign positions the label of a GtkFrame; yalign 0 puts it above the frame line.

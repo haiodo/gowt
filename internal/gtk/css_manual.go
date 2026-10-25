@@ -15,8 +15,10 @@ func newProvider(css string) int64 {
 }
 
 // AddGlobalCSS applies css to every widget of the default screen.
-func AddGlobalCSS(css string) {
-	GTK3Gtk_style_context_add_provider_for_screen(GDKGdk_screen_get_default(), newProvider(css), cssPriorityApplication)
+func AddGlobalCSS(css string) int64 {
+	p := newProvider(css)
+	GTK3Gtk_style_context_add_provider_for_screen(GDKGdk_screen_get_default(), p, cssPriorityApplication)
+	return p
 }
 
 // SetWidgetCSS loads css for the widget alone; the returned provider can be passed back to replace it.
@@ -49,29 +51,18 @@ func SetScrollPolicyAutomatic(scrolled int64) {
 	GTKGtk_scrolled_window_set_overlay_scrolling(scrolled, true)
 }
 
+// AddOverrideCSS loads css above USER, where the portal accent rule sits: GTK lets a provider of a higher
+// priority win over a lower one whatever the selectors, and the later of two equal ones.
+func AddOverrideCSS(css string) int64 {
+	p := newProvider(css)
+	GTK3Gtk_style_context_add_provider_for_screen(GDKGdk_screen_get_default(), p, cssPriorityApplication+100)
+	return p
+}
+
 // AddDefaultCSS loads css for the default screen below the priority of AddGlobalCSS; the provider is
 // returned so the rules can be replaced.
 func AddDefaultCSS(css string) int64 {
 	p := newProvider(css)
 	GTK3Gtk_style_context_add_provider_for_screen(GDKGdk_screen_get_default(), p, cssPriorityDefaults)
 	return p
-}
-
-// ReloadCSS replaces the rules of a provider made by AddDefaultCSS or SetWidgetCSS.
-func ReloadCSS(provider int64, css string) {
-	GTK3Gtk_css_provider_load_from_data(provider, cs(css), -1, nil)
-}
-
-// ScrollOnOverflow keeps the axes of a scrolled window that show bars and makes the bars overlay bars
-// that appear on overflow only; an axis that never scrolls stays that way.
-func ScrollOnOverflow(scrolled int64) {
-	pol := make([]int32, 2)
-	GTKGtk_scrolled_window_get_policy(scrolled, pol[:1], pol[1:])
-	for i, p := range pol {
-		if p == GTKGTK_POLICY_ALWAYS {
-			pol[i] = GTKGTK_POLICY_AUTOMATIC
-		}
-	}
-	GTKGtk_scrolled_window_set_policy(scrolled, pol[0], pol[1])
-	GTKGtk_scrolled_window_set_overlay_scrolling(scrolled, true)
 }

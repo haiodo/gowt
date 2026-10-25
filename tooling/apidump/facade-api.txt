@@ -20,6 +20,7 @@ gowt App.Quit()
 gowt App.ScreenSize() (width int, height int)
 gowt App.SetBadge(text string)
 gowt App.SetDensity(d Density)
+gowt App.SetLinkColor(c *Adaptive)
 gowt App.Sync(f func())
 gowt App.SystemFont() Font
 gowt App.Track(name string) (done func())

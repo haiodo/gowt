@@ -36,6 +36,7 @@ type App struct {
 	// controls whose preferred size changed in this event-loop turn; see sizing
 	relayouts []*swt.Control
 	badge     string
+	link      linkStyle
 	jobs      jobSet // Job, Track and short After timers, see jobs.go
 }
 
@@ -72,6 +73,7 @@ func Run(setup func(*App)) (err error) {
 		r := jrt.NewRunnable(tick)
 		return func() { a.display.AsyncExec(r) }
 	})()
+	installStyle()
 	a.display.FollowSystemTheme()
 	a.followTheme()
 	densityChosen, densityFactor = Density{}, 1
@@ -524,6 +526,7 @@ func Text(opts ...Option) Option {
 	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder|sNoBorder|sScrollbars, opts, func(p *swt.Composite) Widget {
 		t := swt.NewText(p, resolve(swt.NONE, opts))
 		textScrollOnOverflow(t)
+		textThemeBackground(t)
 		return &TextView{base: base{&t.Control}, t: t}
 	})
 }

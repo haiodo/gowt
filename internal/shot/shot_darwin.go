@@ -21,8 +21,10 @@ func WindowPNG(view int64, path string) error {
 	win := objc.ID(view).Send(objc.RegisterName("window"))
 	v := win.Send(objc.RegisterName("contentView")).Send(objc.RegisterName("superview"))
 	if os.Getenv("GOWT_SNAP_NOFOCUS") == "1" {
-		// The window takes the first responder, so no control draws a focus ring (Full Keyboard Access).
+		// The window takes the first responder, and no view or cell may draw a ring in the capture itself:
+		// the ring of the old responder was still in the shots with makeFirstResponder:nil alone.
 		win.Send(objc.RegisterName("makeFirstResponder:"), objc.ID(0))
+		noFocusRings(v)
 	}
 	if os.Getenv("GOWT_SNAP_SCREEN") == "1" {
 		return screenPNG(v, path)
@@ -40,4 +42,21 @@ func WindowPNG(view int64, path string) error {
 		return fmt.Errorf("writing %s failed", path)
 	}
 	return nil
+}
+
+// noFocusRings sets NSFocusRingTypeNone on v, its cell and every view below it. The process ends with
+// the capture, so the change is not undone.
+func noFocusRings(v objc.ID) {
+	sel := objc.RegisterName
+	const focusRingTypeNone = 1
+	v.Send(sel("setFocusRingType:"), focusRingTypeNone)
+	if objc.Send[bool](v, sel("respondsToSelector:"), sel("cell")) {
+		if cell := v.Send(sel("cell")); cell != 0 && objc.Send[bool](cell, sel("respondsToSelector:"), sel("setFocusRingType:")) {
+			cell.Send(sel("setFocusRingType:"), focusRingTypeNone)
+		}
+	}
+	subs := v.Send(sel("subviews"))
+	for i, n := uint64(0), objc.Send[uint64](subs, sel("count")); i < n; i++ {
+		noFocusRings(subs.Send(sel("objectAtIndex:"), i))
+	}
 }

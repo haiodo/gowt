@@ -105,8 +105,9 @@ func (h *Host) bindTarget() error {
 		return hrErr("GetBuffer", hr)
 	}
 	defer release(surf)
-	props := &bitmapProps1{format: dxgiB8G8R8A8, alpha: 3, dpiX: 96, dpiY: 96, options: bmpTarget | bmpCannotDraw} // IGNORE alpha
-	if hr := vcall(h.dc, d2DCCreateBitmapFromDxgi, ui(surf), ref(props), ref(&h.target)); failed(hr) {
+	// no properties: the bitmap takes format, alpha and the target option from the surface, which
+	// D2D rejects as invalid when they are spelled out
+	if hr := vcall(h.dc, d2DCCreateBitmapFromDxgi, ui(surf), ui(0), ref(&h.target)); failed(hr) {
 		return hrErr("CreateBitmapFromDxgiSurface", hr)
 	}
 	vcall(h.dc, d2DCSetTarget, ui(h.target))

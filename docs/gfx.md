@@ -3,7 +3,7 @@
 `gowt/gfx` is a scene of nodes drawn from cached tiles, for editors with many shapes: diagrams, UI
 mockups. It is **experimental**: the API may change without notice. macOS has the full backend
 (CoreGraphics, CoreText, CALayer); Linux has cairo and Pango with a CPU compositor in a GTK 3 canvas;
-Windows is in progress. The scene, pictures, geometry, SVG and the compositor logic are pure Go and
+Windows has Direct2D 1.1 and DirectWrite with a DXGI swap chain. The scene, pictures, geometry, SVG and the compositor logic are pure Go and
 build on every OS; backends plug in behind `gfx.Renderer` and `gfx.Host`.
 
 Packages:
@@ -13,7 +13,8 @@ Packages:
 | `gfx` | paths and curve geometry, `Picture`, `Scene`, `Compositor`, animations, SVG, offscreen rendering |
 | `gfx/cg` | macOS: `Renderer` (CoreGraphics + CoreText), `Host` (CALayer), `DisplayLink` (CVDisplayLink) |
 | `gfx/cairo` | Linux: `Renderer` (cairo image surfaces, Pango text), `Host` (CPU compositing into a cairo context); no GTK, no display needed |
-| `gfx/offscreen` | `offscreen.New`: the headless `gfx.Renderer` of the running OS (cg on macOS, cairo on Linux, an error elsewhere), no build tags for the caller |
+| `gfx/d2d` | Windows: `Renderer` (Direct2D 1.1 on a D3D11 WARP device, DirectWrite text, WIC PNG), `Host` (flip-model swap chain), `FrameClock` (DwmFlush); COM by hand, no cgo |
+| `gfx/offscreen` | `offscreen.New`: the headless `gfx.Renderer` of the running OS (cg on macOS, cairo on Linux, d2d on Windows, an error elsewhere), no build tags for the caller |
 | `gfx/view` | the gowt widget: `view.New(scene, init, opts...)` |
 | `gfx/layout` | auto-layout: row/column, gap, padding, align, justify, wrap, hug/fill/fixed with min/max, absolute children; `layout.Apply` moves scene nodes |
 | `gfx/pen` | importer of `.pen` designs into a scene; a client of `gfx/layout` |
@@ -190,6 +191,26 @@ v.Pan(dx, dy); v.SetZoomLimits(0.02, 64)
 - Scroll, pinch and smart-zoom events are consumed by the view, so a `MouseWheel` or `Gesture` listener on
   the canvas does not see them. Diagonal resize cursors are not offered (AppKit has no public ones).
 
+On Windows `view.New` puts a flip-model DXGI swap chain on the canvas window and draws the tiles (GPU
+bitmaps, `ID2D1Bitmap1`) into it with Direct2D, one `Present` per frame, only when a layer changed. It
+asks for a GPU device and falls back to WARP; `GFX_WARP=1` forces WARP. Frames come from a `DwmFlush`
+loop, not from a waitable swap chain: that one is signaled whenever nothing is queued, so an idle app
+would spin. The window procedure of the canvas is replaced to keep GDI from painting over the swap
+chain and to read `WM_MOUSEWHEEL` and `WM_MOUSEHWHEEL`; pointer, capture, keys and focus come from SWT as
+elsewhere. A font name is a PostScript name of a registered file (`IBMPlexSans-SmBld`, read from the
+file's name and OS/2 tables), a family, or a macOS name that falls back to Segoe UI with the weight read
+from the name. `d2d.RegisterFonts`, `offscreen.RegisterFonts` and `GFX_FONT_DIR` register files for the
+process (DirectWrite font sets, Windows 10 1703 or later). The renderer needs no window: it runs in a
+service or over SSH in session 0; only the swap chain needs a desktop.
+
+Windows input: a wheel notch is `SPI_GETWHEELSCROLLLINES` lines; a precision touchpad is told by
+`GetCurrentInputMessageSource` or by a delta that is not a multiple of 120, and gives `Precise`
+scrolls. Windows sends no finger phase, so a scroll that follows a 120 ms gap is `PhaseBegan` and a gap
+of 120 ms ends it with `PhaseEnded`; the coasting after the fingers lift arrives as ordinary wheel
+messages and has `Momentum` none. A pinch on the touchpad arrives as Ctrl+wheel with the Ctrl key up;
+the view reads that as `Magnify`. Shift+wheel scrolls sideways, Ctrl+wheel zooms. There is no smart zoom.
+Cursors are the system ones; the open and closed hand are the hand and the four-way arrow.
+
 ## Auto-layout
 
 `gfx/layout` resolves the frames of a tree of boxes. It has no `.pen` concepts and imports only the
@@ -248,7 +269,26 @@ is the compositing of the tiles in the paint callback, measured by `View.PaintTi
   pan, zoom and drags, one 12-16 ms outlier in a run. The intervals show 13.3 ms (the 75 Hz display) with
   a tail of 26 ms intervals (a skipped display tick); the cause is not isolated.
 
+## Measured (Windows 11 arm64 VM, WARP software device, 60 Hz DwmFlush, windowed 1400x837)
+
+There is no GPU: every number is the WARP rasterizer on the VM's CPUs, for tiles and for the
+compositing into the swap chain. `paint` is the host's Commit: all visible layers drawn again and
+presented, on the UI thread.
+
+- 10k boxes (`gfx/view/demo`): first frame 32 ms; pan frame CPU p50 0 ms, p99 15 ms; zoom gesture paint
+  p50 16 ms, p99 31 ms; drag of 1 node paint p50 0 ms, 1.3 ms when it moves; drag of 100 nodes frame
+  CPU p50 6.5 ms, p99 10.7 ms, one 88 ms outlier.
+- 50 synthetic mockup screens (`gfx/view/mockdemo`): first frame 27 ms; pan paint p50 12.7 ms, p99 32 ms.
+- 20 screens of a 6920 node `.pen` design with IBM Plex Sans: first frame 32 ms; pan paint p99 1.2 ms
+  (tiles already drawn), zoom paint p50 12 ms, p99 30 ms; drags p99 3 ms except the first frame after a tile
+  arrival.
+- A frame that changes a layer redraws the whole view: 12-30 ms on WARP, which shows as 33 ms
+  intervals (p95 33-36 ms, p50 16 ms). On a GPU device the same draw is a few dozen bitmap copies;
+  no number from real hardware yet.
+- Offscreen: the 800x600 gallery of every op renders in under 40 ms on WARP; eight goroutines drawing
+  it at once give the same PNG bytes.
+
 ## Not there yet
 
-Rotation and swipe gestures, text input (IME) in the canvas, the Windows backend, a GL compositor on Linux, shadows
+Rotation and swipe gestures, text input (IME) in the canvas, DirectManipulation phases and inertia for the Windows touchpad, partial redraw of the Windows swap chain, a GL compositor on Linux, shadows
 blur on the overlay, group opacity for node subtrees, accessibility of the canvas.

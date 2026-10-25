@@ -12,6 +12,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/sfnt"
+	"golang.org/x/image/math/fixed"
+
 	"github.com/haiodo/gowt/gfx"
 )
 
@@ -365,6 +369,38 @@ func TestLODSkeleton(t *testing.T) {
 	}
 	if bar < 5 {
 		t.Errorf("skeleton bar missing: %d columns with ink", bar)
+	}
+}
+
+// TestMeasureAgainstTheFontFile checks the DirectWrite width against the advances in the file: four
+// digits of a tabular font have no kerning, so the width is four advances scaled to the size.
+func TestMeasureAgainstTheFontFile(t *testing.T) {
+	dir := os.Getenv("GFX_FONT_DIR")
+	if dir == "" {
+		t.Skip("GFX_FONT_DIR not set")
+	}
+	data, err := os.ReadFile(filepath.Join(dir, "IBMPlexSans-Regular.otf"))
+	if err != nil {
+		t.Skip(err)
+	}
+	f, err := sfnt.Parse(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var b sfnt.Buffer
+	gi, err := f.GlyphIndex(&b, '0')
+	if err != nil {
+		t.Fatal(err)
+	}
+	const size = 64
+	adv, err := f.GlyphAdvance(&b, gi, fixed.I(size), font.HintingNone)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := 4 * float64(adv) / 64
+	got := shared.MeasureText("0000", gfx.Font{Name: "IBMPlexSans", Size: size}).Width
+	if math.Abs(got-want) > 0.05 {
+		t.Errorf("width of 0000 at %d: DirectWrite %.3f, font file %.3f", size, got, want)
 	}
 }
 

@@ -116,6 +116,8 @@ func (v *View) syncScale() {
 		v.dpr = d
 		v.host.SetScale(d)
 	}
+	w, h := v.cv.Size()
+	Tracef("view: client %dx%d px, canvas %dx%d points, scale %.2f", wpx, hpx, w, h, v.dpr)
 	if err := v.host.Resize(wpx, hpx); err != nil {
 		panic(err)
 	}

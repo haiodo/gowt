@@ -232,7 +232,7 @@ func (i *Image) Size() (float64, float64) { return i.w, i.h }
 func (i *Image) Bitmap() uintptr { return i.bmp }
 
 func (i *Image) Release() {
-	if i.bmp != 0 {
+	if i != nil && i.bmp != 0 {
 		release(i.bmp)
 		i.bmp = 0
 	}

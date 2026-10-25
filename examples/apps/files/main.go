@@ -49,7 +49,7 @@ func main() {
 			look.ToolbarItem{Space: true},
 			look.ToolbarItem{Title: "New Folder", Symbol: "folder.badge.plus", OnClick: func() {}},
 			look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: func() {}},
-			look.ToolbarItem{Title: "Search", OnSearch: func(string) {}})
+			look.ToolbarItem{Title: "Search in Documents", OnSearch: func(string) {}})
 		look.SetSidebar(w, sidebar, content, gowt.Scaled(240))
 		w.Show()
 	})
@@ -86,9 +86,7 @@ func contentPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(), gowt.Padding(gowt.Spacing.SM),
 			gowt.Link(`<a href="home">Home</a>`), gowt.Label(">", kit.Faint()),
-			gowt.Label("Documents", gowt.Typeface(gowt.Type.BodyStrong)),
-			gowt.Spacer(),
-			gowt.Text(gowt.Search(), gowt.Hint("Search in Documents"), gowt.Size(gowt.Scaled(220), 0))),
+			gowt.Label("Documents", gowt.Typeface(gowt.Type.BodyStrong))),
 		gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
 			name := t.Column("Name", gowt.Scaled(360), gowt.Fit())
 			t.Column("Date Modified", gowt.Scaled(200), gowt.Fit())

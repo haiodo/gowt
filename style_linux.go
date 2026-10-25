@@ -39,6 +39,11 @@ const sidebarCSS = `
 	color: @theme_fg_color;
 	border-radius: 6px;
 }
+.gowt-sidebar treeview.view,
+.gowt-sidebar treeview.view:backdrop {
+	background-color: transparent;
+	-GtkTreeView-horizontal-separator: 20;
+}
 `
 
 func installStyle() {

@@ -25,7 +25,11 @@ func setGlassGroup(*swt.Composite, float64) {}
 
 func sidebarInset() int32 { return 0 }
 
-// setSidebarChrome tags the sidebar for the neutral selection rule of the gowt style (style_linux.go).
+// sidebarPadding is the side margin of the sidebar children, in points; the rounded selection of a row
+// then starts 8 from the pane edge.
+func sidebarPadding() int32 { return 8 }
+
+// setSidebarChrome tags the sidebar for the selection and cell rules of the gowt style (style_linux.go).
 func setSidebarChrome(_ *swt.Shell, sb *swt.Composite, _ *swt.Control) {
 	gtk.AddStyleClass(sb.Handle, "gowt-sidebar")
 }

@@ -266,6 +266,9 @@ func (d *toolbarDisposer) WidgetDisposed(*swt.DisposeEvent) {
 // sidebarRadius and the 7-point inset match the Finder sidebar of macOS 26, measured on a screenshot.
 const sidebarRadius = 18
 
+// sidebarPadding is 0: the glass already insets the children, see sidebarInset.
+func sidebarPadding() int32 { return 0 }
+
 func sidebarInset() int32 {
 	if cocoa.GlassAvailable() {
 		return 7

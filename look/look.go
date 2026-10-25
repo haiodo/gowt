@@ -172,9 +172,23 @@ func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	}
 	l.side = l.newPane(sb, width, false)
 	setSidebarChrome(w.Unwrap(), sb, &l.side.sash.Control)
+	padSidebar(sb)
 	b := barOf(w)
 	b.sidebar = sidebar
 	b.build()
+}
+
+// padSidebar gives the children of a sidebar the side margin the macOS glass gives them, where the
+// sidebar is a plain panel. It applies to a VBox or HBox sidebar and adds to the margin it has.
+func padSidebar(sb *swt.Composite) {
+	m := sidebarPadding()
+	if m == 0 || sb.GetLayout() == nil {
+		return
+	}
+	if g, ok := sb.GetLayout().Impl().(interface{ Grid() *swt.GridLayout }); ok {
+		g.Grid().MarginLeft += m
+		g.Grid().MarginRight += m
+	}
 }
 
 // SetInspector puts an inspector on the right of w, width points wide, the trailing counterpart of
@@ -263,6 +277,18 @@ func firstList(c *swt.Composite) *swt.Control {
 		}
 	}
 	return nil
+}
+
+// eachList calls f with the List, Table and Tree widgets under c, depth first.
+func eachList(c *swt.Composite, f func(any)) {
+	for _, ch := range c.GetChildren() {
+		switch v := ch.Impl().(type) {
+		case *swt.List, *swt.Table, *swt.Tree:
+			f(v)
+		case interface{ AsComposite() *swt.Composite }:
+			eachList(v.AsComposite(), f)
+		}
+	}
 }
 
 // SetSidebarVisible shows or hides the sidebar of a SetSidebar window; hidden, the content takes the

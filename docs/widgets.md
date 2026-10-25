@@ -21,7 +21,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Vertical()` | Scale, Slider, Progress, Sash, Split orientation |
 | `MultiSelect()` | List, Table, Tree |
 | `Borderless()`, `Circle()` | push Button: no frame (an icon beside a field); round. `Circle()` with `look.GlassButton()` is a glass circle on macOS 26, the paperclip of the iPad composer. Give a round button a square `Size`. Windows keeps the rectangle |
-| `Primary()`, `Destructive()` | push Button: the main action of the window (also its default button, Enter presses it), and an action that deletes or discards. macOS: the accent default button and `hasDestructiveAction`; GTK: `suggested-action` and `destructive-action`; Windows: the WinUI accent and critical fill. Together they are a red default button |
+| `Primary()`, `Destructive()` | push Button: the main action of the window (also its default button, Enter presses it), and an action that deletes or discards. macOS: the accent default button and `hasDestructiveAction`; GTK: `suggested-action` and `destructive-action`; Windows: the WinUI accent fill for Primary, a standard button for Destructive. Together they are a red default button |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
 | `AccessibleLabel(s)` | any widget: the name a screen reader says for a control with no text, an icon-only Button. macOS `accessibilityLabel`, Linux the ATK name, Windows nothing (`Accessible` is a stub) |
 | `ID(id)` | any widget, a Panel or a Window: names it for the QA driver, which picks controls by it. Stored in the data key `gowt.id` in every build, it changes nothing on screen. Rows made by `Each` pass an id from their row data |
@@ -106,7 +106,7 @@ Options of `Field` after the control go to the label (`Foreground`, `Typeface`, 
 
 ## Primary and destructive buttons
 
-`Button("Save", gowt.Primary())` is the default button of the window: Enter presses it and the system draws it as the prominent one. `Button("Delete", gowt.Destructive())` marks an action that deletes. They are the look of the system, not a colour you choose: macOS draws the default button in the accent colour and a destructive action with `hasDestructiveAction`; GTK adds `suggested-action` (accent fill) and `destructive-action` (red fill); on Windows gowt paints the WinUI accent fill (the system accent, 90% on hover, 80% pressed, text black or white by the accent's brightness) and the critical fill (C42B1C, FF99A4 in the dark theme). The last `Primary` of a window is its default button. Both apply to push buttons only.
+`Button("Save", gowt.Primary())` is the default button of the window: Enter presses it and the system draws it as the prominent one. `Button("Delete", gowt.Destructive())` marks an action that deletes. They are the look of the system, not a colour you choose: macOS draws the default button in the accent colour and a destructive action with `hasDestructiveAction`; GTK adds `suggested-action` (accent fill) and `destructive-action` (red fill); on Windows gowt paints the WinUI accent fill (the system accent, 90% on hover, 80% pressed, text black or white by the accent's brightness) and, only together with `Primary`, the critical fill (C42B1C, FF99A4 in the dark theme); a lone `Destructive` stays a standard button there, as on macOS. The last `Primary` of a window is its default button. Both apply to push buttons only.
 
 ## Columns that fit
 

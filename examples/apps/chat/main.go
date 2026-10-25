@@ -53,7 +53,7 @@ func main() {
 		w.Add(sidebarPane(app, &sidebar), contentPane(app, &content), threadPane(app, &thread))
 		look.SetToolbar(w, look.ToolbarItem{Title: "Hide Sidebar", Symbol: "sidebar.left", Sidebar: true, OnClick: func() {}},
 			look.ToolbarItem{Space: true},
-			look.ToolbarItem{Title: "Search", OnSearch: func(string) {}},
+			look.ToolbarItem{Title: "Search channels", OnSearch: func(string) {}},
 			look.ToolbarItem{Title: "Hide Thread", Symbol: "sidebar.right", OnClick: func() {}})
 		look.SetSidebar(w, sidebar, content, gowt.Scaled(260))
 		look.SetInspector(w, content, thread, gowt.Scaled(340))
@@ -83,7 +83,6 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	dm := func(c gowt.RGB) *gowt.Image { return kit.Dot(app, c, 22) }
 	return gowt.VBox(gowt.Ref(ref), gowt.Gap(gowt.Spacing.SM),
 		gowt.Label("Chats", gowt.Typeface(gowt.Type.BodyStrong), gowt.Place(gowt.AlignCenter, gowt.AlignStart)),
-		gowt.Text(gowt.Search(), gowt.Hint("Find channels..."), gowt.GrowX()),
 		nav(96, -1, [2]any{"Inbox", sym(kit.PathInbox)}, [2]any{"Discussions", sym(kit.PathMail)}, [2]any{"Saved", ic("star")}),
 		gowt.Label("Starred", kit.Faint()),
 		nav(112, 0, [2]any{"develop", sym(kit.PathHash)}, [2]any{"fusion-private", ic("lock")}, [2]any{"ios & android builds", sym(kit.PathHash)}),

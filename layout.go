@@ -130,6 +130,9 @@ func newBox(row bool, gap, pad int) *boxLayout {
 	return l
 }
 
+// Grid is the GridLayout under the box, for look.SetSidebar to add the side margin of a sidebar.
+func (l *boxLayout) Grid() *swt.GridLayout { return l.GridLayout }
+
 func (l *boxLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, flush bool) *swt.Point {
 	l.columns(c)
 	return l.GridLayout.ComputeSize(c, wHint, hHint, flush)

@@ -46,7 +46,7 @@ func fluentCard(d *swt.Display) *swt.Color {
 	return swt.NewColorRedGreenBlue(int32(c.R), int32(c.G), int32(c.B))
 }
 
-func fluentTable(t *swt.Table) { fluent.Table(t) }
+func fluentTable(t *swt.Table) { fluent.Table(t, rowHeight()) }
 
 // rowHeight is Spacing.RowHeight once App.SetDensity chose a density, else 0 for the native height.
 func rowHeight() int {

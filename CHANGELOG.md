@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+Spacing
+- Changed: a `look.SetSidebar` sidebar gets an 8 point side margin on Windows and Linux, as the macOS glass has. On Windows its Tables, Trees and Lists take the window background, rows are `Spacing.SidebarRow` high and the pill spans the list with the icon 10 and the text 10 after it; on Linux the sidebar tree view is transparent and cells have 10 points of side room.
+- Changed: Windows Tables are `Spacing.RowHeight` high after `SetDensity`; the base `RowHeight` is 28, not 32 (32 on Windows and Linux at native density).
+- Changed: on Windows `Destructive()` is a standard button; only `Primary()` together with it gets the critical fill.
+
 API gaps found by examples/apps (TSK-13)
 - New: `Primary()` and `Destructive()` for a push `Button`. Primary is the window's default button (Enter) with the system's prominent look; Destructive marks a deleting action. macOS: the accent default button and `hasDestructiveAction` (not run on a Mac yet); GTK: `suggested-action` and `destructive-action`; Windows: the WinUI accent and critical fills with hover and pressed states, painted by gowt.
 - New: `GC.Size()`, the drawable size at paint time; a chart can follow its cell and font. `CanvasView.Size()` was already right and gives the same numbers.

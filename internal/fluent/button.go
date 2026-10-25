@@ -50,13 +50,13 @@ func Button(b *swt.Button, subtle, circle, border bool) {
 	call(pInvalidateRect, h, 0, 1)
 }
 
-// ButtonKind gives a push button the solid fill of a WinUI accent button (primary) or of a critical
-// one (destructive; with primary it is the same fill, the critical colour wins).
+// ButtonKind gives a push button the solid fill of a WinUI accent button (primary). A destructive one
+// stays a standard button, as on macOS, unless it is primary too: that is the critical fill.
 func ButtonKind(b *swt.Button, primary, destructive bool) {
 	Button(b, false, false, false)
 	if l := buttons[uintptr(b.Handle)]; l != nil {
 		l.accent = l.accent || primary
-		l.danger = l.danger || destructive
+		l.danger = l.danger || (primary && destructive)
 		call(pInvalidateRect, uintptr(b.Handle), 0, 1)
 	}
 }

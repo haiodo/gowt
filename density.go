@@ -106,7 +106,7 @@ var (
 	adwRamp   = ramp{0.82, 1.2, 1.4, 1.8} // libadwaita: .caption, .title-4, .title-3, .title-2
 	rampByOS  = map[string]ramp{"darwin": macRamp, "windows": winRamp, "linux": adwRamp}
 	baseSpace = SpacingScale{XS: 4, SM: 8, MD: 12, LG: 16, XL: 32, PageMargin: 16,
-		RowHeight: 32, ControlHeight: 28, SidebarRow: 28, SidebarWidth: 220, InspectorWidth: 260}
+		RowHeight: 28, ControlHeight: 28, SidebarRow: 28, SidebarWidth: 220, InspectorWidth: 260}
 )
 
 // resolve returns the tokens of d on sys, the body size in px that new widgets get, and the density

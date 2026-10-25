@@ -74,6 +74,12 @@ func fluentScroll(body *swt.Composite) { fluent.Background(body) }
 // Spacing.ControlHeight, like the Text; without App.SetDensity the heights stay the native ones.
 func controlHeight(opts []Option) []Option {
 	return append(opts[:len(opts):len(opts)], lateHook(func(w Widget) error {
+		if v, ok := w.(*SpinnerView); ok {
+			fluent.Spinner(v.s)
+			if wh, _, ok := sizeHints(&v.s.Control); ok && *wh == swt.DEFAULT {
+				*wh = int32(preferred(&v.s.Control).X) + fluent.SpinnerExtra
+			}
+		}
 		if ChosenDensity().Legacy() {
 			return nil
 		}
@@ -88,8 +94,6 @@ func controlHeight(opts []Option) []Option {
 			if v.b.GetStyle()&swt.PUSH == 0 {
 				return nil
 			}
-		case *SpinnerView:
-			fluent.SpinnerCenter(v.s)
 		case *DateTimeView:
 			if v.d.GetStyle()&swt.CALENDAR != 0 {
 				return nil

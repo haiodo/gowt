@@ -18,10 +18,10 @@ type person struct {
 }
 
 var (
-	maria  = person{"Maria Lesova", "ML", kit.Purple}
-	ksenia = person{"Ksenia Starkova", "KS", kit.Orange}
+	maria  = person{"Lucia Ferrante", "LF", kit.Purple}
+	ksenia = person{"Kwame Boateng", "KB", kit.Orange}
 	me     = person{"Alex Morgan", "AM", kit.Blue}
-	andrei = person{"Andrei Zaytsev", "AZ", kit.Teal}
+	andrei = person{"Yuki Okabe", "YO", kit.Teal}
 )
 
 type message struct {
@@ -34,8 +34,8 @@ type message struct {
 }
 
 var feed = []message{
-	{who: maria, time: "15:14", lines: []string{"@all Colleagues, Alexey is about to update staging, anyone against?"}, reaction: "+1  1", replies: "7 replies", repliedBy: []person{me, andrei, maria}},
-	{who: ksenia, time: "15:43", lines: []string{"Hello everyone!", "@Alex Morgan Does anyone know this one?", "Alex, could you roll the landing out to staging from this branch again?", "https://example.com/team/platform-landing/tree/PLAT-1475"}, replies: "10 replies", repliedBy: []person{me, ksenia}},
+	{who: maria, time: "15:14", lines: []string{"@all Colleagues, Omar is about to update staging, anyone against?"}, reaction: "+1  1", replies: "7 replies", repliedBy: []person{me, andrei, maria}},
+	{who: ksenia, time: "15:43", lines: []string{"Hello everyone!", "@Alex Morgan Does anyone know this one?", "Alex, could you roll the landing out to staging from this branch again?", "https://example.com/team/demo-landing/tree/DEMO-1475"}, replies: "10 replies", repliedBy: []person{me, ksenia}},
 	{who: me, time: "15:44", lines: []string{"after 17", "wait, maybe I can do it in a minute"}},
 	{who: andrei, time: "15:53", lines: []string{"@Alex Morgan Shall I rebuild it?"}},
 	{who: me, time: "15:53", lines: []string{"I will do it, you do not have push access anyway"}, reaction: "ok  1", replies: "2 replies", repliedBy: []person{andrei, me}},
@@ -86,10 +86,10 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 		gowt.Text(gowt.Search(), gowt.Hint("Find channels..."), gowt.GrowX()),
 		nav(96, -1, [2]any{"Inbox", sym(kit.PathInbox)}, [2]any{"Discussions", sym(kit.PathMail)}, [2]any{"Saved", ic("star")}),
 		gowt.Label("Starred", kit.Faint()),
-		nav(112, 0, [2]any{"develop", sym(kit.PathHash)}, [2]any{"fusion-private", ic("lock")}, [2]any{"ios & android builds", sym(kit.PathHash)}),
+		nav(112, 0, [2]any{"develop", sym(kit.PathHash)}, [2]any{"orbit-private", ic("lock")}, [2]any{"ios & android builds", sym(kit.PathHash)}),
 		gowt.Label("Direct messages", kit.Faint()),
-		nav(192, -1, [2]any{"Kristina Fefelova", dm(kit.Green)}, [2]any{"Alexey Ivanov", dm(kit.Blue)}, [2]any{"Anastasia Borisova", dm(kit.Purple)},
-			[2]any{"Anton Novgorodtsev", dm(kit.Teal)}, [2]any{"Maxim Denisov", dm(kit.Orange)}),
+		nav(192, -1, [2]any{"Sofia Lindqvist", dm(kit.Green)}, [2]any{"Diego Salazar", dm(kit.Blue)}, [2]any{"Nadia Haddad", dm(kit.Purple)},
+			[2]any{"Rohan Deshmukh", dm(kit.Teal)}, [2]any{"Emeka Obi", dm(kit.Orange)}),
 		gowt.Spacer())
 }
 
@@ -144,7 +144,7 @@ func composer(app *gowt.App, hint string) gowt.Option {
 }
 
 func threadPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
-	code := "Hello,\n\nThank you for your resubmission. Upon further review, we identified additional issues that need your attention. See below for more information.\n\nSubmission ID: 75e80b89-9490-46d1-a748\nReview date: October 23, 2026\nVersion reviewed: 1.0 (319)"
+	code := "Hello,\n\nThis is a sample message for the demo thread. It describes an invented review with a few issues that need attention. See below for the details.\n\nReference: SAMPLE-0000-0001\nReview date: January 1, 2000\nVersion reviewed: 1.0 (100)"
 	return gowt.VBox(gowt.Ref(ref), gowt.Gap(gowt.Spacing.MD), gowt.Padding(gowt.Spacing.MD),
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label("Thread", gowt.Typeface(gowt.Type.Subtitle)), gowt.Label("develop", kit.Faint()), gowt.Spacer(),
 			gowt.Button("", gowt.Flat(), gowt.Size(gowt.Scaled(28), gowt.Scaled(28)), gowt.Init(func(b *gowt.ButtonView) { b.SetImage(icons.Get(app, "close", icons.Size(14))) }))),
@@ -152,7 +152,7 @@ func threadPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 			kit.Avatar(app, me.initials, me.color, gowt.Scaled(36)),
 			gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.GrowX(),
 				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label(me.name, gowt.Typeface(gowt.Type.BodyStrong)), gowt.Label("21:30", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
-				gowt.Label("Apple cannot identify the build, again", gowt.Wrap(), gowt.GrowX()),
+				gowt.Label("The sample build is not recognised, again", gowt.Wrap(), gowt.GrowX()),
 				gowt.HBox(kit.Pill("eyes  1", gowt.Scaled(52), gowt.Scaled(24), gowt.RGB{R: 232, G: 234, B: 240}, gowt.RGB{R: 40, G: 40, B: 50})))),
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(), gowt.Label("3 replies", kit.Faint(), gowt.Typeface(gowt.Type.BodyStrong)), gowt.Separator(gowt.GrowX(), gowt.Place(gowt.AlignFill, gowt.AlignCenter))),
 		gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.Grow(), gowt.Place(gowt.AlignStart, gowt.AlignStart),

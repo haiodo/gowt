@@ -11,7 +11,7 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// A chat feed row as fusion-desktop builds it: avatar Canvas, header Label, wrapped body. Numbers have
+// A chat feed row as a chat client builds it: avatar Canvas, header Label, wrapped body. Numbers have
 // four digits, so that every row of the same i%4 has the same natural width.
 func feedRow(i int, kind string) Option {
 	text := fmt.Sprintf("Message %04d: %s", i, strings.Repeat("some wrapped text of a chat message ", 1+i%4))

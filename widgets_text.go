@@ -1,6 +1,11 @@
 package gowt
 
-import "github.com/haiodo/gowt/swt"
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/haiodo/gowt/swt"
+)
 
 // Scrollbars gives a StyledText vertical and horizontal scroll bars (they appear when needed).
 func Scrollbars() Option { return style{id: sScrollbars, set: swt.V_SCROLL | swt.H_SCROLL} }
@@ -10,13 +15,14 @@ func Scrollbars() Option { return style{id: sScrollbars, set: swt.V_SCROLL | swt
 // Each conversion scans the text, O(n) per call: fine for documents up to some hundred
 // kilobytes; for larger ones keep a line index and use Unwrap with SWT offsets.
 //
-// Not wrapped (use Unwrap): bullets, line alignment and indent, glyph metrics, underline
+// Not wrapped (use Unwrap): bullets other than LineNumbers, line alignment and indent, glyph metrics, underline
 // styles and colors, block selection, verify and extended-modify listeners (undo), bidi
 // segments, custom content.
 type StyledTextView struct {
 	base
 	t     *swt.StyledText
 	fonts *usedFonts
+	nums  *lineNumberer // LineNumbers: the installed bullet listener
 }
 
 // TextStyle is the look of a range of a StyledText. Nil colors inherit the widget's.
@@ -34,7 +40,7 @@ type StyleSpan struct {
 }
 
 // StyledText creates a multi-line styled editor.
-// Options: Scrollbars, Wrap, ReadOnly, Border, Value, OnChange.
+// Options: Scrollbars, Wrap, ReadOnly, Border, Value, OnChange, LineNumbers.
 func StyledText(opts ...Option) Option {
 	return leaf("StyledText", sScrollbars|sWrap|sReadOnly|sBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewStyledText(p, resolve(swt.NONE, opts))
@@ -328,4 +334,66 @@ func unitsToRunes(s string, u int) int {
 		n++
 	}
 	return n
+}
+
+// LineNumbers shows the line number of every line in a gutter at the left of the text. The numbers
+// are SWT bullets drawn with the lines themselves, so they scroll with the text, keep the line spacing
+// and the paragraph spacing of each line, stay level with wrapped lines (one number per line) and follow
+// the font and the theme. The gutter widens with the digits of the last line number.
+func LineNumbers() Option {
+	return hook(func(w Widget) error {
+		t, ok := w.(*StyledTextView)
+		if !ok {
+			return fmt.Errorf("gowt: LineNumbers applies to StyledText, not to %s", nameOf(w.control()))
+		}
+		t.SetLineNumbers(true)
+		return nil
+	})
+}
+
+// SetLineNumbers shows or hides the line number gutter, see LineNumbers.
+func (t *StyledTextView) SetLineNumbers(on bool) {
+	if on == (t.nums != nil) {
+		return
+	}
+	if on {
+		t.nums = &lineNumberer{t: t}
+		t.t.AddLineStyleListener(t.nums)
+	} else {
+		t.t.RemoveLineStyleListener(t.nums)
+		t.nums = nil
+	}
+	t.t.Redraw()
+}
+
+type lineNumberer struct {
+	t     *StyledTextView
+	font  *swt.Font // the font digit was measured with
+	digit int32
+}
+
+func (l *lineNumberer) LineGetStyle(e *swt.LineStyleEvent) {
+	t := l.t.t
+	line := t.GetLineAtOffset(e.LineOffset)
+	if f := t.GetFont(); f != l.font {
+		gc := swt.NewGCDrawable(t)
+		gc.SetFont(f)
+		l.font, l.digit = f, gc.TextExtent("0").X
+		gc.Dispose()
+	}
+	digit := l.digit
+	digits := int32(len(strconv.Itoa(int(t.GetLineCount()))))
+	st := swt.NewStyleRange()
+	st.Foreground = SecondaryText.in(l.t.dark()).color()
+	// Two digits at least, so the gutter does not jump between 9 and 10 lines; the margin is the renderer's.
+	st.Metrics = swt.NewGlyphMetrics(0, 0, max(digits, 2)*digit+2*digit)
+	e.Bullet = swt.NewBulletTypeStyle(swt.STBULLET_NUMBER, st)
+	e.BulletIndex = line
+}
+
+func (t *StyledTextView) dark() bool {
+	if a := appOf(&t.t.Control); a != nil {
+		return a.dark
+	}
+	return systemDark()
 }

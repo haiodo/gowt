@@ -26,6 +26,7 @@ type buttonLook struct {
 	b                      *swt.Button
 	subtle, circle, border bool
 	hot                    bool
+	accent, danger         bool // Primary and Destructive: a solid accent or critical fill
 }
 
 var buttons = map[uintptr]*buttonLook{}
@@ -47,6 +48,39 @@ func Button(b *swt.Button, subtle, circle, border bool) {
 	l.circle = l.circle || circle
 	l.border = l.border || border
 	call(pInvalidateRect, h, 0, 1)
+}
+
+// ButtonKind gives a push button the solid fill of a WinUI accent button (primary) or of a critical
+// one (destructive; with primary it is the same fill, the critical colour wins).
+func ButtonKind(b *swt.Button, primary, destructive bool) {
+	Button(b, false, false, false)
+	if l := buttons[uintptr(b.Handle)]; l != nil {
+		l.accent = l.accent || primary
+		l.danger = l.danger || destructive
+		call(pInvalidateRect, uintptr(b.Handle), 0, 1)
+	}
+}
+
+// solid returns the fill and the text colour of an accent or critical button, and whether this is one.
+func (l *buttonLook) solid(pal Palette, pushed bool, bg RGB) (fill, text RGB, ok bool) {
+	var base RGB
+	switch {
+	case l.danger && pal.Dark:
+		base, text = RGB{0xFF, 0x99, 0xA4}, RGB{0, 0, 0}
+	case l.danger:
+		base, text = RGB{0xC4, 0x2B, 0x1C}, RGB{255, 255, 255}
+	case l.accent:
+		base, text = pal.Accent, pal.OnAccent
+	default:
+		return RGB{}, RGB{}, false
+	}
+	a := 1.0
+	if pushed {
+		a = 0.8
+	} else if l.hot {
+		a = 0.9
+	}
+	return base.over(a, bg), text, true
 }
 
 func (l *buttonLook) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, bool) {
@@ -123,7 +157,11 @@ func (l *buttonLook) draw(hwnd, hdc uintptr, w, h int32) {
 
 	var fill RGB
 	var filled bool
+	solidFill, solidText, solid := l.solid(pal, pushed, bg)
+	solid = solid && enabled
 	switch {
+	case solid:
+		fill, filled = solidFill, true
 	case !enabled:
 		if !l.subtle {
 			fill, filled = pal.Black.over(0.04, bg), true
@@ -164,14 +202,16 @@ func (l *buttonLook) draw(hwnd, hdc uintptr, w, h int32) {
 	if filled {
 		p.fillRound(fill, 0, 0, w, h, r)
 	}
-	if !l.subtle || l.border {
+	if (!l.subtle || l.border) && !solid {
 		p.strokeRound(pal.Stroke(bg), 0, 0, w, h, r, 1)
 	}
 
 	txt := l.b.GetText()
 	img := l.b.GetImage()
 	fg := pal.Text
-	if !enabled {
+	if solid {
+		fg = solidText
+	} else if !enabled {
 		fg = pal.Disabled
 	}
 	z := p.gc.GetZoom()

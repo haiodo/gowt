@@ -192,14 +192,18 @@ func (t *TableView) Deselect() { t.t.DeselectAll0() }
 // RowAt returns row i.
 func (t *TableView) RowAt(i int) *TableRow { return &TableRow{t.t.GetItem(int32(i))} }
 
-// Column appends a column; Right() or Center() set the alignment.
-// Options: Right, Center.
+// Column appends a column; Right() or Center() set the alignment, Fit() keeps the width to the content.
+// Options: Right, Center, Fit.
 func (t *TableView) Column(title string, width int, opts ...Option) *Column {
-	itemOpts(t.t, "Table.Column", sRight|sCenter, false, opts)
+	itemOpts(t.t, "Table.Column", sRight|sCenter|sFit, false, opts)
 	c := swt.NewTableColumn(t.t, resolve(swt.NONE, opts))
 	c.SetText(title)
 	c.SetWidth(int32(width))
-	return &Column{c}
+	col := &Column{c}
+	if hasStyle(opts, sFit) {
+		addFit(&t.t.Control, col)
+	}
+	return col
 }
 
 // Row appends a row with one text per column.
@@ -422,16 +426,20 @@ func Tree(opts ...Option) Option {
 
 // Column appends a column; Right() or Center() set the alignment. The first column holds the node
 // text and the expand arrows. The first call shows the header.
-// Options: Right, Center.
+// Options: Right, Center, Fit.
 func (t *TreeView) Column(title string, width int, opts ...Option) *Column {
-	itemOpts(t.t, "Tree.Column", sRight|sCenter, false, opts)
+	itemOpts(t.t, "Tree.Column", sRight|sCenter|sFit, false, opts)
 	c := swt.NewTreeColumn(t.t, resolve(swt.NONE, opts))
 	c.SetText(title)
 	c.SetWidth(int32(width))
 	if t.t.GetColumnCount() == 1 {
 		t.t.SetHeaderVisible(true)
 	}
-	return &Column{c}
+	col := &Column{c}
+	if hasStyle(opts, sFit) {
+		addFit(&t.t.Control, col)
+	}
+	return col
 }
 
 // ShowRowLines shows or hides thin lines between rows only, see Table.ShowRowLines.

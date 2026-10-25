@@ -10,14 +10,12 @@ import (
 	"github.com/haiodo/gowt/examples/apps/internal/kit"
 )
 
-// The paint callback gets no size (Canvas gap), so the plot area is fixed and the margins do not follow the font.
-const chartW, chartH = 640, 330
-
 var weekly = []int{42, 55, 48, 63, 71, 58, 80, 92, 76, 88, 95, 104}
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		app.SetDensity(gowt.DensityNative)
+		kit.Appearance(app)
 		w := app.Window("Overview")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(900, 600)
@@ -35,7 +33,7 @@ func main() {
 			gowt.HBox(gowt.Gap(gowt.Spacing.LG), gowt.Grow(),
 				gowt.VBox(gowt.Gap(gowt.Spacing.SM), gowt.Grow(),
 					gowt.Label("Weekly signups", gowt.Typeface(gowt.Type.Subtitle)),
-					gowt.Section(gowt.Grow(), gowt.Canvas(chart, gowt.Size(chartW, chartH), gowt.Typeface(gowt.Type.Caption)))),
+					gowt.Section(gowt.Grow(), gowt.Canvas(chart, gowt.Grow(), gowt.Size(gowt.Scaled(400), gowt.Scaled(240)), gowt.Typeface(gowt.Type.Caption)))),
 				gowt.VBox(gowt.Gap(gowt.Spacing.SM), gowt.Size(gowt.Scaled(440), 0),
 					gowt.Label("Recent activity", gowt.Typeface(gowt.Type.Subtitle)),
 					activity(),
@@ -60,9 +58,9 @@ func card(title, value, note string, noteColor gowt.RGB, pct int) gowt.Option {
 
 func activity() gowt.Option {
 	return gowt.Table(gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-		t.Column("Event", gowt.Scaled(250)) // Table has no column autosize
-		t.Column("Who", gowt.Scaled(110))
-		t.Column("When", gowt.Scaled(60), gowt.Right())
+		t.Column("Event", gowt.Scaled(250), gowt.Fit())
+		t.Column("Who", gowt.Scaled(110), gowt.Fit())
+		t.Column("When", gowt.Scaled(60), gowt.Right(), gowt.Fit())
 		for _, r := range [][]string{
 			{"Plan upgraded to Team", "Priya Raman", "2h"},
 			{"New project created", "Tomas Weber", "3h"},
@@ -77,9 +75,9 @@ func activity() gowt.Option {
 }
 
 func chart(g *gowt.GC) {
-	const left, bottom, top = 36, 28, 12
-
-	const w, h = chartW, chartH
+	w, h := g.Size()
+	labelW, labelH := g.TextSize("120")
+	left, bottom, top := labelW+12, labelH+14, labelH
 	maxV := 120
 	plotH := h - bottom - top
 	g.SetColor(gowt.RGB{R: 200, G: 200, B: 205})
@@ -87,7 +85,7 @@ func chart(g *gowt.GC) {
 		y := top + plotH*i/4
 		g.Line(left, y, w, y)
 		g.SetColor(gowt.RGB{R: 140, G: 140, B: 145})
-		g.Text(fmt.Sprint(maxV-maxV*i/4), 4, y-7)
+		g.Text(fmt.Sprint(maxV-maxV*i/4), 4, y-labelH/2)
 		g.SetColor(gowt.RGB{R: 200, G: 200, B: 205})
 	}
 	slot := (w - left) / len(weekly)
@@ -96,6 +94,6 @@ func chart(g *gowt.GC) {
 		bh := plotH * v / maxV
 		g.FillRect(left+i*slot+slot/5, top+plotH-bh, slot*3/5, bh)
 		g.SetColor(gowt.RGB{R: 140, G: 140, B: 145})
-		g.Text(fmt.Sprint("W", i+1), left+i*slot+slot/5, h-bottom+6)
+		g.Text(fmt.Sprint("W", i+1), left+i*slot+slot/5, h-bottom+4)
 	}
 }

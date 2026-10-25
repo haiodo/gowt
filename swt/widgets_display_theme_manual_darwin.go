@@ -21,3 +21,10 @@ func (this *Display) FollowSystemTheme() {
 		}
 	}})
 }
+
+// ForceColorScheme makes the app dark (1) or light (2) whatever the system is, or follow it again (0).
+func (this *Display) ForceColorScheme(scheme int32) {
+	cocoa.SetAppearance(scheme)
+	this.InitColors0()
+	this.runSettings = true
+}

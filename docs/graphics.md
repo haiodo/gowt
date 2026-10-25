@@ -4,7 +4,7 @@ Example: [`examples/graphics`](../examples/graphics).
 
 ## Canvas and GC
 
-`gowt.Canvas(onPaint func(g *gowt.GC), opts...)` is an empty area drawn by your callback. The callback runs whenever the system needs a repaint; draw the whole area each time. After your model changes call `canvas.Redraw()`. The canvas is double buffered. `canvas.Size()` returns the drawable width and height.
+`gowt.Canvas(onPaint func(g *gowt.GC), opts...)` is an empty area drawn by your callback. The callback runs whenever the system needs a repaint; draw the whole area each time. After your model changes call `canvas.Redraw()`. The canvas is double buffered. `canvas.Size()` returns the drawable width and height in points, and `g.Size()` the same inside the callback, so a chart can follow a resize and the font (margins from `g.TextSize`).
 
 ```go
 var canvas *gowt.CanvasView

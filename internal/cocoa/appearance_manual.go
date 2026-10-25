@@ -50,6 +50,21 @@ func SyncCurrentAppearance() {
 	msg(class("NSAppearance"), "setCurrentAppearance:", ap)
 }
 
+// SetAppearance forces the appearance of every window of the app (NSApp.appearance): 1 Dark Aqua,
+// 2 Aqua, anything else follows the system again. The effectiveAppearance observer fires afterwards.
+func SetAppearance(scheme int32) {
+	app := msg(class("NSApplication"), "sharedApplication")
+	var ap uintptr
+	switch scheme {
+	case 1:
+		ap = msg(class("NSAppearance"), "appearanceNamed:", nsString("NSAppearanceNameDarkAqua"))
+	case 2:
+		ap = msg(class("NSAppearance"), "appearanceNamed:", nsString("NSAppearanceNameAqua"))
+	}
+	msg(app, "setAppearance:", ap)
+	SyncCurrentAppearance()
+}
+
 // SecondaryLabelRGB is secondaryLabelColor as 0..255 sRGB, flattened over windowBackgroundColor as
 // GroupedFillRGB is.
 func SecondaryLabelRGB() (r, g, b int32) {

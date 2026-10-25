@@ -12,3 +12,7 @@ func setButtonCircle(b *swt.Button) { fluent.Button(b, false, true, false) }
 
 // Accessible is a stub in the toolkit on Windows.
 func setAccessibleLabel(*swt.Control, string) {}
+
+func setButtonKind(b *swt.Button, kind int) {
+	fluent.ButtonKind(b, kind&buttonPrimary != 0, kind&buttonDestructive != 0)
+}

@@ -13,13 +13,13 @@ err := gowt.Run(func(app *gowt.App) {
 			gowt.Label("Contacts"),
 			gowt.Spacer(),                                   // pushes the button to the right
 			gowt.Button("Clear", gowt.OnClick(func() { name.Set("") }))),
-		gowt.Grid(2, gowt.GrowX(),                           // a form: label | field per row
-			gowt.Label("Name"), gowt.Text(gowt.GrowX(), gowt.Hint("Full name"), gowt.Bind(name)),
-			gowt.Label("Notes"), gowt.Text(gowt.Multiline(), gowt.Grow(), gowt.Size(0, 80))),
+		gowt.Fields(gowt.GrowX(),                            // a form: label | field per row, labels aligned as the OS does
+			gowt.Field("Name", gowt.Text(gowt.GrowX(), gowt.Hint("Full name"), gowt.Bind(name))),
+			gowt.Field("Notes", gowt.Text(gowt.Multiline(), gowt.Grow(), gowt.Size(0, 80)), gowt.FieldTop())),
 		gowt.HBox(gowt.GrowX(),
 			gowt.Spacer(),
 			gowt.Button("Cancel", gowt.OnClick(w.Close)),
-			gowt.Button("Save", gowt.OnClick(func() { save(name.Get()) }),
+			gowt.Button("Save", gowt.Primary(), gowt.OnClick(func() { save(name.Get()) }),
 				gowt.BindEnabled(rx.Compute(func() bool { return name.Get() != "" })))))
 	w.Show()                                                 // packs to the content size unless SetSize was called
 })
@@ -43,7 +43,8 @@ if err != nil {
 |---|---|
 | a column | `gowt.VBox(children...)`; a Window, Group, Tab page and Scroll content are columns too |
 | a row | `gowt.HBox(children...)`, one column per child |
-| a form or a table of cells | `gowt.Grid(columns, children...)` |
+| a form: label | control rows | `gowt.Fields(gowt.Field("Name", control)...)`, labels trailing on macOS, leading elsewhere |
+| a table of cells | `gowt.Grid(columns, children...)` |
 | a row that wraps | `gowt.Flow(children...)` |
 | children sharing the space equally, or one filling it | `gowt.Fill(children...)`, `Fill(gowt.Vertical(), ...)` |
 | edges attached to siblings | `gowt.Form(children...)` with `Anchor(gowt.FormCell{...})` |
@@ -133,6 +134,21 @@ A setter that changes a widget's size lays its parents out again by itself, on t
 
 A container has `Add(children...)` (create more children at its end, also after Show), `Relayout()` (lay the children out again after a change made through `Unwrap()`) and `Clear()` (dispose every child, for content that is rebuilt). `table.Batch(f)` and `tree.Batch(f)` repaint once after many row changes in `f`.
 
+## Buttons, columns, line numbers, avatars, appearance
+
+```go
+gowt.Button("Save", gowt.Primary())                // default button, system accent look
+gowt.Button("Delete", gowt.Destructive())          // red on GTK and Windows, hasDestructiveAction on macOS
+t.Column("Subject", gowt.Scaled(200), gowt.Fit())  // Table or Tree column that follows its content
+gowt.StyledText(gowt.Scrollbars(), gowt.LineNumbers())
+gowt.Canvas(func(g *gowt.GC) { w, h := g.Size(); chart(g, w, h) }, gowt.Grow())
+t.Row("Ann").SetImageAt(0, app.AvatarImage("AM", gowt.RGB{R: 130, G: 80, B: 230}, 24)) // round; CircleImage(img, 24) for a photo
+app.SetAppearance(gowt.AppearanceDark)            // or AppearanceLight; AppearanceSystem follows the OS again
+```
+
+- A badge or chip is a small `Canvas`, not a widget: [widgets.md](widgets.md#badges-and-chips).
+- `SetAppearance` is first in the setup function. macOS and Linux switch live; on Windows the title bars switch live and the content only for windows created afterwards, and part of it stays light, see [cross-platform-look.md](cross-platform-look.md#forcing-dark-or-light).
+
 ## The window
 
 `w.SetSize(800, 600)` fixes the start size in points, `w.SetMinSize(400, 300)` the smallest one the user can drag to, and `app.ScreenSize()` gives the area a window can take on the primary monitor.
@@ -202,7 +218,11 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Smooth()`, `Indeterminate()` | Progress |
 | `Flat()` | ToolBar |
 | `Wrap()` | Label, StyledText, ToolBar |
-| `Scrollbars()` | StyledText |
+| `Scrollbars()`, `LineNumbers()` | StyledText |
+| `Primary()`, `Destructive()` | push Button |
+| `Borderless()`, `Circle()` | push Button |
+| `Fit()` | Table.Column, Tree.Column |
+| `Field(label, control, opts...)`, `FieldTop()` | children of `Fields` |
 | `Bottom()` | Tabs, CTabs |
 | `Closable()` | Tab in a CTabs |
 | `DropDown()` | DateTime, ToolBar.Item |

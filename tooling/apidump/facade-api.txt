@@ -2,7 +2,10 @@
 gowt Adaptive.Dark field RGB
 gowt Adaptive.Light field RGB
 gowt App.After(d time.Duration, f func())
+gowt App.Appearance() Appearance
 gowt App.Async(f func())
+gowt App.AvatarImage(initials string, bg RGB, size int) *Image
+gowt App.CircleImage(img *Image, size int) *Image
 gowt App.Clipboard() *Clipboard
 gowt App.Dark() bool
 gowt App.Every(d time.Duration, f func()) (stop func())
@@ -18,6 +21,7 @@ gowt App.OnThemeChange(f func(dark bool))
 gowt App.Pending() int
 gowt App.Quit()
 gowt App.ScreenSize() (width int, height int)
+gowt App.SetAppearance(m Appearance)
 gowt App.SetBadge(text string)
 gowt App.SetDensity(d Density)
 gowt App.SetLinkColor(c *Adaptive)
@@ -208,6 +212,7 @@ gowt GC.SetColor(c RGB)
 gowt GC.SetFill(c RGB)
 gowt GC.SetFont(f Font)
 gowt GC.SetLineWidth(w int)
+gowt GC.Size() (w int, h int)
 gowt GC.Text(s string, x int, y int)
 gowt GC.TextSize(s string) (w int, h int)
 gowt GC.Unwrap() *github.com/haiodo/gowt/swt.GC
@@ -592,6 +597,7 @@ gowt StyledTextView.SetFont(f Font)
 gowt StyledTextView.SetForeground(c Paint)
 gowt StyledTextView.SetHeight(h int)
 gowt StyledTextView.SetLineBackground(line int, count int, c RGB)
+gowt StyledTextView.SetLineNumbers(on bool)
 gowt StyledTextView.SetMaxHeight(h int)
 gowt StyledTextView.SetParagraphSpacing(line int, before int)
 gowt StyledTextView.SetSelection(start int, length int)
@@ -649,6 +655,7 @@ gowt TableView.Column(title string, width int, opts ...Option) *Column
 gowt TableView.Deselect()
 gowt TableView.Dispose()
 gowt TableView.Enabled() bool
+gowt TableView.FitColumns()
 gowt TableView.Focus() bool
 gowt TableView.Index() int
 gowt TableView.Len() int
@@ -773,6 +780,7 @@ gowt TreeView.Column(title string, width int, opts ...Option) *Column
 gowt TreeView.Deselect()
 gowt TreeView.Dispose()
 gowt TreeView.Enabled() bool
+gowt TreeView.FitColumns()
 gowt TreeView.Focus() bool
 gowt TreeView.Node(text string) *Node
 gowt TreeView.OnActivate(f func(n *Node))
@@ -860,6 +868,9 @@ gowt const AnswerNo Answer = 3
 gowt const AnswerOK Answer = 0
 gowt const AnswerRetry Answer = 4
 gowt const AnswerYes Answer = 2
+gowt const AppearanceDark Appearance = 1
+gowt const AppearanceLight Appearance = 2
+gowt const AppearanceSystem Appearance = 0
 gowt const Bold Weight = 700
 gowt const ButtonsAbortRetryIgnore Buttons = 5
 gowt const ButtonsOK Buttons = 0
@@ -916,12 +927,17 @@ gowt func CoolBar(opts ...Option) Option
 gowt func Custom(f func(*github.com/haiodo/gowt/swt.Control)) Option
 gowt func DateTime(opts ...Option) Option
 gowt func DensityFactor(f float64) Density
+gowt func Destructive() Option
 gowt func Disabled() Option
 gowt func DragFrom(w Widget, d Drag) *DragHandle
 gowt func DropDown() Option
 gowt func DropOn(w Widget, d Drop) *DropHandle
 gowt func Failed(f func(err error, reset func()) Option) Option
+gowt func Field(label string, control Option, opts ...Option) Option
+gowt func FieldTop() Option
+gowt func Fields(opts ...Option) Option
 gowt func Fill(opts ...Option) Option
+gowt func Fit() Option
 gowt func Flat() Option
 gowt func Flow(opts ...Option) Option
 gowt func Focused() Option
@@ -943,6 +959,7 @@ gowt func Init[T Widget](f func(T)) Option
 gowt func Inset(x int, y int) Option
 gowt func Items(list github.com/haiodo/gowt/rx.Reader[[]string]) Option
 gowt func Label(text string, opts ...Option) Option
+gowt func LineNumbers() Option
 gowt func Link(text string, opts ...Option) Option
 gowt func List(items []string, opts ...Option) Option
 gowt func MaxHeight(h int) Option
@@ -961,6 +978,7 @@ gowt func Password() Option
 gowt func Percent(pct int, offset int) Edge
 gowt func Place(h Align, v Align) Option
 gowt func PopupMenu(w Widget) *Menu
+gowt func Primary() Option
 gowt func Progress(max int, opts ...Option) Option
 gowt func Radio() Option
 gowt func ReadOnly() Option
@@ -1007,6 +1025,7 @@ gowt type Adaptive struct
 gowt type Align int32
 gowt type Answer int
 gowt type App struct
+gowt type Appearance int
 gowt type ButtonView struct
 gowt type Buttons int
 gowt type CTabsView struct

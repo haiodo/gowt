@@ -32,7 +32,25 @@ func (this *Display) FollowSystemTheme() {
 		gtk.ConverterJavaStringToCString("org.freedesktop.portal.Settings"), 0, ready.GetAddress(), 0)
 }
 
+// forcedScheme is the ForceColorScheme value: 1 dark, 2 light, 0 the portal decides. portalProxy is
+// the portal connection, kept to read the system value again.
+var (
+	forcedScheme int32
+	portalProxy  int64
+)
+
+// ForceColorScheme makes the app dark (1) or light (2) whatever the portal says, or follow it again (0).
+func (this *Display) ForceColorScheme(scheme int32) {
+	forcedScheme = scheme
+	if scheme == 1 || scheme == 2 {
+		this.setColorScheme(scheme == 1)
+	} else if portalProxy != 0 {
+		portalRead(portalProxy, "color-scheme", "ReadOne", func(v int64) { this.applyColorScheme(portalUint32(v)) })
+	}
+}
+
 func (this *Display) followPortal(proxy int64) {
+	portalProxy = proxy
 	// The proxy and its callback live as long as the process; one display per process is the supported case.
 	cb := NewCallbackFn(func(a []int64) int64 {
 		if gtk.ConverterCCharPtrToJavaString(a[2], false) != "SettingChanged" {
@@ -116,10 +134,13 @@ func (this *Display) applyAccent(rgb []float64) {
 
 // applyColorScheme takes the portal value: 1 dark, 2 light, 0 no preference (the GTK theme stays as it is).
 func (this *Display) applyColorScheme(scheme uint32) {
-	if scheme != 1 && scheme != 2 {
+	if forcedScheme != 0 || scheme != 1 && scheme != 2 {
 		return
 	}
-	dark := scheme == 1
+	this.setColorScheme(scheme == 1)
+}
+
+func (this *Display) setColorScheme(dark bool) {
 	if dark == DisplayThemeDark || this.IsDisposed() {
 		return
 	}

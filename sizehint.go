@@ -171,6 +171,7 @@ func refitUnder(p *swt.Composite) {
 // contentChanged lays the parents of c out on the next event-loop turn, once the native control has
 // caught up with a change of its rows.
 func contentChanged(c *swt.Control) {
+	refitColumns(c)
 	if a := appOf(c); a != nil {
 		a.relayout(c)
 	}

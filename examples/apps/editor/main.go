@@ -1,10 +1,9 @@
 // Command editor is a code editor: a file tree, closable tabs, a StyledText with highlighted code in the
-// monospace font, a line number gutter and a status bar. Static data, fixed 1280x800 window
+// monospace font, line numbers and a status bar. Static data, fixed 1280x800 window
 // (docs/look-check.md).
 package main
 
 import (
-	"fmt"
 	"log"
 	"strings"
 	"unicode/utf8"
@@ -62,6 +61,7 @@ var (
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		app.SetDensity(gowt.DensityNative)
+		kit.Appearance(app)
 		w := app.Window("queue.go - gowt-sample")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(800, 500)
@@ -84,7 +84,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Tree(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TreeView) {
-			t.Column("", gowt.Scaled(220)) // Tree has no column autosize
+			t.Column("", gowt.Scaled(220))
 			t.ShowHeader(false)
 			folder := icons.Get(app, "folder", icons.Size(18))
 			file := icons.Get(app, "file", icons.Size(18))
@@ -107,19 +107,11 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 }
 
 func contentPane(ref **gowt.Panel) gowt.Option {
-	n := strings.Count(source, "\n")
-	nums := make([]string, n)
-	for i := range nums {
-		nums[i] = fmt.Sprintf("%3d", i+1)
-	}
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.CTabs(gowt.Grow(), gowt.Selected(1),
 			gowt.Tab("main.go", gowt.Closable()),
 			gowt.Tab("queue.go", gowt.Closable(), gowt.Padding(0), gowt.Gap(0),
-				gowt.HBox(gowt.Grow(), gowt.Padding(0), gowt.Gap(0),
-					// StyledText has no line number gutter: a Label of numbers stands in, and does not scroll with the text.
-					gowt.Label(strings.Join(nums, "\n"), kit.Faint(), gowt.Typeface(gowt.Type.Mono), gowt.Place(gowt.AlignStart, gowt.AlignStart), gowt.Indent(gowt.Spacing.SM, 0)),
-					gowt.StyledText(gowt.Scrollbars(), gowt.Borderless(), gowt.Grow(), gowt.Init(editor))))),
+				gowt.StyledText(gowt.Scrollbars(), gowt.Grow(), gowt.LineNumbers(), gowt.Init(editor)))),
 		gowt.Separator(gowt.GrowX()),
 		gowt.HBox(gowt.Gap(gowt.Spacing.LG), gowt.GrowX(), gowt.Padding(gowt.Spacing.SM),
 			gowt.Label("Ln 27, Col 14", gowt.Typeface(gowt.Type.Caption)), gowt.Label("UTF-8", gowt.Typeface(gowt.Type.Caption)), gowt.Label("Go", gowt.Typeface(gowt.Type.Caption)),

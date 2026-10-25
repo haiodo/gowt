@@ -21,18 +21,19 @@ func init() { runtime.LockOSThread() }
 
 // App is the handle to the UI thread, valid inside Run.
 type App struct {
-	display *swt.Display
-	quit    atomic.Bool
-	ended   atomic.Bool // the event loop is over: Display release still runs queued callbacks, on disposed widgets
-	images  map[*Image]struct{}
-	fonts   map[Font]*sharedFont
-	pxFonts map[*swt.Font]float64 // the Px of the native fonts made from one, to keep their size on a later SetFont
-	bodyPx  float64               // the body size SetDensity chose; 0 keeps the system font
-	body    *Font                 // the font new widgets get when it differs from the system font
-	clip    *Clipboard
-	onError func(error)
-	dark    bool                      // the theme the Adaptive colours were last applied for
-	paints  map[*swt.Control]*painted // controls given an Adaptive colour
+	display    *swt.Display
+	quit       atomic.Bool
+	ended      atomic.Bool // the event loop is over: Display release still runs queued callbacks, on disposed widgets
+	images     map[*Image]struct{}
+	fonts      map[Font]*sharedFont
+	pxFonts    map[*swt.Font]float64 // the Px of the native fonts made from one, to keep their size on a later SetFont
+	bodyPx     float64               // the body size SetDensity chose; 0 keeps the system font
+	body       *Font                 // the font new widgets get when it differs from the system font
+	clip       *Clipboard
+	onError    func(error)
+	dark       bool // the theme the Adaptive colours were last applied for
+	appearance Appearance
+	paints     map[*swt.Control]*painted // controls given an Adaptive colour
 	// controls whose preferred size changed in this event-loop turn; see sizing
 	relayouts []*swt.Control
 	badge     string

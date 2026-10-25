@@ -33,6 +33,7 @@ var issues = []issue{
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		app.SetDensity(gowt.DensityNative)
+		kit.Appearance(app)
 		w := app.Window("Issues")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(900, 500)
@@ -71,12 +72,12 @@ func filterBar() gowt.Option {
 
 func table(app *gowt.App) gowt.Option {
 	return gowt.Table(gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-		t.Column("ID", gowt.Scaled(92)) // Table has no column autosize
-		title := t.Column("Title", gowt.Scaled(400))
-		t.Column("Status", gowt.Scaled(120))
-		t.Column("Assignee", gowt.Scaled(130))
-		t.Column("Priority", gowt.Scaled(80))
-		t.Column("Updated", gowt.Scaled(92), gowt.Right())
+		t.Column("ID", gowt.Scaled(92), gowt.Fit())
+		title := t.Column("Title", gowt.Scaled(400), gowt.Fit())
+		t.Column("Status", gowt.Scaled(120), gowt.Fit())
+		t.Column("Assignee", gowt.Scaled(130), gowt.Fit())
+		t.Column("Priority", gowt.Scaled(80), gowt.Fit())
+		t.Column("Updated", gowt.Scaled(92), gowt.Right(), gowt.Fit())
 		for _, i := range issues {
 			r := t.Row(i.id, i.title, i.status, i.assignee, i.priority, i.updated)
 			r.SetImageAt(2, kit.Dot(app, statuses[i.status], 12))

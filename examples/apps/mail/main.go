@@ -45,6 +45,7 @@ Priya`
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		app.SetDensity(gowt.DensityNative)
+		kit.Appearance(app)
 		w := app.Window("Inbox")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(900, 500)
@@ -70,7 +71,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-			t.Column("", gowt.Scaled(200)) // Table has no column autosize
+			t.Column("", gowt.Scaled(200))
 			t.ShowHeader(false)
 			t.ShowLines(false)
 			boxes := []struct {
@@ -96,15 +97,15 @@ func contentPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Split(gowt.Grow(),
 			gowt.VBox(gowt.Padding(0), gowt.Gap(0), list(app)),
-			reader()))
+			reader(app)))
 }
 
 func list(app *gowt.App) gowt.Option {
 	return gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-		t.Column("", gowt.Scaled(28)) // Table has no column autosize
-		t.Column("From", gowt.Scaled(150))
-		t.Column("Subject", gowt.Scaled(332))
-		t.Column("Date", gowt.Scaled(80), gowt.Right())
+		t.Column("", gowt.Scaled(28))
+		t.Column("From", gowt.Scaled(150), gowt.Fit())
+		t.Column("Subject", gowt.Scaled(332), gowt.Fit())
+		t.Column("Date", gowt.Scaled(80), gowt.Right(), gowt.Fit())
 		t.ShowLines(false)
 		dot := kit.Dot(app, kit.Blue, 12)
 		for _, m := range inbox {
@@ -117,10 +118,10 @@ func list(app *gowt.App) gowt.Option {
 	}))
 }
 
-func reader() gowt.Option {
+func reader(app *gowt.App) gowt.Option {
 	return gowt.VBox(gowt.Padding(gowt.Scaled(20)), gowt.Gap(gowt.Spacing.MD),
 		gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(),
-			kit.Avatar("PR", kit.Purple, gowt.Scaled(44)),
+			kit.Avatar(app, "PR", kit.Purple, gowt.Scaled(44)),
 			gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.GrowX(),
 				gowt.Label("Priya Raman", gowt.Typeface(gowt.Type.BodyStrong)),
 				gowt.Label("To: Team", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),

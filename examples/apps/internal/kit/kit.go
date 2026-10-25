@@ -1,9 +1,10 @@
 // Package kit holds the small pieces the look-check apps share: fixed colours, round
-// avatars, pill badges and coloured dots. It uses only the public gowt facade and icons.
+// round avatars, pill badges and coloured dots. It uses only the public gowt facade and icons.
 package kit
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/icons"
@@ -26,6 +27,17 @@ const (
 	Height = 800
 )
 
+// Appearance forces the scheme named by GOWT_APPEARANCE ("dark" or "light") for screenshots; unset
+// follows the system. Call it right after SetDensity, before any window.
+func Appearance(app *gowt.App) {
+	switch os.Getenv("GOWT_APPEARANCE") {
+	case "dark":
+		app.SetAppearance(gowt.AppearanceDark)
+	case "light":
+		app.SetAppearance(gowt.AppearanceLight)
+	}
+}
+
 // Faint is the secondary text colour.
 func Faint() gowt.Option { return gowt.Foreground(gowt.SecondaryText) }
 
@@ -36,20 +48,16 @@ func badgeFont(w gowt.Weight) gowt.Font {
 	return f
 }
 
-// Avatar is a filled circle with initials, size points square.
-func Avatar(initials string, c gowt.RGB, size int) gowt.Option {
-	return gowt.Canvas(func(g *gowt.GC) {
-		g.SetFill(c)
-		g.FillOval(0, 0, size, size)
-		g.SetColor(gowt.RGB{R: 255, G: 255, B: 255})
-		w, h := g.TextSize(initials)
-		g.Text(initials, (size-w)/2, (size-h)/2)
-	}, gowt.Size(size, size), gowt.Typeface(badgeFont(gowt.Semibold)))
+// Avatar is a round image with initials, size points square.
+func Avatar(app *gowt.App, initials string, c gowt.RGB, size int) gowt.Option {
+	return gowt.Label("", gowt.Size(size, size), gowt.Init(func(l *gowt.LabelView) { l.SetImage(app.AvatarImage(initials, c, size)) }))
 }
 
-// Pill is a rounded badge w x h points; the text is centred.
+// Pill is a rounded badge w x h points; the text is centred. The facade has no badge widget: a pill is
+// a Canvas that draws itself into the size it is given.
 func Pill(text string, w, h int, bg, fg gowt.RGB) gowt.Option {
 	return gowt.Canvas(func(g *gowt.GC) {
+		w, h := g.Size()
 		g.SetFill(bg)
 		g.FillOval(0, 0, h, h)
 		g.FillOval(w-h, 0, h, h)

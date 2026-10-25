@@ -15,6 +15,7 @@ import (
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		app.SetDensity(gowt.DensityNative)
+		kit.Appearance(app)
 		w := app.Window("Appearance")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(800, 500)
@@ -39,7 +40,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-			t.Column("", gowt.Scaled(220)) // Table has no column autosize
+			t.Column("", gowt.Scaled(220))
 			t.ShowHeader(false)
 			t.ShowLines(false)
 			cats := []struct {
@@ -62,7 +63,7 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 		})))
 }
 
-// The form row is a plain HBox: labels are not aligned into a column (no form layout yet).
+// A settings row: the label at the start, the control at the end. The Account form uses Fields.
 func row(label string, control gowt.Option) gowt.Option {
 	return gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(), gowt.Label(label, gowt.GrowX(), gowt.Place(gowt.AlignFill, gowt.AlignCenter)), gowt.VBox(gowt.Padding(0), control))
 }
@@ -87,14 +88,14 @@ func contentPane(ref **gowt.Panel) gowt.Option {
 					row("Show path in the title", gowt.Button("", gowt.Check(), gowt.Checked(true)))),
 				gowt.Label("Account", kit.Faint()),
 				gowt.Section(gowt.GrowX(),
-					row("Display name", gowt.Text(gowt.Value("Alex Morgan"), gowt.Size(gowt.Scaled(220), 0))),
-					row("Email", gowt.Text(gowt.Hint("name@example.com"), gowt.Size(gowt.Scaled(220), 0))),
-					row("Password", gowt.Text(gowt.Password(), gowt.Value("secret-pass"), gowt.Size(gowt.Scaled(220), 0)))),
+					gowt.Fields(gowt.GrowX(), gowt.Gap(gowt.Spacing.MD),
+						gowt.Field("Display name", gowt.Text(gowt.Value("Alex Morgan"), gowt.GrowX())),
+						gowt.Field("Email", gowt.Text(gowt.Hint("name@example.com"), gowt.GrowX())),
+						gowt.Field("Password", gowt.Text(gowt.Password(), gowt.Value("secret-pass"), gowt.GrowX())))),
 				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(),
-					// No primary or destructive button style yet: the foreground and Focused() stand in.
-					gowt.Button("Delete Account...", gowt.Foreground(kit.Red)),
+					gowt.Button("Delete Account...", gowt.Destructive()),
 					gowt.Spacer(),
 					gowt.Button("Cancel"),
-					gowt.Button("Save Changes", gowt.Focused())),
+					gowt.Button("Save Changes", gowt.Primary())),
 				gowt.Link(`<a href="https://example.com/privacy">About privacy and this setting</a>`))))
 }

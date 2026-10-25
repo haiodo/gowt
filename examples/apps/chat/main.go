@@ -44,6 +44,7 @@ var feed = []message{
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		app.SetDensity(gowt.DensityNative)
+		kit.Appearance(app)
 		w := app.Window("develop")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(900, 500)
@@ -66,7 +67,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	nav := func(h int, sel int, rows ...[2]any) gowt.Option {
 		return gowt.Table(gowt.NoBorder(), gowt.GrowX(), gowt.Size(0, gowt.Scaled(h)), gowt.Init(func(t *gowt.TableView) {
-			t.Column("", gowt.Scaled(220)) // Table has no column autosize
+			t.Column("", gowt.Scaled(220))
 			t.ShowHeader(false)
 			t.ShowLines(false)
 			for _, r := range rows {
@@ -95,14 +96,14 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 func contentPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	rows := make([]gowt.Option, 0, len(feed))
 	for _, m := range feed {
-		rows = append(rows, messageRow(m))
+		rows = append(rows, messageRow(app, m))
 	}
 	return gowt.VBox(gowt.Ref(ref), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.MD),
 		gowt.Scroll(gowt.Grow(), gowt.VBox(append([]gowt.Option{gowt.Gap(gowt.Spacing.LG), gowt.GrowX()}, rows...)...)),
 		composer(app, "Message..."))
 }
 
-func messageRow(m message) gowt.Option {
+func messageRow(app *gowt.App, m message) gowt.Option {
 	body := []gowt.Option{gowt.Gap(gowt.Spacing.XS), gowt.GrowX(),
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label(m.who.name, gowt.Typeface(gowt.Type.BodyStrong)), gowt.Label(m.time, kit.Faint(), gowt.Typeface(gowt.Type.Caption)))}
 	for _, l := range m.lines {
@@ -113,20 +114,20 @@ func messageRow(m message) gowt.Option {
 		}
 	}
 	if m.reaction != "" {
-		// No badge widget: the pill is a Canvas with a fixed width.
+		// A pill is a small Canvas (kit.Pill), see docs/widgets.md "Badges and chips".
 		body = append(body, gowt.HBox(kit.Pill(m.reaction, gowt.Scaled(52), gowt.Scaled(24),
 			gowt.RGB{R: 232, G: 234, B: 240}, gowt.RGB{R: 40, G: 40, B: 50})))
 	}
 	if m.replies != "" {
 		row := []gowt.Option{gowt.Gap(gowt.Spacing.XS)}
 		for _, p := range m.repliedBy {
-			row = append(row, kit.Avatar(p.initials, p.color, gowt.Scaled(28)))
+			row = append(row, kit.Avatar(app, p.initials, p.color, gowt.Scaled(28)))
 		}
 		row = append(row, gowt.Link(`<a href="thread">`+m.replies+`</a>`))
 		body = append(body, gowt.HBox(row...))
 	}
 	return gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
-		kit.Avatar(m.who.initials, m.who.color, gowt.Scaled(40)), gowt.VBox(body...))
+		kit.Avatar(app, m.who.initials, m.who.color, gowt.Scaled(40)), gowt.VBox(body...))
 }
 
 // composer is the glass capsule with the text field and send button, and a round attach button beside it.
@@ -148,14 +149,14 @@ func threadPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label("Thread", gowt.Typeface(gowt.Type.Subtitle)), gowt.Label("develop", kit.Faint()), gowt.Spacer(),
 			gowt.Button("", gowt.Flat(), gowt.Size(gowt.Scaled(28), gowt.Scaled(28)), gowt.Init(func(b *gowt.ButtonView) { b.SetImage(icons.Get(app, "close", icons.Size(14))) }))),
 		gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
-			kit.Avatar(me.initials, me.color, gowt.Scaled(36)),
+			kit.Avatar(app, me.initials, me.color, gowt.Scaled(36)),
 			gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.GrowX(),
 				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label(me.name, gowt.Typeface(gowt.Type.BodyStrong)), gowt.Label("21:30", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
 				gowt.Label("Apple cannot identify the build, again", gowt.Wrap(), gowt.GrowX()),
 				gowt.HBox(kit.Pill("eyes  1", gowt.Scaled(52), gowt.Scaled(24), gowt.RGB{R: 232, G: 234, B: 240}, gowt.RGB{R: 40, G: 40, B: 50})))),
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(), gowt.Label("3 replies", kit.Faint(), gowt.Typeface(gowt.Type.BodyStrong)), gowt.Separator(gowt.GrowX(), gowt.Place(gowt.AlignFill, gowt.AlignCenter))),
 		gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.Grow(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
-			kit.Avatar(me.initials, me.color, gowt.Scaled(36)),
+			kit.Avatar(app, me.initials, me.color, gowt.Scaled(36)),
 			gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.Grow(),
 				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label(me.name, gowt.Typeface(gowt.Type.BodyStrong)), gowt.Label("21:30", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
 				gowt.StyledText(gowt.ReadOnly(), gowt.Wrap(), gowt.Grow(), gowt.Borderless(),

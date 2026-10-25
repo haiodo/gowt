@@ -1,5 +1,5 @@
 // Package offscreen picks the headless gfx.Renderer of the running OS: CoreGraphics on macOS, cairo
-// and Pango on Linux. Windows has none yet. It needs no window, no display and no build tags.
+// and Pango on Linux, Direct2D on Windows. It needs no window, no display and no build tags.
 //
 //	r, err := offscreen.New(offscreen.Options{})
 //	raster, err := gfx.RenderSubtree(r, scene, node, gfx.Rect{}, 2, bg)

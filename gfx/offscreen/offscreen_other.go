@@ -1,4 +1,4 @@
-//go:build !darwin && !linux
+//go:build !darwin && !linux && !windows
 
 package offscreen
 
@@ -13,7 +13,7 @@ func RegisterFonts(string) (int, error) { return 0, errNoBackend }
 
 var errNoBackend = errors.New("gfx/offscreen: no headless renderer on this OS yet")
 
-// New fails until a backend for this OS lands (Windows: Direct2D).
+// New fails: there is no backend for this OS.
 func New(Options) (gfx.Renderer, error) {
 	return nil, errNoBackend
 }

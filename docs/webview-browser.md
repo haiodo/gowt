@@ -1,6 +1,6 @@
 # Web view and Browser
 
-<p align="center"><img src="img/art/webview-browser.png" alt="Gopher in a porthole with web pages around" width="240"></p>
+<img src="img/art/webview-browser.png" alt="Gopher in a porthole with web pages around" width="220" align="right">
 
 Examples: [`examples/webview`](../examples/webview), [`examples/browser`](../examples/browser).
 
@@ -11,6 +11,8 @@ Two packages put a web page next to native widgets. Both use the system engine, 
 | What | small hand-written Go API | SWT's `Browser` widget, translated, with `webview` as its engine |
 | Engine | WKWebView (macOS), WebKitGTK 4.1 (Linux), WebView2 (Windows, not checked on real Windows) | the same |
 | Use it for | new code | porting SWT code, or SWT's listener model |
+
+<br clear="right">
 
 ## webview
 

@@ -19,7 +19,7 @@ The commands were not run; the Windows and Linux ones are untested. -->
 
 ## Install
 
-<p align="center"><img src="docs/img/art/readme-install.png" alt="Gopher catching a parcel on a parachute" width="160"></p>
+<img src="docs/img/art/readme-install.png" alt="Gopher catching a parcel on a parachute" width="160" align="right">
 
 ```sh
 go get github.com/haiodo/gowt@latest
@@ -30,9 +30,11 @@ Run `go mod tidy` after writing code that imports `gowt`; until then `go.mod` li
 
 Go 1.27 or newer. No C compiler and no Java. Cross-compiling works from any host: `GOOS=windows go build`. Details and per-OS requirements: [docs/install.md](docs/install.md).
 
+<br clear="right">
+
 ## Hello
 
-<p align="center"><img src="docs/img/art/readme-hello.png" alt="Gopher pressing a button that pops up a window" width="160"></p>
+<img src="docs/img/art/readme-hello.png" alt="Gopher pressing a button that pops up a window" width="160" align="right">
 
 ```go
 package main
@@ -58,9 +60,11 @@ func main() {
 
 `Run` returns an `error` (no GTK, no display); [`examples/hello`](examples/hello) is the same program.
 
+<br clear="right">
+
 ## Documentation
 
-<p align="center"><img src="docs/img/art/readme-docs.png" alt="Gopher reading on a pile of books" width="160"></p>
+<img src="docs/img/art/readme-docs.png" alt="Gopher reading on a pile of books" width="160" align="right">
 
 Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable program:
 
@@ -85,6 +89,8 @@ SWT port, for porting SWT and JFace code (apps and the examples above do not use
 | JFace factories | [jface](docs/jface.md) | [jface](examples/jface) |
 | SWT `Browser` | [webview-browser](docs/webview-browser.md#browser) | [browser](examples/browser) |
 
+<br clear="right">
+
 ## What you get
 
 - Widgets: labels, buttons, text, combo, list, table, tree, tabs, pages, split, scroll, tool bar, menus, date picker, sliders, canvas, dialogs, tray icon.
@@ -95,7 +101,7 @@ SWT port, for porting SWT and JFace code (apps and the examples above do not use
 
 ## Compared with Wails and Fyne
 
-<p align="center"><img src="docs/img/art/readme-compare.png" alt="Gopher thinking at a crossroads signpost" width="160"></p>
+<img src="docs/img/art/readme-compare.png" alt="Gopher thinking at a crossroads signpost" width="160" align="right">
 
 Only what the pages linked in the table say, as fetched on 2026-10-10 (the wails.io and docs.fyne.io architecture pages returned 403/404 and are not used).
 
@@ -108,9 +114,11 @@ Only what the pages linked in the table say, as fetched on 2026-10-10 (the wails
 
 Not compared because it could not be confirmed from the documentation: how Fyne draws its widgets, Wails' cross-compile limits, binary sizes, performance. gowt is younger and covers fewer widgets than a mature toolkit; see the known gaps below.
 
+<br clear="right">
+
 ## Tests
 
-<p align="center"><img src="docs/img/art/readme-tests.png" alt="Gopher in a lab coat checking test tubes" width="160"></p>
+<img src="docs/img/art/readme-tests.png" alt="Gopher in a lab coat checking test tubes" width="160" align="right">
 
 SWT's own JUnit tests, translated to Go and run per OS by `make test-swt` against `tests/expected*.txt` (a regression fails the gate):
 
@@ -126,6 +134,8 @@ SWT's own JUnit tests, translated to Go and run per OS by `make test-swt` agains
 
 JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts are the `pass`, `fail`, `flaky` and `skip` lines of the expected files; every non-pass line carries a reason. The facade itself has `go test` examples and an API stability gate (`make api-check`).
 
+<br clear="right">
+
 ## Platform requirements
 
 | OS | Needed |
@@ -136,7 +146,7 @@ JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts a
 
 ## Known gaps
 
-<p align="center"><img src="docs/img/art/readme-gaps.png" alt="Gopher repairing a bridge with missing planks" width="160"></p>
+<img src="docs/img/art/readme-gaps.png" alt="Gopher repairing a bridge with missing planks" width="160" align="right">
 
 - Windows runs on a real Windows 11 arm64 (UTM virtual machine) and under Wine (CrossOver). Not checked: Mica, Acrylic and rounded corners by eye, a machine with two monitors (the VM has one display), the QA driver. Per-monitor DPI changes while running are not handled by the port itself; they use upstream SWT code and are untested.
 - CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb; Linux was also run on a real GNOME Wayland desktop. macOS and Windows GUI tests are not in CI; they run locally and on the VM.

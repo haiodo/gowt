@@ -1,8 +1,10 @@
 # Graphics and images
 
-<p align="center"><img src="img/art/graphics.png" alt="Gopher painting on an easel" width="240"></p>
+<img src="img/art/graphics.png" alt="Gopher painting on an easel" width="220" align="right">
 
 Example: [`examples/graphics`](../examples/graphics).
+
+<br clear="right">
 
 ## Canvas and GC
 

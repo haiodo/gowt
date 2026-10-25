@@ -1,8 +1,10 @@
 # Writing one layout for macOS, Windows and Linux
 
-<p align="center"><img src="img/art/cross-platform-look.png" alt="Three gophers in different jackets reading one blueprint" width="240"></p>
+<img src="img/art/cross-platform-look.png" alt="Three gophers in different jackets reading one blueprint" width="220" align="right">
 
 The same numbers do not mean the same size on the three systems. The system font is 13 px on macOS, 12 px (Segoe UI 9 pt) on Windows and 14.7 px (11 pt) on GNOME, and a font size in points becomes pixels at 1 pt = 1 px, 4/3 px and 4/3 px. A layout tuned on a Mac then has text 13% too big for its paddings on Linux, and too small on Windows. Sizes from tokens fix that: you name a role (`Type.Title`, `Spacing.RowHeight`) and gowt gives the size for the OS.
+
+<br clear="right">
 
 ## The tokens
 

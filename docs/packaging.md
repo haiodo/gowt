@@ -1,8 +1,10 @@
 # Packaging and distribution
 
-<p align="center"><img src="img/art/packaging.png" alt="Gopher tying a ribbon on a gift box next to parcels" width="240"></p>
+<img src="img/art/packaging.png" alt="Gopher tying a ribbon on a gift box next to parcels" width="220" align="right">
 
 A gowt program is one Go executable; the OS libraries are loaded at run time. This page covers what to put around it per OS. What the user must have installed is in [install.md](install.md).
+
+<br clear="right">
 
 ## Cross-compiling
 

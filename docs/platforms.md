@@ -1,6 +1,8 @@
 # Platforms
 
-<p align="center"><img src="img/art/platforms.png" alt="Gopher jumping between floating islands with an apple tree, a house and a penguin" width="240"></p>
+<img src="img/art/platforms.png" alt="Gopher jumping between floating islands with an apple tree, a house and a penguin" width="220" align="right">
+
+<br clear="right">
 
 ## For app authors
 

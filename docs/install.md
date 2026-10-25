@@ -1,6 +1,6 @@
 # Installing gowt
 
-<p align="center"><img src="img/art/install.png" alt="Gopher in a hard hat unpacking an app from a box" width="240"></p>
+<img src="img/art/install.png" alt="Gopher in a hard hat unpacking an app from a box" width="220" align="right">
 
 Next: the [getting started](index.md) page. A quick hello is in [`examples/hello`](../examples/hello).
 
@@ -12,6 +12,8 @@ Needs Go 1.27 (`go` line of `go.mod`). No cgo, no C toolchain, no Java: the gene
 loaded at run time. Cross-compiling works from any host (`GOOS=windows go build`).
 
 The default application name is the executable's base name (without `.exe`); `gowt.SetAppName(name)` overrides it; call it before `gowt.Run`.
+
+<br clear="right">
 
 ## What must exist on the user's machine
 

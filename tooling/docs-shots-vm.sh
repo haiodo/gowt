@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # Writes docs/img/<name>-<label>.png (the names docs-shots.sh writes) on the real stands: the Windows 11 arm64 UTM VM
 # (.work/winvm/vm.sh) or the Ubuntu 26.04 GNOME Wayland UTM VM (.work/ubvm/vm.sh). Not Wine, not Xvfb.
-# Usage: [VMTAG=catalog] [VM=path/to/vm.sh] [ONLY="coolbar example-hello"] tooling/docs-shots-vm.sh windows|linux
+# Usage: [VMTAG=catalog] [VM=path/to/vm.sh] [SCALE=2] [ONLY="coolbar example-hello"] tooling/docs-shots-vm.sh windows|linux
 # Run it from the repository root. The programs are cross-built for arm64, copied to the VM, run one after another in
-# the logged-on desktop session and the PNGs copied back. Theme, scale and window frame are the VM's own (Linux:
-# light theme, native Wayland). A web view example is shot after its load finished (GOWT_SNAP waits for it).
+# the logged-on desktop session and the PNGs copied back. Theme and window frame are the VM's own (Linux: light
+# theme, native Wayland). A web view example is shot after its load finished (GOWT_SNAP waits for it).
+# The VM display runs at SCALE (default Windows 1.5, the most its 1728x1044 display takes; GNOME 2) during the shots
+# and is set back afterwards (tooling/vm-scale.sh). A catalog sample is captured at device pixels and exported at
+# 2 px per point, 2x its outer size in examples/catalog/main.go; a capture below 2x is scaled up.
 set -uo pipefail
 label=${1:-}
 export VMTAG=${VMTAG:-catalog}
@@ -19,6 +22,9 @@ esac
 out=$(pwd)/docs/img
 bin=$(pwd)/bin/docs/vm-$label
 rm -rf "$bin"; mkdir -p "$bin"
+scale=${SCALE:-$([ "$label" = windows ] && echo 1.5 || echo 2)}
+prevscale=$(tooling/vm-scale.sh "$label" "$scale") || exit 1
+trap 'tooling/vm-scale.sh "$label" "$prevscale" >/dev/null' EXIT
 
 jobs=() # "<png stem> <program> [catalog widget]"
 for e in $(ls examples | grep -vx -e controlexample -e catalog -e apps); do
@@ -38,14 +44,13 @@ for w in $(sed -n 's/^	{"\([a-z]*\)", .*/\1/p' examples/catalog/main.go); do job
 		set -- $j
 		if [ "$label" = windows ]; then
 			[ -n "${ONLY:-}" ] && [[ " $ONLY " != *" $1 "* ]] && continue
-			# PrintWindow also gets the WebView2 child windows, which BitBlt leaves out; on other windows it renders the backdrop wrongly.
-			case $2 in browser|webview) echo "set GOWT_SNAP_FULL=1";; *) echo "set GOWT_SNAP_FULL=";; esac
+			[ -n "${RAWSIZE:-}" ] && echo "set GOWT_SNAP_SIZE=0x0"
 			echo "set GOWT_SNAP=C:\\gowt\\$tag\\out\\$1-$label.png"
-			echo "start /wait \"\" $2.exe ${3:-}"
+			echo "$2.exe ${3:-} 2>out\\$1.log"
 		else
 			[ -n "${ONLY:-}" ] && [[ " $ONLY " != *" $1 "* ]] && continue
 			# Native Wayland reads a WebKitGTK window back as empty; the web view examples are shot through Xwayland.
-			x=; case $2 in browser|webview) x=GDK_BACKEND=x11;; esac
+			x=${RAWSIZE:+GOWT_SNAP_SIZE=0x0}; case $2 in browser|webview) x="$x GDK_BACKEND=x11 GDK_SCALE=$scale";; esac
 			# GTK_THEME pins the light theme whatever the desktop's setting is; an empty capture (window not painted yet) is an error and is shot again later.
 			echo "for d in 1000 3000 6000; do $x GTK_THEME=Adwaita:light GOWT_SNAP_DELAY=\$d GOWT_SNAP=\$PWD/out/$1-$label.png timeout 90 ./$2 ${3:-} >out/$1.log 2>&1; [ -s out/$1-$label.png ] && break; done"
 		fi
@@ -67,12 +72,14 @@ fi
 if [ -z "${ONLY:-}" ]; then
 	if [ "$label" = windows ]; then
 		stand=$("$vm" ssh '(Get-CimInstance Win32_OperatingSystem | % { $_.Caption + " build " + $_.BuildNumber + " " + $_.OSArchitecture })' | tr -d '\r')
-		stand="Windows in a UTM virtual machine: $stand; WebView2 for the web examples; BitBlt capture, PrintWindow for web views"
+		stand="Windows in a UTM virtual machine: $stand; WebView2 for the web examples; whole window with its DWM frame copied from the screen"
 	else
 		stand=$("$vm" ssh '. /etc/os-release; echo "$PRETTY_NAME $(uname -m)"')
-		stand="Ubuntu GNOME in a UTM virtual machine with a GPU, native Wayland, light theme (GTK_THEME=Adwaita:light): $stand; web view examples through Xwayland"
+		stand="Ubuntu GNOME in a UTM virtual machine with a GPU, native Wayland, light theme (GTK_THEME=Adwaita:light): $stand; web view examples through Xwayland; client-side title bar, shadow trimmed"
 	fi
-	printf 'stand: %s\nsource: tooling/docs-shots-vm.sh %s\ncommit: %s\ndate: %s\n' "$stand" "$label" "$(git rev-parse --short HEAD)" "$(date +%F)" >"$out/source-$label.txt"
+	# The scale the programs saw, from the line GOWT_SNAP prints for a catalog sample.
+	seen=$(sed -n 's/.*capture scale \([0-9.]*\),.*/\1/p' "$bin"/got/*.log | sort | uniq -c | sort -rn | head -1 | awk '{ print $2 }')
+	printf 'stand: %s\ndisplay scale: %s (requested %s; catalog samples captured at device pixels, exported at 2 px per point)\nsource: tooling/docs-shots-vm.sh %s\ncommit: %s\ndate: %s\n' "$stand" "${seen:-unknown}" "$scale" "$label" "$(git rev-parse --short HEAD)" "$(date +%F)" >"$out/source-$label.txt"
 fi
 fail=0
 for j in "${jobs[@]}"; do

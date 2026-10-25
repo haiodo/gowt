@@ -27,11 +27,12 @@ func screenPNG(v objc.ID, path string) error {
 	}
 	const (
 		includingWindow = 1 << 3 // kCGWindowListOptionIncludingWindow
+		ignoreFraming   = 1 << 0 // kCGWindowImageBoundsIgnoreFraming: no shadow
 		bestResolution  = 1 << 3 // kCGWindowImageBestResolution
 	)
 	wid := objc.Send[int64](v.Send(sel("window")), sel("windowNumber"))
 	null := nsRect{X: math.Inf(1), Y: math.Inf(1)} // CGRectNull: the window's own bounds
-	img := windowImage(null, includingWindow, uint32(wid), bestResolution)
+	img := windowImage(null, includingWindow, uint32(wid), ignoreFraming|bestResolution)
 	if img == 0 {
 		return fmt.Errorf("CGWindowListCreateImage returned no image (Screen Recording permission?)")
 	}

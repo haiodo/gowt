@@ -11,8 +11,8 @@ import (
 	"github.com/haiodo/gowt/internal/gtk"
 )
 
-// WindowPNG writes the toplevel window that holds widget as a PNG: the client area as the X server shows
-// it (no window-manager frame), read back through GDK.
+// WindowPNG writes the toplevel window of widget as a PNG with its frame: a window-manager frame is copied
+// from the root window, client-side decorations are in the window's own surface minus the shadow margin.
 func WindowPNG(widget int64, path string) error {
 	win := gtk.GTK3Gtk_widget_get_window(gtk.GTK3Gtk_widget_get_toplevel(widget))
 	if win == 0 {
@@ -20,27 +20,21 @@ func WindowPNG(widget int64, path string) error {
 	}
 	// The window size is in logical points, the pixbuf copies device pixels: at scale 2 the logical size reads a quarter.
 	scale := gtk.GTKGtk_widget_get_scale_factor(widget)
-	w, h := gtk.GDKGdk_window_get_width(win)*scale, gtk.GDKGdk_window_get_height(win)*scale
-	pb := gtk.GDKGdk_pixbuf_get_from_window(win, 0, 0, w, h)
-	if pb == 0 {
-		return fmt.Errorf("gdk_pixbuf_get_from_window failed")
-	}
-	defer gtk.OSG_object_unref(pb)
-	stride, n := gtk.GDKGdk_pixbuf_get_rowstride(pb), int32(4)
-	if !gtk.GDKGdk_pixbuf_get_has_alpha(pb) {
-		n = 3
-	}
-	buf := make([]int8, int(stride)*int(h))
-	gtk.CMemmoveOverload8(buf, gtk.GDKGdk_pixbuf_get_pixels(pb), int64(len(buf)))
-	img := image.NewNRGBA(image.Rect(0, 0, int(w), int(h)))
-	for y := 0; y < int(h); y++ {
-		for x := 0; x < int(w); x++ {
-			src, dst := y*int(stride)+x*int(n), img.PixOffset(x, y)
-			img.Pix[dst], img.Pix[dst+1], img.Pix[dst+2], img.Pix[dst+3] = byte(buf[src]), byte(buf[src+1]), byte(buf[src+2]), 255
-			if n == 4 {
-				img.Pix[dst+3] = byte(buf[src+3])
-			}
+	w, h := gtk.GDKGdk_window_get_width(win), gtk.GDKGdk_window_get_height(win)
+	var img *image.NRGBA
+	var fe gtk.GdkRectangle
+	gtk.GDKGdk_window_get_frame_extents(win, &fe)
+	if fe.Width > w || fe.Height > h {
+		// A root window that reads back as one colour has no desktop content (seen under Xwayland): use the own surface.
+		if root := readPixbuf(gtk.GDKGdk_get_default_root_window(), fe.X, fe.Y, fe.Width*scale, fe.Height*scale); root != nil && !uniform(root) {
+			img = root
 		}
+	}
+	if img == nil {
+		img = readPixbuf(win, 0, 0, w*scale, h*scale)
+	}
+	if img == nil {
+		return fmt.Errorf("gdk_pixbuf_get_from_window failed")
 	}
 	// A Wayland window that was not painted yet reads back as all transparent; do not write that as a result.
 	if !slices.ContainsFunc(img.Pix[3:], func(b byte) bool { return b != 0 }) {
@@ -51,7 +45,59 @@ func WindowPNG(widget int64, path string) error {
 		return err
 	}
 	defer f.Close()
-	return png.Encode(f, img)
+	return png.Encode(f, trimShadow(img))
+}
+
+// readPixbuf copies a w x h device pixel area of a GdkWindow at x, y; nil when GDK cannot read it.
+func readPixbuf(win int64, x, y, w, h int32) *image.NRGBA {
+	pb := gtk.GDKGdk_pixbuf_get_from_window(win, x, y, w, h)
+	if pb == 0 {
+		return nil
+	}
+	defer gtk.OSG_object_unref(pb)
+	stride, n := gtk.GDKGdk_pixbuf_get_rowstride(pb), int32(4)
+	if !gtk.GDKGdk_pixbuf_get_has_alpha(pb) {
+		n = 3
+	}
+	buf := make([]int8, int(stride)*int(h))
+	gtk.CMemmoveOverload8(buf, gtk.GDKGdk_pixbuf_get_pixels(pb), int64(len(buf)))
+	img := image.NewNRGBA(image.Rect(0, 0, int(w), int(h)))
+	for py := 0; py < int(h); py++ {
+		for px := 0; px < int(w); px++ {
+			si, dst := py*int(stride)+px*int(n), img.PixOffset(px, py)
+			img.Pix[dst], img.Pix[dst+1], img.Pix[dst+2], img.Pix[dst+3] = byte(buf[si]), byte(buf[si+1]), byte(buf[si+2]), 255
+			if n == 4 {
+				img.Pix[dst+3] = byte(buf[si+3])
+			}
+		}
+	}
+	return img
+}
+
+func uniform(img *image.NRGBA) bool {
+	first := img.Pix[:4]
+	for i := 4; i+4 <= len(img.Pix); i += 4 {
+		if !slices.Equal(img.Pix[i:i+4], first) {
+			return false
+		}
+	}
+	return true
+}
+
+// trimShadow keeps the box of the nearly opaque pixels, so the rounded corners stay.
+func trimShadow(img *image.NRGBA) image.Image {
+	b, box := img.Bounds(), image.Rectangle{}
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
+			if img.Pix[img.PixOffset(x, y)+3] >= 0xF0 {
+				box = box.Union(image.Rect(x, y, x+1, y+1))
+			}
+		}
+	}
+	if box.Empty() {
+		return img
+	}
+	return img.SubImage(box)
 }
 
 // Meta is what the pixels depend on besides the code: snapcheck compares it before comparing images.

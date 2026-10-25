@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+Docs images
+- `GOWT_SNAP` captures the whole window with its frame on every OS (Windows: the DWM frame bounds copied from the screen; Linux: the CSD title bar with the shadow margin trimmed), and `GOWT_SNAP_SIZE=<w>x<h>` exports it at exactly 2 pixels per point. The catalog opens every sample at one outer size from a table, so the three images of a sample have one size; `make shot-sizes` checks it. `tooling/docs-shots-vm.sh` sets the VM display scale for the run and restores it (`tooling/vm-scale.sh`).
+
 Linux look (GTK)
 - A default stylesheet is installed by `Run` at GTK application priority (below any app CSS): flat table and tree headers without column dividers, roomier rows (`-GtkTreeView-vertical-separator: 6`), and `Group` as a card with its title above it instead of in the frame line. Theme named colours only, so Adwaita, Yaru, light and dark follow.
 - `look.SetSidebar` marks the sidebar `gowt-sidebar`: a selected row in a List, Table or Tree there is a neutral rounded fill with the normal text colour instead of the accent bar; other lists keep the accent. The rule outranks the portal accent rule. Row insets are not possible with GTK 3 CSS.

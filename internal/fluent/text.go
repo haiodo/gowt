@@ -68,12 +68,14 @@ func (f *textFrame) vpad(hwnd uintptr) int32 {
 }
 
 // applyColors puts the theme's input colours on a Text that has none of its own.
-func (f *textFrame) applyColors() {
-	pal := Current(f.t.GetDisplay())
+func (f *textFrame) applyColors() { inputColors(&f.t.Control) }
+
+func inputColors(c *swt.Control) {
+	pal := Current(c.GetDisplay())
 	fill := pal.Fill
-	f.t.SetBackgroundWithColor(swt.NewColorRedGreenBlue(int32(fill.R), int32(fill.G), int32(fill.B)))
+	c.SetBackgroundWithColor(swt.NewColorRedGreenBlue(int32(fill.R), int32(fill.G), int32(fill.B)))
 	if pal.Dark {
-		f.t.SetForeground(swt.NewColorRedGreenBlue(int32(pal.Text.R), int32(pal.Text.G), int32(pal.Text.B)))
+		c.SetForeground(swt.NewColorRedGreenBlue(int32(pal.Text.R), int32(pal.Text.G), int32(pal.Text.B)))
 	}
 }
 
@@ -131,7 +133,11 @@ func (f *textFrame) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr
 	return 0, false
 }
 
-func (f *textFrame) paint(hwnd uintptr) {
+func (f *textFrame) paint(hwnd uintptr) { paintInput(hwnd, &f.t.Control) }
+
+// paintInput paints the frame of the single-line edit hwnd, which belongs to the control c, in its
+// non-client area.
+func paintInput(hwnd uintptr, c *swt.Control) {
 	var wr, cr rect
 	call(pGetWindowRect, hwnd, uintptr(unsafe.Pointer(&wr)))
 	call(pGetClientRect, hwnd, uintptr(unsafe.Pointer(&cr)))
@@ -154,10 +160,10 @@ func (f *textFrame) paint(hwnd uintptr) {
 		call(pExcludeClipRect, hdc, uintptr(w)-sb, 0, uintptr(w), uintptr(h))
 	}
 
-	d := f.t.GetDisplay()
+	d := c.GetDisplay()
 	pal := Current(d)
-	enabled := f.t.IsEnabled()
-	bg := parentBackground(&f.t.Control)
+	enabled := c.IsEnabled()
+	bg := parentBackground(c)
 	fill := pal.Fill
 	if !enabled {
 		fill = pal.Black.over(0.04, bg)

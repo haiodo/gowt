@@ -51,8 +51,11 @@ func (r *Renderer) newLine(s string, font uintptr) uintptr {
 // Layout creates an uncached line for s; Release frees it. Used by benchmarks and measuring.
 type Layout struct{ line uintptr }
 
+// Layout lays out one line of s in f.
 func (r *Renderer) Layout(s string, f gfx.Font) Layout { return Layout{r.newLine(s, r.font(f))} }
-func (l Layout) Release()                              { cfRelease(l.line) }
+
+// Release frees the line.
+func (l Layout) Release() { cfRelease(l.line) }
 
 // Width is the typographic advance of the laid-out line in points.
 func (l Layout) Width() float64 {

@@ -8,6 +8,8 @@ import (
 // Easing maps linear progress 0..1 to eased progress; it must give 0 at 0 and 1 at 1.
 type Easing func(t float64) float64
 
+// The easings. Linear is constant speed; EaseIn starts slow, EaseOut ends slow, EaseInOut does
+// both.
 var (
 	Linear    Easing = func(t float64) float64 { return t }
 	EaseIn    Easing = func(t float64) float64 { return t * t * t }

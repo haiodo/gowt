@@ -34,7 +34,7 @@ type rig struct {
 
 func newRig(t *testing.T) *rig {
 	t.Helper()
-	s := gfx.NewScene(gfx.R(-1000, -1000, 4000, 4000), 128)
+	s := gfx.NewScene()
 	n := gfx.NewNode(1)
 	p := &gfx.Path{}
 	p.Rect(0, 0, 20, 20)

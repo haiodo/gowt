@@ -59,6 +59,7 @@ func (c *Compositor) NewSprite(pic *Picture, space Space, pos Point) *Sprite {
 	return s
 }
 
+// SetPicture replaces what the sprite shows; it is drawn again once.
 func (s *Sprite) SetPicture(p *Picture) {
 	s.mu.Lock()
 	s.pic, s.picDirty = p, true
@@ -73,6 +74,7 @@ func (s *Sprite) SetPos(p Point) {
 	s.mu.Unlock()
 }
 
+// SetOpacity sets the opacity at once and stops a fade under way.
 func (s *Sprite) SetOpacity(a float64) {
 	s.mu.Lock()
 	s.st.opacity = a
@@ -80,6 +82,7 @@ func (s *Sprite) SetOpacity(a float64) {
 	s.mu.Unlock()
 }
 
+// SetRotation sets the angle in radians at once and stops a rotation under way.
 func (s *Sprite) SetRotation(rad float64) {
 	s.mu.Lock()
 	s.st.rotation = rad
@@ -87,6 +90,7 @@ func (s *Sprite) SetRotation(rad float64) {
 	s.mu.Unlock()
 }
 
+// SetScale sets the scale at once and stops a scaling under way.
 func (s *Sprite) SetScale(f float64) {
 	s.mu.Lock()
 	s.st.scale = f
@@ -134,14 +138,17 @@ func (s *Sprite) MoveTo(p Point, d time.Duration, ease Easing, done func()) {
 	s.start(&anim{prop: propPos, to: p, dur: d, ease: orLinear(ease), done: done}, propPos, propAlong)
 }
 
+// FadeTo animates the opacity to a over d. done, when not nil, runs on the frame that finishes it.
 func (s *Sprite) FadeTo(a float64, d time.Duration, ease Easing, done func()) {
 	s.start(&anim{prop: propOpacity, to: Point{X: a}, dur: d, ease: orLinear(ease), done: done}, propOpacity)
 }
 
+// RotateTo animates the angle to rad over d.
 func (s *Sprite) RotateTo(rad float64, d time.Duration, ease Easing, done func()) {
 	s.start(&anim{prop: propRotation, to: Point{X: rad}, dur: d, ease: orLinear(ease), done: done}, propRotation)
 }
 
+// ScaleTo animates the scale to f over d.
 func (s *Sprite) ScaleTo(f float64, d time.Duration, ease Easing, done func()) {
 	s.start(&anim{prop: propScale, to: Point{X: f}, dur: d, ease: orLinear(ease), done: done}, propScale)
 }
@@ -447,7 +454,7 @@ func (c *Compositor) applyLifts() {
 // liftNow takes the node of a pending lift out of the tiles.
 func (c *Compositor) liftNow(l *lift) {
 	l.pending = false
-	l.hrect = c.scene.Lift(l.node)
+	l.hrect = c.scene.liftNode(l.node)
 	c.invalidate([]Rect{l.hrect})
 	if l.has && c.cur != nil {
 		l.hold = true

@@ -33,8 +33,10 @@ func (h *Host) Close() {
 	}
 }
 
+// Begin starts the layer changes of one frame.
 func (h *Host) Begin() {}
 
+// Commit queues a redraw of the widget.
 func (h *Host) Commit() {
 	if h.dirty {
 		h.dirty = false
@@ -44,6 +46,7 @@ func (h *Host) Commit() {
 	}
 }
 
+// NewLayer adds a layer in group g.
 func (h *Host) NewLayer(g gfx.Group) gfx.Layer {
 	l := &layer{h: h, g: g, op: 1, m: gfx.Identity()}
 	h.groups[g] = append(h.groups[g], l)

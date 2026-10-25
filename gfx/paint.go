@@ -7,8 +7,10 @@ import (
 	"image/png"
 )
 
+// GradientKind is linear or radial.
 type GradientKind uint8
 
+// The kinds of Gradient.
 const (
 	LinearGradient GradientKind = iota
 	RadialGradient
@@ -29,10 +31,12 @@ type Gradient struct {
 	Stops  []Stop
 }
 
+// NewLinearGradient returns a gradient along the line from p0 to p1.
 func NewLinearGradient(p0, p1 Point, stops ...Stop) *Gradient {
 	return &Gradient{Kind: LinearGradient, P0: p0, P1: p1, Stops: stops}
 }
 
+// NewRadialGradient returns a gradient from the circle (c0, r0) to the circle (c1, r1).
 func NewRadialGradient(c0 Point, r0 float64, c1 Point, r1 float64, stops ...Stop) *Gradient {
 	return &Gradient{Kind: RadialGradient, P0: c0, R0: r0, P1: c1, R1: r1, Stops: stops}
 }
@@ -45,8 +49,10 @@ type Raster struct {
 	Pix  []byte
 }
 
+// NewRaster returns a transparent Raster of w by h pixels.
 func NewRaster(w, h int) *Raster { return &Raster{W: w, H: h, Pix: make([]byte, w*h*4)} }
 
+// Size returns the size in pixels as floats, so a *Raster is an Image.
 func (r *Raster) Size() (float64, float64) { return float64(r.W), float64(r.H) }
 
 // RasterFrom copies img.
@@ -62,6 +68,7 @@ func (r *Raster) Image() *image.NRGBA {
 	return &image.NRGBA{Pix: r.Pix, Stride: r.W * 4, Rect: image.Rect(0, 0, r.W, r.H)}
 }
 
+// PNG encodes r as a PNG file.
 func (r *Raster) PNG() ([]byte, error) {
 	var b bytes.Buffer
 	if err := png.Encode(&b, r.Image()); err != nil {

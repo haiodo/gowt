@@ -253,10 +253,14 @@ func (p *Picture) WriteSVG(out io.Writer, scale float64) error {
 	return w.finish(out, p.Bounds, scale)
 }
 
-// WriteSubtreeSVG writes the subtree of root, as RenderSubtree draws it, as an SVG document. area
-// is the scene rectangle to write, or an empty Rect for the subtree bounds.
+// WriteSubtreeSVG writes the subtree of root, as RenderSubtree draws it, as an SVG document; a nil
+// root writes the whole scene. area is the scene rectangle to write, or the zero Rect for the
+// subtree bounds.
 func WriteSubtreeSVG(out io.Writer, s *Scene, root *Node, area Rect, scale float64) error {
 	s.Commit()
+	if root == nil {
+		root = s.Root()
+	}
 	if noArea(area) {
 		s.Read(func() { area = root.SubtreeBounds() })
 	}

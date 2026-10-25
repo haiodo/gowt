@@ -177,6 +177,7 @@ func (p *Path) Measure(tol float64) *Measure {
 	return m
 }
 
+// Length returns the length of the flattened path.
 func (m *Measure) Length() float64 { return m.cum[len(m.cum)-1] }
 
 // At returns the point and unit tangent at arc length s (clamped to 0..Length).

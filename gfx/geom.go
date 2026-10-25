@@ -2,13 +2,25 @@ package gfx
 
 import "math"
 
+// Point is a position or a vector in scene units, y down.
 type Point struct{ X, Y float64 }
 
-func (p Point) Add(q Point) Point    { return Point{p.X + q.X, p.Y + q.Y} }
-func (p Point) Sub(q Point) Point    { return Point{p.X - q.X, p.Y - q.Y} }
-func (p Point) Mul(f float64) Point  { return Point{p.X * f, p.Y * f} }
-func (p Point) Dot(q Point) float64  { return p.X*q.X + p.Y*q.Y }
-func (p Point) Len() float64         { return math.Hypot(p.X, p.Y) }
+// Add returns p + q.
+func (p Point) Add(q Point) Point { return Point{p.X + q.X, p.Y + q.Y} }
+
+// Sub returns p - q.
+func (p Point) Sub(q Point) Point { return Point{p.X - q.X, p.Y - q.Y} }
+
+// Mul returns p scaled by f.
+func (p Point) Mul(f float64) Point { return Point{p.X * f, p.Y * f} }
+
+// Dot returns the dot product of p and q.
+func (p Point) Dot(q Point) float64 { return p.X*q.X + p.Y*q.Y }
+
+// Len returns the length of p as a vector.
+func (p Point) Len() float64 { return math.Hypot(p.X, p.Y) }
+
+// Dist returns the distance from p to q.
 func (p Point) Dist(q Point) float64 { return math.Hypot(p.X-q.X, p.Y-q.Y) }
 
 func lerp(a, b Point, t float64) Point { return Point{a.X + (b.X-a.X)*t, a.Y + (b.Y-a.Y)*t} }
@@ -25,44 +37,61 @@ func (p Point) Unit() Point {
 // Rect is an axis-aligned rectangle. Use EmptyRect as the identity of Union.
 type Rect struct{ Min, Max Point }
 
+// R returns the rectangle with top left (x, y) and size w by h.
 func R(x, y, w, h float64) Rect { return Rect{Point{x, y}, Point{x + w, y + h}} }
 
+// EmptyRect returns the rectangle that contains nothing: the identity of Union.
 func EmptyRect() Rect {
 	return Rect{Point{math.Inf(1), math.Inf(1)}, Point{math.Inf(-1), math.Inf(-1)}}
 }
 
-func (r Rect) Empty() bool   { return r.Min.X > r.Max.X || r.Min.Y > r.Max.Y }
-func (r Rect) W() float64    { return r.Max.X - r.Min.X }
-func (r Rect) H() float64    { return r.Max.Y - r.Min.Y }
+// Empty reports whether r contains no area.
+func (r Rect) Empty() bool { return r.Min.X > r.Max.X || r.Min.Y > r.Max.Y }
+
+// W returns the width of r.
+func (r Rect) W() float64 { return r.Max.X - r.Min.X }
+
+// H returns the height of r.
+func (r Rect) H() float64 { return r.Max.Y - r.Min.Y }
+
+// Center returns the middle of r.
 func (r Rect) Center() Point { return Point{(r.Min.X + r.Max.X) / 2, (r.Min.Y + r.Max.Y) / 2} }
 
+// Contains reports whether p lies inside r or on its edge.
 func (r Rect) Contains(p Point) bool {
 	return p.X >= r.Min.X && p.X <= r.Max.X && p.Y >= r.Min.Y && p.Y <= r.Max.Y
 }
 
+// Intersects reports whether r and o overlap.
 func (r Rect) Intersects(o Rect) bool {
 	return r.Min.X <= o.Max.X && o.Min.X <= r.Max.X && r.Min.Y <= o.Max.Y && o.Min.Y <= r.Max.Y
 }
 
+// Union returns the smallest rectangle that holds r and o.
 func (r Rect) Union(o Rect) Rect {
 	return Rect{Point{math.Min(r.Min.X, o.Min.X), math.Min(r.Min.Y, o.Min.Y)}, Point{math.Max(r.Max.X, o.Max.X), math.Max(r.Max.Y, o.Max.Y)}}
 }
 
+// AddPoint returns r grown to hold p.
 func (r Rect) AddPoint(p Point) Rect {
 	return Rect{Point{math.Min(r.Min.X, p.X), math.Min(r.Min.Y, p.Y)}, Point{math.Max(r.Max.X, p.X), math.Max(r.Max.Y, p.Y)}}
 }
 
+// Expand returns r grown by d on every side; a negative d shrinks it.
 func (r Rect) Expand(d float64) Rect {
 	return Rect{Point{r.Min.X - d, r.Min.Y - d}, Point{r.Max.X + d, r.Max.Y + d}}
 }
 
+// Translate returns r moved by d.
 func (r Rect) Translate(d Point) Rect { return Rect{r.Min.Add(d), r.Max.Add(d)} }
 
 // Affine is [a b c d tx ty]: x' = a*x + c*y + tx, y' = b*x + d*y + ty.
 type Affine [6]float64
 
+// Identity returns the transform that changes nothing.
 func Identity() Affine { return Affine{1, 0, 0, 1, 0, 0} }
 
+// Apply returns p transformed by m.
 func (m Affine) Apply(p Point) Point {
 	return Point{m[0]*p.X + m[2]*p.Y + m[4], m[1]*p.X + m[3]*p.Y + m[5]}
 }
@@ -76,9 +105,13 @@ func (m Affine) Mul(n Affine) Affine {
 	}
 }
 
+// TranslateBy returns the transform that moves by (x, y).
 func TranslateBy(x, y float64) Affine { return Affine{1, 0, 0, 1, x, y} }
-func ScaleBy(x, y float64) Affine     { return Affine{x, 0, 0, y, 0, 0} }
 
+// ScaleBy returns the transform that scales by x and y about the origin.
+func ScaleBy(x, y float64) Affine { return Affine{x, 0, 0, y, 0, 0} }
+
+// RotateBy returns the transform that rotates by a radians about the origin.
 func RotateBy(a float64) Affine {
 	s, c := math.Sincos(a)
 	return Affine{c, s, -s, c, 0, 0}
@@ -116,3 +149,20 @@ func (m Affine) SameLinear(n Affine) bool {
 
 // Color is non-premultiplied RGBA in 0..1.
 type Color struct{ R, G, B, A float64 }
+
+// RGB returns the opaque color of three 8-bit channels, the way gowt.RGB writes them.
+func RGB(r, g, b uint8) Color { return RGBA(r, g, b, 1) }
+
+// RGBA is RGB with an alpha of 0..1.
+func RGBA(r, g, b uint8, a float64) Color {
+	return Color{float64(r) / 255, float64(g) / 255, float64(b) / 255, a}
+}
+
+// WithAlpha returns c with alpha a (0..1).
+func (c Color) WithAlpha(a float64) Color { c.A = a; return c }
+
+// Black and White are the opaque extremes.
+var (
+	Black = Color{A: 1}
+	White = Color{R: 1, G: 1, B: 1, A: 1}
+)

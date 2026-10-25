@@ -32,7 +32,7 @@ func add(s *Scene, parent *Node, id int, x, y, w, h float64) *Node {
 	return n
 }
 
-func testScene() *Scene { return NewScene(R(-1000, -1000, 4000, 4000), 128) }
+func testScene() *Scene { return NewScene() }
 
 func TestTransactionAppliedOnCommit(t *testing.T) {
 	s := testScene()
@@ -243,7 +243,7 @@ func TestLiftSkipsAndSilences(t *testing.T) {
 	f := add(s, nil, 1, 0, 0, 50, 50)
 	k := add(s, f, 2, 10, 10, 10, 10)
 	other := add(s, nil, 3, 300, 300, 10, 10)
-	r := s.Lift(f)
+	r := s.liftNode(f)
 	if r != R(0, 0, 50, 50) {
 		t.Errorf("lift area %v", r)
 	}
@@ -260,7 +260,7 @@ func TestLiftSkipsAndSilences(t *testing.T) {
 	if !k.Lifted() {
 		t.Error("descendants are lifted")
 	}
-	if r := s.Land(f); r != R(100, 100, 50, 50) {
+	if r := s.landNode(f); r != R(100, 100, 50, 50) {
 		t.Errorf("land area %v", r)
 	}
 	s.CollectSubtree(f, R(-100, -100, 1000, 1000), &b)
@@ -336,7 +336,7 @@ func TestUpdateFromManyGoroutines(t *testing.T) {
 }
 
 func TestBuildIndexLarge(t *testing.T) {
-	s := NewScene(R(0, 0, 10000, 10000), 256)
+	s := NewScene()
 	s.Update(func(tx *Tx) {
 		for i := 0; i < 5000; i++ {
 			n := NewNode(i)

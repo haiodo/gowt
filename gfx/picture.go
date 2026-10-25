@@ -5,8 +5,10 @@ import (
 	"encoding/binary"
 	"math"
 	"slices"
+	"sync"
 )
 
+// OpKind tells which drawing command an Op is.
 type OpKind uint8
 
 // The operands of each kind are in the fields of Op named after it.
@@ -31,21 +33,28 @@ const (
 	OpEndLayer          //
 )
 
+// Cap is the shape of the ends of a stroked line.
 type Cap uint8
+
+// Join is the shape of the corners of a stroked path.
 type Join uint8
 
+// The line caps: flat at the end, round, or square past the end by half the width.
 const (
 	CapButt Cap = iota
 	CapRound
 	CapSquare
 )
 
+// The line joins: sharp (up to MiterLimit), round, or cut off.
 const (
 	JoinMiter Join = iota
 	JoinRound
 	JoinBevel
 )
 
+// StrokeStyle describes a stroke. The zero value is a hairline with butt caps and miter joins; set
+// Width.
 type StrokeStyle struct {
 	Width      float64
 	Cap        Cap
@@ -55,11 +64,14 @@ type StrokeStyle struct {
 	DashPhase  float64
 }
 
+// Shadow is a blurred drop shadow offset by (DX, DY).
 type Shadow struct {
 	DX, DY, Blur float64
 	Color        Color
 }
 
+// Font names a face and its size in points. An empty Name is the default sans face of the backend;
+// a name no backend knows falls back to it.
 type Font struct {
 	Name string
 	Size float64
@@ -149,6 +161,7 @@ type TextMeasurer interface {
 // EstimateText is the measurer used until a backend sets one: 0.6 em per rune, ascent 0.8 em, descent 0.25 em.
 type EstimateText struct{}
 
+// MeasureText estimates the size of s from the number of runes.
 func (EstimateText) MeasureText(s string, f Font) TextMetrics {
 	n := 0
 	for range s {
@@ -157,9 +170,34 @@ func (EstimateText) MeasureText(s string, f Font) TextMetrics {
 	return TextMetrics{float64(n) * f.Size * 0.6, f.Size * 0.8, f.Size * 0.25}
 }
 
-// DefaultMeasurer is what NewRecorder uses. A backend's NewRenderer replaces it with CoreText or
-// the like; set it once before recording.
+// DefaultMeasurer is what NewRecorder uses. Importing a backend (gfx/cg, gfx/cairo, gfx/d2d, and
+// so gfx/view and gfx/offscreen) replaces it with that backend's measurer, so text bounds match
+// what is drawn whatever the order of recording and of creating a renderer. Without a backend it is
+// EstimateText.
 var DefaultMeasurer TextMeasurer = EstimateText{}
+
+// LazyMeasurer returns a TextMeasurer that calls open on its first use, once, and measures with the
+// result; when open fails it estimates with EstimateText. Backends use it so that a renderer is
+// made only if text is recorded.
+func LazyMeasurer(open func() (TextMeasurer, error)) TextMeasurer {
+	return &lazyMeasurer{open: open}
+}
+
+type lazyMeasurer struct {
+	once sync.Once
+	open func() (TextMeasurer, error)
+	m    TextMeasurer
+}
+
+func (l *lazyMeasurer) MeasureText(s string, f Font) TextMetrics {
+	l.once.Do(func() {
+		var err error
+		if l.m, err = l.open(); err != nil || l.m == nil {
+			l.m = EstimateText{}
+		}
+	})
+	return l.m.MeasureText(s, f)
+}
 
 // Recorder builds a Picture and tracks its bounds through the transform and clip stack.
 type Recorder struct {
@@ -177,6 +215,7 @@ type recState struct {
 	clip Rect
 }
 
+// NewRecorder returns a Recorder that measures text with DefaultMeasurer.
 func NewRecorder() *Recorder {
 	return &Recorder{pic: Picture{Bounds: EmptyRect()}, ctm: Identity(), clip: infRect(), m: DefaultMeasurer}
 }
@@ -249,11 +288,13 @@ func (r *Recorder) grow(local Rect) {
 	r.pic.Bounds = r.pic.Bounds.Union(r.ctm.Bounds(local).Intersect(r.clip))
 }
 
+// Save pushes the transform and the clip.
 func (r *Recorder) Save() {
 	r.stack = append(r.stack, recState{r.ctm, r.clip})
 	r.op(OpSave)
 }
 
+// Restore pops what Save pushed.
 func (r *Recorder) Restore() {
 	if n := len(r.stack); n > 0 {
 		r.ctm, r.clip = r.stack[n-1].ctm, r.stack[n-1].clip
@@ -262,18 +303,21 @@ func (r *Recorder) Restore() {
 	r.op(OpRestore)
 }
 
+// Translate moves the origin of what follows by (x, y).
 func (r *Recorder) Translate(x, y float64) {
 	r.ctm = r.ctm.Mul(TranslateBy(x, y))
 	r.op(OpTranslate)
 	r.f32(x, y)
 }
 
+// Scale scales what follows by x and y about the origin.
 func (r *Recorder) Scale(x, y float64) {
 	r.ctm = r.ctm.Mul(ScaleBy(x, y))
 	r.op(OpScale)
 	r.f32(x, y)
 }
 
+// Rotate rotates what follows by a radians about the origin.
 func (r *Recorder) Rotate(a float64) {
 	r.ctm = r.ctm.Mul(RotateBy(a))
 	r.op(OpRotate)
@@ -315,6 +359,7 @@ func (r *Recorder) BeginLayer(alpha float64) {
 	r.f32(alpha)
 }
 
+// EndLayer closes the group BeginLayer opened and draws it with its alpha.
 func (r *Recorder) EndLayer() {
 	if r.ls > 0 {
 		r.ls--
@@ -342,6 +387,7 @@ func (r *Recorder) strokeBounds(p *Path, st StrokeStyle) Rect {
 	return p.Bounds().Expand(st.Width / 2 * strokeReach(p, st))
 }
 
+// StrokePath strokes p with st in color c.
 func (r *Recorder) StrokePath(p *Path, st StrokeStyle, c Color) {
 	r.grow(r.strokeBounds(p, st))
 	r.op(OpStroke)
@@ -350,6 +396,7 @@ func (r *Recorder) StrokePath(p *Path, st StrokeStyle, c Color) {
 	r.color(c)
 }
 
+// StrokeGradient strokes p with st, painted by g.
 func (r *Recorder) StrokeGradient(p *Path, st StrokeStyle, g *Gradient) {
 	r.grow(r.strokeBounds(p, st))
 	r.op(OpStrokeGrad)
@@ -439,6 +486,7 @@ func (r *Recorder) Text(s string, x, y float64, f Font, c Color) {
 	r.color(c)
 }
 
+// DrawImage draws img stretched into the rectangle at (x, y) of size w by h.
 func (r *Recorder) DrawImage(img Image, x, y, w, h float64) {
 	r.grow(R(x, y, w, h))
 	r.res.images = append(r.res.images, img)
@@ -471,6 +519,7 @@ type Iter struct {
 	grad  Gradient
 }
 
+// Reset points the iterator at the start of p.
 func (it *Iter) Reset(p *Picture) {
 	it.p, it.pos = p, 0
 }
@@ -603,3 +652,29 @@ func (it *Iter) Next() bool {
 
 // Op returns the command Next decoded.
 func (it *Iter) Op() *Op { return &it.op }
+
+// FillRect fills rc.
+func (r *Recorder) FillRect(rc Rect, c Color) { r.FillPath(RectPath(rc), c) }
+
+// FillRRect fills rc with corners rounded by radius.
+func (r *Recorder) FillRRect(rc Rect, radius float64, c Color) {
+	r.FillPath(RoundRectPath(rc, radius), c)
+}
+
+// FillEllipse fills the ellipse that fits in rc.
+func (r *Recorder) FillEllipse(rc Rect, c Color) { r.FillPath(EllipsePath(rc), c) }
+
+// StrokeRect strokes the outline of rc, centred on its edge.
+func (r *Recorder) StrokeRect(rc Rect, st StrokeStyle, c Color) {
+	r.StrokePath(RectPath(rc), st, c)
+}
+
+// StrokeRRect strokes the outline of rc with corners rounded by radius.
+func (r *Recorder) StrokeRRect(rc Rect, radius float64, st StrokeStyle, c Color) {
+	r.StrokePath(RoundRectPath(rc, radius), st, c)
+}
+
+// StrokeEllipse strokes the outline of the ellipse that fits in rc.
+func (r *Recorder) StrokeEllipse(rc Rect, st StrokeStyle, c Color) {
+	r.StrokePath(EllipsePath(rc), st, c)
+}

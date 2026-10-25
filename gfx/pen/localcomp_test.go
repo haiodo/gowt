@@ -37,7 +37,7 @@ func TestLocalComponentOverride(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	s := gfx.NewScene(gfx.R(0, 0, 500, 500), 128)
+	s := gfx.NewScene()
 	var sc *Screen
 	s.Update(func(tx *gfx.Tx) { sc, err = d.BuildNode(tx, nil, "f") })
 	if err != nil {

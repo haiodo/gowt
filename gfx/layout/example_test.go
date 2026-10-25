@@ -10,15 +10,15 @@ import (
 // A toolbar of chips that wraps, with a badge pinned to its corner.
 func Example() {
 	chip := func(w float64) *layout.Node {
-		return &layout.Node{W: layout.Size{Kind: layout.Fixed, V: w}, H: layout.Size{Kind: layout.Fixed, V: 20}}
+		return &layout.Node{W: layout.Fixed(w), H: layout.Fixed(20)}
 	}
 	badge := &layout.Node{
 		Absolute: true, X: 90, Y: -4,
-		W: layout.Size{Kind: layout.Fixed, V: 8}, H: layout.Size{Kind: layout.Fixed, V: 8},
+		W: layout.Fixed(8), H: layout.Fixed(8),
 	}
 	bar := &layout.Node{
 		Dir: layout.Row, Wrap: true, Gap: 6, LineGap: 4, Pad: [4]float64{4, 4, 4, 4},
-		W:    layout.Size{Kind: layout.Fixed, V: 100},
+		W:    layout.Fixed(100),
 		Kids: []*layout.Node{chip(40), chip(40), chip(30), badge},
 	}
 	bar.Layout()
@@ -53,13 +53,13 @@ func ExampleNode_text() {
 		return lines * lineH
 	}
 	text := &layout.Node{
-		W:     layout.Size{Kind: layout.Fill},
+		W:     layout.Fill,
 		LeafW: func() float64 { return float64(len(content)) * charW },
 		LeafH: words,
 	}
 	card := &layout.Node{
 		Dir: layout.Column, Pad: [4]float64{8, 8, 8, 8},
-		W:    layout.Size{Kind: layout.Fixed, V: 96},
+		W:    layout.Fixed(96),
 		Kids: []*layout.Node{text},
 	}
 	card.Layout()
@@ -70,7 +70,7 @@ func ExampleNode_text() {
 // Apply moves scene nodes to the resolved positions in one transaction. The layout tree here
 // mirrors the app's tree; Tag links each layout node to its scene node.
 func ExampleApply() {
-	scene := gfx.NewScene(gfx.R(0, 0, 1000, 1000), 100)
+	scene := gfx.NewScene()
 	left, right := gfx.NewNode(1), gfx.NewNode(2)
 	scene.Update(func(tx *gfx.Tx) {
 		tx.Add(nil, left)
@@ -81,8 +81,8 @@ func ExampleApply() {
 	box := func(g *gfx.Node) *layout.Node {
 		return &layout.Node{
 			Tag: g,
-			W:   layout.Size{Kind: layout.Fixed, V: 50},
-			H:   layout.Size{Kind: layout.Fixed, V: 30},
+			W:   layout.Fixed(50),
+			H:   layout.Fixed(30),
 		}
 	}
 	root := &layout.Node{Gap: 10, Kids: []*layout.Node{box(left), box(right)}}
@@ -98,4 +98,28 @@ func ExampleApply() {
 	t := right.Transform()
 	fmt.Println(t[4], t[5])
 	// Output: 60 0
+}
+
+// Layout nodes without a scene node pass their offset on: the scene is flat here, the layout nested.
+// A nil target reads Tag as the *gfx.Node.
+func ExampleApply_nested() {
+	scene := gfx.NewScene()
+	a, b := gfx.NewNode(1), gfx.NewNode(2)
+	scene.Update(func(tx *gfx.Tx) {
+		tx.Add(nil, a)
+		tx.Add(nil, b)
+	})
+	scene.Commit()
+
+	leaf := func(g *gfx.Node) *layout.Node {
+		return &layout.Node{Tag: g, W: layout.Fixed(40), H: layout.Fixed(20)}
+	}
+	column := &layout.Node{Dir: layout.Column, Gap: 6, Kids: []*layout.Node{leaf(a), leaf(b)}}
+	root := &layout.Node{Pad: layout.All(10), Kids: []*layout.Node{{W: layout.Fixed(30), H: layout.Fixed(30)}, column}, Gap: 5}
+	root.Layout()
+
+	scene.Update(func(tx *gfx.Tx) { layout.Apply(tx, root, nil) })
+	scene.Commit()
+	fmt.Println(a.Transform()[4], a.Transform()[5], b.Transform()[4], b.Transform()[5])
+	// Output: 45 10 45 36
 }

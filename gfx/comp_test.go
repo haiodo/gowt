@@ -122,7 +122,7 @@ type rig struct {
 
 func newRig(t *testing.T, o Options) *rig {
 	t.Helper()
-	g := &rig{t: t, s: NewScene(R(-5000, -5000, 20000, 20000), 256), r: &fakeRenderer{}, h: &fakeHost{}}
+	g := &rig{t: t, s: NewScene(), r: &fakeRenderer{}, h: &fakeHost{}}
 	if o.Workers == 0 {
 		o.Workers = 2
 	}

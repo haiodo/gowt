@@ -2,11 +2,11 @@ package layout
 
 import "testing"
 
-func box(w, h float64) *Node { return &Node{W: Size{Fixed, w}, H: Size{Fixed, h}} }
+func box(w, h float64) *Node { return &Node{W: Fixed(w), H: Fixed(h)} }
 
 func TestColumnHugAndFill(t *testing.T) {
 	a, b := box(50, 10), box(20, 30)
-	fill := &Node{W: Size{Fill, 0}, H: Size{Fixed, 5}}
+	fill := &Node{W: Fill, H: Fixed(5)}
 	root := &Node{Dir: Column, Gap: 4, Pad: [4]float64{2, 3, 2, 3}, Kids: []*Node{a, b, fill}}
 	root.Layout()
 	// width hugs the widest child plus padding, height is the sum of children, gaps and padding
@@ -23,9 +23,9 @@ func TestColumnHugAndFill(t *testing.T) {
 
 func TestRowFillShareJustifyAlign(t *testing.T) {
 	a := box(20, 10)
-	f1 := &Node{W: Size{Fill, 0}, H: Size{Fixed, 6}}
-	f2 := &Node{W: Size{Fill, 0}, H: Size{Fixed, 6}}
-	root := &Node{W: Size{Fixed, 100}, H: Size{Fixed, 20}, Gap: 10, Align: Center, Kids: []*Node{a, f1, f2}}
+	f1 := &Node{W: Fill, H: Fixed(6)}
+	f2 := &Node{W: Fill, H: Fixed(6)}
+	root := &Node{W: Fixed(100), H: Fixed(20), Gap: 10, Align: Center, Kids: []*Node{a, f1, f2}}
 	root.Layout()
 	if f1.RW != 30 || f2.RW != 30 { // (100 - 20 - 2*10) / 2
 		t.Errorf("fill widths %v %v", f1.RW, f2.RW)
@@ -38,13 +38,13 @@ func TestRowFillShareJustifyAlign(t *testing.T) {
 	}
 
 	x, y := box(10, 10), box(10, 10)
-	sb := &Node{W: Size{Fixed, 100}, H: Size{Fixed, 10}, Justify: SpaceBetween, Kids: []*Node{x, y}}
+	sb := &Node{W: Fixed(100), H: Fixed(10), Justify: SpaceBetween, Kids: []*Node{x, y}}
 	sb.Layout()
 	if y.RX != 90 {
 		t.Errorf("space between puts the last child at %v", y.RX)
 	}
 	c := box(10, 10)
-	ce := &Node{W: Size{Fixed, 100}, H: Size{Fixed, 10}, Justify: Center, Kids: []*Node{c}}
+	ce := &Node{W: Fixed(100), H: Fixed(10), Justify: Center, Kids: []*Node{c}}
 	ce.Layout()
 	if c.RX != 45 {
 		t.Errorf("centered at %v", c.RX)
@@ -53,8 +53,8 @@ func TestRowFillShareJustifyAlign(t *testing.T) {
 
 func TestLeafWrapsAtAssignedWidth(t *testing.T) {
 	var at float64
-	text := &Node{W: Size{Fill, 0}, LeafW: func() float64 { return 200 }, LeafH: func(w float64) float64 { at = w; return 12 * float64(int(200/w)+1) }}
-	root := &Node{Dir: Column, W: Size{Fixed, 100}, Kids: []*Node{text, box(10, 5)}}
+	text := &Node{W: Fill, LeafW: func() float64 { return 200 }, LeafH: func(w float64) float64 { at = w; return 12 * float64(int(200/w)+1) }}
+	root := &Node{Dir: Column, W: Fixed(100), Kids: []*Node{text, box(10, 5)}}
 	root.Layout()
 	if at != 100 || text.RH != 36 {
 		t.Errorf("text laid out at %v, height %v", at, text.RH)

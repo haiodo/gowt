@@ -102,6 +102,7 @@ func (v *View) frame(fi gfx.FrameInfo) {
 // Canvas is the underlying gowt canvas: mouse listeners, focus, size.
 func (v *View) Canvas() *g.CanvasView { return v.cv }
 
+// Scene returns the scene the view shows.
 func (v *View) Scene() *gfx.Scene { return v.scene }
 
 // Compositor gives the camera, the lifting of nodes for drags, sprites and statistics.
@@ -116,6 +117,15 @@ func (v *View) HitTest(x, y int) *gfx.Node {
 func modsOfMask(m int32) g.Mods {
 	return g.Mods{Ctrl: m&swt.CTRL != 0, Shift: m&swt.SHIFT != 0, Alt: m&swt.ALT != 0, Cmd: m&swt.COMMAND != 0}
 }
+
+// Drag moves nodes with the pointer until the button is released. Call it from the PointerDown
+// that starts the drag, with the nodes to move (for example p.Node). The nodes are lifted into the
+// active layer and landed at the end, so the tiles under them are not redrawn each move. The
+// app's OnPointer callback still gets every event, after the nodes moved: update what depends on
+// them there. Releasing outside the view drops the nodes at the nearest visible point; Escape or
+// a lost focus puts them back (Aborted). Positions are read from the last committed state, so call
+// it from the UI goroutine.
+func (v *View) Drag(p *Pointer, nodes ...*gfx.Node) { v.r.beginDrag(v.comp, v.scene, p, nodes) }
 
 // OnPointer sets f to run for every press, move, release and cancel, with the scene point and the
 // node under the pointer. While a button is held the moves and the release keep coming outside

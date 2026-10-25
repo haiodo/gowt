@@ -2,9 +2,10 @@
 // Pictures, a compositor that shows it from cached tiles, and the geometry under both.
 //
 // The package is pure Go and builds on every OS. Rasterizers and layer hosts live in sub-packages:
-// gfx/cg (CoreGraphics, CoreText and CALayer, macOS only), gfx/view (the gowt widget) and gfx/synth
-// (a synthetic document for benchmarks). The API may change without notice; docs/gfx.md has the
-// overview.
+// gfx/cg (macOS), gfx/cairo (Linux), gfx/d2d (Windows), gfx/view (the gowt widget), gfx/offscreen
+// (PNG without a window), gfx/layout (auto-layout) and gfx/pen (.pen designs). Most programs need
+// only gfx, gfx/view or gfx/offscreen. The API may change without notice; docs/gfx.md has a quick
+// start and the overview.
 //
 //   - Path, Measure: curves, exact bounds, flattening, length, point and tangent by length,
 //     nearest point, split.

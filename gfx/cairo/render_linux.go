@@ -34,6 +34,11 @@ type Renderer struct {
 	images  sync.Map // *gfx.Raster -> *Image
 }
 
+// The measurer of recordings made before any renderer exists (see gfx.DefaultMeasurer).
+func init() {
+	gfx.DefaultMeasurer = gfx.LazyMeasurer(func() (gfx.TextMeasurer, error) { return NewRenderer(Options{}) })
+}
+
 // NewRenderer loads cairo and Pango. It fails when the libraries are missing; it needs no display.
 func NewRenderer(o Options) (*Renderer, error) {
 	if err := bind(); err != nil {
@@ -53,9 +58,6 @@ func NewRenderer(o Options) (*Renderer, error) {
 	fontMaps[r.fm] = struct{}{}
 	fontsMu.Unlock()
 	r.mctx = r.newContext()
-	if _, ok := gfx.DefaultMeasurer.(gfx.EstimateText); ok {
-		gfx.DefaultMeasurer = r // recordings from now on get Pango bounds
-	}
 	return r, nil
 }
 
@@ -66,6 +68,7 @@ type Image struct {
 	wpx, hpx int
 }
 
+// Size returns the size of the image in points.
 func (i *Image) Size() (float64, float64) { return i.w, i.h }
 
 // Release drops the surface reference of the image.
@@ -103,6 +106,7 @@ func (r *Renderer) NewTarget(wpx, hpx int) gfx.Target {
 	return t
 }
 
+// Close frees the surface.
 func (t *Target) Close() {
 	if t.cr != 0 {
 		destroy(t.cr)
@@ -111,6 +115,7 @@ func (t *Target) Close() {
 	}
 }
 
+// Size returns the size in pixels.
 func (t *Target) Size() (int, int) { return t.w, t.h }
 
 // Pixels returns the bitmap memory (BGRA, premultiplied, rows top to bottom, 4*W bytes each); it is

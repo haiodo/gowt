@@ -2,6 +2,7 @@ package gfx
 
 import (
 	"errors"
+	"fmt"
 	"math"
 )
 
@@ -55,20 +56,37 @@ func Release(img Image) {
 // noArea is true for the zero Rect and for EmptyRect: callers pass either to mean "the default area".
 func noArea(r Rect) bool { return r.Empty() || r == Rect{} }
 
-// RenderSubtree draws the subtree of root, with the clips of its ancestors, into a Raster.
-// area is the scene rectangle to draw, or an empty Rect for the subtree bounds; scale is device
-// pixels per scene unit. It needs no window.
+// maxRender is the largest side of a rendered image in device pixels.
+const maxRender = 1 << 15
+
+// pixelSize is the device size of an area of scene units at scale, or an error that names the cause.
+func pixelSize(area Rect, scale float64) (w, h int, err error) {
+	fw, fh := math.Ceil(area.W()*scale), math.Ceil(area.H()*scale)
+	if !(scale > 0) || !(fw >= 1 && fw <= maxRender && fh >= 1 && fh <= maxRender) {
+		return 0, 0, fmt.Errorf("gfx: cannot render %.0fx%.0f scene units at scale %v: each side must come to 1..%d pixels", area.W(), area.H(), scale, maxRender)
+	}
+	return int(fw), int(fh), nil
+}
+
+// RenderSubtree draws the subtree of root, with the clips of its ancestors, into a Raster; a nil
+// root draws the whole scene. area is the scene rectangle to draw, or the zero Rect for the bounds
+// of the subtree; scale is device pixels per scene unit. bg is the background and is transparent
+// when it is the zero Color; use White for an opaque page. It commits the scene's pending
+// transactions first and needs no window.
 func RenderSubtree(r Renderer, s *Scene, root *Node, area Rect, scale float64, bg Color) (*Raster, error) {
 	s.Commit()
+	if root == nil {
+		root = s.Root()
+	}
 	if noArea(area) {
 		s.Read(func() { area = root.SubtreeBounds() })
 	}
 	if noArea(area) {
-		return nil, errors.New("gfx: nothing to render")
+		return nil, fmt.Errorf("gfx: nothing to render: node %d and its subtree draw nothing (no picture, or clipped away)", root.ID())
 	}
-	w, h := int(math.Ceil(area.W()*scale)), int(math.Ceil(area.H()*scale))
-	if w <= 0 || h <= 0 || w > 1<<15 || h > 1<<15 {
-		return nil, errors.New("gfx: render size out of range")
+	w, h, err := pixelSize(area, scale)
+	if err != nil {
+		return nil, err
 	}
 	t := r.NewTarget(w, h)
 	defer t.Close()
@@ -82,11 +100,11 @@ func RenderSubtree(r Renderer, s *Scene, root *Node, area Rect, scale float64, b
 // RenderPicture draws one picture at the given scale into a Raster of its bounds.
 func RenderPicture(r Renderer, p *Picture, scale float64, bg Color) (*Raster, error) {
 	if p.Bounds.Empty() {
-		return nil, errors.New("gfx: nothing to render")
+		return nil, errors.New("gfx: nothing to render: the picture draws nothing")
 	}
-	w, h := int(math.Ceil(p.Bounds.W()*scale)), int(math.Ceil(p.Bounds.H()*scale))
-	if w <= 0 || h <= 0 || w > 1<<15 || h > 1<<15 {
-		return nil, errors.New("gfx: render size out of range")
+	w, h, err := pixelSize(p.Bounds, scale)
+	if err != nil {
+		return nil, err
 	}
 	t := r.NewTarget(w, h)
 	defer t.Close()

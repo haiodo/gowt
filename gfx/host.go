@@ -5,6 +5,8 @@ import "time"
 // Group orders the layers a Host holds: tiles lie under the active layer, which lies under the overlay.
 type Group uint8
 
+// The groups of layers a Host draws, from the bottom: static tiles, the active layer of dragged
+// nodes, the overlay of sprites.
 const (
 	GroupTiles Group = iota
 	GroupActive

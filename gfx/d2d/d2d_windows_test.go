@@ -604,7 +604,7 @@ func TestConcurrentTargets(t *testing.T) {
 }
 
 func TestRenderSubtree(t *testing.T) {
-	scene := gfx.NewScene(gfx.R(-100, -100, 1000, 1000), 64)
+	scene := gfx.NewScene()
 	frame, box := gfx.NewNode(1), gfx.NewNode(2)
 	scene.Update(func(tx *gfx.Tx) {
 		tx.Add(nil, frame)

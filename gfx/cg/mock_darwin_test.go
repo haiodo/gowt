@@ -62,7 +62,7 @@ func canvasPen(tb testing.TB, r *Renderer, path string, n int) *mockCanvas {
 	cols, rows := synth.Grid(n, synth.ScreenW, synth.ScreenH)
 	px, py := synth.ScreenW+synth.ScreenGap, synth.ScreenH+synth.ScreenGap
 	c := &mockCanvas{cols: cols, rows: rows}
-	c.scene = gfx.NewScene(gfx.R(-synth.ScreenGap, -synth.ScreenGap, float64(cols)*px+synth.ScreenGap, float64(rows)*py+synth.ScreenGap), 256)
+	c.scene = gfx.NewScene()
 	var m0, m1 runtime.MemStats
 	runtime.GC()
 	runtime.ReadMemStats(&m0)
@@ -466,7 +466,7 @@ func TestPenRender(t *testing.T) {
 	}
 	t.Logf("system font fallback: %v", d.FontFallback())
 	for _, in := range d.Screens() {
-		s := gfx.NewScene(gfx.R(-100, -100, in.W+200, in.H+200), 256)
+		s := gfx.NewScene()
 		var sc *pen.Screen
 		s.Update(func(tx *gfx.Tx) { sc, err = d.Build(tx, nil, in.Index) })
 		if err != nil {

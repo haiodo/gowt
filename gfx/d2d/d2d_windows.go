@@ -125,6 +125,11 @@ type Renderer struct {
 
 var _ gfx.Renderer = (*Renderer)(nil)
 
+// The measurer of recordings made before any renderer exists (see gfx.DefaultMeasurer).
+func init() {
+	gfx.DefaultMeasurer = gfx.LazyMeasurer(func() (gfx.TextMeasurer, error) { return NewRenderer(Options{}) })
+}
+
 // NewRenderer creates the device. Output is the same whatever the machine, within one machine: all
 // drawing goes through the WARP software rasterizer unless o.Hardware is set.
 func NewRenderer(o Options) (*Renderer, error) {
@@ -178,9 +183,6 @@ func NewRenderer(o Options) (*Renderer, error) {
 	if o.FontDir != "" {
 		_, _ = r.RegisterFonts(o.FontDir) // a missing directory leaves the system fonts
 	}
-	if _, ok := gfx.DefaultMeasurer.(gfx.EstimateText); ok {
-		gfx.DefaultMeasurer = r // recordings from now on get DirectWrite bounds
-	}
 	return r, nil
 }
 
@@ -206,9 +208,15 @@ func (r *Renderer) Software() bool { return r.warp }
 
 // Factory, Device, D3DDevice and DXGIDevice are the COM objects behind the renderer, for a Host that
 // shares them; the renderer keeps the reference.
-func (r *Renderer) Factory() uintptr    { return r.factory }
-func (r *Renderer) Device() uintptr     { return r.dev }
-func (r *Renderer) D3DDevice() uintptr  { return r.d3d }
+func (r *Renderer) Factory() uintptr { return r.factory }
+
+// Device returns the ID2D1Device5, for a Host.
+func (r *Renderer) Device() uintptr { return r.dev }
+
+// D3DDevice returns the ID3D11Device, for a Host.
+func (r *Renderer) D3DDevice() uintptr { return r.d3d }
+
+// DXGIDevice returns the IDXGIDevice, for a Host.
 func (r *Renderer) DXGIDevice() uintptr { return r.dxgi }
 
 // NewDeviceContext creates a device context on the renderer's device; the caller releases it.
@@ -226,11 +234,13 @@ type Image struct {
 	w, h float64
 }
 
+// Size returns the size of the image in points.
 func (i *Image) Size() (float64, float64) { return i.w, i.h }
 
 // Bitmap is the ID2D1Bitmap1, for a Host to draw.
 func (i *Image) Bitmap() uintptr { return i.bmp }
 
+// Release frees the bitmap.
 func (i *Image) Release() {
 	if i != nil && i.bmp != 0 {
 		release(i.bmp)
@@ -300,6 +310,7 @@ func (r *Renderer) newTarget(wpx, hpx int) (*Target, error) {
 	return t, nil
 }
 
+// Close frees the target.
 func (t *Target) Close() {
 	release(t.staging)
 	release(t.brush)
@@ -311,6 +322,7 @@ func (t *Target) Close() {
 	t.staging, t.brush, t.bmp, t.dc = 0, 0, 0, 0
 }
 
+// Size returns the size in pixels.
 func (t *Target) Size() (int, int) { return t.w, t.h }
 
 // Begin clears the target to bg and maps the scene point origin to the top left pixel at scale.

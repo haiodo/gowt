@@ -287,7 +287,7 @@ func TestSkeletonUnderLOD(t *testing.T) {
 func TestRenderSubtreePNGDeterministic(t *testing.T) {
 	render := func() [32]byte {
 		r := newRenderer(t, Options{})
-		s := gfx.NewScene(gfx.R(-1000, -1000, 2000, 2000), 256)
+		s := gfx.NewScene()
 		n := gfx.NewNode(1)
 		rc := gfx.NewRecorderWith(r)
 		rc.FillShadowRRect(10, 10, 120, 60, 8, gfx.Color{R: 0.9, G: 0.95, B: 1, A: 1}, gfx.Shadow{DY: 3, Blur: 8, Color: gfx.Color{A: 0.4}})

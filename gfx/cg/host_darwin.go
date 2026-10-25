@@ -119,13 +119,16 @@ func (h *Host) Close() {
 	h.groups = [3]uintptr{}
 }
 
+// Begin starts the layer changes of one frame.
 func (h *Host) Begin() {
 	send0(clsTransaction, sels.begin)
 	msgInt(clsTransaction, sels.setDisableActions, 1)
 }
 
+// Commit shows the layer changes of the frame together.
 func (h *Host) Commit() { send0(clsTransaction, sels.commit) }
 
+// NewLayer adds a CALayer in group g.
 func (h *Host) NewLayer(g gfx.Group) gfx.Layer {
 	l := send0(send0(clsLayer, sels.alloc), sels.init)
 	msgF64(l, sels.setContentsScale, h.scale)

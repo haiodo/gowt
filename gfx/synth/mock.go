@@ -48,7 +48,7 @@ func NewMock(n int, seed int64) *Mock {
 	cols, rows := Grid(n, ScreenW, ScreenH)
 	px, py := ScreenW+ScreenGap, ScreenH+ScreenGap
 	m := &Mock{Cols: cols, Rows: rows}
-	m.Scene = gfx.NewScene(gfx.R(-ScreenGap, -ScreenGap, float64(cols)*px+ScreenGap, float64(rows)*py+ScreenGap), 256)
+	m.Scene = gfx.NewScene()
 	ids := 0
 	m.Scene.Update(func(tx *gfx.Tx) {
 		for i := 0; i < n; i++ {

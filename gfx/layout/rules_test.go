@@ -2,8 +2,8 @@ package layout
 
 import "testing"
 
-func fixed(v float64) Size { return Size{Fixed, v} }
-func fill() Size           { return Size{Fill, 0} }
+func fixed(v float64) Size { return Fixed(v) }
+func fill() Size           { return Fill }
 
 type rect struct{ x, y, w, h float64 }
 

@@ -11,6 +11,7 @@ import (
 	"github.com/haiodo/gowt/gfx"
 )
 
+// CellW and CellH are the pitch of the box grid.
 const (
 	CellW = 200.0 // grid pitch of the box layout
 	CellH = 130.0
@@ -18,6 +19,7 @@ const (
 	lodBelow = 24 // device pixels
 )
 
+// Box is a rounded rectangle node with its position and the connectors that touch it.
 type Box struct {
 	Node  *gfx.Node
 	X, Y  float64
@@ -25,6 +27,7 @@ type Box struct {
 	Conns []*Conn
 }
 
+// Conn is a connector node between two boxes.
 type Conn struct {
 	Node   *gfx.Node
 	Shape  *gfx.Path
@@ -33,6 +36,7 @@ type Conn struct {
 	Dashed bool
 }
 
+// Doc is a synthetic document: boxes on a grid and the connectors added with Link.
 type Doc struct {
 	Scene *gfx.Scene
 	Boxes []*Box
@@ -57,7 +61,7 @@ func New(n int, seed int64) *Doc {
 	cols := int(math.Ceil(math.Sqrt(float64(n) * 1.6)))
 	rows := (n + cols - 1) / cols
 	d := &Doc{Cols: cols, Rows: rows}
-	d.Scene = gfx.NewScene(gfx.R(-100, -100, float64(cols)*CellW+200, float64(rows)*CellH+200), 256)
+	d.Scene = gfx.NewScene()
 	for i := 0; i < n; i++ {
 		w, h := 120+rng.Float64()*40, 56+rng.Float64()*24
 		x := float64(i%cols)*CellW + rng.Float64()*20

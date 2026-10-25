@@ -169,7 +169,7 @@ func TestMeasureTextAndRenderSubtree(t *testing.T) {
 		t.Errorf("text bounds %v for metrics %+v", b, big)
 	}
 
-	sc := gfx.NewScene(gfx.R(-100, -100, 1000, 1000), 128)
+	sc := gfx.NewScene()
 	frame, kid := gfx.NewNode(1), gfx.NewNode(2)
 	sc.Update(func(tx *gfx.Tx) {
 		tx.Add(nil, frame)

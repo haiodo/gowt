@@ -56,6 +56,7 @@ func initInput() {
 // InputKind tells which native event an InputEvent came from.
 type InputKind uint8
 
+// The kinds of native input event.
 const (
 	InputScroll InputKind = iota
 	InputMagnify

@@ -148,6 +148,7 @@ func (h *Host) Invalidate() { h.dirty = true }
 // Begin and Commit bracket one frame; Commit draws and presents when a layer changed.
 func (h *Host) Begin() {}
 
+// Commit draws the layers again and presents, when one changed.
 func (h *Host) Commit() {
 	if !h.dirty || h.target == 0 {
 		return
@@ -203,6 +204,7 @@ type hostLayer struct {
 	hidden  bool
 }
 
+// NewLayer adds a layer in group g.
 func (h *Host) NewLayer(g gfx.Group) gfx.Layer {
 	l := &hostLayer{h: h, g: g, m: gfx.Identity(), opacity: 1}
 	h.groups[g] = append(h.groups[g], l)
@@ -291,6 +293,7 @@ func NewFrameClock(tick func(gfx.FrameInfo)) (*FrameClock, error) {
 	return &FrameClock{tick: tick, stop: make(chan struct{}), done: make(chan struct{})}, nil
 }
 
+// Start begins the frame loop.
 func (c *FrameClock) Start() error {
 	if hr, _, _ := procDwmFlush.Call(); failed(hr) {
 		return hrErr("DwmFlush", hr)

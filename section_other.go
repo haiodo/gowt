@@ -4,8 +4,11 @@ package gowt
 
 import "github.com/haiodo/gowt/swt"
 
-// cardColor is 6% of the way from the window colour toward the text colour.
+// cardColor is 6% of the way from the window colour toward the text colour; Windows 11 has its own card fill.
 func cardColor(d *swt.Display) *swt.Color {
+	if c := fluentCard(d); c != nil {
+		return c
+	}
 	bg, fg := d.GetSystemColor(swt.COLOR_WIDGET_BACKGROUND), d.GetSystemColor(swt.COLOR_WIDGET_FOREGROUND)
 	return swt.NewColorRedGreenBlue(mix(bg.GetRed(), fg.GetRed()), mix(bg.GetGreen(), fg.GetGreen()), mix(bg.GetBlue(), fg.GetBlue()))
 }

@@ -40,7 +40,77 @@ func fluentBorder(c *swt.Control) {
 	}
 }
 
+// fluentCard is the colour of a Section card.
+func fluentCard(d *swt.Display) *swt.Color {
+	c := fluent.Current(d).Card()
+	return swt.NewColorRedGreenBlue(int32(c.R), int32(c.G), int32(c.B))
+}
+
 func fluentTable(t *swt.Table) { fluent.Table(t) }
 
-// fluentShell hides focus rectangles until the keyboard is used.
-func fluentShell(s *swt.Shell) { fluent.Shell(s) }
+// rowHeight is Spacing.RowHeight once App.SetDensity chose a density, else 0 for the native height.
+func rowHeight() int {
+	if ChosenDensity().Legacy() {
+		return 0
+	}
+	return Spacing.RowHeight
+}
+
+func fluentList(l *swt.List) { fluent.List(l, rowHeight()) }
+
+func fluentTree(t *swt.Tree) { fluent.Tree(t, rowHeight()) }
+
+// fluentShell hides focus rectangles until the keyboard is used and sets the Fluent window background.
+func fluentShell(s *swt.Shell) {
+	fluent.Shell(s)
+	fluent.Background(&s.Composite)
+}
+
+// fluentScroll gives the content of a Scroll the window background: a ScrolledComposite does not pass
+// the inherited one on to its content.
+func fluentScroll(body *swt.Composite) { fluent.Background(body) }
+
+// controlHeight gives a push button, drop-down Combo, Spinner and date field the height of
+// Spacing.ControlHeight, like the Text; without App.SetDensity the heights stay the native ones.
+func controlHeight(opts []Option) []Option {
+	return append(opts[:len(opts):len(opts)], lateHook(func(w Widget) error {
+		if ChosenDensity().Legacy() {
+			return nil
+		}
+		c := w.control()
+		switch v := w.(type) {
+		case *ComboView:
+			if v.c.GetStyle()&swt.DROP_DOWN != 0 {
+				fluent.ComboHeight(v.c, Spacing.ControlHeight)
+			}
+			return nil
+		case *ButtonView:
+			if v.b.GetStyle()&swt.PUSH == 0 {
+				return nil
+			}
+		case *SpinnerView:
+			fluent.SpinnerCenter(v.s)
+		case *DateTimeView:
+			if v.d.GetStyle()&swt.CALENDAR != 0 {
+				return nil
+			}
+		}
+		if _, h, ok := sizeHints(c); ok && *h == swt.DEFAULT {
+			*h = int32(max(Spacing.ControlHeight, int(preferred(c).Y)))
+		}
+		return nil
+	}))
+}
+
+// fluentRange gives Progress and Scale the Windows 11 bar and slider.
+func fluentRange(opts []Option) []Option {
+	return append(opts[:len(opts):len(opts)], lateHook(func(w Widget) error {
+		switch v := w.(type) {
+		case *ProgressView:
+			fluent.Progress(v.b)
+		case *ScaleView:
+			fluent.Scale(v.s)
+		}
+		return nil
+	}))
+}

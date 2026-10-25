@@ -21,6 +21,7 @@ func subclassProc(hwnd, msg, wp, lp, _, _ uintptr) (ret uintptr) {
 	def := func() uintptr { return call(pDefSubclassProc, hwnd, msg, wp, lp) }
 	if msg == wmNCDestroy {
 		delete(handlers, hwnd)
+		delete(flat, hwnd)
 		call(pRemoveWindowSubclass, hwnd, subProc, subID)
 		return def()
 	}
@@ -38,6 +39,22 @@ func subclassProc(hwnd, msg, wp, lp, _, _ uintptr) (ret uintptr) {
 		return r
 	}
 	return def()
+}
+
+// chain puts h in front of the handler of hwnd: it sees a message first, and what it leaves goes to
+// the earlier handler.
+func chain(hwnd uintptr, h handler) {
+	prev := handlers[hwnd]
+	if prev == nil {
+		attach(hwnd, h)
+		return
+	}
+	handlers[hwnd] = func(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, bool) {
+		if r, ok := h(hwnd, msg, wp, lp, def); ok {
+			return r, true
+		}
+		return prev(hwnd, msg, wp, lp, def)
+	}
 }
 
 // attach makes h the handler of hwnd, replacing an earlier one.

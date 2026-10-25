@@ -89,6 +89,31 @@ func Current(d *swt.Display) Palette {
 	return p
 }
 
+// Layer is the colour of the window background in WinUI 3: F3F3F3 light, 202020 dark.
+func (p Palette) Layer() RGB {
+	if p.Dark {
+		return RGB{0x20, 0x20, 0x20}
+	}
+	return RGB{0xF3, 0xF3, 0xF3}
+}
+
+// Card is the fill of a card on the window background: white at 70% in the light theme, white at 5% in
+// the dark one (CardBackgroundFillColorDefault).
+func (p Palette) Card() RGB {
+	if p.Dark {
+		return RGB{255, 255, 255}.over(0.05, p.Layer())
+	}
+	return RGB{255, 255, 255}.over(0.70, p.Layer())
+}
+
+// Background gives the window the Fluent background; labels, groups and tab pages inherit it, inputs
+// and tables keep their own. Windows 11 has no system colour for it, GetSysColor still answers F0F0F0.
+func Background(c *swt.Composite) {
+	l := Current(c.GetDisplay()).Layer()
+	c.SetBackgroundWithColor(swt.NewColorRedGreenBlue(int32(l.R), int32(l.G), int32(l.B)))
+	c.SetBackgroundMode(swt.INHERIT_DEFAULT)
+}
+
 // Stroke is the hairline of a surface: 12% of the tint over bg.
 func (p Palette) Stroke(bg RGB) RGB { return p.Black.over(0.12, bg) }
 
@@ -99,7 +124,7 @@ func (p Palette) StrongStroke(bg RGB) RGB { return p.Black.over(0.45, bg) }
 func parentBackground(c *swt.Control) RGB {
 	p := c.GetParent()
 	if p == nil {
-		return RGB{0xF3, 0xF3, 0xF3}
+		return Current(c.GetDisplay()).Layer()
 	}
 	col := p.GetBackground()
 	rgb := col.GetRGB()

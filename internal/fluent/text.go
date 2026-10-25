@@ -21,10 +21,10 @@ type textFrame struct {
 var frames = map[uintptr]*textFrame{}
 
 // Text gives t the WinUI 3 TextBox look: 4 px radius, hairline, strong bottom edge, accent line while
-// focused. The native border goes; the frame is painted in the non-client area. Search fields keep SWT's look.
+// focused. The native border goes; the frame is painted in the non-client area.
 func Text(t *swt.Text) {
 	h := uintptr(t.Handle)
-	if h == 0 || t.GetStyle()&swt.SEARCH != 0 || frames[h] != nil {
+	if h == 0 || frames[h] != nil {
 		return
 	}
 	f := &textFrame{t: t, multi: t.GetStyle()&swt.MULTI != 0}
@@ -195,4 +195,27 @@ func (f *textFrame) paintInSurface(hwnd uintptr) {
 	ox, oy := org.x-wr.left, org.y-wr.top
 	call(pExcludeClipRect, hdc, uintptr(ox), uintptr(oy), uintptr(ox+cr.right), uintptr(oy+cr.bottom))
 	f.surf.draw(hdc, w, h, wr.left-so.x, wr.top-so.y, sr.right, sr.bottom)
+}
+
+const (
+	cbSetItemHeight = 0x153
+	cbGetItemHeight = 0x154
+)
+
+// ComboHeight sizes the closed combo through its selection field: SWT spends the layout height on the
+// drop-down list. The themed box is 6 px taller than the field; a font change resets the field, so a
+// Resize listener sets it again.
+func ComboHeight(c *swt.Combo, dips int) {
+	h := uintptr(c.Handle)
+	if h == 0 {
+		return
+	}
+	apply := func() {
+		want := uintptr(px(float64(dips), dpiOf(h)) - 6)
+		if call(pSendMessage, h, cbGetItemHeight, ^uintptr(0), 0) != want {
+			call(pSendMessage, h, cbSetItemHeight, ^uintptr(0), want)
+		}
+	}
+	apply()
+	c.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { apply() }))
 }

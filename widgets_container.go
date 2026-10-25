@@ -210,6 +210,7 @@ func Scroll(opts ...Option) Option {
 		gap, pad := spacingOf(opts, 0)
 		body.SetLayout(newBox(false, gap, pad))
 		scrollOverlay(s)
+		fluentScroll(body)
 		s.SetContent(body)
 		s.SetExpandHorizontal(true)
 		s.SetExpandVertical(true)

@@ -4,6 +4,7 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/internal/fluent"
 	"github.com/haiodo/gowt/internal/win32"
 	"github.com/haiodo/gowt/swt"
@@ -108,7 +109,28 @@ func setGlassGroup(*swt.Composite, float64) {}
 
 func sidebarInset() int32 { return 0 }
 
-func setSidebarChrome(*swt.Shell, *swt.Composite, *swt.Control) {}
+// sidebarPadding is the side margin of the sidebar children, in points: the pill of a row starts 8 from
+// the pane edge, as the item margin of a WinUI NavigationView does.
+func sidebarPadding() int32 { return 8 }
+
+// setSidebarChrome gives the Tables, Trees and Lists of the sidebar the pill and the insets of a sidebar
+// row. A list added to the sidebar after SetSidebar keeps the look of a content list.
+func setSidebarChrome(_ *swt.Shell, sb *swt.Composite, _ *swt.Control) {
+	row := 0
+	if !gowt.ChosenDensity().Legacy() {
+		row = gowt.Spacing.SidebarRow
+	}
+	eachList(sb, func(c any) {
+		switch v := c.(type) {
+		case *swt.Table:
+			fluent.SidebarTable(v, row)
+		case *swt.Tree:
+			fluent.SidebarTree(v, row)
+		case *swt.List:
+			fluent.SidebarList(v)
+		}
+	})
+}
 
 func syncSidebar(*swt.Shell, *swt.Composite, [4]int32, bool) {}
 

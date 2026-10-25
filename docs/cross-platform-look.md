@@ -54,7 +54,7 @@ Values under `DensityNative`, as printed on Windows 11 arm64 and on Ubuntu 26.04
 | Gap SM / MD / LG | 8 / 12 / 16 | 8 / 12 / 16 | 8 / 12 / 20 |
 | PageMargin | 16 | 16 | 20 |
 | ControlHeight | 28 | 32 | 32 |
-| RowHeight | 32 | 36 | 36 |
+| RowHeight | 28 | 32 | 32 |
 | SidebarRow | 28 | 32 | 32 |
 | SidebarWidth | 220 | 236 | 248 |
 

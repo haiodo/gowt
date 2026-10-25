@@ -138,7 +138,7 @@ A container has `Add(children...)` (create more children at its end, also after 
 
 ```go
 gowt.Button("Save", gowt.Primary())                // default button, system accent look
-gowt.Button("Delete", gowt.Destructive())          // red on GTK and Windows, hasDestructiveAction on macOS
+gowt.Button("Delete", gowt.Destructive())          // red on GTK, standard on Windows, hasDestructiveAction on macOS
 t.Column("Subject", gowt.Scaled(200), gowt.Fit())  // Table or Tree column that follows its content
 gowt.StyledText(gowt.Scrollbars(), gowt.LineNumbers())
 gowt.Canvas(func(g *gowt.GC) { w, h := g.Size(); chart(g, w, h) }, gowt.Grow())

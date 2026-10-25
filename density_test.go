@@ -46,9 +46,9 @@ func TestSpacingNative(t *testing.T) {
 		factor                                        float64
 		gap, margin, control, row, sideRow, sideWidth int
 	}{
-		{macSys, 1, 8, 16, 28, 32, 28, 220},
-		{winSys, 14.0 / 13, 8, 16, 32, 36, 32, 236},
-		{linSys, linuxBody / 13, 8, 20, 32, 36, 32, 248},
+		{macSys, 1, 8, 16, 28, 28, 28, 220},
+		{winSys, 14.0 / 13, 8, 16, 32, 32, 32, 236},
+		{linSys, linuxBody / 13, 8, 20, 32, 32, 32, 248},
 	} {
 		_, s, _, f := resolveTokens(c.sys, DensityNative)
 		if !near(f, c.factor) || s.SM != c.gap || s.PageMargin != c.margin || s.ControlHeight != c.control ||
@@ -66,7 +66,7 @@ func TestDensitySameIsOneLayout(t *testing.T) {
 			t.Errorf("%s: %+v body %v factor %v", sys.goos, s, body, f)
 		}
 	}
-	want := SpacingScale{XS: 4, SM: 8, MD: 12, LG: 16, XL: 32, PageMargin: 16, RowHeight: 32,
+	want := SpacingScale{XS: 4, SM: 8, MD: 12, LG: 16, XL: 32, PageMargin: 16, RowHeight: 28,
 		ControlHeight: 28, SidebarRow: 28, SidebarWidth: 220, InspectorWidth: 260}
 	if ms != want {
 		t.Errorf("base: %+v", ms)

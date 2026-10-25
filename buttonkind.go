@@ -20,7 +20,7 @@ func Primary() Option {
 }
 
 // Destructive marks a push Button whose action deletes or discards: macOS hasDestructiveAction (red),
-// GTK "destructive-action" (red fill), Windows the WinUI critical fill. With Primary it is also the
+// GTK "destructive-action" (red fill), Windows a standard button. With Primary it is also the
 // default button, as for "Delete" in a confirmation.
 func Destructive() Option {
 	return hook(func(w Widget) error {

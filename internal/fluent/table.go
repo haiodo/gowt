@@ -11,7 +11,18 @@ import (
 // Table hooks EraseItem so SWT paints the Explorer selection once per row, not per cell (the seams
 // between columns), drops the dotted focus rectangle until a key is used, and draws images of right
 // and centre columns aligned.
-func Table(t *swt.Table) {
+// rowDips is the row height, 0 keeps the native one.
+func Table(t *swt.Table, rowDips int) {
+	if h := uintptr(t.Handle); h != 0 && rowDips > 0 {
+		// A column, a font or an image list change resets the row height, so a Resize listener sets it again.
+		apply := func() {
+			if want := px(float64(rowDips), dpiOf(h)); t.GetItemHeightInPixels() != want && !sidebarTables[t] {
+				t.SetItemHeight(want)
+			}
+		}
+		apply()
+		t.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { apply() }))
+	}
 	t.AddListener(swt.EraseItem, newListener(func(e *swt.Event) {
 		hide := call(pSendMessage, uintptr(t.Handle), wmQueryUIState, 0, 0)&uisfHideFocus != 0
 		if e.Detail&(swt.SELECTED|swt.HOT) != 0 && e.Gc != nil && e.Item != nil {
@@ -23,15 +34,68 @@ func Table(t *swt.Table) {
 		if hide {
 			e.Detail &^= swt.FOCUSED
 		}
-		if movedImage(t, e) {
+		if movedImage(t, e) || sidebarTables[t] && e.Index == 0 {
 			e.Detail &^= swt.FOREGROUND
 		}
 	}))
 	t.AddListener(swt.PaintItem, newListener(func(e *swt.Event) {
-		if movedImage(t, e) {
+		switch {
+		case sidebarTables[t] && e.Index == 0:
+			paintSidebarCell(t, e)
+		case movedImage(t, e):
 			paintAligned(t, e)
 		}
 	}))
+}
+
+// The look of a sidebar row, in dips: the pane gives the Table its side margin, the pill spans the
+// Table, the icon sits sidebarIconPad inside the pill and the text sidebarGap after the icon.
+const (
+	sidebarIconPad = 10
+	sidebarGap     = 10
+)
+
+var sidebarTables = map[*swt.Table]bool{}
+
+// SidebarTable makes t a sidebar list: it takes the window background instead of the white of an input
+// surface, rows are rowDips high (0 keeps the native height), and the icon and text of the first column
+// are drawn with the sidebar insets. Call it after Table.
+func SidebarTable(t *swt.Table, rowDips int) {
+	h := uintptr(t.Handle)
+	if h == 0 {
+		return
+	}
+	sidebarTables[t] = true
+	t.AddDisposeListener(disposer(func() { delete(sidebarTables, t) }))
+	if rowDips > 0 {
+		t.SetItemHeight(px(float64(rowDips), dpiOf(h)))
+	}
+	sidebarBackground(&t.Control)
+	call(pInvalidateRect, h, 0, 1)
+}
+
+// sidebarBackground gives c the colour of its parent, the window background of the pane.
+func sidebarBackground(c *swt.Control) {
+	bg := parentBackground(c)
+	c.SetBackgroundWithColor(swt.NewColorRedGreenBlue(int32(bg.R), int32(bg.G), int32(bg.B)))
+}
+
+// paintSidebarCell draws the image and the text of a first-column cell, which EraseItem left undrawn.
+func paintSidebarCell(t *swt.Table, e *swt.Event) {
+	it := tableItem(e)
+	cell := it.GetBoundsIndex(0)
+	gc := e.Gc
+	gc.SetForeground(t.GetForeground())
+	x := cell.X + sidebarIconPad
+	if img := it.GetImageIndex(0); img != nil {
+		ib := img.GetBounds()
+		gc.DrawImage(img, x, cell.Y+(cell.Height-ib.Height)/2)
+		x += ib.Width + sidebarGap
+	}
+	if txt := it.GetTextIndex(0); txt != "" {
+		te := gc.TextExtent(txt)
+		gc.DrawStringStringXYIsTransparent(txt, x, cell.Y+(cell.Height-te.Y)/2, true)
+	}
 }
 
 // movedImage reports whether the cell of e has an image in a column that is not left-aligned.
@@ -93,13 +157,18 @@ func paintRow(t *swt.Table, e *swt.Event, hideFocus bool) {
 	if t.GetColumnCount() == 0 {
 		total = t.GetClientArea().Width
 	}
-	x := e.X - left + 4 // left is 0 for the first cell
-	y, h, w := e.Y+1, e.Height-2, total-8
+	x, inset := e.X-left, int32(4) // left is 0 for the first cell
+	if sidebarTables[t] {
+		// The pane gives the margin; the pill spans the whole Table, whatever the column width.
+		inset, total = 0, max(total, t.GetClientArea().Width)
+	}
+	x += inset
+	y, h, w := e.Y+1, e.Height-2, total-2*inset
 	sel, hot := e.Detail&swt.SELECTED != 0, e.Detail&swt.HOT != 0
 	fill := rowFill(pal, bg, sel, hot, t.IsFocusControl())
 	gc := e.Gc
 	gc.SetAntialias(swt.ON)
-	gc.SetClipping(x-4, y-1, w+8, h+2)
+	gc.SetClipping(x-inset, y-1, w+2*inset, h+2)
 	// SWT takes the colour of the text of the selected row from the GC after the event.
 	gc.SetForeground(t.GetForeground())
 	c := swt.NewColorRedGreenBlue(int32(fill.R), int32(fill.G), int32(fill.B))

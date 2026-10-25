@@ -32,6 +32,8 @@ func setGlassGroup(*swt.Composite, float64) {}
 
 func sidebarInset() int32 { return 0 }
 
+func sidebarPadding() int32 { return 0 }
+
 func setSidebarChrome(*swt.Shell, *swt.Composite, *swt.Control) {}
 
 func syncSidebar(*swt.Shell, *swt.Composite, [4]int32, bool) {}

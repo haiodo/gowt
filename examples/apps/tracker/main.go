@@ -43,7 +43,7 @@ func main() {
 		look.SetToolbar(w,
 			look.ToolbarItem{Space: true},
 			look.ToolbarItem{Title: "New Issue", Symbol: "plus", OnClick: func() {}},
-			look.ToolbarItem{Title: "Search", OnSearch: func(string) {}},
+			look.ToolbarItem{Title: "Filter issues", OnSearch: func(string) {}},
 			look.ToolbarItem{Title: "Hide Inspector", Symbol: "sidebar.right", OnClick: func() {}})
 		look.SetInspector(w, content, insp, gowt.Scaled(340))
 		w.Show()
@@ -65,9 +65,7 @@ func filterBar() gowt.Option {
 	return gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(),
 		gowt.Combo([]string{"Any status", "Todo", "In Progress", "In Review", "Done"}, gowt.ReadOnly(), gowt.Selected(0)),
 		gowt.Combo([]string{"Any assignee", "Alex Morgan", "Priya Raman"}, gowt.ReadOnly(), gowt.Selected(0)),
-		gowt.Combo([]string{"Any priority", "Urgent", "High", "Medium", "Low"}, gowt.ReadOnly(), gowt.Selected(0)),
-		gowt.Spacer(),
-		gowt.Text(gowt.Search(), gowt.Hint("Filter issues"), gowt.Size(gowt.Scaled(220), 0)))
+		gowt.Combo([]string{"Any priority", "Urgent", "High", "Medium", "Low"}, gowt.ReadOnly(), gowt.Selected(0)))
 }
 
 func table(app *gowt.App) gowt.Option {
@@ -102,10 +100,9 @@ func inspectorPane(ref **gowt.Panel) gowt.Option {
 		field("Due", gowt.Label("30 Oct 2026")),
 		field("Estimate", gowt.Spinner(0, 40, gowt.Value(5))),
 		gowt.Label("Description", gowt.Typeface(gowt.Type.BodyStrong)),
-		gowt.Text(gowt.Multiline(), gowt.ReadOnly(), gowt.Border(), gowt.GrowX(), gowt.Size(0, gowt.Scaled(120)),
+		gowt.Text(gowt.Multiline(), gowt.ReadOnly(), gowt.Border(), gowt.Grow(), gowt.Size(0, gowt.Scaled(60)),
 			gowt.Value("The window crashes when it is dragged from the laptop display to an external monitor with a different scale factor.")),
 		gowt.Link(`<a href="https://example.com/issues/105">Open in browser</a>`),
-		gowt.Spacer(),
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(), gowt.Spacer(),
 			gowt.Button("Close Issue", gowt.Destructive()),
 			gowt.Button("Save", gowt.Primary())))

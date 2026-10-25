@@ -42,6 +42,24 @@ func Tree(t *swt.Tree, rowDips int) {
 	}))
 }
 
+var sidebarTrees = map[*swt.Tree]bool{}
+
+// SidebarTree makes t a sidebar tree: the window background instead of the white of an input surface,
+// and a pill that spans the Tree, the pane giving the side margin. Call it after Tree.
+func SidebarTree(t *swt.Tree, rowDips int) {
+	h := uintptr(t.Handle)
+	if h == 0 {
+		return
+	}
+	sidebarTrees[t] = true
+	t.AddDisposeListener(disposer(func() { delete(sidebarTrees, t) }))
+	if rowDips > 0 {
+		call(pSendMessage, h, tvmSetItemHeight, uintptr(px(float64(rowDips), dpiOf(h))), 0)
+	}
+	sidebarBackground(&t.Control)
+	call(pInvalidateRect, h, 0, 1)
+}
+
 func paintTreeRow(t *swt.Tree, e *swt.Event, hideFocus bool) {
 	pal := Current(t.GetDisplay())
 	bgc := t.GetBackground().GetRGB()
@@ -53,15 +71,19 @@ func paintTreeRow(t *swt.Tree, e *swt.Event, hideFocus bool) {
 			total += t.GetColumnIndex(i).GetWidth()
 		}
 	}
-	x := int32(4)
+	inset := int32(4)
+	if sidebarTrees[t] {
+		inset, total = 0, max(total, t.GetClientArea().Width)
+	}
+	x := inset
 	if hb := t.GetHorizontalBar(); hb != nil {
 		x -= hb.GetSelection()
 	}
-	y, h, w := e.Y+1, e.Height-2, total-8
+	y, h, w := e.Y+1, e.Height-2, total-2*inset
 	sel, hot := e.Detail&swt.SELECTED != 0, e.Detail&swt.HOT != 0
 	gc := e.Gc
 	gc.SetAntialias(swt.ON)
-	gc.SetClipping(x-4, y-1, w+8, h+2)
+	gc.SetClipping(x-inset, y-1, w+2*inset, h+2)
 	gc.SetForeground(t.GetForeground())
 	fill := rowFill(pal, bg, sel, hot, t.IsFocusControl())
 	c := swt.NewColorRedGreenBlue(int32(fill.R), int32(fill.G), int32(fill.B))
@@ -80,9 +102,23 @@ func paintTreeRow(t *swt.Tree, e *swt.Event, hideFocus bool) {
 // listLook paints a List (a list box) with the pill rows of Table; the native control keeps the
 // items, the selection, the keyboard and the accessible object.
 type listLook struct {
-	l   *swt.List
-	hot int32 // item under the pointer, -1 for none
+	l       *swt.List
+	hot     int32 // item under the pointer, -1 for none
+	sidebar bool  // in a window sidebar: the pane gives the side margin
 }
+
+// SidebarList makes l a sidebar list: the window background, a pill that spans the List and text
+// sidebarIconPad inside it. Call it after List.
+func SidebarList(l *swt.List) {
+	h := uintptr(l.Handle)
+	if lk := lists[h]; lk != nil {
+		lk.sidebar = true
+		sidebarBackground(&l.Control)
+		call(pInvalidateRect, h, 0, 1)
+	}
+}
+
+var lists = map[uintptr]*listLook{}
 
 // List gives l the Windows 11 rows; rowDips is the row height, 0 keeps the native one.
 func List(l *swt.List, rowDips int) {
@@ -100,7 +136,10 @@ func List(l *swt.List, rowDips int) {
 		apply()
 		l.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { apply() }))
 	}
-	chain(h, (&listLook{l: l, hot: -1}).proc)
+	lk := &listLook{l: l, hot: -1}
+	lists[h] = lk
+	l.AddDisposeListener(disposer(func() { delete(lists, h) }))
+	chain(h, lk.proc)
 	call(pInvalidateRect, h, 0, 1)
 }
 
@@ -158,6 +197,9 @@ func (l *listLook) draw(hwnd, hdc uintptr, w, h int32) {
 	caret := int32(call(pSendMessage, hwnd, lbGetCaretIndex, 0, 0))
 	n := int32(call(pSendMessage, hwnd, lbGetCount, 0, 0))
 	inset, pad := px(4, dpi), px(12, dpi)
+	if l.sidebar {
+		inset, pad = 0, px(sidebarIconPad, dpi)
+	}
 	for i := int32(call(pSendMessage, hwnd, lbGetTopIndex, 0, 0)); i >= 0 && i < n; i++ {
 		var r rect
 		call(pSendMessage, hwnd, lbGetItemRect, uintptr(i), uintptr(unsafe.Pointer(&r)))

@@ -5,6 +5,9 @@ package gtk
 // USER, because SWT's per-widget colour providers sit at APPLICATION and would win over these rules.
 const cssPriorityApplication = 800
 
+// GTK_STYLE_PROVIDER_PRIORITY_APPLICATION: above the theme, below USER, so an app's own provider can override.
+const cssPriorityDefaults = 600
+
 func newProvider(css string) int64 {
 	p := GTKGtk_css_provider_new()
 	GTK3Gtk_css_provider_load_from_data(p, cs(css), -1, nil)
@@ -43,5 +46,32 @@ func Parent(widget int64) int64 { return GTKGtk_widget_get_parent(widget) }
 // SetScrollPolicyAutomatic shows the bars of a scrolled window on overflow only, as overlay bars.
 func SetScrollPolicyAutomatic(scrolled int64) {
 	GTKGtk_scrolled_window_set_policy(scrolled, GTKGTK_POLICY_AUTOMATIC, GTKGTK_POLICY_AUTOMATIC)
+	GTKGtk_scrolled_window_set_overlay_scrolling(scrolled, true)
+}
+
+// AddDefaultCSS loads css for the default screen below the priority of AddGlobalCSS; the provider is
+// returned so the rules can be replaced.
+func AddDefaultCSS(css string) int64 {
+	p := newProvider(css)
+	GTK3Gtk_style_context_add_provider_for_screen(GDKGdk_screen_get_default(), p, cssPriorityDefaults)
+	return p
+}
+
+// ReloadCSS replaces the rules of a provider made by AddDefaultCSS or SetWidgetCSS.
+func ReloadCSS(provider int64, css string) {
+	GTK3Gtk_css_provider_load_from_data(provider, cs(css), -1, nil)
+}
+
+// ScrollOnOverflow keeps the axes of a scrolled window that show bars and makes the bars overlay bars
+// that appear on overflow only; an axis that never scrolls stays that way.
+func ScrollOnOverflow(scrolled int64) {
+	pol := make([]int32, 2)
+	GTKGtk_scrolled_window_get_policy(scrolled, pol[:1], pol[1:])
+	for i, p := range pol {
+		if p == GTKGTK_POLICY_ALWAYS {
+			pol[i] = GTKGTK_POLICY_AUTOMATIC
+		}
+	}
+	GTKGtk_scrolled_window_set_policy(scrolled, pol[0], pol[1])
 	GTKGtk_scrolled_window_set_overlay_scrolling(scrolled, true)
 }

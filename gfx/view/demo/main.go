@@ -1,4 +1,4 @@
-//go:build (darwin || linux) && gfxdemo
+//go:build (darwin || linux || windows) && gfxdemo
 
 // Command demo is the windowed measurement of the gfx compositor on the synthetic 10k document:
 // first frame, pan with a flying cursor, zoom gesture, drag of 1 node with its links and of 100

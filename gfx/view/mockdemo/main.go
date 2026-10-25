@@ -1,4 +1,4 @@
-//go:build (darwin || linux) && gfxmock
+//go:build (darwin || linux || windows) && gfxmock
 
 // Command mockdemo is the windowed measurement of the gfx compositor on a canvas of UI mockup
 // screens: N screens of 1920 x 1080 on a grid, from the synthetic generator or from a .pen file.

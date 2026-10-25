@@ -1,9 +1,10 @@
-//go:build darwin || linux
+//go:build darwin || linux || windows
 
 // Package view puts a gfx scene into a gowt window as a widget.
 //
 // Experimental, like gfx: the API may change without notice. macOS composites tiles as CALayers;
-// Linux composites them on the CPU with cairo into the widget (GTK 3).
+// Linux composites them on the CPU with cairo into the widget (GTK 3); Windows draws them
+// with Direct2D into a DXGI swap chain.
 package view
 
 import (

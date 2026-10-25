@@ -1,4 +1,4 @@
-//go:build (darwin || linux) && gfxdemo
+//go:build (darwin || linux || windows) && gfxdemo
 
 package main
 

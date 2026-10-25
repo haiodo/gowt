@@ -49,10 +49,9 @@ type textEngine struct {
 	sys     uintptr // system font collection
 
 	mu     sync.RWMutex
-	custom uintptr // collection built from the registered files, 0 if none
-	files  map[string]bool
-	faces  map[string]FaceInfo // by lowercase PostScript name
-	gen    int                 // bumps when the custom collection changes
+	custom uintptr             // collection built from the registered files, 0 if none
+	faces  map[string]FaceInfo // by lowercase PostScript name, from fontReg
+	gen    int                 // the fontReg generation the custom collection was built from
 
 	resolved sync.Map // string -> Resolved (per gen, cleared on change)
 	formats  sync.Map // fmtKey -> uintptr
@@ -84,7 +83,7 @@ func newTextEngine() (*textEngine, error) {
 			return nil, hrErr("DWriteCreateFactory", hr)
 		}
 	}
-	te := &textEngine{factory: fac, files: map[string]bool{}, faces: map[string]FaceInfo{}}
+	te := &textEngine{factory: fac}
 	if hr := vcall(fac, dwFactoryGetSystemFontCollection, ref(&te.sys), ui(0)); failed(hr) {
 		return nil, hrErr("GetSystemFontCollection", hr)
 	}
@@ -107,10 +106,18 @@ func (te *textEngine) hasFamily(coll uintptr, family string) bool {
 	return exists != 0
 }
 
-// RegisterFonts makes the font files of dir (or the one file) usable by name in this process and
-// returns how many were new. Call it before text is measured: earlier lookups keep their fallback.
-func (r *Renderer) RegisterFonts(dir string) (int, error) {
-	te := r.text
+// The registered fonts are process-wide: every Renderer builds its custom collection from them.
+var fontReg struct {
+	mu    sync.RWMutex
+	gen   int
+	files map[string]bool
+	faces map[string]FaceInfo // by lowercase PostScript name
+}
+
+// RegisterFonts makes the font files of dir (or the one file) usable by name by every Renderer of
+// this process and returns how many were new. Call it before text is measured or drawn: lookups
+// made earlier keep their fallback.
+func RegisterFonts(dir string) (int, error) {
 	var files []string
 	st, err := os.Stat(dir)
 	if err != nil {
@@ -127,9 +134,12 @@ func (r *Renderer) RegisterFonts(dir string) (int, error) {
 	} else {
 		files = []string{dir}
 	}
-	te.mu.Lock()
-	defer te.mu.Unlock()
-	var fresh []FaceInfo
+	fontReg.mu.Lock()
+	defer fontReg.mu.Unlock()
+	if fontReg.files == nil {
+		fontReg.files, fontReg.faces = map[string]bool{}, map[string]FaceInfo{}
+	}
+	n := 0
 	for _, f := range files {
 		switch strings.ToLower(filepath.Ext(f)) {
 		case ".otf", ".ttf", ".ttc":
@@ -137,40 +147,59 @@ func (r *Renderer) RegisterFonts(dir string) (int, error) {
 			continue
 		}
 		abs, err := filepath.Abs(f)
-		if err != nil || te.files[abs] {
+		if err != nil || fontReg.files[abs] {
 			continue
 		}
 		fi, err := ReadFaceInfo(abs)
 		if err != nil {
 			continue
 		}
-		fresh = append(fresh, fi)
+		fontReg.files[abs] = true
+		fontReg.faces[strings.ToLower(fi.PostScript)] = fi
+		n++
 	}
-	if len(fresh) == 0 {
-		return 0, nil
+	if n > 0 {
+		fontReg.gen++
 	}
-	for _, fi := range fresh {
-		te.files[fi.File] = true
-		te.faces[strings.ToLower(fi.PostScript)] = fi
-	}
-	if err := te.rebuild(); err != nil {
-		for _, fi := range fresh {
-			delete(te.files, fi.File)
-			delete(te.faces, strings.ToLower(fi.PostScript))
-		}
-		return 0, err
-	}
-	return len(fresh), nil
+	return n, nil
 }
 
-// rebuild makes the custom collection from all registered files; mu is held.
-func (te *textEngine) rebuild() error {
+// RegisterFonts is the package function, as a method for callers that hold a Renderer.
+func (r *Renderer) RegisterFonts(dir string) (int, error) { return RegisterFonts(dir) }
+
+// sync rebuilds the custom collection when fonts were registered since the last lookup.
+func (te *textEngine) sync() {
+	fontReg.mu.RLock()
+	gen := fontReg.gen
+	fontReg.mu.RUnlock()
+	te.mu.RLock()
+	same := gen == te.gen
+	te.mu.RUnlock()
+	if same {
+		return
+	}
+	te.mu.Lock()
+	defer te.mu.Unlock()
+	fontReg.mu.RLock()
+	defer fontReg.mu.RUnlock()
+	if fontReg.gen == te.gen {
+		return
+	}
+	te.gen = fontReg.gen
+	te.faces = fontReg.faces
+	if err := te.rebuild(fontReg.files); err != nil {
+		te.custom = 0 // the system fonts stay
+	}
+}
+
+// rebuild makes the custom collection from files; mu is held.
+func (te *textEngine) rebuild(files map[string]bool) error {
 	var b uintptr
 	if hr := vcall(te.factory, dwFactoryCreateFontSetBuilder1, ref(&b)); failed(hr) {
 		return fmt.Errorf("gfx/d2d: custom fonts need Windows 10 1703 or later: %w", hrErr("CreateFontSetBuilder", hr))
 	}
 	defer release(b)
-	for f := range te.files {
+	for f := range files {
 		var ff uintptr
 		if hr := vcall(te.factory, dwFactoryCreateFontFileReference, wstr(f), ui(0), ref(&ff)); failed(hr) {
 			continue
@@ -189,7 +218,6 @@ func (te *textEngine) rebuild() error {
 	}
 	release(te.custom)
 	te.custom = coll
-	te.gen++
 	te.resolved.Clear()
 	te.formats.Range(func(k, v any) bool { release(v.(uintptr)); te.formats.Delete(k); return true })
 	te.layouts.Range(func(k, v any) bool { release(v.(*textLayout).ptr); te.layouts.Delete(k); return true })
@@ -197,6 +225,7 @@ func (te *textEngine) rebuild() error {
 }
 
 func (te *textEngine) resolve(name string) Resolved {
+	te.sync()
 	if v, ok := te.resolved.Load(name); ok {
 		return v.(Resolved)
 	}
@@ -213,6 +242,7 @@ func (te *textEngine) resolve(name string) Resolved {
 }
 
 func (te *textEngine) format(f gfx.Font) uintptr {
+	te.sync()
 	k := fmtKey{f.Name, f.Size}
 	if v, ok := te.formats.Load(k); ok {
 		return v.(uintptr)
@@ -273,6 +303,7 @@ func (te *textEngine) newLayout(s string, f gfx.Font) *textLayout {
 }
 
 func (te *textEngine) layout(s string, f gfx.Font, cache bool) *textLayout {
+	te.sync()
 	if !cache {
 		return te.newLayout(s, f)
 	}

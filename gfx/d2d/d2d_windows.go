@@ -46,7 +46,7 @@ const (
 	d2DCSetTarget     = 74
 	d2DCPushLayer1    = 86
 
-	d2BrushSetOpacity   = 4
+	d2BrushSetOpacity    = 4
 	d2SolidBrushSetColor = 8
 
 	d2BitmapCopyFrom = 8

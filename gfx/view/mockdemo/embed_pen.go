@@ -1,4 +1,4 @@
-//go:build (darwin || linux) && gfxmock && gfxmockpen
+//go:build (darwin || linux || windows) && gfxmock && gfxmockpen
 
 package main
 

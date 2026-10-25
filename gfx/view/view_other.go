@@ -1,4 +1,4 @@
-//go:build !darwin && !linux
+//go:build !darwin && !linux && !windows
 
 // Package view puts a gfx scene into a gowt window as a widget.
 //

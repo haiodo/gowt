@@ -61,6 +61,7 @@ var (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
+		app.SetDensity(gowt.DensityNative)
 		w := app.Window("queue.go - gowt-sample")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(800, 500)
@@ -72,7 +73,7 @@ func main() {
 			look.ToolbarItem{Space: true},
 			look.ToolbarItem{Title: "Run", Symbol: "play.fill", OnClick: func() {}},
 			look.ToolbarItem{Title: "Search", OnSearch: func(string) {}})
-		look.SetSidebar(w, sidebar, content, 240)
+		look.SetSidebar(w, sidebar, content, gowt.Scaled(240))
 		w.Show()
 	})
 	if err != nil {
@@ -83,7 +84,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Tree(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TreeView) {
-			t.Column("", 220)
+			t.Column("", gowt.Scaled(220)) // Tree has no column autosize
 			t.ShowHeader(false)
 			folder := icons.Get(app, "folder", icons.Size(18))
 			file := icons.Get(app, "file", icons.Size(18))
@@ -116,16 +117,17 @@ func contentPane(ref **gowt.Panel) gowt.Option {
 			gowt.Tab("main.go", gowt.Closable()),
 			gowt.Tab("queue.go", gowt.Closable(), gowt.Padding(0), gowt.Gap(0),
 				gowt.HBox(gowt.Grow(), gowt.Padding(0), gowt.Gap(0),
-					gowt.Label(strings.Join(nums, "\n"), kit.Faint(), gowt.Typeface(kit.MonoFont()), gowt.Place(gowt.AlignStart, gowt.AlignStart), gowt.Indent(6, 0)),
+					// StyledText has no line number gutter: a Label of numbers stands in, and does not scroll with the text.
+					gowt.Label(strings.Join(nums, "\n"), kit.Faint(), gowt.Typeface(gowt.Type.Mono), gowt.Place(gowt.AlignStart, gowt.AlignStart), gowt.Indent(gowt.Spacing.SM, 0)),
 					gowt.StyledText(gowt.Scrollbars(), gowt.Borderless(), gowt.Grow(), gowt.Init(editor))))),
 		gowt.Separator(gowt.GrowX()),
-		gowt.HBox(gowt.Gap(16), gowt.GrowX(), gowt.Padding(6),
-			gowt.Label("Ln 27, Col 14", kit.Caption()), gowt.Label("UTF-8", kit.Caption()), gowt.Label("Go", kit.Caption()),
-			gowt.Spacer(), gowt.Label("0 problems", kit.Faint(), kit.Caption())))
+		gowt.HBox(gowt.Gap(gowt.Spacing.LG), gowt.GrowX(), gowt.Padding(gowt.Spacing.SM),
+			gowt.Label("Ln 27, Col 14", gowt.Typeface(gowt.Type.Caption)), gowt.Label("UTF-8", gowt.Typeface(gowt.Type.Caption)), gowt.Label("Go", gowt.Typeface(gowt.Type.Caption)),
+			gowt.Spacer(), gowt.Label("0 problems", kit.Faint(), gowt.Typeface(gowt.Type.Caption))))
 }
 
 func editor(ed *gowt.StyledTextView) {
-	ed.SetFont(kit.MonoFont())
+	ed.SetFont(gowt.Type.Mono)
 	ed.SetTabs(4)
 	ed.SetText(source)
 	ed.OnStyle(func(line string) []gowt.StyleSpan {

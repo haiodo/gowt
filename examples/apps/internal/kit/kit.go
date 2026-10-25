@@ -1,10 +1,9 @@
-// Package kit holds the small pieces the look-check apps share: fixed colours, text styles, round
+// Package kit holds the small pieces the look-check apps share: fixed colours, round
 // avatars, pill badges and coloured dots. It uses only the public gowt facade and icons.
 package kit
 
 import (
 	"fmt"
-	"runtime"
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/icons"
@@ -27,27 +26,14 @@ const (
 	Height = 800
 )
 
-// Mono is the system monospace family of the OS.
-func Mono() string {
-	switch runtime.GOOS {
-	case "darwin":
-		return "Menlo"
-	case "windows":
-		return "Consolas"
-	}
-	return "monospace"
-}
+// Faint is the secondary text colour.
+func Faint() gowt.Option { return gowt.Foreground(gowt.SecondaryText) }
 
-// Text styles relative to the system font, as a macOS app sets them.
-
-func Title() gowt.Option   { return gowt.Typeface(gowt.Font{Scale: 1.5, Weight: gowt.Semibold}) }
-func Heading() gowt.Option { return gowt.Typeface(gowt.Font{Scale: 1.15, Weight: gowt.Semibold}) }
-func Strong() gowt.Option  { return gowt.Typeface(gowt.Font{Scale: 1, Weight: gowt.Semibold}) }
-func Caption() gowt.Option { return gowt.Typeface(gowt.Font{Scale: 0.85}) }
-func Faint() gowt.Option   { return gowt.Foreground(gowt.SecondaryText) }
-func MonoFont() gowt.Font  { return gowt.Font{Name: Mono(), Scale: 0.95} }
-func Big(scale float64) gowt.Option {
-	return gowt.Typeface(gowt.Font{Scale: scale, Weight: gowt.Semibold})
+// badgeFont is Type.Caption in the given weight, the size of text inside avatars and pills.
+func badgeFont(w gowt.Weight) gowt.Font {
+	f := gowt.Type.Caption
+	f.Weight = w
+	return f
 }
 
 // Avatar is a filled circle with initials, size points square.
@@ -58,7 +44,7 @@ func Avatar(initials string, c gowt.RGB, size int) gowt.Option {
 		g.SetColor(gowt.RGB{R: 255, G: 255, B: 255})
 		w, h := g.TextSize(initials)
 		g.Text(initials, (size-w)/2, (size-h)/2)
-	}, gowt.Size(size, size), gowt.Typeface(gowt.Font{Scale: 0.85, Weight: gowt.Semibold}))
+	}, gowt.Size(size, size), gowt.Typeface(badgeFont(gowt.Semibold)))
 }
 
 // Pill is a rounded badge w x h points; the text is centred.
@@ -71,7 +57,7 @@ func Pill(text string, w, h int, bg, fg gowt.RGB) gowt.Option {
 		g.SetColor(fg)
 		tw, th := g.TextSize(text)
 		g.Text(text, (w-tw)/2, (h-th)/2)
-	}, gowt.Size(w, h), gowt.Typeface(gowt.Font{Scale: 0.85, Weight: gowt.Medium}))
+	}, gowt.Size(w, h), gowt.Typeface(badgeFont(gowt.Medium)))
 }
 
 // Tint is a light tone of c for a badge background.

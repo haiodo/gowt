@@ -43,6 +43,7 @@ var feed = []message{
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
+		app.SetDensity(gowt.DensityNative)
 		w := app.Window("develop")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(900, 500)
@@ -53,8 +54,8 @@ func main() {
 			look.ToolbarItem{Space: true},
 			look.ToolbarItem{Title: "Search", OnSearch: func(string) {}},
 			look.ToolbarItem{Title: "Hide Thread", Symbol: "sidebar.right", OnClick: func() {}})
-		look.SetSidebar(w, sidebar, content, 260)
-		look.SetInspector(w, content, thread, 340)
+		look.SetSidebar(w, sidebar, content, gowt.Scaled(260))
+		look.SetInspector(w, content, thread, gowt.Scaled(340))
 		w.Show()
 	})
 	if err != nil {
@@ -64,8 +65,8 @@ func main() {
 
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	nav := func(h int, sel int, rows ...[2]any) gowt.Option {
-		return gowt.Table(gowt.NoBorder(), gowt.GrowX(), gowt.Size(0, h), gowt.Init(func(t *gowt.TableView) {
-			t.Column("", 220)
+		return gowt.Table(gowt.NoBorder(), gowt.GrowX(), gowt.Size(0, gowt.Scaled(h)), gowt.Init(func(t *gowt.TableView) {
+			t.Column("", gowt.Scaled(220)) // Table has no column autosize
 			t.ShowHeader(false)
 			t.ShowLines(false)
 			for _, r := range rows {
@@ -79,14 +80,14 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	ic := func(n string) *gowt.Image { return icons.Get(app, n, icons.Size(18)) }
 	sym := func(p string) *gowt.Image { return kit.Symbol(app, p, 18, kit.Gray) }
 	dm := func(c gowt.RGB) *gowt.Image { return kit.Dot(app, c, 22) }
-	return gowt.VBox(gowt.Ref(ref), gowt.Gap(6),
-		gowt.Label("Chats", kit.Strong(), gowt.Place(gowt.AlignCenter, gowt.AlignStart)),
+	return gowt.VBox(gowt.Ref(ref), gowt.Gap(gowt.Spacing.SM),
+		gowt.Label("Chats", gowt.Typeface(gowt.Type.BodyStrong), gowt.Place(gowt.AlignCenter, gowt.AlignStart)),
 		gowt.Text(gowt.Search(), gowt.Hint("Find channels..."), gowt.GrowX()),
 		nav(96, -1, [2]any{"Inbox", sym(kit.PathInbox)}, [2]any{"Discussions", sym(kit.PathMail)}, [2]any{"Saved", ic("star")}),
 		gowt.Label("Starred", kit.Faint()),
 		nav(112, 0, [2]any{"develop", sym(kit.PathHash)}, [2]any{"fusion-private", ic("lock")}, [2]any{"ios & android builds", sym(kit.PathHash)}),
 		gowt.Label("Direct messages", kit.Faint()),
-		nav(190, -1, [2]any{"Kristina Fefelova", dm(kit.Green)}, [2]any{"Alexey Ivanov", dm(kit.Blue)}, [2]any{"Anastasia Borisova", dm(kit.Purple)},
+		nav(192, -1, [2]any{"Kristina Fefelova", dm(kit.Green)}, [2]any{"Alexey Ivanov", dm(kit.Blue)}, [2]any{"Anastasia Borisova", dm(kit.Purple)},
 			[2]any{"Anton Novgorodtsev", dm(kit.Teal)}, [2]any{"Maxim Denisov", dm(kit.Orange)}),
 		gowt.Spacer())
 }
@@ -96,14 +97,14 @@ func contentPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	for _, m := range feed {
 		rows = append(rows, messageRow(m))
 	}
-	return gowt.VBox(gowt.Ref(ref), gowt.Gap(8), gowt.Padding(12),
-		gowt.Scroll(gowt.Grow(), gowt.VBox(append([]gowt.Option{gowt.Gap(14), gowt.GrowX()}, rows...)...)),
+	return gowt.VBox(gowt.Ref(ref), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.MD),
+		gowt.Scroll(gowt.Grow(), gowt.VBox(append([]gowt.Option{gowt.Gap(gowt.Spacing.LG), gowt.GrowX()}, rows...)...)),
 		composer(app, "Message..."))
 }
 
 func messageRow(m message) gowt.Option {
-	body := []gowt.Option{gowt.Gap(4), gowt.GrowX(),
-		gowt.HBox(gowt.Gap(8), gowt.Label(m.who.name, kit.Strong()), gowt.Label(m.time, kit.Faint(), kit.Caption()))}
+	body := []gowt.Option{gowt.Gap(gowt.Spacing.XS), gowt.GrowX(),
+		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label(m.who.name, gowt.Typeface(gowt.Type.BodyStrong)), gowt.Label(m.time, kit.Faint(), gowt.Typeface(gowt.Type.Caption)))}
 	for _, l := range m.lines {
 		if len(l) > 8 && l[:8] == "https://" {
 			body = append(body, gowt.Link(`<a href="`+l+`">`+l+`</a>`, gowt.Wrap(), gowt.GrowX()))
@@ -112,52 +113,54 @@ func messageRow(m message) gowt.Option {
 		}
 	}
 	if m.reaction != "" {
-		body = append(body, gowt.HBox(kit.Pill(m.reaction, 52, 24, gowt.RGB{R: 232, G: 234, B: 240}, gowt.RGB{R: 40, G: 40, B: 50})))
+		// No badge widget: the pill is a Canvas with a fixed width.
+		body = append(body, gowt.HBox(kit.Pill(m.reaction, gowt.Scaled(52), gowt.Scaled(24),
+			gowt.RGB{R: 232, G: 234, B: 240}, gowt.RGB{R: 40, G: 40, B: 50})))
 	}
 	if m.replies != "" {
-		row := []gowt.Option{gowt.Gap(4)}
+		row := []gowt.Option{gowt.Gap(gowt.Spacing.XS)}
 		for _, p := range m.repliedBy {
-			row = append(row, kit.Avatar(p.initials, p.color, 26))
+			row = append(row, kit.Avatar(p.initials, p.color, gowt.Scaled(28)))
 		}
 		row = append(row, gowt.Link(`<a href="thread">`+m.replies+`</a>`))
 		body = append(body, gowt.HBox(row...))
 	}
-	return gowt.HBox(gowt.Gap(10), gowt.GrowX(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
-		kit.Avatar(m.who.initials, m.who.color, 40), gowt.VBox(body...))
+	return gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
+		kit.Avatar(m.who.initials, m.who.color, gowt.Scaled(40)), gowt.VBox(body...))
 }
 
 // composer is the glass capsule with the text field and send button, and a round attach button beside it.
 func composer(app *gowt.App, hint string) gowt.Option {
 	var cap *gowt.Panel
-	return gowt.HBox(gowt.Gap(8), gowt.GrowX(),
-		gowt.Button("", look.GlassButton(), gowt.Circle(), gowt.Size(36, 36), gowt.Tooltip("Attach"),
+	return gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(),
+		gowt.Button("", look.GlassButton(), gowt.Circle(), gowt.Size(gowt.Scaled(36), gowt.Scaled(36)), gowt.Tooltip("Attach"),
 			gowt.Init(func(b *gowt.ButtonView) { b.SetImage(kit.Symbol(app, kit.PathClip, 18, kit.Gray)) })),
-		gowt.HBox(gowt.Ref(&cap), gowt.GrowX(), gowt.Padding(4), gowt.Gap(4),
+		gowt.HBox(gowt.Ref(&cap), gowt.GrowX(), gowt.Padding(gowt.Spacing.XS), gowt.Gap(gowt.Spacing.XS),
 			gowt.Init(func(p *gowt.Panel) { look.SetGlass(p, true); look.SetGlassRadius(p, look.Capsule) }),
 			gowt.Text(gowt.Borderless(), gowt.GrowX(), gowt.Hint(hint)),
-			gowt.Button("", gowt.Flat(), gowt.Size(30, 30), gowt.Tooltip("Send"),
+			gowt.Button("", gowt.Flat(), gowt.Size(gowt.Scaled(32), gowt.Scaled(32)), gowt.Tooltip("Send"),
 				gowt.Init(func(b *gowt.ButtonView) { b.SetImage(kit.Symbol(app, kit.PathSend, 18, kit.Blue)) }))))
 }
 
 func threadPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	code := "Hello,\n\nThank you for your resubmission. Upon further review, we identified additional issues that need your attention. See below for more information.\n\nSubmission ID: 75e80b89-9490-46d1-a748\nReview date: October 23, 2026\nVersion reviewed: 1.0 (319)"
-	return gowt.VBox(gowt.Ref(ref), gowt.Gap(10), gowt.Padding(12),
-		gowt.HBox(gowt.Gap(8), gowt.Label("Thread", kit.Heading()), gowt.Label("develop", kit.Faint()), gowt.Spacer(),
-			gowt.Button("", gowt.Flat(), gowt.Size(26, 26), gowt.Init(func(b *gowt.ButtonView) { b.SetImage(icons.Get(app, "close", icons.Size(14))) }))),
-		gowt.HBox(gowt.Gap(10), gowt.GrowX(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
-			kit.Avatar(me.initials, me.color, 36),
-			gowt.VBox(gowt.Gap(4), gowt.GrowX(),
-				gowt.HBox(gowt.Gap(8), gowt.Label(me.name, kit.Strong()), gowt.Label("21:30", kit.Faint(), kit.Caption())),
+	return gowt.VBox(gowt.Ref(ref), gowt.Gap(gowt.Spacing.MD), gowt.Padding(gowt.Spacing.MD),
+		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label("Thread", gowt.Typeface(gowt.Type.Subtitle)), gowt.Label("develop", kit.Faint()), gowt.Spacer(),
+			gowt.Button("", gowt.Flat(), gowt.Size(gowt.Scaled(28), gowt.Scaled(28)), gowt.Init(func(b *gowt.ButtonView) { b.SetImage(icons.Get(app, "close", icons.Size(14))) }))),
+		gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
+			kit.Avatar(me.initials, me.color, gowt.Scaled(36)),
+			gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.GrowX(),
+				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label(me.name, gowt.Typeface(gowt.Type.BodyStrong)), gowt.Label("21:30", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
 				gowt.Label("Apple cannot identify the build, again", gowt.Wrap(), gowt.GrowX()),
-				gowt.HBox(kit.Pill("eyes  1", 52, 24, gowt.RGB{R: 232, G: 234, B: 240}, gowt.RGB{R: 40, G: 40, B: 50})))),
-		gowt.HBox(gowt.Gap(8), gowt.GrowX(), gowt.Label("3 replies", kit.Faint(), kit.Strong()), gowt.Separator(gowt.GrowX(), gowt.Place(gowt.AlignFill, gowt.AlignCenter))),
-		gowt.HBox(gowt.Gap(10), gowt.Grow(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
-			kit.Avatar(me.initials, me.color, 36),
-			gowt.VBox(gowt.Gap(4), gowt.Grow(),
-				gowt.HBox(gowt.Gap(8), gowt.Label(me.name, kit.Strong()), gowt.Label("21:30", kit.Faint(), kit.Caption())),
+				gowt.HBox(kit.Pill("eyes  1", gowt.Scaled(52), gowt.Scaled(24), gowt.RGB{R: 232, G: 234, B: 240}, gowt.RGB{R: 40, G: 40, B: 50})))),
+		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(), gowt.Label("3 replies", kit.Faint(), gowt.Typeface(gowt.Type.BodyStrong)), gowt.Separator(gowt.GrowX(), gowt.Place(gowt.AlignFill, gowt.AlignCenter))),
+		gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.Grow(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
+			kit.Avatar(me.initials, me.color, gowt.Scaled(36)),
+			gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.Grow(),
+				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label(me.name, gowt.Typeface(gowt.Type.BodyStrong)), gowt.Label("21:30", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
 				gowt.StyledText(gowt.ReadOnly(), gowt.Wrap(), gowt.Grow(), gowt.Borderless(),
 					gowt.Init(func(t *gowt.StyledTextView) {
-						t.SetFont(kit.MonoFont())
+						t.SetFont(gowt.Type.Mono)
 						t.SetText(code)
 					})))),
 		composer(app, "Reply in thread"))

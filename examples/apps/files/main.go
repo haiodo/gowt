@@ -33,6 +33,7 @@ var entries = []entry{
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
+		app.SetDensity(gowt.DensityNative)
 		w := app.Window("Documents")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(800, 500)
@@ -48,7 +49,7 @@ func main() {
 			look.ToolbarItem{Title: "New Folder", Symbol: "folder.badge.plus", OnClick: func() {}},
 			look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: func() {}},
 			look.ToolbarItem{Title: "Search", OnSearch: func(string) {}})
-		look.SetSidebar(w, sidebar, content, 240)
+		look.SetSidebar(w, sidebar, content, gowt.Scaled(240))
 		w.Show()
 	})
 	if err != nil {
@@ -59,7 +60,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Tree(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TreeView) {
-			t.Column("", 220)
+			t.Column("", gowt.Scaled(220)) // Table has no column autosize
 			t.ShowHeader(false)
 			folder := icons.Get(app, "folder", icons.Size(18))
 			home := t.Node("Home")
@@ -82,16 +83,16 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 
 func contentPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
-		gowt.HBox(gowt.Gap(6), gowt.GrowX(), gowt.Padding(8),
+		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(), gowt.Padding(gowt.Spacing.SM),
 			gowt.Link(`<a href="home">Home</a>`), gowt.Label(">", kit.Faint()),
-			gowt.Label("Documents", kit.Strong()),
+			gowt.Label("Documents", gowt.Typeface(gowt.Type.BodyStrong)),
 			gowt.Spacer(),
-			gowt.Text(gowt.Search(), gowt.Hint("Search in Documents"), gowt.Size(220, 0))),
+			gowt.Text(gowt.Search(), gowt.Hint("Search in Documents"), gowt.Size(gowt.Scaled(220), 0))),
 		gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-			name := t.Column("Name", 360)
-			t.Column("Date Modified", 200)
-			t.Column("Size", 100, gowt.Right())
-			t.Column("Kind", 160)
+			name := t.Column("Name", gowt.Scaled(360)) // Table has no column autosize
+			t.Column("Date Modified", gowt.Scaled(200))
+			t.Column("Size", gowt.Scaled(100), gowt.Right())
+			t.Column("Kind", gowt.Scaled(160))
 			folder := icons.Get(app, "folder", icons.Size(18))
 			file := icons.Get(app, "file", icons.Size(18))
 			for _, e := range entries {
@@ -105,6 +106,6 @@ func contentPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 			t.SetSort(name, gowt.SortAscending)
 			t.Select(5)
 		})),
-		gowt.HBox(gowt.GrowX(), gowt.Padding(8),
-			gowt.Label("12 items, 48.2 GB available", kit.Faint(), kit.Caption())))
+		gowt.HBox(gowt.GrowX(), gowt.Padding(gowt.Spacing.SM),
+			gowt.Label("12 items, 48.2 GB available", kit.Faint(), gowt.Typeface(gowt.Type.Caption))))
 }

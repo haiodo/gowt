@@ -10,35 +10,36 @@ import (
 	"github.com/haiodo/gowt/examples/apps/internal/kit"
 )
 
-// The paint callback gets no size, so the plot area is fixed.
+// The paint callback gets no size (Canvas gap), so the plot area is fixed and the margins do not follow the font.
 const chartW, chartH = 640, 330
 
 var weekly = []int{42, 55, 48, 63, 71, 58, 80, 92, 76, 88, 95, 104}
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
+		app.SetDensity(gowt.DensityNative)
 		w := app.Window("Overview")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(900, 600)
-		w.Add(gowt.VBox(gowt.Grow(), gowt.Padding(24), gowt.Gap(16),
-			gowt.HBox(gowt.Gap(12), gowt.GrowX(),
-				gowt.VBox(gowt.Gap(2), gowt.Label("Overview", kit.Title()), gowt.Label("Last 12 weeks, all regions", kit.Faint())),
+		w.Add(gowt.VBox(gowt.Grow(), gowt.Padding(gowt.Scaled(24)), gowt.Gap(gowt.Spacing.LG),
+			gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(),
+				gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.Label("Overview", gowt.Typeface(gowt.Type.Title)), gowt.Label("Last 12 weeks, all regions", kit.Faint())),
 				gowt.Spacer(),
 				gowt.Combo([]string{"Last 12 weeks", "Last 30 days", "This year"}, gowt.ReadOnly(), gowt.Selected(0)),
 				gowt.Button("Export")),
-			gowt.HBox(gowt.Gap(16), gowt.GrowX(),
+			gowt.HBox(gowt.Gap(gowt.Spacing.LG), gowt.GrowX(),
 				card("Revenue", "$84,200", "+12.4% from last period", kit.Green, 78),
 				card("Active users", "12,480", "+3.1% from last period", kit.Green, 62),
 				card("Open tickets", "37", "-8 from last period", kit.Green, 35),
 				card("Error rate", "0.42%", "+0.05% from last period", kit.Red, 20)),
-			gowt.HBox(gowt.Gap(16), gowt.Grow(),
-				gowt.VBox(gowt.Gap(8), gowt.Grow(),
-					gowt.Label("Weekly signups", kit.Heading()),
-					gowt.Section(gowt.Grow(), gowt.Canvas(chart, gowt.Size(chartW, chartH), gowt.Typeface(gowt.Font{Scale: 0.8})))),
-				gowt.VBox(gowt.Gap(8), gowt.Size(440, 0),
-					gowt.Label("Recent activity", kit.Heading()),
+			gowt.HBox(gowt.Gap(gowt.Spacing.LG), gowt.Grow(),
+				gowt.VBox(gowt.Gap(gowt.Spacing.SM), gowt.Grow(),
+					gowt.Label("Weekly signups", gowt.Typeface(gowt.Type.Subtitle)),
+					gowt.Section(gowt.Grow(), gowt.Canvas(chart, gowt.Size(chartW, chartH), gowt.Typeface(gowt.Type.Caption)))),
+				gowt.VBox(gowt.Gap(gowt.Spacing.SM), gowt.Size(gowt.Scaled(440), 0),
+					gowt.Label("Recent activity", gowt.Typeface(gowt.Type.Subtitle)),
 					activity(),
-					gowt.HBox(gowt.Gap(12),
+					gowt.HBox(gowt.Gap(gowt.Spacing.MD),
 						gowt.Link(`<a href="https://example.com/reports">All reports</a>`),
 						gowt.Link(`<a href="https://example.com/status">System status</a>`))))))
 		w.Show()
@@ -50,18 +51,18 @@ func main() {
 
 func card(title, value, note string, noteColor gowt.RGB, pct int) gowt.Option {
 	return gowt.Section(gowt.GrowX(),
-		gowt.VBox(gowt.Gap(6), gowt.Padding(4),
+		gowt.VBox(gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS),
 			gowt.Label(title, kit.Faint()),
-			gowt.Label(value, kit.Big(2.2)),
+			gowt.Label(value, gowt.Typeface(gowt.Type.LargeTitle)),
 			gowt.Progress(100, gowt.GrowX(), gowt.Value(pct)),
-			gowt.Label(note, kit.Caption(), gowt.Foreground(noteColor))))
+			gowt.Label(note, gowt.Typeface(gowt.Type.Caption), gowt.Foreground(noteColor))))
 }
 
 func activity() gowt.Option {
 	return gowt.Table(gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-		t.Column("Event", 250)
-		t.Column("Who", 110)
-		t.Column("When", 60, gowt.Right())
+		t.Column("Event", gowt.Scaled(250)) // Table has no column autosize
+		t.Column("Who", gowt.Scaled(110))
+		t.Column("When", gowt.Scaled(60), gowt.Right())
 		for _, r := range [][]string{
 			{"Plan upgraded to Team", "Priya Raman", "2h"},
 			{"New project created", "Tomas Weber", "3h"},

@@ -24,7 +24,7 @@ shoot() { # <png name> <executable> [args...]
 	fi
 }
 
-for e in $(ls examples | grep -vx -e controlexample -e catalog); do
+for e in $(ls examples | grep -vx -e controlexample -e catalog -e apps); do
 	go build -o "$bin/$e$ext" "./examples/$e" || { fail=1; continue; }
 	delay=800; case $e in webview|browser) delay=4000;; esac
 	GOWT_SNAP_DELAY=$delay shoot "example-$e-$label.png" "$(pwd)/$bin/$e$ext"

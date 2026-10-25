@@ -1,6 +1,6 @@
 // Command catalog shows one sample of every facade widget. With a widget name as the argument
 // (catalog table) it opens only that sample; without arguments it puts all of them in tabs.
-// docs/widget-catalog.md lists the names, and `make docs-shots` runs it once per name.
+// docs/components.md lists the names, and `make docs-shots` runs it once per name.
 package main
 
 import (

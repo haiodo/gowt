@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: shot-sizes check-gui check-gui-list docs-counts docs-shots vm-docs-shots-windows vm-docs-shots-linux win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: shot-sizes check-gui check-gui-list docs-counts docs-shots docs-shots-apps vm-docs-shots-windows vm-docs-shots-linux win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -60,9 +60,9 @@ check: vet test xcheck examples-check api-check qa-check licence-check docs-coun
 docs-counts:
 	go run ./tooling/doccounts
 
-# Every catalog sample has the same image size on macOS, Windows and Linux (also part of go test with macOS left out).
+# Every catalog sample and every app shot has the same image size on macOS, Windows and Linux (also part of go test with macOS left out).
 shot-sizes:
-	GOWT_SHOT_OS="macos windows linux" go test -count=1 -run TestShotSizes ./examples/catalog
+	GOWT_SHOT_OS="macos windows linux" go test -count=1 -run 'TestShotSizes|TestAppShotSizes' ./examples/catalog ./examples/apps/internal/kit
 
 # Every package with a GOWT_GUI_TEST test, on the display of the host (Linux: inside the stand, see CI). -p 1: packages run
 # one after another, since parallel ones fight over focus on the one X screen.
@@ -210,6 +210,10 @@ win-snap-update: win-build snapcheck
 # CrossOver bottle; the Linux run needs the stand (LINUX_CTR and LINUX_PORT can be overridden).
 docs-shots:
 	tooling/docs-shots.sh macos
+
+# Only docs/img/app-<name>-macos.png of the seven apps; opens a window per app.
+docs-shots-apps:
+	ONLY=apps tooling/docs-shots.sh macos
 
 # The pictures of docs/img come from these two: real Windows 11 and Ubuntu GNOME VMs (tooling/docs-shots-vm.sh), not Wine or Xvfb.
 vm-docs-shots-windows:

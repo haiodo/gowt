@@ -58,7 +58,8 @@ Four ideas carry the whole API:
 | One layout for three systems: type and spacing tokens, density | [cross-platform-look.md](cross-platform-look.md) | - |
 | Icons | [icons.md](icons.md) | [`examples/icons`](../examples/icons) |
 | Web view | [webview-browser.md](webview-browser.md) | [`examples/webview`](../examples/webview) |
-| Widget catalog (all widgets, one line each) | [widget-catalog.md](widget-catalog.md) | [`examples/catalog`](../examples/catalog) |
+| Components (all widgets, one line and a picture on each OS) | [components.md](components.md) | [`examples/catalog`](../examples/catalog) |
+| Demo apps (seven windows, three OS side by side) | [apps.md](apps.md) | [`examples/apps`](../examples/apps) |
 | Packaging and distribution | [packaging.md](packaging.md) | - |
 | Look check: realistic apps on all three OSes | [look-check.md](look-check.md) | [`examples/apps`](../examples/apps) |
 | Platform notes and known gaps | [platforms.md](platforms.md) | - |

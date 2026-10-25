@@ -17,7 +17,7 @@ func main() {
 		app.SetDensity(gowt.DensityNative)
 		kit.Appearance(app)
 		w := app.Window("Overview")
-		w.SetSize(kit.Width, kit.Height)
+		kit.Size(w)
 		w.SetMinSize(900, 600)
 		w.Add(gowt.VBox(gowt.Grow(), gowt.Padding(gowt.Scaled(24)), gowt.Gap(gowt.Spacing.LG),
 			gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(),

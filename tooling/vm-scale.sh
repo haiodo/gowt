@@ -10,6 +10,7 @@ os=${1:-}; factor=${2:-}
 [ -n "$factor" ] || { echo "usage: $0 windows|linux <factor>" >&2; exit 2; }
 export VMTAG=${VMTAG:-catalog}
 tag=$VMTAG
+wd=${WINWD:-C:\\gowt\\$tag} # WINWD: another work folder on the Windows VM, single backslashes
 case $os in
 windows) vm=${VM:-.work/winvm/vm.sh} ;;
 linux) vm=${VM:-.work/ubvm/vm.sh} ;;
@@ -19,11 +20,11 @@ esac
 
 if [ "$os" = windows ]; then
 	percent=$(awk -v f="$factor" 'BEGIN { printf "%d", f * 100 }')
-	"$vm" ssh "New-Item -ItemType Directory -Force C:\\gowt\\$tag | Out-Null"
-	"$vm" put tooling/win-dpi.ps1 "C:\\gowt\\$tag"
+	"$vm" ssh "New-Item -ItemType Directory -Force $wd | Out-Null"
+	"$vm" put tooling/win-dpi.ps1 "$wd"
 	run() { # <get|set percent>
-		"$vm" gui "powershell -NoProfile -ExecutionPolicy Bypass -File C:\\gowt\\$tag\\win-dpi.ps1 $* > C:\\gowt\\$tag\\dpi.txt 2>&1" 60 >/dev/null
-		"$vm" ssh "Get-Content C:\\gowt\\$tag\\dpi.txt" | tr -d '\r'
+		"$vm" gui "powershell -NoProfile -ExecutionPolicy Bypass -File $wd\\win-dpi.ps1 $* > $wd\\dpi.txt 2>&1" 60 >/dev/null
+		"$vm" ssh "Get-Content $wd\\dpi.txt" | tr -d '\r'
 	}
 	prev=$(run get | sed -n 's/^current=\([0-9]*\).*/\1/p')
 	[ -n "$prev" ] || { echo "cannot read the Windows display scale" >&2; exit 1; }

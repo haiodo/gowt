@@ -46,7 +46,7 @@ func main() {
 		app.SetDensity(gowt.DensityNative)
 		kit.Appearance(app)
 		w := app.Window("develop")
-		w.SetSize(kit.Width, kit.Height)
+		kit.Size(w)
 		w.SetMinSize(900, 500)
 
 		var sidebar, content, thread *gowt.Panel

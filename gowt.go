@@ -36,6 +36,7 @@ type App struct {
 	paints     map[*swt.Control]*painted // controls given an Adaptive colour
 	// controls whose preferred size changed in this event-loop turn; see sizing
 	relayouts []*swt.Control
+	repaints  []*swt.Shell // windows to repaint with their children at the next turn, see repaint_linux.go
 	badge     string
 	link      linkStyle
 	jobs      jobSet // Job, Track and short After timers, see jobs.go
@@ -685,7 +686,12 @@ type LabelView struct {
 }
 
 // SetText replaces the label text. Lays the parents out when the size changes.
-func (l *LabelView) SetText(s string) { sizing(&l.l.Control, func() { l.l.SetText(s) }) }
+func (l *LabelView) SetText(s string) {
+	if l.l.GetText() == s {
+		return
+	}
+	sizing(&l.l.Control, func() { l.l.SetText(s) })
+}
 
 // Unwrap returns the underlying swt.Label for the full API.
 func (l *LabelView) Unwrap() *swt.Label { return l.l }

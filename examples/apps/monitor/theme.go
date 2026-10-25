@@ -4,6 +4,7 @@ import (
 	"runtime"
 
 	"github.com/haiodo/gowt/gfx"
+	"github.com/haiodo/gowt/swt"
 )
 
 // palette is every colour and font the charts draw with. It is rebuilt when the appearance or the
@@ -64,4 +65,14 @@ func (c *palette) track() gfx.Color {
 		return mix(c.card, gfx.White, 0.16)
 	}
 	return mix(c.card, gfx.Black, 0.10)
+}
+
+// setCanvasBackground gives a GTK canvas the colour it is drawn on. Without one SWT fills its whole
+// area again before every paint, which was a fifth of the main thread's time while the charts scroll.
+func (p *palette) setCanvasBackground(c *swt.Canvas) {
+	if runtime.GOOS != "linux" {
+		return
+	}
+	k := func(v float64) int32 { return int32(v*255 + 0.5) }
+	c.SetBackgroundWithColor(swt.NewColorRedGreenBlue(k(p.card.R), k(p.card.G), k(p.card.B)))
 }

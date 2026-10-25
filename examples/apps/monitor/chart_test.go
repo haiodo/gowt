@@ -22,7 +22,7 @@ func testPalette(dark bool) *palette {
 func cpuSpec() chartSpec {
 	return chartSpec{
 		names: []string{"System", "User"}, stacked: true, total: "CPU", fixedMax: 1,
-		fracs: []float64{0, 0.25, 0.5, 0.75, 1},
+		fracs: []float64{0, 0.25, 0.5, 0.75, 1}, widest: "100%",
 		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
 		axis:  func(v float64) string { return pct(v) },
 		value: func(v float64) string { return pct(v) },
@@ -31,7 +31,7 @@ func cpuSpec() chartSpec {
 
 func netSpec() chartSpec {
 	return chartSpec{
-		names: []string{"Sent", "Received"}, minMax: 100e3, fracs: []float64{0, 0.5, 1},
+		names: []string{"Sent", "Received"}, minMax: 100e3, fracs: []float64{0, 0.5, 1}, widest: "000 KB/s",
 		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
 		axis:  rate, value: rate,
 	}
@@ -121,6 +121,7 @@ func TestPreviewCharts(t *testing.T) {
 		suffix := map[bool]string{false: "light", true: "dark"}[dark]
 		c := newChart(cpuSpec(), testPalette(dark), time.Minute)
 		c.w, c.h = 760, 200
+		c.restyle()
 		feed(c, 95, cpuWave)
 		c.tr = c.trTo - 0.3 // mid-step
 		c.rerecord()
@@ -128,6 +129,7 @@ func TestPreviewCharts(t *testing.T) {
 
 		n := newChart(netSpec(), testPalette(dark), 5*time.Minute)
 		n.w, n.h = 560, 180
+		n.restyle()
 		feed(n, 400, func(i int) []float64 {
 			burst := 0.0
 			if i > 250 && i < 300 {
@@ -164,6 +166,7 @@ func TestSplineMonotone(t *testing.T) {
 func benchChart() *chart {
 	c := newChart(cpuSpec(), testPalette(false), time.Minute)
 	c.w, c.h = 760, 200
+	c.restyle()
 	t := time.Date(2026, 10, 26, 14, 0, 0, 0, time.Local)
 	for i := 0; i < 70; i++ {
 		c.push(t.Add(time.Duration(i)*time.Second), cpuWave(i)...)

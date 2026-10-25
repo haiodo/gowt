@@ -19,16 +19,19 @@ type chartSpec struct {
 	fixedMax float64
 	minMax   float64 // auto axis: the smallest top value
 	fracs    []float64
+	widest   string // the widest axis label, to size the label column
 	color    func(p *palette, i int) gfx.Color
 	axis     func(float64) string // gridline labels
 	value    func(float64) string // tooltip values
 }
 
 const (
-	animDur  = 650 * time.Millisecond // one sample step, and the pulse that marks it
+	animDur  = 350 * time.Millisecond // one sample step, and the pulse that marks it
 	rightPad = 14.0                   // empty space right of the newest point, points
-	hoverPad = 10.0
 )
+
+// frameGap is the least time between two frames that move the chart.
+const frameGap = 20 * time.Millisecond
 
 var stepEase = gfx.CubicBezier(0.25, 0.0, 0.2, 1)
 
@@ -47,6 +50,7 @@ type chart struct {
 	node    *gfx.Node
 	v       *view.View
 	w, h    float64
+	margin  float64 // the label column left of the plot
 	window  time.Duration
 	t0      time.Time
 	ts      []float64
@@ -62,6 +66,7 @@ type chart struct {
 	animFresh        bool
 	yMax, yTarget    float64
 	lastFrame        time.Duration
+	lastPlaced       time.Duration
 	ticking          bool
 
 	axisSp, lineSp, bubbleSp, ringSp *gfx.Sprite
@@ -129,7 +134,7 @@ func (c *chart) resize() {
 	c.restyle()
 }
 
-func (c *chart) pps() float64 { return (c.w - rightPad) / c.window.Seconds() }
+func (c *chart) pps() float64 { return (c.w - c.margin - rightPad) / c.window.Seconds() }
 
 // setPalette swaps colours; pictures are recorded again.
 func (c *chart) setPalette(p *palette) {
@@ -149,6 +154,10 @@ func (c *chart) restyle() {
 	if c.w == 0 {
 		return
 	}
+	if c.v != nil {
+		c.pal.setCanvasBackground(c.v.Canvas().Unwrap())
+	}
+	c.margin = gfx.DefaultMeasurer.MeasureText(c.spec.widest, c.pal.small).Width + 18
 	c.rerecord()
 	if c.v == nil || c.axisSp == nil {
 		return
@@ -193,7 +202,7 @@ func (c *chart) params() *tapeParams {
 		cols[i] = c.spec.color(c.pal, i)
 	}
 	return &tapeParams{
-		pal: c.pal, colors: cols, stacked: c.spec.stacked, w: c.w, h: c.h, pps: pps, yMax: c.yMax,
+		pal: c.pal, colors: cols, stacked: c.spec.stacked, w: c.w, h: c.h, margin: c.margin, pps: pps, yMax: c.yMax,
 		fracs: c.spec.fracs, tickStep: step, base: c.t0,
 		xLo: min(c.trFrom, c.trTo) - (c.w-rightPad)/pps - 2, xHi: c.trTo + rightPad/pps + 2,
 	}
@@ -310,6 +319,10 @@ func (c *chart) frame(fi gfx.FrameInfo) {
 		c.animStart, c.animFresh = fi.Time, false
 	}
 	t := min(float64(fi.Time-c.animStart)/float64(animDur), 1)
+	if t < 1 && c.yMax == c.yTarget && fi.Time-c.lastPlaced < frameGap {
+		return // a step needs no more than about 45 frames a second; a skipped frame costs nothing
+	}
+	c.lastPlaced = fi.Time
 	c.tr = c.trFrom + (c.trTo-c.trFrom)*stepEase(t)
 	settled := t >= 1
 	if c.yMax != c.yTarget {
@@ -326,7 +339,7 @@ func (c *chart) frame(fi gfx.FrameInfo) {
 	}
 	c.lastFrame = fi.Time
 	c.place()
-	if settled && c.hover == nil && !c.animFresh {
+	if settled && !c.animFresh {
 		c.ticking = false
 		c.v.Compositor().OnFrame(nil)
 	}
@@ -352,7 +365,7 @@ func (c *chart) place() {
 }
 
 func (c *chart) yOf(v float64) float64 {
-	return plotTop + (1-v/c.yMax)*(c.h-plotTop-plotBottom)
+	return plotTop + (1-v/c.yMax)*(c.h-strip-plotTop)
 }
 
 func (c *chart) setHover(p *gfx.Point) {
@@ -364,7 +377,7 @@ func (c *chart) setHover(p *gfx.Point) {
 		}
 		return
 	}
-	c.wake()
+	c.placeHover() // sprite changes ask for their own frame; no frame loop while the pointer rests
 }
 
 // placeHover moves the crosshair to the sample nearest the pointer. The data scrolls under a
@@ -381,7 +394,7 @@ func (c *chart) placeHover() {
 		k--
 	}
 	x := right - (c.tr-c.ts[k])*pps
-	if x < hoverPad || x > right+1 {
+	if x < c.margin || x > right+1 {
 		if c.hoverShown {
 			c.hoverShown = false
 			for _, s := range append([]*gfx.Sprite{c.lineSp, c.bubbleSp}, c.dots...) {

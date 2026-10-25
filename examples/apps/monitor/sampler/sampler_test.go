@@ -92,6 +92,9 @@ func TestHost(t *testing.T) {
 	if m.Total == 0 || m.Used == 0 || m.Used > m.Total {
 		t.Errorf("memory %+v", m)
 	}
+	if m.Used+m.Cached+m.Free != m.Total {
+		t.Errorf("used %d + cached %d + free %d != total %d", m.Used, m.Cached, m.Free, m.Total)
+	}
 	if snap.Uptime <= 0 {
 		t.Errorf("uptime %v", snap.Uptime)
 	}

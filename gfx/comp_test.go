@@ -536,3 +536,32 @@ func TestOnFrameKeepsTicking(t *testing.T) {
 		t.Fatal("NeedsFrame stays true after OnFrame(nil)")
 	}
 }
+
+// A change to a sprite on an idle scene must ask for a frame by itself: a crosshair moved or a pulse
+// started from an event handler would otherwise wait for the next camera move.
+func TestSpriteChangeWakesAnIdleScene(t *testing.T) {
+	g := newRig(t, Options{})
+	g.settle()
+	sp := g.c.NewSprite(boxPic(10, 10), SpaceScreen, Point{})
+	if !g.c.NeedsFrame() {
+		t.Fatal("a new sprite does not ask for its first frame")
+	}
+	g.settle()
+	for name, change := range map[string]func(){
+		"SetPos":     func() { sp.SetPos(Point{5, 5}) },
+		"SetOpacity": func() { sp.SetOpacity(0.5) },
+		"SetPicture": func() { sp.SetPicture(boxPic(20, 20)) },
+		"MoveTo":     func() { sp.MoveTo(Point{50, 50}, 64*time.Millisecond, Linear, nil) },
+		"FadeTo":     func() { sp.FadeTo(0, 64*time.Millisecond, Linear, nil) },
+		"Remove":     sp.Remove,
+	} {
+		if g.c.NeedsFrame() {
+			t.Fatalf("%s: frames wanted before the change", name)
+		}
+		change()
+		if !g.c.NeedsFrame() {
+			t.Errorf("%s does not ask for a frame", name)
+		}
+		g.settle()
+	}
+}

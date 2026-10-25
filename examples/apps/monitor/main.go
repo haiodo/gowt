@@ -30,9 +30,7 @@ type segment struct {
 func memSegments() (used []segment, rest []segment) {
 	app := segment{"App", func(p *palette) gfx.Color { return p.accent }, func(m sampler.Memory) uint64 { return m.App }}
 	cached := segment{"Cached files", func(p *palette) gfx.Color { return mix(p.card, p.accent, 0.32) }, func(m sampler.Memory) uint64 { return m.Cached }}
-	free := segment{"Free", func(p *palette) gfx.Color { return p.track() }, func(m sampler.Memory) uint64 {
-		return m.Total - min(m.Total, m.Used+m.Cached)
-	}}
+	free := segment{"Free", func(p *palette) gfx.Color { return p.track() }, func(m sampler.Memory) uint64 { return m.Free }}
 	if runtime.GOOS == "darwin" {
 		wired := segment{"Wired", func(p *palette) gfx.Color { return p.orange }, func(m sampler.Memory) uint64 { return m.Wired }}
 		comp := segment{"Compressed", func(p *palette) gfx.Color { return p.purple }, func(m sampler.Memory) uint64 { return m.Compressed }}
@@ -64,6 +62,7 @@ type monitor struct {
 	segValues                                                          []*gowt.LabelView
 	uptime, load, procCount                                            *gowt.LabelView
 
+	win      *gowt.Window
 	table    *gowt.TableView
 	cols     []*gowt.Column
 	procs    []sampler.Process
@@ -98,13 +97,7 @@ func (m *monitor) palette() *palette {
 	if m.app.Dark() {
 		card = gfx.Color{R: 0.17, G: 0.17, B: 0.18, A: 1}
 	}
-	if runtime.GOOS == "linux" {
-		c := linuxCard.Light
-		if m.app.Dark() {
-			c = linuxCard.Dark
-		}
-		card = gfx.RGB(c.R, c.G, c.B)
-	} else if len(m.cards) > 0 {
+	if len(m.cards) > 0 {
 		if c := m.cards[0].Unwrap().GetBackground(); c != nil {
 			rgb := c.GetRGB()
 			card = gfx.Color{R: float64(rgb.Red) / 255, G: float64(rgb.Green) / 255, B: float64(rgb.Blue) / 255, A: 1}
@@ -139,14 +132,7 @@ func toRGB(c gfx.Color) gowt.RGB {
 	return gowt.RGB{R: uint8(c.R*255 + 0.5), G: uint8(c.G*255 + 0.5), B: uint8(c.B*255 + 0.5)}
 }
 
-// linuxCard is the Section colour on GNOME. In a Section, labels that are not updated stay blank
-// beside a gfx view (cause not isolated), so Linux uses a plain panel of this colour.
-var linuxCard = gowt.Adaptive{Light: gowt.RGB{R: 235, G: 235, B: 234}, Dark: gowt.RGB{R: 52, G: 52, B: 52}}
-
 func (m *monitor) card(grow gowt.Option, opts ...gowt.Option) gowt.Option {
-	if runtime.GOOS == "linux" {
-		return gowt.VBox(append([]gowt.Option{grow, gowt.Background(linuxCard), gowt.Padding(gowt.Spacing.MD)}, opts...)...)
-	}
 	return gowt.Section(append([]gowt.Option{grow, gowt.Init(func(s *gowt.SectionView) { m.cards = append(m.cards, s) })}, opts...)...)
 }
 
@@ -171,7 +157,7 @@ func (m *monitor) build() {
 	m.pal = pal
 	m.cpu = newChart(chartSpec{
 		names: []string{"System", "User"}, stacked: true, total: "CPU", fixedMax: 1,
-		fracs: []float64{0, 0.25, 0.5, 0.75, 1},
+		fracs: []float64{0, 0.25, 0.5, 0.75, 1}, widest: "100%",
 		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
 		axis:  pct, value: pct,
 	}, pal, windows[0])
@@ -184,13 +170,13 @@ func (m *monitor) build() {
 	}
 	m.mem = newChart(chartSpec{
 		names: names, stacked: len(used) > 1, total: "Used", fixedMax: 1,
-		fracs: []float64{0, 0.25, 0.5, 0.75, 1},
+		fracs: []float64{0, 0.25, 0.5, 0.75, 1}, widest: "000 GB",
 		color: func(p *palette, i int) gfx.Color { return used[i].color(p) },
 		axis:  func(v float64) string { return gbAxis(v * total) },
 		value: func(v float64) string { return bytesStr(uint64(v * total)) },
 	}, pal, windows[0])
 	m.net = newChart(chartSpec{
-		names: []string{"Sent", "Received"}, minMax: 100e3, fracs: []float64{0, 0.5, 1},
+		names: []string{"Sent", "Received"}, minMax: 100e3, fracs: []float64{0, 0.5, 1}, widest: "000 KB/s",
 		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
 		axis:  rate, value: rate,
 	}, pal, windows[0])
@@ -204,8 +190,9 @@ func (m *monitor) build() {
 	})
 
 	w := app.Window("Monitor")
-	w.SetSize(kit.Width, kit.Height)
-	w.SetMinSize(1040, 700)
+	m.win = w
+	w.SetSize(1200, 740)
+	w.SetMinSize(1040, 640)
 	w.Add(gowt.VBox(gowt.Grow(), gowt.Padding(gowt.Scaled(20)), gowt.Gap(gowt.Spacing.MD),
 		m.header(),
 		gowt.HBox(gowt.Grow(), gowt.Gap(gowt.Spacing.MD),
@@ -252,7 +239,7 @@ func (m *monitor) cpuCard() gowt.Option {
 	return m.card(gowt.GrowX(), gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS),
 		head("CPU", m.legend("User", func(p *palette) gfx.Color { return p.accent }), m.legend("System", func(p *palette) gfx.Color { return p.orange }),
 			gowt.Spacer(), lbl(&m.cpuValue, "-", gowt.Typeface(gowt.Type.Title))),
-		m.cpu.option(gowt.Scaled(300), gowt.Scaled(120))))
+		m.cpu.option(gowt.Scaled(300), gowt.Scaled(100))))
 }
 
 func (m *monitor) memCard() gowt.Option {
@@ -266,7 +253,7 @@ func (m *monitor) memCard() gowt.Option {
 	legend = append(legend, gowt.Spacer(), lbl(&m.swapNote, "", kit.Faint(), gowt.Typeface(gowt.Type.Caption)))
 	return m.card(gowt.Grow(), gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS),
 		head("Memory", gowt.Spacer(), lbl(&m.memNote, "", kit.Faint()), lbl(&m.memValue, "-", gowt.Typeface(gowt.Type.Title))),
-		m.mem.option(gowt.Scaled(300), gowt.Scaled(90)),
+		m.mem.option(gowt.Scaled(300), gowt.Scaled(76)),
 		m.bar.strip(gowt.Scaled(16)),
 		gowt.HBox(append([]gowt.Option{gowt.GrowX(), gowt.Gap(gowt.Scaled(20))}, legend...)...)))
 }
@@ -276,7 +263,7 @@ func (m *monitor) netCard() gowt.Option {
 		head("Network", gowt.Spacer(),
 			m.legend("Received", func(p *palette) gfx.Color { return p.accent }), lbl(&m.rxValue, "-", gowt.Typeface(gowt.Type.Subtitle)),
 			m.legend("Sent", func(p *palette) gfx.Color { return p.orange }), lbl(&m.txValue, "-", gowt.Typeface(gowt.Type.Subtitle))),
-		m.net.option(gowt.Scaled(300), gowt.Scaled(80))))
+		m.net.option(gowt.Scaled(300), gowt.Scaled(64))))
 }
 
 func (m *monitor) coresCard() gowt.Option {
@@ -289,12 +276,12 @@ var columns = []struct {
 	title string
 	width int
 	right bool
-}{{"Process", 190, false}, {"CPU %", 64, true}, {"Memory", 84, true}, {"PID", 62, true}}
+}{{"Process", 190, false}, {"% CPU", 64, true}, {"Memory", 84, true}, {"PID", 62, true}}
 
 func (m *monitor) procCard() gowt.Option {
 	return gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM),
-		head("Processes"),
-		gowt.Table(gowt.Grow(), gowt.Size(0, gowt.Scaled(160)), gowt.Init(func(t *gowt.TableView) {
+		head("Processes", gowt.Spacer(), gowt.Label("CPU is percent of one core", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
+		gowt.Table(gowt.Grow(), gowt.Size(0, gowt.Scaled(160)), gowt.Tooltip("100% is one core fully busy, as in Activity Monitor"), gowt.Init(func(t *gowt.TableView) {
 			m.table = t
 			for i, c := range columns {
 				opts := []gowt.Option{}
@@ -324,7 +311,7 @@ func (m *monitor) sortBy(i int) {
 	m.fillTable()
 }
 
-const maxRows = 80
+const maxRows = 40
 
 // fillTable shows the top processes in the sort order, rewriting rows in place so the selection and
 // the scroll position stay, and tracking the selected process by PID as the order changes.

@@ -108,6 +108,7 @@ func sizing(c *swt.Control, set func()) {
 	}
 	before := preferred(c)
 	set()
+	a.repaintShell(c)
 	after := preferred(c)
 	if after.X != before.X || after.Y != before.Y {
 		a.relayout(c)

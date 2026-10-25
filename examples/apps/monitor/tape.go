@@ -72,7 +72,8 @@ type tapeParams struct {
 	pal      *palette
 	colors   []gfx.Color
 	stacked  bool
-	w, h     float64   // plot size in points
+	w, h     float64   // view size in points
+	margin   float64   // width of the column that holds the value labels, left of the plot
 	pps      float64   // points per second
 	yMax     float64   // value at the top gridline
 	fracs    []float64 // gridlines, as fractions of yMax
@@ -82,12 +83,12 @@ type tapeParams struct {
 }
 
 const (
-	plotTop    = 20.0 // room above the highest gridline for its label
-	plotBottom = 1.5
+	plotTop = 10.0 // room above the highest gridline for half of its label
+	strip   = 20.0 // the band under the plot that holds the time labels
 )
 
 func (p *tapeParams) y(v float64) float64 {
-	return plotTop + (1-v/p.yMax)*(p.h-plotTop-plotBottom)
+	return plotTop + (1-v/p.yMax)*(p.h-strip-plotTop)
 }
 
 // tapeResult is the picture and the curves it was drawn from, in value space, for the live dot.
@@ -109,8 +110,8 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 	for t := math.Ceil((p.xLo+off)/p.tickStep)*p.tickStep - off; t <= p.xHi; t += p.tickStep {
 		x := math.Round(t*p.pps) + 0.5
 		var l gfx.Path
-		l.MoveTo(x, 0)
-		l.LineTo(x, p.h)
+		l.MoveTo(x, plotTop)
+		l.LineTo(x, p.h-strip+4)
 		r.StrokePath(&l, tick, pal.tick)
 		at := p.base.Add(time.Duration(t * float64(time.Second)))
 		// a label on every second tick only: Pango text is the slow part of a Linux tile
@@ -119,7 +120,7 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 			if p.tickStep < 60 {
 				layout = "15:04:05"
 			}
-			r.Text(at.Format(layout), x+4, p.h-5, pal.small, pal.labelSoft)
+			r.Text(at.Format(layout), x+4, p.h-5, pal.small, pal.label)
 		}
 	}
 	for _, f := range p.fracs {
@@ -175,7 +176,7 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 			}
 			area.Close()
 			c := p.colors[i]
-			r.FillGradient(&area, gfx.NewLinearGradient(gfx.Point{Y: plotTop}, gfx.Point{Y: p.h},
+			r.FillGradient(&area, gfx.NewLinearGradient(gfx.Point{Y: plotTop}, gfx.Point{Y: p.h - strip},
 				gfx.Stop{Offset: 0, Color: c.WithAlpha(0.62)}, gfx.Stop{Offset: 1, Color: c.WithAlpha(0.07)}))
 			var line gfx.Path
 			line.MoveTo(xs[0], top.ys[0])
@@ -187,14 +188,17 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 	return res
 }
 
-// recordAxis draws the value labels of the gridlines; they stay put while the tape moves.
+// recordAxis draws the column of value labels left of the plot. It covers the tape under it, so the data
+// never runs under a label, and stays put while the tape moves.
 func recordAxis(pal *palette, p *tapeParams, label func(float64) string) *gfx.Picture {
 	r := gfx.NewRecorder()
+	r.FillRect(gfx.R(0, 0, p.margin, p.h), pal.card)
 	for _, f := range p.fracs {
 		if f == 0 {
 			continue
 		}
-		r.Text(label(f*p.yMax), 8, math.Round(p.y(f*p.yMax))-4, pal.small, pal.label)
+		s := label(f * p.yMax)
+		r.Text(s, p.margin-8-gfx.DefaultMeasurer.MeasureText(s, pal.small).Width, math.Round(p.y(f*p.yMax))+pal.small.Size*0.36, pal.small, pal.label)
 	}
 	return r.Finish()
 }

@@ -17,6 +17,7 @@ var (
 	objectRef        func(o uintptr) uintptr
 	addEvents        func(w uintptr, mask int32)
 	scaleFactor      func(w uintptr) int32
+	queueDraw        func(w uintptr)
 	addTick          func(w, cb, data, notify uintptr) uint32
 	removeTick       func(w uintptr, id uint32)
 	clockTime        func(c uintptr) int64
@@ -38,7 +39,7 @@ func bindGTK() {
 	gtkOnce.Do(func() {
 		for fn, name := range map[any]string{
 			&signalConnect: "g_signal_connect_data", &signalDisconnect: "g_signal_handler_disconnect",
-			&objectRef: "g_object_ref", &addEvents: "gtk_widget_add_events", &scaleFactor: "gtk_widget_get_scale_factor",
+			&objectRef: "g_object_ref", &addEvents: "gtk_widget_add_events", &scaleFactor: "gtk_widget_get_scale_factor", &queueDraw: "gtk_widget_queue_draw",
 			&addTick: "gtk_widget_add_tick_callback", &removeTick: "gtk_widget_remove_tick_callback",
 			&clockTime: "gdk_frame_clock_get_frame_time", &clockRefresh: "gdk_frame_clock_get_refresh_info",
 			&scrollDeltas: "gdk_event_get_scroll_deltas", &scrollDirection: "gdk_event_get_scroll_direction",

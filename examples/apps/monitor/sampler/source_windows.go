@@ -122,15 +122,11 @@ func (s *windowsSource) read(procs bool) (raw, error) {
 	if x, _, e := pGlobalMemoryStatusEx.Call(uintptr(unsafe.Pointer(&ms))); x == 0 {
 		return r, e
 	}
-	r.mem.Total = ms.totalPhys
-	r.mem.Free = ms.availPhys
-	r.mem.Used = ms.totalPhys - min(ms.availPhys, ms.totalPhys)
-	r.mem.App = r.mem.Used
 	var pi perfInfo
 	pi.size = uint32(unsafe.Sizeof(pi))
+	var cache uint64
 	if x, _, _ := pGetPerformanceInfo.Call(uintptr(unsafe.Pointer(&pi)), uintptr(pi.size)); x != 0 {
-		// the cache is partly in use: only what is also available counts as reclaimable
-		r.mem.Cached = min(uint64(pi.systemCache*pi.pageSize), ms.availPhys)
+		cache = uint64(pi.systemCache * pi.pageSize)
 		// the commit charge beyond RAM is what lives in the page file
 		if total := uint64(pi.commitLimit * pi.pageSize); total > ms.totalPhys {
 			r.mem.SwapTotal = total - ms.totalPhys
@@ -139,6 +135,9 @@ func (s *windowsSource) read(procs bool) (raw, error) {
 			}
 		}
 	}
+	swapTotal, swapUsed := r.mem.SwapTotal, r.mem.SwapUsed
+	r.mem = windowsMemory(ms.totalPhys, ms.availPhys, cache)
+	r.mem.SwapTotal, r.mem.SwapUsed = swapTotal, swapUsed
 	r.rx, r.tx = ifOctets()
 	ms64, _, _ := pGetTickCount64.Call()
 	r.uptime = time.Duration(ms64) * time.Millisecond

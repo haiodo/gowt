@@ -127,6 +127,9 @@ func (m *meterView) relayout() {
 	if m.w == 0 || m.layout == nil {
 		return
 	}
+	if m.v != nil {
+		m.pal.setCanvasBackground(m.v.Canvas().Unwrap())
+	}
 	m.layout(m)
 	r := gfx.NewRecorder()
 	r.FillRect(gfx.R(0, 0, m.w, m.h), m.pal.card)
@@ -153,7 +156,12 @@ func (m *meterView) wake() {
 		return
 	}
 	m.on = true
+	var placed time.Duration
 	m.v.Compositor().OnFrame(func(fi gfx.FrameInfo) {
+		if fi.Time-placed < frameGap {
+			return
+		}
+		placed = fi.Time
 		moving := m.sm.step(fi.Time, 0.1)
 		pics := make([]*gfx.Picture, len(m.nodes))
 		for i := range m.nodes {

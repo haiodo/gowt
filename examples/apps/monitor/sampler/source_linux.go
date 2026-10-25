@@ -52,7 +52,7 @@ func (s *linuxSource) read(procs bool) (raw, error) {
 	if err != nil {
 		return r, err
 	}
-	r.mem = memoryOf(m)
+	r.mem = linuxMemory(m)
 	r.rx, r.tx = netDev()
 	if f := fields(readFile("/proc/loadavg")); len(f) >= 3 {
 		for i := range r.load {
@@ -110,47 +110,6 @@ func meminfo() (map[string]uint64, error) {
 		return nil, err
 	}
 	return parseMeminfo(string(b)), nil
-}
-
-// parseMeminfo returns bytes by key.
-func parseMeminfo(s string) map[string]uint64 {
-	m := map[string]uint64{}
-	for _, l := range strings.Split(s, "\n") {
-		k, v, ok := strings.Cut(l, ":")
-		if !ok {
-			continue
-		}
-		f := strings.Fields(v)
-		if len(f) == 0 {
-			continue
-		}
-		n, _ := strconv.ParseUint(f[0], 10, 64)
-		if len(f) > 1 && f[1] == "kB" {
-			n *= 1024
-		}
-		m[k] = n
-	}
-	return m
-}
-
-func memoryOf(m map[string]uint64) Memory {
-	var r Memory
-	r.Total = m["MemTotal"]
-	avail, ok := m["MemAvailable"]
-	if !ok {
-		avail = m["MemFree"] + m["Cached"] + m["Buffers"]
-	}
-	r.Free = m["MemFree"]
-	r.Cached = m["Cached"] + m["Buffers"] + m["SReclaimable"] - min(m["Shmem"], m["Cached"])
-	if r.Total >= avail {
-		r.Used = r.Total - avail
-	}
-	r.App = r.Used
-	r.SwapTotal = m["SwapTotal"]
-	if r.SwapTotal >= m["SwapFree"] {
-		r.SwapUsed = r.SwapTotal - m["SwapFree"]
-	}
-	return r
 }
 
 // netDev sums the interfaces except loopback; a down interface does not count.

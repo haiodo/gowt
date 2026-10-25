@@ -161,7 +161,7 @@ func (s *darwinSource) memory(m *Memory) {
 	if hostStatistics64(s.mach, hostVMInfo64, unsafe.Pointer(&st[0]), &cnt) == 0 {
 		u32 := func(off int) uint64 { return uint64(uint32(st[off/4])) }
 		page := s.pageSize
-		free, wired := u32(0), u32(12)
+		wired := u32(12)
 		purgeable, comp := u32(88), u32(128)
 		external, internal := u32(136), u32(140)
 		app := uint64(0)
@@ -169,9 +169,9 @@ func (s *darwinSource) memory(m *Memory) {
 			app = internal - purgeable
 		}
 		m.App, m.Wired, m.Compressed = app*page, wired*page, comp*page
-		m.Cached = (external + purgeable) * page
-		m.Free = free * page
-		m.Used = m.App + m.Wired + m.Compressed
+		m.Used = min(m.App+m.Wired+m.Compressed, m.Total)
+		m.Cached = min((external+purgeable)*page, m.Total-m.Used)
+		m.Free = m.Total - m.Used - m.Cached
 	}
 	if b := sysctlBytes("vm.swapusage", 32); len(b) >= 24 {
 		m.SwapTotal = binary.LittleEndian.Uint64(b[0:])

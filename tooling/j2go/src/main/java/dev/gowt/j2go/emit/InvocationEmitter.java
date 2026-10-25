@@ -473,7 +473,7 @@ final class InvocationEmitter {
 		// struct classes (NSPoint, NSRect, ...) have no declared constructor in the Java source
 		// (JLS implicit no-arg ctor only): "new X()" is a zero-value composite literal.
 		if (ci.isStruct) return emitter.qualifiedTypeName(ci) + "{}";
-		boolean pub = Modifier.isPublic(ctor.getModifiers());
+		boolean pub = TypeModel.exportsConstructor(ctor, ci);
 		String prefix = emitter.qualify((pub ? "New" : "new") + ci.goFuncPrefix, ci);
 		String goName = emitter.ctorGoName(ctor, prefix);
 		List<String> args = buildArgs(cic.arguments(), ctor);

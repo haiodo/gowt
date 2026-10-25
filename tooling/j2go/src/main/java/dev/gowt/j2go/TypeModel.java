@@ -96,6 +96,11 @@ public class TypeModel {
 	/** dispatch.properties: classes whose non-private instance methods dispatch through impl although no translated subclass overrides them (SWT's public API is to subclass them). */
 	public static final Set<String> FORCED_DISPATCH = new HashSet<>();
 
+	/** A public constructor is exported; so is a protected one of a forced-dispatch class, which other packages subclass. */
+	public static boolean exportsConstructor(IMethodBinding ctor, ClassInfo ci) {
+		return Modifier.isPublic(ctor.getModifiers()) || Modifier.isProtected(ctor.getModifiers()) && FORCED_DISPATCH.contains(ci.binaryName);
+	}
+
 	/** Dispatch points the reference platform has (cascade.properties): shared files call them, so every platform declares them. */
 	public static final Set<String> PINNED_CASCADE = new HashSet<>();
 

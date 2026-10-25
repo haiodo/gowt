@@ -190,7 +190,7 @@ func (this *CTabFolder) Init(style int32) {
 	var display *Display = this.GetDisplay()
 	this.selectionForeground = display.impl.getSystemColor_(CTabFolderSELECTION_FOREGROUND)
 	this.selectionBackground = display.impl.getSystemColor_(CTabFolderSELECTION_BACKGROUND)
-	this.renderer = newCTabFolderRenderer(this)
+	this.renderer = NewCTabFolderRenderer(this)
 	this.useDefaultRenderer = true
 	this.controls = make([]*Control, 0)
 	this.controlAlignments = make([]int32, 0)
@@ -2850,7 +2850,7 @@ func (this *CTabFolder) SetRenderer(rendererLike CTabFolderRendererLike) {
 	}
 	this.useDefaultRenderer = renderer == (nil)
 	if this.useDefaultRenderer {
-		renderer = newCTabFolderRenderer(this)
+		renderer = NewCTabFolderRenderer(this)
 	}
 	this.renderer = renderer
 	this.UpdateFolder(CTabFolderREDRAW)

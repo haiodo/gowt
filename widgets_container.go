@@ -133,7 +133,11 @@ type CTabsView struct {
 func CTabs(opts ...Option) Option {
 	return leaf("CTabs", sBottom|sBorder, opts, func(p *swt.Composite) Widget {
 		f := swt.NewCTabFolder(p, resolve(swt.NONE, opts))
-		return &CTabsView{base{&f.Control}, f}
+		newTabRenderer(f)
+		v := &CTabsView{base{&f.Control}, f}
+		v.SetFont(Type.Body)
+		redrawOnTheme(f)
+		return v
 	})
 }
 

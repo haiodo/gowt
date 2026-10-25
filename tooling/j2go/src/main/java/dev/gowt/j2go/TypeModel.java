@@ -68,6 +68,10 @@ public class TypeModel {
 
 		static boolean hasOverrideBelow(ClassInfo ci, String sig) {
 			if (PINNED_CASCADE.contains(ci.binaryName + "#" + sig) || ci.anonOverridden.contains(sig)) return true;
+			if (FORCED_DISPATCH.contains(ci.binaryName)) {
+				IMethodBinding mb = ci.declaredMethods.get(sig);
+				if (mb != null && !Modifier.isStatic(mb.getModifiers()) && !Modifier.isPrivate(mb.getModifiers())) return true;
+			}
 			for (ClassInfo child : ci.children) {
 				if (child.declaredMethods.containsKey(sig) || hasOverrideBelow(child, sig)) return true;
 			}
@@ -75,7 +79,7 @@ public class TypeModel {
 		}
 
 		/** The tree dispatches through an impl field: it has named subclasses, or anonymous ones that override. */
-		public boolean hasImpl() { return !children.isEmpty() || anonDispatch; }
+		public boolean hasImpl() { return !children.isEmpty() || anonDispatch || FORCED_DISPATCH.contains(binaryName); }
 
 		public IMethodBinding declaredBinding(String sig) {
 			return declaredMethods.get(sig);
@@ -88,6 +92,9 @@ public class TypeModel {
 			return !root.goPackage.equals(GoTypes.piPackage);
 		}
 	}
+
+	/** dispatch.properties: classes whose non-private instance methods dispatch through impl although no translated subclass overrides them (SWT's public API is to subclass them). */
+	public static final Set<String> FORCED_DISPATCH = new HashSet<>();
 
 	/** Dispatch points the reference platform has (cascade.properties): shared files call them, so every platform declares them. */
 	public static final Set<String> PINNED_CASCADE = new HashSet<>();

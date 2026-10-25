@@ -54,13 +54,13 @@ func (this *CTabFolderLayout) computeSize_(composite *Composite, wHint int32, hH
 	var gc *GC = NewGCDrawable(upcastCTabFolderToDrawable(folder))
 	for i := int32(0); i < int32(len(items)); i++ {
 		if folder.single {
-			tabW = int32(math.Max(float64(tabW), float64(renderer.ComputeSize(i, SELECTED, gc, DEFAULT, DEFAULT).X)))
+			tabW = int32(math.Max(float64(tabW), float64(renderer.impl.computeSize_(i, SELECTED, gc, DEFAULT, DEFAULT).X)))
 		} else {
 			var state int32 = 0
 			if i == selectedIndex {
 				state |= SELECTED
 			}
-			tabW += renderer.ComputeSize(i, state, gc, DEFAULT, DEFAULT).X
+			tabW += renderer.impl.computeSize_(i, state, gc, DEFAULT, DEFAULT).X
 		}
 	}
 	var width int32 = 0

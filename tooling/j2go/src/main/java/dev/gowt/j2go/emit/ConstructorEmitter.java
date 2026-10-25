@@ -59,7 +59,9 @@ final class ConstructorEmitter {
 
 	void emitConstructor(MethodDeclaration md, TypeModel.ClassInfo ci, AbstractTypeDeclaration td, StringBuilder out) {
 		IMethodBinding mb = md.resolveBinding();
-		boolean pub = Modifier.isPublic(md.getModifiers()) && !ci.isEnum;
+		// A forced-dispatch class is subclassed from other packages, which need its protected constructor.
+		boolean forced = Modifier.isProtected(md.getModifiers()) && TypeModel.FORCED_DISPATCH.contains(ci.binaryName);
+		boolean pub = (Modifier.isPublic(md.getModifiers()) || forced) && !ci.isEnum;
 		String prefix = (pub ? "New" : "new") + ci.goFuncPrefix;
 		String goName = emitter.ctorGoName(mb, prefix);
 		String initName = emitter.names.goMemberName(mb, "init" + ci.goFuncPrefix); // init methods are always unexported by shape

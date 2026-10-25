@@ -349,7 +349,7 @@ func (this *CTabFolder) ComputeControlBounds(sizeLike PointLike, position [][]bo
 	for i := int32(0); i < int32(len(rects)); i++ {
 		rects[i] = NewRectangle(0, 0, 0, 0)
 	}
-	var trim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
+	var trim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
 	var borderRight int32 = trim.Width + trim.X
 	var borderLeft int32 = -trim.X
 	var borderBottom int32 = trim.Height + trim.Y
@@ -482,7 +482,7 @@ func (this *CTabFolder) ComputeControlBounds(sizeLike PointLike, position [][]bo
 			}
 		}
 	}
-	var bodyTrim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BODY, NONE, 0, 0, 0, 0)
+	var bodyTrim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BODY, NONE, 0, 0, 0, 0)
 	var bodyRight int32 = bodyTrim.Width + bodyTrim.X
 	var bodyLeft int32 = -bodyTrim.X
 	var bodyWidth int32 = size.X - bodyLeft - bodyRight
@@ -576,7 +576,7 @@ func (this *CTabFolder) GetControlHeight(ctrlSizeLike PointLike) int32 {
 
 func (this *CTabFolder) computeTrim_(x int32, y int32, width int32, height int32) *Rectangle {
 	this.CheckWidget()
-	var trim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BODY, NONE, x, y, width, height)
+	var trim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BODY, NONE, x, y, width, height)
 	var size *Point = NewPoint(width, height)
 	var wrapHeight int32 = this.GetWrappedHeight(size)
 	if this.onBottom {
@@ -595,9 +595,9 @@ func (this *CTabFolder) CreateButtonImage(displayLike DisplayLike, button int32)
 	}
 	_ = display
 	var tempGC *GC = NewGCDrawable(this)
-	var size *Point = this.renderer.ComputeSize(button, NONE, tempGC, DEFAULT, DEFAULT)
+	var size *Point = this.renderer.impl.computeSize_(button, NONE, tempGC, DEFAULT, DEFAULT)
 	tempGC.impl.dispose_()
-	var trim *Rectangle = this.renderer.ComputeTrim(button, NONE, 0, 0, 0, 0)
+	var trim *Rectangle = this.renderer.impl.computeTrim_(button, NONE, 0, 0, 0, 0)
 	var imageSize *Point = NewPoint(size.X-trim.Width, size.Y-trim.Height)
 	var transColor *Color = this.renderer.parent.impl.getBackground_()
 	anon702 := &CTabFolderAnon1{}
@@ -606,7 +606,7 @@ func (this *CTabFolder) CreateButtonImage(displayLike DisplayLike, button int32)
 		var imageBounds *Rectangle = NewRectangle(0, 0, imageWidth, imageHeight)
 		gc.SetBackground(transColor)
 		gc.FillRectangleRect(imageBounds)
-		this.renderer.Draw(button, NONE, imageBounds, gc)
+		this.renderer.impl.draw_(button, NONE, imageBounds, gc)
 	}
 	var imageGcDrawer ImageGcDrawer = anon702
 	return NewImageDeviceImageGcDrawerWidthHeight(upcastDisplayToDevice(display), imageGcDrawer, imageSize.X, imageSize.Y)
@@ -761,7 +761,7 @@ func (this *CTabFolder) GetChevronVisible() bool {
 
 func (this *CTabFolder) getClientArea_() *Rectangle {
 	this.CheckWidget()
-	var trim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BODY, FILL, 0, 0, 0, 0)
+	var trim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BODY, FILL, 0, 0, 0, 0)
 	var size *Point = this.impl.getSize_()
 	var wrapHeight int32 = this.GetWrappedHeight(size)
 	if this.onBottom {
@@ -796,7 +796,7 @@ func (this *CTabFolder) GetItemPt(ptLike PointLike) *CTabItem {
 	}
 	this.RunUpdate()
 	var size *Point = this.impl.getSize_()
-	var trim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
+	var trim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
 	if size.X <= trim.Width {
 		return nil
 	}
@@ -826,7 +826,7 @@ func (this *CTabFolder) GetLeftItemEdge(gcLike GCLike, part int32) int32 {
 		gc = gcLike.AsGC()
 	}
 	_ = gc
-	var trim *Rectangle = this.renderer.ComputeTrim(part, NONE, 0, 0, 0, 0)
+	var trim *Rectangle = this.renderer.impl.computeTrim_(part, NONE, 0, 0, 0, 0)
 	var x int32 = -trim.X
 	var width int32 = 0
 	for i := int32(0); i < int32(len(this.controls)); i++ {
@@ -929,7 +929,7 @@ func (this *CTabFolder) GetRightItemEdge(gcLike GCLike) int32 {
 		gc = gcLike.AsGC()
 	}
 	_ = gc
-	var trim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
+	var trim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
 	var x int32 = this.impl.getSize_().X - (trim.Width + trim.X)
 	var width int32 = 0
 	for i := int32(0); i < int32(len(this.controls)); i++ {
@@ -1411,7 +1411,7 @@ func (this *CTabFolder) OnDispose(eventLike EventLike) {
 	}
 	this.chevronImage = nil
 	if this.renderer != (nil) {
-		this.renderer.Dispose()
+		this.renderer.impl.dispose_()
 	}
 	this.renderer = nil
 	this.minItem = nil
@@ -1494,8 +1494,8 @@ func (this *CTabFolder) OnMenuDetect(eventLike EventLike) {
 			var item *CTabItem = this.items[this.selectedIndex]
 			var rect *Rectangle = this.GetDisplay().MapFromToRectangle(upcastCTabFolderToControl(this), nil, item.GetBounds())
 			if !rect.Contains(event.X, event.Y) {
-				var itemTrim *Rectangle = this.renderer.ComputeTrim(this.selectedIndex, NONE, 0, 0, 0, 0)
-				var closeTrim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_CLOSE_BUTTON, NONE, 0, 0, 0, 0)
+				var itemTrim *Rectangle = this.renderer.impl.computeTrim_(this.selectedIndex, NONE, 0, 0, 0, 0)
+				var closeTrim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_CLOSE_BUTTON, NONE, 0, 0, 0, 0)
 				event.X = rect.X + rect.Width - item.closeRect.Width + itemTrim.X - closeTrim.Width
 				event.Y = rect.Y - itemTrim.Y - closeTrim.Y
 			}
@@ -1835,11 +1835,11 @@ func (this *CTabFolder) OnPaint(eventLike EventLike) {
 	var gcForeground *Color = gc.GetForeground()
 	var size *Point = this.impl.getSize_()
 	var bodyRect *Rectangle = NewRectangle(0, 0, size.X, size.Y)
-	this.renderer.Draw(CTabFolderRendererPART_BODY, BACKGROUND|FOREGROUND, bodyRect, gc)
+	this.renderer.impl.draw_(CTabFolderRendererPART_BODY, BACKGROUND|FOREGROUND, bodyRect, gc)
 	gc.SetFont(gcFont)
 	gc.SetForeground(gcForeground)
 	gc.SetBackground(gcBackground)
-	this.renderer.Draw(CTabFolderRendererPART_HEADER, BACKGROUND|FOREGROUND, bodyRect, gc)
+	this.renderer.impl.draw_(CTabFolderRendererPART_HEADER, BACKGROUND|FOREGROUND, bodyRect, gc)
 	gc.SetFont(gcFont)
 	gc.SetForeground(gcForeground)
 	gc.SetBackground(gcBackground)
@@ -1847,7 +1847,7 @@ func (this *CTabFolder) OnPaint(eventLike EventLike) {
 		for i := int32(0); i < int32(len(this.items)); i++ {
 			var itemBounds *Rectangle = this.items[i].GetBounds()
 			if i != this.selectedIndex && event.GetBounds().IntersectsRect(itemBounds) {
-				this.renderer.Draw(i, BACKGROUND|FOREGROUND|this.items[i].state, itemBounds, gc)
+				this.renderer.impl.draw_(i, BACKGROUND|FOREGROUND|this.items[i].state, itemBounds, gc)
 			}
 		}
 	}
@@ -1855,13 +1855,13 @@ func (this *CTabFolder) OnPaint(eventLike EventLike) {
 	gc.SetForeground(gcForeground)
 	gc.SetBackground(gcBackground)
 	if this.selectedIndex != -1 {
-		this.renderer.Draw(this.selectedIndex, this.items[this.selectedIndex].state|BACKGROUND|FOREGROUND, this.items[this.selectedIndex].GetBounds(), gc)
+		this.renderer.impl.draw_(this.selectedIndex, this.items[this.selectedIndex].state|BACKGROUND|FOREGROUND, this.items[this.selectedIndex].GetBounds(), gc)
 	}
 	gc.SetFont(gcFont)
 	gc.SetForeground(gcForeground)
 	gc.SetBackground(gcBackground)
 	if this.hoverTb {
-		var trim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
+		var trim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
 		var x int32 = this.impl.getSize_().X - (trim.Width + trim.X)
 		this.hoverRect = NewRectangle(x-16-CTabFolderSPACING, 2, 16, this.GetTabHeight()-2)
 		gc.SetForeground(gc.impl.getDevice_().impl.getSystemColor_(COLOR_WIDGET_NORMAL_SHADOW))
@@ -1902,7 +1902,7 @@ func (this *CTabFolder) OnResize(eventLike EventLike) {
 			this.impl.redraw_()
 		} else {
 			var x1 int32 = int32(math.Min(float64(size.X), float64(this.oldSize.X)))
-			var trim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BODY, NONE, 0, 0, 0, 0)
+			var trim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BODY, NONE, 0, 0, 0, 0)
 			if size.X != this.oldSize.X {
 				x1 -= trim.Width + trim.X - this.MarginWidth + 2
 			}
@@ -2023,7 +2023,7 @@ func (this *CTabFolder) OnTraverse(eventLike EventLike) {
 
 func (this *CTabFolder) RedrawTabs() {
 	var size *Point = this.impl.getSize_()
-	var trim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BODY, NONE, 0, 0, 0, 0)
+	var trim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BODY, NONE, 0, 0, 0, 0)
 	if this.onBottom {
 		var h int32 = trim.Height + trim.Y - this.MarginHeight
 		this.impl.redrawXYWidthHeightAll_(0, size.Y-h-1, size.X, h+1, false)
@@ -2388,7 +2388,7 @@ func (this *CTabFolder) setFont_(font *Font) {
 	}
 	this.Composite.setFont_(font)
 	this.oldFont = this.GetFont()
-	this.renderer.ResetChevronFont()
+	this.renderer.impl.resetChevronFont_()
 	this.UpdateChevronImage(true)
 	this.UpdateFolder(CTabFolderREDRAW)
 }
@@ -2427,7 +2427,7 @@ func (this *CTabFolder) SetItemLocation(gcLike GCLike) bool {
 	if int32(len(this.items)) == 0 {
 		return false
 	}
-	var trim *Rectangle = this.renderer.ComputeTrim(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
+	var trim *Rectangle = this.renderer.impl.computeTrim_(CTabFolderRendererPART_BORDER, NONE, 0, 0, 0, 0)
 	var borderBottom int32 = trim.Height + trim.Y
 	var borderTop int32 = -trim.Y
 	var size *Point = this.impl.getSize_()
@@ -2437,7 +2437,7 @@ func (this *CTabFolder) SetItemLocation(gcLike GCLike) bool {
 	} else {
 		y = borderTop
 	}
-	var closeButtonSize *Point = this.renderer.ComputeSize(CTabFolderRendererPART_CLOSE_BUTTON, 0, gc, DEFAULT, DEFAULT)
+	var closeButtonSize *Point = this.renderer.impl.computeSize_(CTabFolderRendererPART_CLOSE_BUTTON, 0, gc, DEFAULT, DEFAULT)
 	var leftItemEdge int32 = this.GetLeftItemEdge(gc, CTabFolderRendererPART_BORDER)
 	if this.single {
 		var defaultX int32 = this.GetDisplay().impl.getBounds_().Width + 10
@@ -2451,7 +2451,7 @@ func (this *CTabFolder) SetItemLocation(gcLike GCLike) bool {
 				item.y = y
 				item.showing = true
 				if this.showClose || item.showClose || (this.dirtyIndicatorStyle && item.showDirty) {
-					item.closeRect.X = leftItemEdge - this.renderer.ComputeTrim(i, NONE, 0, 0, 0, 0).X
+					item.closeRect.X = leftItemEdge - this.renderer.impl.computeTrim_(i, NONE, 0, 0, 0, 0).X
 					if this.onBottom {
 						item.closeRect.Y = size.Y - borderBottom - this.tabHeight + (this.tabHeight-closeButtonSize.Y)/2
 					} else {
@@ -2500,7 +2500,7 @@ func (this *CTabFolder) SetItemLocation(gcLike GCLike) bool {
 				if i == this.selectedIndex {
 					state |= SELECTED
 				}
-				var edgeTrim *Rectangle = this.renderer.ComputeTrim(i, state, 0, 0, 0, 0)
+				var edgeTrim *Rectangle = this.renderer.impl.computeTrim_(i, state, 0, 0, 0, 0)
 				item.closeRect.X = item.x + item.width - (edgeTrim.Width + edgeTrim.X) - closeButtonSize.X
 				if this.onBottom {
 					item.closeRect.Y = size.Y - borderBottom - this.tabHeight + (this.tabHeight-closeButtonSize.Y)/2
@@ -2608,7 +2608,7 @@ func (this *CTabFolder) SetItemSize(gcLike GCLike) bool {
 		}
 		if this.selectedIndex != -1 {
 			var tab *CTabItem = this.items[this.selectedIndex]
-			var width int32 = this.renderer.ComputeSize(this.selectedIndex, SELECTED, gc, DEFAULT, DEFAULT).X
+			var width int32 = this.renderer.impl.computeSize_(this.selectedIndex, SELECTED, gc, DEFAULT, DEFAULT).X
 			width = int32(math.Min(float64(width), float64(this.GetRightItemEdge(gc)-this.GetLeftItemEdge(gc, CTabFolderRendererPART_BORDER))))
 			if tab.height != this.tabHeight || tab.width != width {
 				changed = true
@@ -2619,7 +2619,7 @@ func (this *CTabFolder) SetItemSize(gcLike GCLike) bool {
 				tab.closeRect.Height = 0
 				tab.closeRect.Width = tab.closeRect.Height
 				if this.showClose || tab.showClose || (this.dirtyIndicatorStyle && tab.showDirty) {
-					var closeSize *Point = this.renderer.ComputeSize(CTabFolderRendererPART_CLOSE_BUTTON, SELECTED, gc, DEFAULT, DEFAULT)
+					var closeSize *Point = this.renderer.impl.computeSize_(CTabFolderRendererPART_CLOSE_BUTTON, SELECTED, gc, DEFAULT, DEFAULT)
 					tab.closeRect.Width = closeSize.X
 					tab.closeRect.Height = closeSize.Y
 				}
@@ -2640,7 +2640,7 @@ func (this *CTabFolder) SetItemSize(gcLike GCLike) bool {
 		if index == this.selectedIndex {
 			state |= SELECTED
 		}
-		minWidths[index] = this.renderer.ComputeSize(index, state, gc, DEFAULT, DEFAULT).X
+		minWidths[index] = this.renderer.impl.computeSize_(index, state, gc, DEFAULT, DEFAULT).X
 		minWidth += minWidths[index]
 		if minWidth > tabAreaWidth {
 			break
@@ -2670,7 +2670,7 @@ func (this *CTabFolder) SetItemSize(gcLike GCLike) bool {
 			if i == this.selectedIndex {
 				state |= SELECTED
 			}
-			maxWidths[i] = this.renderer.ComputeSize(i, state, gc, DEFAULT, DEFAULT).X
+			maxWidths[i] = this.renderer.impl.computeSize_(i, state, gc, DEFAULT, DEFAULT).X
 			maxWidth += maxWidths[i]
 		}
 		if maxWidth <= tabAreaWidth {
@@ -2715,7 +2715,7 @@ func (this *CTabFolder) SetItemSize(gcLike GCLike) bool {
 		tab.closeRect.Width = tab.closeRect.Height
 		if this.showClose || tab.showClose || (this.dirtyIndicatorStyle && tab.showDirty) {
 			if i == this.selectedIndex || this.showUnselectedClose || (this.dirtyIndicatorStyle && tab.showDirty) {
-				var closeSize *Point = this.renderer.ComputeSize(CTabFolderRendererPART_CLOSE_BUTTON, NONE, gc, DEFAULT, DEFAULT)
+				var closeSize *Point = this.renderer.impl.computeSize_(CTabFolderRendererPART_CLOSE_BUTTON, NONE, gc, DEFAULT, DEFAULT)
 				tab.closeRect.Width = closeSize.X
 				tab.closeRect.Height = closeSize.Y
 			}
@@ -2846,7 +2846,7 @@ func (this *CTabFolder) SetRenderer(rendererLike CTabFolderRendererLike) {
 		return
 	}
 	if this.renderer != (nil) {
-		this.renderer.Dispose()
+		this.renderer.impl.dispose_()
 	}
 	this.useDefaultRenderer = renderer == (nil)
 	if this.useDefaultRenderer {
@@ -3315,7 +3315,7 @@ func (this *CTabFolder) UpdateItemsShowIndex(showIndex int32) bool {
 				if i == this.selectedIndex {
 					state |= SELECTED
 				}
-				widths[i] = this.renderer.ComputeSize(i, state, gc, DEFAULT, DEFAULT).X
+				widths[i] = this.renderer.impl.computeSize_(i, state, gc, DEFAULT, DEFAULT).X
 				width += widths[i]
 				if width > maxWidth {
 					break
@@ -3329,7 +3329,7 @@ func (this *CTabFolder) UpdateItemsShowIndex(showIndex int32) bool {
 						state |= SELECTED
 					}
 					if widths[i] == 0 {
-						widths[i] = this.renderer.ComputeSize(i, state, gc, DEFAULT, DEFAULT).X
+						widths[i] = this.renderer.impl.computeSize_(i, state, gc, DEFAULT, DEFAULT).X
 					}
 					width += widths[i]
 					if width > maxWidth {
@@ -3344,7 +3344,7 @@ func (this *CTabFolder) UpdateItemsShowIndex(showIndex int32) bool {
 					if i == this.selectedIndex {
 						state |= SELECTED
 					}
-					widths[i] = this.renderer.ComputeSize(i, state, gc, DEFAULT, DEFAULT).X
+					widths[i] = this.renderer.impl.computeSize_(i, state, gc, DEFAULT, DEFAULT).X
 					width += widths[i]
 					if width >= maxWidth {
 						break
@@ -3357,7 +3357,7 @@ func (this *CTabFolder) UpdateItemsShowIndex(showIndex int32) bool {
 							state |= SELECTED
 						}
 						if widths[i] == 0 {
-							widths[i] = this.renderer.ComputeSize(i, state, gc, DEFAULT, DEFAULT).X
+							widths[i] = this.renderer.impl.computeSize_(i, state, gc, DEFAULT, DEFAULT).X
 						}
 						width += widths[i]
 						if width > maxWidth {
@@ -3410,13 +3410,13 @@ func (this *CTabFolder) UpdateItemsShowIndex(showIndex int32) bool {
 func (this *CTabFolder) UpdateTabHeight(force bool) bool {
 	var oldHeight int32 = this.tabHeight
 	var gc *GC = NewGCDrawable(this)
-	this.tabHeight = this.renderer.ComputeSize(CTabFolderRendererPART_HEADER, NONE, gc, DEFAULT, DEFAULT).Y
+	this.tabHeight = this.renderer.impl.computeSize_(CTabFolderRendererPART_HEADER, NONE, gc, DEFAULT, DEFAULT).Y
 	gc.impl.dispose_()
 	if this.fixedTabHeight == DEFAULT && this.controls != (nil) && int32(len(this.controls)) > 0 {
 		for i := int32(0); i < int32(len(this.controls)); i++ {
 			if !this.controls[i].IsDisposed() && this.controls[i].GetVisible() {
 				var topHeight int32 = this.controls[i].ComputeSize(DEFAULT, DEFAULT).Y
-				topHeight += this.renderer.ComputeTrim(CTabFolderRendererPART_HEADER, NONE, 0, 0, 0, 0).Height + 1
+				topHeight += this.renderer.impl.computeTrim_(CTabFolderRendererPART_HEADER, NONE, 0, 0, 0, 0).Height + 1
 				this.tabHeight = int32(math.Max(float64(topHeight), float64(this.tabHeight)))
 			}
 		}
@@ -3519,7 +3519,7 @@ func (this *CTabFolder) UpdateBkImages(colorChanged bool) {
 								this.controlBkImages[i].impl.dispose_()
 							}
 							this.controlBkImages[i] = NewImageDeviceImageGcDrawerWidthHeight(upcastDisplayToDevice(control.GetDisplay()), &ImageGcDrawerFunc{fn: func(gc *GC, imageWidth int32, imageHeight int32) {
-								this.renderer.Draw(CTabFolderRendererPART_BACKGROUND, 0, bounds, gc)
+								this.renderer.impl.draw_(CTabFolderRendererPART_BACKGROUND, 0, bounds, gc)
 							}}, bounds.Width, bounds.Height)
 							control.impl.setBackgroundWithColor_(nil)
 							control.impl.setBackgroundImage_(this.controlBkImages[i])

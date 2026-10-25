@@ -201,6 +201,8 @@ public class Main {
 		Selectors selectors = new Selectors();
 		selectors.load(Config.dir.resolve("selectors.properties"));
 		TypeModel model = new TypeModel();
+		Path forcedDispatch = Config.dir.resolve("dispatch.properties");
+		if (Files.exists(forcedDispatch)) Files.readAllLines(forcedDispatch).stream().filter(l -> !l.startsWith("#") && !l.isBlank()).forEach(TypeModel.FORCED_DISPATCH::add);
 		Path cascadePins = Config.dir.resolve("cascade.properties");
 		if (Files.exists(cascadePins) && System.getenv("J2GO_DUMP_CASCADE") == null) Files.readAllLines(cascadePins).stream().filter(l -> !l.startsWith("#") && !l.isBlank()).forEach(l -> { int eq = l.indexOf('='); if (eq < 0) TypeModel.PINNED_CASCADE.add(l); else TypeModel.PINNED_CASCADE_NAMES.put(l.substring(0, eq), l.substring(eq + 1)); });
 		model.build(orderedUnits, names);

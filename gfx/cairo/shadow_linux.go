@@ -9,9 +9,8 @@ import (
 	"github.com/haiodo/gowt/gfx"
 )
 
-// shadowBox draws the rounded box with its blurred shadow. cairo has no blur, so the shape is drawn
-// into an A8 surface at device resolution, blurred in Go and used as a mask for the shadow color.
-// The blur is a Gaussian of sigma blur/2 in scene units, as three box passes.
+// shadowBox draws the box over its shadow. cairo has no blur: the shape goes into an A8 surface,
+// is blurred in Go (Gaussian of sigma blur/2 as three box passes) and masks the shadow color.
 func (t *Target) shadowBox(op *gfx.Op) {
 	cr := t.cr
 	x, y, w, h, rad := op.A, op.B, op.C, op.D, op.E
@@ -91,7 +90,7 @@ func boxSizes(sigma float64, n int) []int {
 	return sz
 }
 
-// blurA8 blurs the alpha plane in place with integer arithmetic, so the same input gives the same bytes.
+// blurA8 blurs the alpha plane in place; integer arithmetic keeps the bytes stable.
 func blurA8(pix []byte, w, h, stride int, sigma float64) {
 	tmp := make([]byte, max(w, h))
 	for _, size := range boxSizes(sigma, 3) {

@@ -30,7 +30,9 @@ const (
 	fillRuleWinding = 0
 	fillRuleEvenOdd = 1
 
-	filterGood = 1
+	filterFast     = 0
+	filterGood     = 1
+	filterBilinear = 4
 )
 
 var (

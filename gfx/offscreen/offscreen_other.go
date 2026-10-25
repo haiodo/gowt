@@ -8,7 +8,12 @@ import (
 	"github.com/haiodo/gowt/gfx"
 )
 
+// RegisterFonts fails: there is no backend for this OS.
+func RegisterFonts(string) (int, error) { return 0, errNoBackend }
+
+var errNoBackend = errors.New("gfx/offscreen: no headless renderer on this OS yet")
+
 // New fails until a backend for this OS lands (Windows: Direct2D).
 func New(Options) (gfx.Renderer, error) {
-	return nil, errors.New("gfx/offscreen: no headless renderer on this OS yet")
+	return nil, errNoBackend
 }

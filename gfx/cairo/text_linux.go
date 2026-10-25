@@ -14,9 +14,8 @@ import (
 
 const pangoScale = 1024
 
-// RegisterFonts adds the font files of dir (or the one file) to the fontconfig configuration of this
-// process, not to the system, and returns how many were new. Call it before the first text is laid
-// out by a Renderer: a font map built earlier may keep its old list.
+// RegisterFonts adds the font files of dir (or the one file) to this process's fontconfig and
+// returns how many were new. Call it before the first Renderer lays text out.
 func RegisterFonts(dir string) (int, error) {
 	if err := bind(); err != nil {
 		return 0, err
@@ -73,10 +72,8 @@ type face struct {
 	style  int32
 }
 
-// resolve maps a gfx font name to a family, weight and style. The names the .pen importer and the
-// macOS backend use are PostScript names ("IBMPlexSans-SmBld"), which fontconfig matches by its
-// postscriptname property. Other names are taken as a family, with a "-Bold" style suffix read as a
-// weight; a family nobody has falls back to the default sans of Pango.
+// resolve maps a font name to a face: a PostScript name ("IBMPlexSans-SmBld", what the macOS backend
+// takes) by fontconfig's postscriptname, else a family with a "-Bold" style suffix read as weight.
 func resolve(name string) face {
 	if f, ok := matchPostScript(name); ok {
 		return f
@@ -213,9 +210,8 @@ type lineKey struct {
 	s string
 }
 
-// Under LOD, text smaller than skeletonHi device pixels turns into a rounded bar the size of the
-// line, in skeletonInk of the text color: the block keeps its outline and its weight. Between
-// skeletonLo and skeletonHi the glyphs and the bar cross-fade. The numbers are those of gfx/cg.
+// LOD skeleton text: a bar in place of glyphs under skeletonHi device pixels, cross-faded down to
+// skeletonLo. The numbers are those of gfx/cg.
 const (
 	skeletonHi  = 6.0
 	skeletonLo  = 4.0

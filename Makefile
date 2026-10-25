@@ -76,10 +76,11 @@ xcheck:
 	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go look/*.go icons/*.go jface/*.go browser/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
 	if [ -n "$$bad" ]; then echo "platform import in files without a GOOS suffix:"; echo "$$bad"; exit 1; fi
 
-# The documented examples (docs/*.md) build and vet for every OS; controlexample is the translated SWT one and is not a doc example.
-EXAMPLES := $(filter-out controlexample,$(notdir $(wildcard examples/*)))
+# The documented examples (docs/*.md) and the look-check apps (examples/apps, docs/look-check.md) build and vet for every OS; controlexample is the translated SWT one and is not a doc example.
+EXAMPLES := $(filter-out controlexample apps,$(notdir $(wildcard examples/*)))
+APPS := $(filter-out internal,$(notdir $(wildcard examples/apps/*)))
 examples-check:
-	@for os in darwin windows linux; do for e in $(EXAMPLES); do GOOS=$$os go vet ./examples/$$e || exit 1; done; done
+	@for os in darwin windows linux; do for e in $(EXAMPLES); do GOOS=$$os go vet ./examples/$$e || exit 1; done; for a in $(APPS); do GOOS=$$os go vet ./examples/apps/$$a || exit 1; done; done
 
 # The gowt facade API must not lose or change a symbol against tooling/apidump/facade-api.txt (-facade -update to accept).
 # Exported swt API of the platforms in tooling/apidump/platforms.txt must agree (platform-only.txt lists the exceptions).

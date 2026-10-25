@@ -58,6 +58,7 @@ Four ideas carry the whole API:
 | Web view | [webview-browser.md](webview-browser.md) | [`examples/webview`](../examples/webview) |
 | Widget catalog (all widgets, one line each) | [widget-catalog.md](widget-catalog.md) | [`examples/catalog`](../examples/catalog) |
 | Packaging and distribution | [packaging.md](packaging.md) | - |
+| Look check: realistic apps on all three OSes | [look-check.md](look-check.md) | [`examples/apps`](../examples/apps) |
 | Platform notes and known gaps | [platforms.md](platforms.md) | - |
 | Testing an app with the QA driver | [qa.md](qa.md) | [`examples/qa`](../examples/qa) |
 

@@ -590,7 +590,7 @@ func (w *Window) Show() {
 	}
 	// Open passes over a push button on Windows and Linux.
 	if c != nil && !c.IsDisposed() {
-		c.SetFocus()
+		swt.QAFocus(c) // SetFocus, except in a QA run on macOS
 	}
 }
 

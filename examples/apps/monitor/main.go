@@ -191,7 +191,7 @@ func (m *monitor) build() {
 
 	w := app.Window("Monitor")
 	m.win = w
-	w.SetSize(1200, 740)
+	w.SetSize(kit.Width, kit.Height)
 	w.SetMinSize(1040, 640)
 	w.Add(gowt.VBox(gowt.Grow(), gowt.Padding(gowt.Scaled(20)), gowt.Gap(gowt.Spacing.MD),
 		m.header(),

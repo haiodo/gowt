@@ -255,3 +255,20 @@ func ExampleAdaptive() {
 		w.Show()
 	})
 }
+
+// Native density: the body follows the system font, and the spacing, heights and widths scale with
+// it, so the same code reads as native on macOS, Windows 11 and GNOME. SetDensity comes first in the
+// setup function; DensitySame gives every OS the macOS layout instead.
+func ExampleApp_SetDensity() {
+	_ = gowt.Run(func(app *gowt.App) {
+		app.SetDensity(gowt.DensityNative)
+		w := app.Window("Settings",
+			gowt.Label("Appearance", gowt.Typeface(gowt.Type.Title)),
+			gowt.Label("Applies to new windows", gowt.Typeface(gowt.Type.Caption)),
+			gowt.HBox(gowt.Gap(gowt.Spacing.MD),
+				gowt.Button("Cancel"),
+				gowt.Button("Save", gowt.OnClick(app.Quit))),
+			gowt.Label("gowt --version", gowt.Typeface(gowt.Type.Mono)))
+		w.Show()
+	})
+}

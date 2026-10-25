@@ -54,6 +54,7 @@ Four ideas carry the whole API:
 | Dialogs and menus | [dialogs-menus.md](dialogs-menus.md) | [`examples/dialogs`](../examples/dialogs) |
 | Graphics and images | [graphics.md](graphics.md) | [`examples/graphics`](../examples/graphics) |
 | Theme and platform look | [theme-look.md](theme-look.md) | [`examples/theme`](../examples/theme) |
+| One layout for three systems: type and spacing tokens, density | [cross-platform-look.md](cross-platform-look.md) | - |
 | Icons | [icons.md](icons.md) | [`examples/icons`](../examples/icons) |
 | Web view | [webview-browser.md](webview-browser.md) | [`examples/webview`](../examples/webview) |
 | Widget catalog (all widgets, one line each) | [widget-catalog.md](widget-catalog.md) | [`examples/catalog`](../examples/catalog) |

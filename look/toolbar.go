@@ -152,7 +152,7 @@ func (b *toolbarBar) fill() {
 		spaced = spaced || it.Space
 	}
 	var p *gowt.Panel
-	b.w.Add(gowt.Grid(len(over)+len(lead)+1+len(trail), gowt.Padding(8), gowt.Gap(6), gowt.Ref(&p)))
+	b.w.Add(gowt.Grid(len(over)+len(lead)+1+len(trail), gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.Ref(&p)))
 	p.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
 	p.Unwrap().AddPaintListener(painter(func(e *swt.PaintEvent) {
 		r := p.Unwrap().GetClientArea()
@@ -171,17 +171,21 @@ func (b *toolbarBar) fill() {
 		b.item(p, it, &b.icons)
 	}
 	p.Add(gowt.Label(b.w.Unwrap().GetText(), gowt.Cell(gowt.GridCell{GrowX: !spaced, Align: gowt.AlignFill, VAlign: gowt.AlignCenter}), gowt.Ref(&b.title)))
-	size := 0
-	if fd := b.title.Unwrap().GetFont().GetFontData(); len(fd) > 0 {
-		size = int(fd[0].GetHeight()) + 2
+	if gowt.ChosenDensity().Legacy() {
+		size := 0
+		if fd := b.title.Unwrap().GetFont().GetFontData(); len(fd) > 0 {
+			size = int(fd[0].GetHeight()) + 2
+		}
+		b.title.SetFont(gowt.Font{Size: size, Weight: gowt.Semibold})
+	} else {
+		b.title.SetFont(gowt.Type.Subtitle)
 	}
-	b.title.SetFont(gowt.Font{Size: size, Weight: gowt.Semibold})
 	for _, it := range trail {
 		b.item(p, it, &b.icons)
 	}
 	if len(over) > 0 {
 		// The row goes first in the sidebar, its items at the right end, as over the macOS sidebar.
-		side.Add(gowt.Grid(len(over)+1, gowt.Padding(8), gowt.Gap(6), gowt.GrowX(), gowt.Ref(&b.side)))
+		side.Add(gowt.Grid(len(over)+1, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.GrowX(), gowt.Ref(&b.side)))
 		b.side.Unwrap().MoveAbove(nil)
 		b.side.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
 		b.side.Add(gowt.Spacer())
@@ -200,7 +204,7 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		return nil
 	case it.OnSearch != nil:
 		var t *gowt.TextView
-		p.Add(gowt.Text(gowt.Search(), gowt.Size(240, 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)))
+		p.Add(gowt.Text(gowt.Search(), gowt.Size(gowt.Scaled(240), 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)))
 		t.SetHint(it.Title)
 		t.OnChange(it.OnSearch)
 		return t

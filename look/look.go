@@ -303,12 +303,10 @@ func OnInspectorChange(w *gowt.Window, f func(visible bool, width int)) { inspec
 
 // minSidebarWidth is where a drag of the sidebar edge stops without Sidebar toolbar items,
 // minInspectorWidth where a drag of the inspector edge stops; minContentWidth is the content such a
-// drag leaves at least.
-const (
-	minSidebarWidth   = 120
-	minInspectorWidth = 160
-	minContentWidth   = 200
-)
+// drag leaves at least. They are the points of the doc comments scaled by the density, see gowt.Scaled.
+func minSidebarWidth() int32   { return int32(gowt.Scaled(120)) }
+func minInspectorWidth() int32 { return int32(gowt.Scaled(160)) }
+func minContentWidth() int32   { return int32(gowt.Scaled(200)) }
 
 func layoutOf(w *gowt.Window) *paneLayout {
 	if lo := w.Unwrap().GetLayout(); lo != nil {
@@ -464,9 +462,9 @@ func (p *pane) notify() {
 // Windows and Linux row).
 func (p *pane) minWidth() int32 {
 	if p.trailing {
-		return minInspectorWidth
+		return minInspectorWidth()
 	}
-	m := max(int32(minSidebarWidth), p.l.itemsMin)
+	m := max(minSidebarWidth(), p.l.itemsMin)
 	if b := bars[p.l.w.Unwrap()]; b != nil && b.side != nil {
 		m = max(m, b.side.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X)
 	}
@@ -492,10 +490,10 @@ func (p *pane) HandleEvent(e *swt.Event) {
 		var want, most int32
 		if p.trailing {
 			want = inspectorWidthAt(e.X, r.X+r.Width, p.inset(), div)
-			most = r.Width - p.l.side.room() - p.inset() - div - minContentWidth
+			most = r.Width - p.l.side.room() - p.inset() - div - minContentWidth()
 		} else {
 			want = sidebarWidthAt(e.X-r.X, p.inset(), div)
-			most = r.Width - p.inset() - div - minContentWidth - p.l.insp.room()
+			most = r.Width - p.inset() - div - minContentWidth() - p.l.insp.room()
 		}
 		width := dragWidth(want, p.minWidth(), most)
 		if width != p.width && !p.hidden {
@@ -521,7 +519,7 @@ func (l *paneLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) 
 		}
 	}
 	// A packed window starts at least as wide as fitMinSize lets it get.
-	pt := swt.NewPoint(l.side.room()+max(ct.X, minContentWidth)+l.insp.room(), top+h)
+	pt := swt.NewPoint(l.side.room()+max(ct.X, minContentWidth())+l.insp.room(), top+h)
 	if wHint != swt.DEFAULT {
 		pt.X = wHint
 	}
@@ -563,7 +561,7 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 // the app gave Window.SetMinSize, height included.
 func (l *paneLayout) fitMinSize() {
 	s := l.w.Unwrap()
-	cw := l.side.room() + minContentWidth + l.insp.room()
+	cw := l.side.room() + minContentWidth() + l.insp.room()
 	trim := s.GetSize().X - s.GetClientArea().Width
 	want := [2]int32{max(cw+trim, l.appMin[0]), l.appMin[1]}
 	if l.minSet && want == l.lastMin {

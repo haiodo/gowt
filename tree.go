@@ -176,6 +176,10 @@ func resolve(base int32, opts []Option) int32 {
 func finish(w Widget, allow styleID, opts []Option) {
 	c := w.control()
 	h, isHost := w.(host)
+	if a := appOf(c); a != nil && a.body != nil && c.GetName() != "Composite" {
+		// The widget is new and not laid out yet, so the size change needs no relayout.
+		setFont(c, *a.body, func(_ *swt.Control, set func()) { set() })
+	}
 	var pl *placement
 	for _, o := range opts {
 		switch o := o.(type) {

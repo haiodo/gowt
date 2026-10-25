@@ -82,11 +82,13 @@ func (w *base) SetTooltip(s string) { w.ctl.SetToolTipText(s) }
 // Controls given equal fonts share one native font, released after the last of them is disposed or
 // given another font. Typeface() does the same at creation. Lays the parents out when the size
 // changes.
-func (w *base) SetFont(f Font) {
-	c := w.ctl
+func (w *base) SetFont(f Font) { setFont(w.ctl, f, sizing) }
+
+// setFont gives c the font f; run decides whether the change lays the parents out.
+func setFont(c *swt.Control, f Font, run func(*swt.Control, func())) {
 	a := appOf(c)
 	k := f.from(c.GetFont(), c.GetDisplay())
-	sizing(c, func() { c.SetFont(a.font(k)) })
+	run(c, func() { c.SetFont(a.font(k)) })
 	old, had := ownedFonts[c]
 	ownedFonts[c] = k
 	if had {
@@ -183,6 +185,9 @@ func (a *App) font(k Font) *swt.Font {
 	if s == nil {
 		s = &sharedFont{f: k.swtFont(a.display)}
 		a.fonts[k] = s
+		if k.Px > 0 {
+			a.pxFonts[s.f] = k.Px
+		}
 	}
 	s.refs++
 	return s.f
@@ -195,6 +200,7 @@ func (a *App) releaseFont(k Font) {
 		return
 	}
 	if s.refs--; s.refs == 0 {
+		delete(a.pxFonts, s.f)
 		s.f.Dispose()
 		delete(a.fonts, k)
 	}

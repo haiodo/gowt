@@ -1,5 +1,5 @@
 stand: Windows in a UTM virtual machine: Microsoft Windows 11 Home build 26100 ARM 64-bit Processor; WebView2 for the web examples; whole window with its DWM frame copied from the screen
 display scale: 1.5 (requested 1.5; catalog samples captured at device pixels, exported at 2 px per point)
 source: tooling/docs-shots-vm.sh windows
-commit: 452c352
+commit: e55f5e6
 date: 2026-10-25

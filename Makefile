@@ -14,7 +14,7 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: check-gui docs-counts docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.PHONY: check-gui check-gui-listdocs-counts docs-shots win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
 
 all: check build
 
@@ -62,8 +62,13 @@ docs-counts:
 
 # Every package with a GOWT_GUI_TEST test, on the display of the host (Linux: inside the stand, see CI). -p 1: packages run
 # one after another, since parallel ones fight over focus on the one X screen.
+# go list -e drops the directories with no file for the current GOOS (internal/fluent is Windows-only).
+GUI_PKGS = $$(git ls-files '*_test.go' | xargs grep -l GOWT_GUI_TEST | xargs -n1 dirname | sort -u | sed 's|^|./|' | xargs go list -e -f '{{if or .GoFiles .CgoFiles .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}')
+check-gui-list:
+	@echo $(GUI_PKGS)
+
 check-gui:
-	GOWT_GUI_TEST=1 go test -count=1 -p 1 $$(git ls-files '*_test.go' | xargs grep -l GOWT_GUI_TEST | xargs -n1 dirname | sort -u | sed 's|^|./|')
+	GOWT_GUI_TEST=1 go test -count=1 -p 1 $(GUI_PKGS)
 	GOWT_GUI_TEST=1 go test -count=1 -tags gowtqa -run 'TestQATreeFocus' .
 	GOWT_GUI_TEST=1 go test -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$$' ./look
 

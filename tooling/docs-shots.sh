@@ -2,6 +2,8 @@
 # Writes docs/img/<widget>-<label>.png for every sample of examples/catalog and
 # docs/img/example-<name>-<label>.png for every other example, using GOWT_SNAP (see docs/screenshots.md).
 # This is the macOS run (the Wine and Xvfb stands are no longer the source: see docs-shots-vm.sh for Windows and Linux).
+# A catalog sample comes out at the outer size from examples/catalog/main.go (2 px per point, title bar included);
+# tooling/docs-shots-vm.sh does the same on Windows and Linux, `make shot-sizes` compares the three.
 # GOWT_SNAP_NOFOCUS=1 takes the focus ring off the first control before the capture.
 # Usage: [GOOS=windows] [RUN="wine --bottle gowt"] [EXT=.exe] [PATHPFX=Z:] tooling/docs-shots.sh <label>
 # Run it from the repository root. RUN prefixes the executable, PATHPFX the output path as the program sees it.

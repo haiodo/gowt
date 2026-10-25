@@ -1,4 +1,5 @@
-stand: Ubuntu GNOME in a UTM virtual machine with a GPU, native Wayland, light theme (GTK_THEME=Adwaita:light): Ubuntu 26.04.1 LTS aarch64; web view examples through Xwayland
+stand: Ubuntu GNOME in a UTM virtual machine with a GPU, native Wayland, light theme (GTK_THEME=Adwaita:light): Ubuntu 26.04.1 LTS aarch64; web view examples through Xwayland; client-side title bar, shadow trimmed
+display scale: 2 (requested 2; catalog samples captured at device pixels, exported at 2 px per point)
 source: tooling/docs-shots-vm.sh linux
-commit: 0bdb16e
+commit: 452c352
 date: 2026-10-25

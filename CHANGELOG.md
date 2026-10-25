@@ -8,6 +8,8 @@ Windows look (Windows 11)
 - `Progress` is the WinUI bar (hairline track, 3 px rounded accent indicator, red and yellow for error and paused), with its own animation for `Indeterminate()`. `Scale` is the WinUI slider (4 px track, accent up to a round thumb with a dot that grows on hover); the native trackbar still handles mouse, keyboard and accessibility.
 - `List` and `Tree` select with the rounded pill of `Table` (accent when focused, grey otherwise), with a hover fill. `Text` with `Search()` has the Fluent frame and a centred line.
 - `Section` cards are the WinUI card fill (white at 70% over the window colour) instead of a darkened grey.
+Docs images
+- `GOWT_SNAP` captures the whole window with its frame on every OS (Windows: the DWM frame bounds copied from the screen; Linux: the CSD title bar with the shadow margin trimmed), and `GOWT_SNAP_SIZE=<w>x<h>` exports it at exactly 2 pixels per point. The catalog opens every sample at one outer size from a table, so the three images of a sample have one size; `make shot-sizes` checks it. `tooling/docs-shots-vm.sh` sets the VM display scale for the run and restores it (`tooling/vm-scale.sh`).
 
 Linux look (GTK)
 - A default stylesheet is installed by `Run` at GTK application priority (below any app CSS): flat table and tree headers without column dividers, roomier rows (`-GtkTreeView-vertical-separator: 6`), and `Group` as a card with its title above it instead of in the frame line. Theme named colours only, so Adwaita, Yaru, light and dark follow.

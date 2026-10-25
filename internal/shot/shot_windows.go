@@ -11,13 +11,18 @@ import (
 )
 
 var (
-	user32   = syscall.NewLazyDLL("user32.dll")
-	gdi32    = syscall.NewLazyDLL("gdi32.dll")
-	ntdll    = syscall.NewLazyDLL("ntdll.dll")
-	uxtheme  = syscall.NewLazyDLL("uxtheme.dll")
-	getRect  = user32.NewProc("GetWindowRect")
-	getCRect = user32.NewProc("GetClientRect")
-	toScreen = user32.NewProc("ClientToScreen")
+	user32     = syscall.NewLazyDLL("user32.dll")
+	gdi32      = syscall.NewLazyDLL("gdi32.dll")
+	ntdll      = syscall.NewLazyDLL("ntdll.dll")
+	uxtheme    = syscall.NewLazyDLL("uxtheme.dll")
+	dwmapi     = syscall.NewLazyDLL("dwmapi.dll")
+	dwmGetAttr = dwmapi.NewProc("DwmGetWindowAttribute")
+	getRect    = user32.NewProc("GetWindowRect")
+)
+
+const (
+	srccopy    = 0x00CC0020
+	captureblt = 0x40000000 // layered windows too
 )
 
 type rect struct{ L, T, R, B int32 }
@@ -31,34 +36,44 @@ type bmi struct {
 	ClrUsed, ClrImportant  uint32
 }
 
-// WindowPNG writes the client area of the toplevel window hwnd as a PNG, copied from its window DC
-// (the window must be on top and on screen).
+// WindowPNG writes the whole window hwnd as a PNG: title bar and DWM frame, without the invisible resize border
+// (DWMWA_EXTENDED_FRAME_BOUNDS). It copies that rectangle from the screen, so the window must be on top and
+// on screen; the screen copy also holds the WebView2 child windows. GOWT_SNAP_FULL=1 uses PrintWindow
+// (PW_RENDERFULLCONTENT) instead, which renders Mica and acrylic backdrops wrongly.
 func WindowPNG(hwnd int64, path string) error {
-	var wr, cr rect
-	pt := [2]int32{}
+	var wr, fr rect
 	getRect.Call(uintptr(hwnd), uintptr(unsafe.Pointer(&wr)))
-	getCRect.Call(uintptr(hwnd), uintptr(unsafe.Pointer(&cr)))
-	toScreen.Call(uintptr(hwnd), uintptr(unsafe.Pointer(&pt)))
-	ww, wh := int(wr.R-wr.L), int(wr.B-wr.T)
-	cw, ch := int(cr.R), int(cr.B)
-	if cw <= 0 || ch <= 0 {
-		return fmt.Errorf("empty client area")
+	// DWMWA_EXTENDED_FRAME_BOUNDS is 9; it fails without DWM, then the window rect is the frame.
+	if r, _, _ := dwmGetAttr.Call(uintptr(hwnd), 9, uintptr(unsafe.Pointer(&fr)), unsafe.Sizeof(fr)); r != 0 {
+		fr = wr
+	}
+	fw, fh := int(fr.R-fr.L), int(fr.B-fr.T)
+	if fw <= 0 || fh <= 0 {
+		return fmt.Errorf("empty window")
 	}
 	user32.NewProc("UpdateWindow").Call(uintptr(hwnd))
-	dc, _, _ := user32.NewProc("GetWindowDC").Call(uintptr(hwnd))
-	defer user32.NewProc("ReleaseDC").Call(uintptr(hwnd), dc)
+	user32.NewProc("BringWindowToTop").Call(uintptr(hwnd))
+	user32.NewProc("SetForegroundWindow").Call(uintptr(hwnd))
+	full := os.Getenv("GOWT_SNAP_FULL") == "1"
+	ww, wh := fw, fh
+	src, sx, sy := uintptr(0), int(fr.L), int(fr.T)
+	if full {
+		ww, wh = int(wr.R-wr.L), int(wr.B-wr.T)
+		src = uintptr(hwnd)
+		sx, sy = 0, 0
+	}
+	dc, _, _ := user32.NewProc("GetWindowDC").Call(src)
+	defer user32.NewProc("ReleaseDC").Call(src, dc)
 	mem, _, _ := gdi32.NewProc("CreateCompatibleDC").Call(dc)
 	defer gdi32.NewProc("DeleteDC").Call(mem)
 	bmp, _, _ := gdi32.NewProc("CreateCompatibleBitmap").Call(dc, uintptr(ww), uintptr(wh))
 	defer gdi32.NewProc("DeleteObject").Call(bmp)
 	gdi32.NewProc("SelectObject").Call(mem, bmp)
-	// SRCCOPY. PrintWindow(PW_RENDERFULLCONTENT) left Wine blocked in the next DispatchMessage.
-	if os.Getenv("GOWT_SNAP_FULL") == "1" {
-		// PW_RENDERFULLCONTENT: DWM composes the child windows too, which a window DC BitBlt leaves out (WebView2).
+	if full {
 		if r, _, _ := user32.NewProc("PrintWindow").Call(uintptr(hwnd), mem, 2); r == 0 {
 			return fmt.Errorf("PrintWindow failed")
 		}
-	} else if r, _, _ := gdi32.NewProc("BitBlt").Call(mem, 0, 0, uintptr(ww), uintptr(wh), dc, 0, 0, 0x00CC0020); r == 0 {
+	} else if r, _, _ := gdi32.NewProc("BitBlt").Call(mem, 0, 0, uintptr(ww), uintptr(wh), dc, uintptr(sx), uintptr(sy), srccopy|captureblt); r == 0 {
 		return fmt.Errorf("BitBlt failed")
 	}
 	hdr := bmi{Size: uint32(unsafe.Sizeof(bmi{})), W: int32(ww), H: -int32(wh), Planes: 1, BitCount: 32}
@@ -66,12 +81,20 @@ func WindowPNG(hwnd int64, path string) error {
 	if r, _, _ := gdi32.NewProc("GetDIBits").Call(mem, bmp, 0, uintptr(wh), uintptr(unsafe.Pointer(&buf[0])), uintptr(unsafe.Pointer(&hdr)), 0); r == 0 {
 		return fmt.Errorf("GetDIBits failed")
 	}
-	ox, oy := int(pt[0]-wr.L), int(pt[1]-wr.T)
-	img := image.NewNRGBA(image.Rect(0, 0, cw, ch))
-	for y := 0; y < ch; y++ {
-		for x := 0; x < cw; x++ {
-			src, dst := ((y+oy)*ww+x+ox)*4, img.PixOffset(x, y)
-			img.Pix[dst], img.Pix[dst+1], img.Pix[dst+2], img.Pix[dst+3] = buf[src+2], buf[src+1], buf[src], 255
+	ox, oy := 0, 0
+	if full {
+		ox, oy = int(fr.L-wr.L), int(fr.T-wr.T)
+	}
+	dpi, _, _ := user32.NewProc("GetDpiForWindow").Call(uintptr(hwnd))
+	radius := 8 * int(dpi) / 96 // Windows 11 rounds the window corners; the screen copy holds the desktop behind them
+	img := image.NewNRGBA(image.Rect(0, 0, fw, fh))
+	for y := 0; y < fh; y++ {
+		for x := 0; x < fw; x++ {
+			si, dst := ((y+oy)*ww+x+ox)*4, img.PixOffset(x, y)
+			img.Pix[dst], img.Pix[dst+1], img.Pix[dst+2], img.Pix[dst+3] = buf[si+2], buf[si+1], buf[si], 255
+			if outsideCorner(x, y, fw, fh, radius) {
+				img.Pix[dst+3] = 0
+			}
 		}
 	}
 	f, err := os.Create(path)
@@ -80,6 +103,25 @@ func WindowPNG(hwnd int64, path string) error {
 	}
 	defer f.Close()
 	return png.Encode(f, img)
+}
+
+// outsideCorner reports whether the pixel lies outside the rounded corner arc of a w x h window.
+func outsideCorner(x, y, w, h, r int) bool {
+	cx, cy := x, y
+	switch {
+	case x < r && y < r:
+		cx, cy = r, r
+	case x >= w-r && y < r:
+		cx, cy = w-r-1, r
+	case x < r && y >= h-r:
+		cx, cy = r, h-r-1
+	case x >= w-r && y >= h-r:
+		cx, cy = w-r-1, h-r-1
+	default:
+		return false
+	}
+	dx, dy := x-cx, y-cy
+	return dx*dx+dy*dy > r*r
 }
 
 // Meta is what the pixels depend on besides the code: snapcheck compares it before comparing images.

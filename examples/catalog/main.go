@@ -37,7 +37,7 @@ var samples = []sample{
 		t.Row("go.mod", "1 KB")
 		t.Row("README.md", "5 KB")
 	}))},
-	{"tree", gowt.Tree(gowt.Size(180, 100), gowt.Init(func(t *gowt.TreeView) {
+	{"tree", gowt.Tree(gowt.Size(180, 140), gowt.Init(func(t *gowt.TreeView) {
 		src := t.Node("src")
 		src.Node("main.go")
 		src.Node("util.go")
@@ -85,6 +85,32 @@ var samples = []sample{
 	}, gowt.Size(200, 130))},
 }
 
+// sizes is the outer size in points (frame included) of the window of every sample; the same on every OS, so
+// the docs images of one sample have one size. A name that is not here gets defaultSize.
+var sizes = map[string][2]int{
+	"coolbar":  {420, 160}, // five tool items in a row: Ubuntu's are the widest
+	"datetime": {320, 260}, // the calendar of GTK is the tallest
+	"table":    {320, 210},
+	"text":     {320, 220},
+	"tree":     {320, 210},
+}
+
+var defaultSize = [2]int{320, 200}
+
+// frameSlack is what SetSize needs added so that the visible frame has the size in the table: Windows counts the
+// invisible resize border into the window rect, and GTK on GNOME (Adwaita) opens a window 6 points narrower and
+// 8 taller than asked. Measured on Windows 11 and Ubuntu 26.04; another theme leaves a few pixels, which
+// internal/shot.Finish stretches away.
+func frameSlack() (w, h int) {
+	switch runtime.GOOS {
+	case "windows":
+		return 14, 7
+	case "linux":
+		return 6, -8
+	}
+	return 0, 0
+}
+
 func noop() {}
 
 // coolbarInit locks the bands on macOS: the Cocoa port draws SWT's classic grip bars, which look broken
@@ -124,8 +150,17 @@ func main() {
 				log.Fatalf("unknown widget %q", os.Args[1])
 			}
 			w.SetTitle(samples[i].name)
-			// Without a width hint the window packs to the widget and the title bar cuts its title.
-			w.Add(gowt.VBox(gowt.Grow(), gowt.Size(300, 0), samples[i].ui))
+			size, ok := sizes[samples[i].name]
+			if !ok {
+				size = defaultSize
+			}
+			w.Add(gowt.VBox(gowt.Grow(), samples[i].ui))
+			sw, sh := frameSlack()
+			w.SetSize(size[0]+sw, size[1]+sh)
+			if os.Getenv("GOWT_SNAP") != "" && os.Getenv("GOWT_SNAP_SIZE") == "" {
+				// The capture is exported at 2 px per point at exactly this outer size (see internal/shot.Finish).
+				os.Setenv("GOWT_SNAP_SIZE", fmt.Sprintf("%dx%d", size[0], size[1]))
+			}
 		} else {
 			tabs := []gowt.Option{gowt.Grow()}
 			for _, s := range samples {

@@ -23,11 +23,23 @@ How the window is read per OS (`internal/shot`):
 
 | OS | Capture |
 |---|---|
-| macOS | `cacheDisplayInRect:toBitmapImageRep:` on the window's view tree, so no Screen Recording permission is needed (the terminal does not have it) |
-| Windows | `BitBlt` from the window DC (the window must be on top and on screen) |
-| Linux | `gdk_pixbuf_get_from_window` on the window's `GdkWindow` (the window's own surface: X server content without frame, on native Wayland with the GTK frame and shadow) |
+| macOS | `cacheDisplayInRect:toBitmapImageRep:` on the window's frame view (title bar and traffic lights, no shadow; `GOWT_SNAP_SCREEN=1` drops the shadow too), so no Screen Recording permission is needed (the terminal does not have it) |
+| Windows | the window rectangle without the invisible resize border (`DWMWA_EXTENDED_FRAME_BOUNDS`), copied from the screen with `BitBlt`, so the title bar, the DWM frame and WebView2 children are in; the rounded corners are made transparent. The window must be on top and on screen. `GOWT_SNAP_FULL=1` uses `PrintWindow(PW_RENDERFULLCONTENT)` on the window instead |
+| Linux | `gdk_pixbuf_get_from_window` on the window's `GdkWindow`: with client-side decorations (GNOME Wayland, GTK on X11) the title bar is in the surface and the transparent shadow margin is trimmed; a window-manager frame (`gdk_window_get_frame_extents` larger than the window) is read from the root window (not tried on a real X11 window manager) |
 
-The capture is the window's client area.
+The capture is the whole window with its frame. `GOWT_SNAP_SIZE=<w>x<h>` (set by `examples/catalog`) names the window's outer size in points; the PNG is then exported at exactly `2w x 2h` pixels: a capture at scale 1 or 1.5 is scaled up (CatmullRom), a capture within 3% of the size is stretched to it. `GOWT_SNAP` prints the capture scale on stderr (`gowt: snap capture scale 1.5, exported at 2x as 720x520, ...`).
+
+## Uniform catalog shots
+
+The images of one catalog sample have the same pixel size on macOS, Windows and Linux, title bar included, so they can sit side by side. The size table is `sizes` in `examples/catalog/main.go` (outer size in points, `defaultSize` 320x200); `frameSlack` adds what a platform's window rect hides (Windows invisible border, Adwaita's smaller GTK window). `make shot-sizes` fails if any `<widget>-{macos,windows,linux}.png` differs from `2 x` that table; `go test ./examples/catalog` runs the same check for Windows and Linux only, until macOS is shot again.
+
+| OS | Display scale of the shots |
+|---|---|
+| macOS | 2 (Retina), no change |
+| Windows VM | 1.5: the 1728x1044 display follows the UTM window, and Windows takes 150% at most there; `tooling/vm-scale.sh windows 1.5` sets it with `tooling/win-dpi.ps1`, the script sets it back afterwards |
+| Linux VM | 2: `tooling/vm-scale.sh linux 2` (Mutter `ApplyMonitorsConfig`, temporary); web view examples run through Xwayland with `GDK_SCALE=2` |
+
+`docs/img/source-<os>.txt` records the scale the programs saw.
 
 ## Make targets
 
@@ -39,7 +51,7 @@ The capture is the window's client area.
 | `make win-docs-shots` | CrossOver bottle `gowt` | Wine render, not used for `docs/img` any more |
 | `make linux-docs-shots` | Docker stand `gowt-linux` | Xvfb render, not used for `docs/img` any more |
 
-`tooling/docs-shots-vm.sh windows|linux` (`ONLY="coolbar example-hello"` shoots a few) copies the programs to the VM, runs them one after another and fetches the PNGs; `source-<os>.txt` records the stand, commit and date. The Linux images include the GTK window frame and its shadow (transparent) at the VM's scale of 2, the web view examples are shot through Xwayland because native Wayland reads a WebKitGTK window back empty. The Windows images are the client area at the VM's scale. `GOWT_SNAP_FULL=1` (Windows) copies with `PrintWindow(PW_RENDERFULLCONTENT)` so WebView2 shows; `GOWT_SNAP_NOFOCUS=1` (macOS) takes the focus ring off before the capture, `tooling/docs-shots.sh` sets it.
+`tooling/docs-shots-vm.sh windows|linux` (`ONLY="coolbar example-hello"` shoots a few) copies the programs to the VM, runs them one after another and fetches the PNGs; `source-<os>.txt` records the stand, commit and date. The web view examples are shot through Xwayland because native Wayland reads a WebKitGTK window back empty; under Xwayland the window has no frame, so those two images lack the title bar. `GOWT_SNAP_FULL=1` (Windows) copies with `PrintWindow(PW_RENDERFULLCONTENT)` so WebView2 shows; `GOWT_SNAP_NOFOCUS=1` (macOS) takes the focus ring off before the capture, `tooling/docs-shots.sh` sets it.
 
 All three run `tooling/docs-shots.sh <os>`: it builds each program in `examples/` except `controlexample` and `catalog`, runs it with `GOWT_SNAP=docs/img/example-<name>-<os>.png`, then runs `examples/catalog <widget>` for every sample, writing `docs/img/<widget>-<os>.png` (the [widget catalog](widget-catalog.md)). Windows open one after another and close by themselves; a program that does not produce a file within 60 seconds is killed and reported as `FAILED`. The script exits non-zero if any shot failed. Use another stand container with `make linux-docs-shots LINUX_CTR=name LINUX_PORT=6090`.
 

@@ -3471,3 +3471,10 @@ constant and no compile-time exhaustiveness.
 Tests: `testdata/enums` (fields, constructor, interface, switch, `valueOf`, `values`, `compareTo`, `equals`), `enum-bodies`, `annotations`, `switch`/`enumcycle`
 (existing, outputs now use the enum type). The nested rules use `args` with a `cfg/packages.txt` so the output is a non-SWT module; it was also built
 and run (`go test` of `testdata/<rule>/behavior/*_test.go`, copied next to the output) in a temp module against any2go's jrt.
+
+## Forced dispatch (`dispatch.properties`)
+
+A class listed there (binary name, one per line) dispatches every public/protected instance method through `impl`, as if a translated
+subclass overrode it, and its protected constructors are exported. SWT users subclass such classes and install the object
+(`CTabFolderRenderer` with `CTabFolder.setRenderer`); with no subclass in the translated set the port made them final. A Go subclass
+embeds the base, builds it with `New<Base>`, calls `SetImpl_(x)` and defines the exported hook names (`DrawSelected_`).

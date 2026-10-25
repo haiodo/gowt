@@ -133,7 +133,11 @@ type CTabsView struct {
 func CTabs(opts ...Option) Option {
 	return leaf("CTabs", sBottom|sBorder, opts, func(p *swt.Composite) Widget {
 		f := swt.NewCTabFolder(p, resolve(swt.NONE, opts))
-		return &CTabsView{base{&f.Control}, f}
+		newTabRenderer(f)
+		v := &CTabsView{base{&f.Control}, f}
+		v.SetFont(Type.Body)
+		redrawOnTheme(f)
+		return v
 	})
 }
 
@@ -141,8 +145,14 @@ func CTabs(opts ...Option) Option {
 func (t *CTabsView) Add(tabs ...Option) { add(t, tabs) }
 
 func (t *CTabsView) into() *swt.Composite { return &t.f.Composite }
-func (t *CTabsView) added(Widget)         {}
-func (t *CTabsView) only() string         { return "Tab" }
+
+// added selects the first tab: SWT selects one only when the folder gets the focus.
+func (t *CTabsView) added(Widget) {
+	if t.f.GetSelectionIndex() < 0 {
+		t.f.SetSelectionIndex(0)
+	}
+}
+func (t *CTabsView) only() string { return "Tab" }
 
 // Index is the selected tab, -1 if none.
 func (t *CTabsView) Index() int { return int(t.f.GetSelectionIndex()) }

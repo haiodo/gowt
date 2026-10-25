@@ -68,6 +68,10 @@ public class TypeModel {
 
 		static boolean hasOverrideBelow(ClassInfo ci, String sig) {
 			if (PINNED_CASCADE.contains(ci.binaryName + "#" + sig) || ci.anonOverridden.contains(sig)) return true;
+			if (FORCED_DISPATCH.contains(ci.binaryName)) {
+				IMethodBinding mb = ci.declaredMethods.get(sig);
+				if (mb != null && !Modifier.isStatic(mb.getModifiers()) && !Modifier.isPrivate(mb.getModifiers())) return true;
+			}
 			for (ClassInfo child : ci.children) {
 				if (child.declaredMethods.containsKey(sig) || hasOverrideBelow(child, sig)) return true;
 			}
@@ -75,7 +79,7 @@ public class TypeModel {
 		}
 
 		/** The tree dispatches through an impl field: it has named subclasses, or anonymous ones that override. */
-		public boolean hasImpl() { return !children.isEmpty() || anonDispatch; }
+		public boolean hasImpl() { return !children.isEmpty() || anonDispatch || FORCED_DISPATCH.contains(binaryName); }
 
 		public IMethodBinding declaredBinding(String sig) {
 			return declaredMethods.get(sig);
@@ -87,6 +91,14 @@ public class TypeModel {
 		public boolean splitsDispatch() {
 			return !root.goPackage.equals(GoTypes.piPackage);
 		}
+	}
+
+	/** dispatch.properties: classes whose non-private instance methods dispatch through impl although no translated subclass overrides them (SWT's public API is to subclass them). */
+	public static final Set<String> FORCED_DISPATCH = new HashSet<>();
+
+	/** A public constructor is exported; so is a protected one of a forced-dispatch class, which other packages subclass. */
+	public static boolean exportsConstructor(IMethodBinding ctor, ClassInfo ci) {
+		return Modifier.isPublic(ctor.getModifiers()) || Modifier.isProtected(ctor.getModifiers()) && FORCED_DISPATCH.contains(ci.binaryName);
 	}
 
 	/** Dispatch points the reference platform has (cascade.properties): shared files call them, so every platform declares them. */

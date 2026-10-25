@@ -182,3 +182,6 @@ func cgColorRGBA(cg uintptr) (rgba [4]float64) {
 	n := NewNSColorOverload1(int64(c))
 	return [4]float64{n.RedComponent(), n.GreenComponent(), n.BlueComponent(), n.AlphaComponent()}
 }
+
+// AccentRGBA is NSColor.controlAccentColor under the Aqua or Dark Aqua appearance.
+func AccentRGBA(dark bool) [4]float64 { return namedColorRGBA("controlAccentColor", dark) }

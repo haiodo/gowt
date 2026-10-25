@@ -59,7 +59,7 @@ final class ConstructorEmitter {
 
 	void emitConstructor(MethodDeclaration md, TypeModel.ClassInfo ci, AbstractTypeDeclaration td, StringBuilder out) {
 		IMethodBinding mb = md.resolveBinding();
-		boolean pub = Modifier.isPublic(md.getModifiers()) && !ci.isEnum;
+		boolean pub = TypeModel.exportsConstructor(mb, ci) && !ci.isEnum;
 		String prefix = (pub ? "New" : "new") + ci.goFuncPrefix;
 		String goName = emitter.ctorGoName(mb, prefix);
 		String initName = emitter.names.goMemberName(mb, "init" + ci.goFuncPrefix); // init methods are always unexported by shape

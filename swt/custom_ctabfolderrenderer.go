@@ -21,10 +21,101 @@ import (
 	"math"
 )
 
+type CTabFolderRendererImpl interface {
+	computeSize_(a0 int32, a1 int32, a2 *GC, a3 int32, a4 int32) *Point
+	computeTrim_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 int32) *Rectangle
+	dispose_()
+	draw_(a0 int32, a1 int32, a2 *Rectangle, a3 *GC)
+	drawBackground_(a0 *GC, a1 *Rectangle, a2 int32)
+	drawBackgroundGcShapeSelected_(a0 *GC, a1 []int32, a2 bool)
+	drawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical_(a0 *GC, a1 []int32, a2 int32, a3 int32, a4 int32, a5 int32, a6 *Color, a7 *Image, a8 []*Color, a9 []int32, a10 bool)
+	drawBody_(a0 *GC, a1 *Rectangle, a2 int32)
+	drawClose_(a0 *GC, a1 *Rectangle, a2 int32)
+	drawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected_(a0 *GC, a1 *Rectangle, a2 int32, a3 bool, a4 bool)
+	drawChevron_(a0 *GC, a1 *Rectangle, a2 int32)
+	drawLeftUnselectedBorder_(a0 *GC, a1 *Rectangle, a2 int32)
+	drawMaximize_(a0 *GC, a1 *Rectangle, a2 int32)
+	drawMinimize_(a0 *GC, a1 *Rectangle, a2 int32)
+	drawHighlight_(a0 *GC, a1 *Rectangle, a2 int32, a3 int32)
+	drawRightUnselectedBorder_(a0 *GC, a1 *Rectangle, a2 int32)
+	drawSelected_(a0 int32, a1 *GC, a2 *Rectangle, a3 int32)
+	drawTabArea_(a0 *GC, a1 *Rectangle, a2 int32)
+	drawUnselected_(a0 int32, a1 *GC, a2 *Rectangle, a3 int32)
+	getFillColor_() *Color
+	resetChevronFont_()
+	shortenText_(a0 *GC, a1 string, a2 int32) string
+	shortenTextGcTextWidthEllipses_(a0 *GC, a1 string, a2 int32, a3 string) string
+}
+
+// j2go: wraps a subclass from another package; its exported hook names override the defaults.
+type cTabFolderRendererHooked struct {
+	CTabFolderRendererImpl
+	hook   CTabFolderRendererImpl
+	active string
+}
+
+func (this *cTabFolderRendererHooked) enter(name string) func() {
+	prev := this.active
+	this.active = name
+	return func() { this.active = prev }
+}
+
+func (this *cTabFolderRendererHooked) computeSize_(a0 int32, a1 int32, a2 *GC, a3 int32, a4 int32) *Point {
+	if h, ok := this.hook.(interface {
+		ComputeSize_(a0 int32, a1 int32, a2 *GC, a3 int32, a4 int32) *Point
+	}); ok && this.active != "computeSize_" {
+		defer this.enter("computeSize_")()
+		return h.ComputeSize_(a0, a1, a2, a3, a4)
+	}
+	return this.CTabFolderRendererImpl.computeSize_(a0, a1, a2, a3, a4)
+}
+
+func (this *cTabFolderRendererHooked) computeTrim_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 int32) *Rectangle {
+	if h, ok := this.hook.(interface {
+		ComputeTrim_(a0 int32, a1 int32, a2 int32, a3 int32, a4 int32, a5 int32) *Rectangle
+	}); ok && this.active != "computeTrim_" {
+		defer this.enter("computeTrim_")()
+		return h.ComputeTrim_(a0, a1, a2, a3, a4, a5)
+	}
+	return this.CTabFolderRendererImpl.computeTrim_(a0, a1, a2, a3, a4, a5)
+}
+
+func (this *cTabFolderRendererHooked) dispose_() {
+	if h, ok := this.hook.(interface{ Dispose_() }); ok && this.active != "dispose_" {
+		defer this.enter("dispose_")()
+		h.Dispose_()
+		return
+	}
+	this.CTabFolderRendererImpl.dispose_()
+}
+
+func (this *cTabFolderRendererHooked) draw_(a0 int32, a1 int32, a2 *Rectangle, a3 *GC) {
+	if h, ok := this.hook.(interface {
+		Draw_(a0 int32, a1 int32, a2 *Rectangle, a3 *GC)
+	}); ok && this.active != "draw_" {
+		defer this.enter("draw_")()
+		h.Draw_(a0, a1, a2, a3)
+		return
+	}
+	this.CTabFolderRendererImpl.draw_(a0, a1, a2, a3)
+}
+
 type CTabFolderRenderer struct {
 	parent      *CTabFolder
 	fillColor   *Color
 	chevronFont *Font
+	impl        CTabFolderRendererImpl
+}
+
+func (this *CTabFolderRenderer) Impl() CTabFolderRendererImpl {
+	if h, ok := this.impl.(*cTabFolderRendererHooked); ok {
+		return h.hook
+	}
+	return this.impl
+}
+
+func (this *CTabFolderRenderer) SetImpl_(impl CTabFolderRendererImpl) {
+	this.impl = &cTabFolderRendererHooked{CTabFolderRendererImpl: this.impl, hook: impl}
 }
 
 func init() { jrt.RegisterClassPackage("CTabFolderRenderer", "org.eclipse.swt.custom") }
@@ -87,8 +178,14 @@ const CTabFolderRendererPART_CLOSE_BUTTON int32 = -8
 
 const CTabFolderRendererMINIMUM_SIZE int32 = 16777216
 
-func newCTabFolderRenderer(parent *CTabFolder) *CTabFolderRenderer {
+func NewCTabFolderRenderer(parentLike CTabFolderLike) *CTabFolderRenderer {
+	var parent *CTabFolder
+	if parentLike != nil {
+		parent = parentLike.AsCTabFolder()
+	}
+	_ = parent
 	this := &CTabFolderRenderer{}
+	this.impl = this
 	this.initCTabFolderRenderer(parent)
 	return this
 }
@@ -109,7 +206,10 @@ func (this *CTabFolderRenderer) ComputeSize(part int32, state int32, gcLike GCLi
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
+	return this.impl.computeSize_(part, state, gc, wHint, hHint)
+}
+
+func (this *CTabFolderRenderer) computeSize_(part int32, state int32, gc *GC, wHint int32, hHint int32) *Point {
 	var width int32 = 0
 	var height int32 = 0
 	switch part {
@@ -126,7 +226,7 @@ func (this *CTabFolderRenderer) ComputeSize(part int32, state int32, gcLike GCLi
 				height = gc.TextExtentStringFlags("Default", CTabFolderRendererFLAGS).Y + CTabFolderRendererITEM_TOP_MARGIN + CTabFolderRendererITEM_BOTTOM_MARGIN
 			} else {
 				for i := int32(0); i < int32(len(items)); i++ {
-					height = int32(math.Max(float64(height), float64(this.ComputeSize(i, NONE, gc, wHint, hHint).Y)))
+					height = int32(math.Max(float64(height), float64(this.impl.computeSize_(i, NONE, gc, wHint, hHint).Y)))
 				}
 			}
 			gc.impl.dispose_()
@@ -205,13 +305,13 @@ func (this *CTabFolderRenderer) ComputeSize(part int32, state int32, gcLike GCLi
 					if width > 0 {
 						width += CTabFolderRendererINTERNAL_SPACING
 					}
-					width += this.ComputeSize(CTabFolderRendererPART_CLOSE_BUTTON, NONE, gc, DEFAULT, DEFAULT).X
+					width += this.impl.computeSize_(CTabFolderRendererPART_CLOSE_BUTTON, NONE, gc, DEFAULT, DEFAULT).X
 				}
 			}
 		}
 		break
 	}
-	var trim *Rectangle = this.ComputeTrim(part, state, 0, 0, width, height)
+	var trim *Rectangle = this.impl.computeTrim_(part, state, 0, 0, width, height)
 	width = trim.Width
 	height = trim.Height
 	return NewPoint(width, height)
@@ -272,6 +372,10 @@ func (this *CTabFolderRenderer) ShouldApplyLargeTextPadding(tabFolderLike CTabFo
 }
 
 func (this *CTabFolderRenderer) ComputeTrim(part int32, state int32, x int32, y int32, width int32, height int32) *Rectangle {
+	return this.impl.computeTrim_(part, state, x, y, width, height)
+}
+
+func (this *CTabFolderRenderer) computeTrim_(part int32, state int32, x int32, y int32, width int32, height int32) *Rectangle {
 	var borderLeft int32
 	if this.parent.borderVisible {
 		borderLeft = 1
@@ -357,6 +461,10 @@ func (this *CTabFolderRenderer) ComputeTrim(part int32, state int32, x int32, y 
 }
 
 func (this *CTabFolderRenderer) Dispose() {
+	this.impl.dispose_()
+}
+
+func (this *CTabFolderRenderer) dispose_() {
 	this.fillColor = nil
 	if this.chevronFont != (nil) {
 		this.chevronFont.impl.dispose_()
@@ -369,30 +477,32 @@ func (this *CTabFolderRenderer) Draw(part int32, state int32, boundsLike Rectang
 	if boundsLike != nil {
 		bounds = boundsLike.AsRectangle()
 	}
-	_ = bounds
 	var gc *GC
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
+	this.impl.draw_(part, state, bounds, gc)
+}
+
+func (this *CTabFolderRenderer) draw_(part int32, state int32, bounds *Rectangle, gc *GC) {
 	switch part {
 	case CTabFolderRendererPART_BACKGROUND:
-		this.DrawBackground(gc, bounds, state)
+		this.impl.drawBackground_(gc, bounds, state)
 		break
 	case CTabFolderRendererPART_BODY:
-		this.DrawBody(gc, bounds, state)
+		this.impl.drawBody_(gc, bounds, state)
 		break
 	case CTabFolderRendererPART_HEADER:
-		this.DrawTabArea(gc, bounds, state)
+		this.impl.drawTabArea_(gc, bounds, state)
 		break
 	case CTabFolderRendererPART_MAX_BUTTON:
-		this.DrawMaximize(gc, bounds, state)
+		this.impl.drawMaximize_(gc, bounds, state)
 		break
 	case CTabFolderRendererPART_MIN_BUTTON:
-		this.DrawMinimize(gc, bounds, state)
+		this.impl.drawMinimize_(gc, bounds, state)
 		break
 	case CTabFolderRendererPART_CHEVRON_BUTTON:
-		this.DrawChevron(gc, bounds, state)
+		this.impl.drawChevron_(gc, bounds, state)
 		break
 	default:
 		if 0 <= part && part < this.parent.GetItemCount() {
@@ -400,9 +510,9 @@ func (this *CTabFolderRenderer) Draw(part int32, state int32, boundsLike Rectang
 				return
 			}
 			if (state & SELECTED) != 0 {
-				this.DrawSelected(part, gc, bounds, state)
+				this.impl.drawSelected_(part, gc, bounds, state)
 			} else {
-				this.DrawUnselected(part, gc, bounds, state)
+				this.impl.drawUnselected_(part, gc, bounds, state)
 			}
 		}
 		break
@@ -414,12 +524,14 @@ func (this *CTabFolderRenderer) DrawBackground(gcLike GCLike, boundsLike Rectang
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var bounds *Rectangle
 	if boundsLike != nil {
 		bounds = boundsLike.AsRectangle()
 	}
-	_ = bounds
+	this.impl.drawBackground_(gc, bounds, state)
+}
+
+func (this *CTabFolderRenderer) drawBackground_(gc *GC, bounds *Rectangle, state int32) {
 	var selected bool = (state & SELECTED) != 0
 	var defaultBackground *Color
 	if selected && this.parent.ShouldHighlight() {
@@ -453,7 +565,7 @@ func (this *CTabFolderRenderer) DrawBackground(gcLike GCLike, boundsLike Rectang
 	} else {
 		vertical = this.parent.gradientVertical
 	}
-	this.DrawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical(gc, nil, bounds.X, bounds.Y, bounds.Width, bounds.Height, defaultBackground, image, colors, percents, vertical)
+	this.impl.drawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical_(gc, nil, bounds.X, bounds.Y, bounds.Width, bounds.Height, defaultBackground, image, colors, percents, vertical)
 }
 
 func (this *CTabFolderRenderer) DrawBackgroundGcShapeSelected(gcLike GCLike, shape []int32, selected bool) {
@@ -461,7 +573,10 @@ func (this *CTabFolderRenderer) DrawBackgroundGcShapeSelected(gcLike GCLike, sha
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
+	this.impl.drawBackgroundGcShapeSelected_(gc, shape, selected)
+}
+
+func (this *CTabFolderRenderer) drawBackgroundGcShapeSelected_(gc *GC, shape []int32, selected bool) {
 	var defaultBackground *Color
 	if selected && this.parent.ShouldHighlight() {
 		defaultBackground = this.parent.selectionBackground
@@ -530,7 +645,7 @@ func (this *CTabFolderRenderer) DrawBackgroundGcShapeSelected(gcLike GCLike, sha
 	} else {
 		y = borderTop
 	}
-	this.DrawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical(gc, shape, x, y, width, height, defaultBackground, image, colors, percents, vertical)
+	this.impl.drawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical_(gc, shape, x, y, width, height, defaultBackground, image, colors, percents, vertical)
 }
 
 func (this *CTabFolderRenderer) DrawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical(gcLike GCLike, shape []int32, x int32, y int32, width int32, height int32, defaultBackgroundLike ColorLike, imageLike ImageLike, colors []*Color, percents []int32, vertical bool) {
@@ -538,17 +653,18 @@ func (this *CTabFolderRenderer) DrawBackgroundGcShapeXYWidthHeightDefaultBackgro
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var defaultBackground *Color
 	if defaultBackgroundLike != nil {
 		defaultBackground = defaultBackgroundLike.AsColor()
 	}
-	_ = defaultBackground
 	var image *Image
 	if imageLike != nil {
 		image = imageLike.AsImage()
 	}
-	_ = image
+	this.impl.drawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical_(gc, shape, x, y, width, height, defaultBackground, image, colors, percents, vertical)
+}
+
+func (this *CTabFolderRenderer) drawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical_(gc *GC, shape []int32, x int32, y int32, width int32, height int32, defaultBackground *Color, image *Image, colors []*Color, percents []int32, vertical bool) {
 	var clipping *Region = nil
 	var region *Region = nil
 	if shape != (nil) {
@@ -676,12 +792,14 @@ func (this *CTabFolderRenderer) DrawBody(gcLike GCLike, boundsLike RectangleLike
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var bounds *Rectangle
 	if boundsLike != nil {
 		bounds = boundsLike.AsRectangle()
 	}
-	_ = bounds
+	this.impl.drawBody_(gc, bounds, state)
+}
+
+func (this *CTabFolderRenderer) drawBody_(gc *GC, bounds *Rectangle, state int32) {
 	var size *Point = NewPoint(bounds.Width, bounds.Height)
 	var selectedIndex int32 = this.parent.selectedIndex
 	var tabHeight int32 = this.parent.tabHeight
@@ -736,10 +854,10 @@ func (this *CTabFolderRenderer) DrawBody(gcLike GCLike, boundsLike RectangleLike
 				shape = []int32{x1, y1, x1 + highlight_margin, y1, x1 + highlight_margin, y2 - highlight_margin, x2 - highlight_margin, y2 - highlight_margin, x2 - highlight_margin, y1, x2, y1, x2, y2, x1, y2}
 			}
 			if selectedIndex != -1 && this.parent.selectionGradientColors != (nil) && int32(len(this.parent.selectionGradientColors)) > 1 && !this.parent.selectionGradientVertical {
-				this.DrawBackgroundGcShapeSelected(gc, shape, true)
+				this.impl.drawBackgroundGcShapeSelected_(gc, shape, true)
 			} else {
 				if selectedIndex == -1 && this.parent.gradientColors != (nil) && int32(len(this.parent.gradientColors)) > 1 && !this.parent.gradientVertical {
-					this.DrawBackgroundGcShapeSelected(gc, shape, false)
+					this.impl.drawBackgroundGcShapeSelected_(gc, shape, false)
 				} else {
 					var cond738 *Color
 					if selectedIndex != -1 && this.parent.ShouldHighlight() {
@@ -805,13 +923,15 @@ func (this *CTabFolderRenderer) DrawClose(gcLike GCLike, closeRectLike Rectangle
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var closeRect *Rectangle
 	if closeRectLike != nil {
 		closeRect = closeRectLike.AsRectangle()
 	}
-	_ = closeRect
-	this.DrawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected(gc, closeRect, closeImageState, false, false)
+	this.impl.drawClose_(gc, closeRect, closeImageState)
+}
+
+func (this *CTabFolderRenderer) drawClose_(gc *GC, closeRect *Rectangle, closeImageState int32) {
+	this.impl.drawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected_(gc, closeRect, closeImageState, false, false)
 }
 
 func (this *CTabFolderRenderer) DrawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected(gcLike GCLike, closeRectLike RectangleLike, closeImageState int32, showDirtyIndicator bool, selected bool) {
@@ -819,12 +939,14 @@ func (this *CTabFolderRenderer) DrawCloseGcCloseRectCloseImageStateShowDirtyIndi
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var closeRect *Rectangle
 	if closeRectLike != nil {
 		closeRect = closeRectLike.AsRectangle()
 	}
-	_ = closeRect
+	this.impl.drawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected_(gc, closeRect, closeImageState, showDirtyIndicator, selected)
+}
+
+func (this *CTabFolderRenderer) drawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected_(gc *GC, closeRect *Rectangle, closeImageState int32, showDirtyIndicator bool, selected bool) {
 	if closeRect.Width == 0 || closeRect.Height == 0 {
 		return
 	}
@@ -866,7 +988,7 @@ func (this *CTabFolderRenderer) DrawCloseGcCloseRectCloseImageStateShowDirtyIndi
 	case BACKGROUND:
 		{
 			var shape []int32 = []int32{x, y, x + 10, y, x + 10, y + 10, x, y + 10}
-			this.DrawBackgroundGcShapeSelected(gc, shape, false)
+			this.impl.drawBackgroundGcShapeSelected_(gc, shape, false)
 			break
 		}
 	}
@@ -924,7 +1046,7 @@ func (this *CTabFolderRenderer) DrawCloseLines(gcLike GCLike, x int32, y int32, 
 	_ = gc
 	if hot {
 		gc.SetLineWidth(gc.GetLineWidth() + 2)
-		gc.SetForeground(this.GetFillColor())
+		gc.SetForeground(this.impl.getFillColor_())
 	}
 	gc.SetLineCap(CAP_ROUND)
 	gc.DrawLine(x, y, x+lineLength, y+lineLength)
@@ -936,12 +1058,14 @@ func (this *CTabFolderRenderer) DrawChevron(gcLike GCLike, chevronRectLike Recta
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var chevronRect *Rectangle
 	if chevronRectLike != nil {
 		chevronRect = chevronRectLike.AsRectangle()
 	}
-	_ = chevronRect
+	this.impl.drawChevron_(gc, chevronRect, chevronImageState)
+}
+
+func (this *CTabFolderRenderer) drawChevron_(gc *GC, chevronRect *Rectangle, chevronImageState int32) {
 	if chevronRect.Width == 0 || chevronRect.Height == 0 {
 		return
 	}
@@ -1030,12 +1154,14 @@ func (this *CTabFolderRenderer) DrawLeftUnselectedBorder(gcLike GCLike, boundsLi
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var bounds *Rectangle
 	if boundsLike != nil {
 		bounds = boundsLike.AsRectangle()
 	}
-	_ = bounds
+	this.impl.drawLeftUnselectedBorder_(gc, bounds, state)
+}
+
+func (this *CTabFolderRenderer) drawLeftUnselectedBorder_(gc *GC, bounds *Rectangle, state int32) {
 	var x int32 = bounds.X
 	var y int32 = bounds.Y
 	var height int32 = bounds.Height
@@ -1052,12 +1178,14 @@ func (this *CTabFolderRenderer) DrawMaximize(gcLike GCLike, maxRectLike Rectangl
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var maxRect *Rectangle
 	if maxRectLike != nil {
 		maxRect = maxRectLike.AsRectangle()
 	}
-	_ = maxRect
+	this.impl.drawMaximize_(gc, maxRect, maxImageState)
+}
+
+func (this *CTabFolderRenderer) drawMaximize_(gc *GC, maxRect *Rectangle, maxImageState int32) {
 	if maxRect.Width == 0 || maxRect.Height == 0 {
 		return
 	}
@@ -1114,12 +1242,14 @@ func (this *CTabFolderRenderer) DrawMinimize(gcLike GCLike, minRectLike Rectangl
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var minRect *Rectangle
 	if minRectLike != nil {
 		minRect = minRectLike.AsRectangle()
 	}
-	_ = minRect
+	this.impl.drawMinimize_(gc, minRect, minImageState)
+}
+
+func (this *CTabFolderRenderer) drawMinimize_(gc *GC, minRect *Rectangle, minImageState int32) {
 	if minRect.Width == 0 || minRect.Height == 0 {
 		return
 	}
@@ -1173,12 +1303,14 @@ func (this *CTabFolderRenderer) DrawHighlight(gcLike GCLike, boundsLike Rectangl
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var bounds *Rectangle
 	if boundsLike != nil {
 		bounds = boundsLike.AsRectangle()
 	}
-	_ = bounds
+	this.impl.drawHighlight_(gc, bounds, state, rightEdge)
+}
+
+func (this *CTabFolderRenderer) drawHighlight_(gc *GC, bounds *Rectangle, state int32, rightEdge int32) {
 }
 
 func (this *CTabFolderRenderer) DrawRightUnselectedBorder(gcLike GCLike, boundsLike RectangleLike, state int32) {
@@ -1186,12 +1318,14 @@ func (this *CTabFolderRenderer) DrawRightUnselectedBorder(gcLike GCLike, boundsL
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var bounds *Rectangle
 	if boundsLike != nil {
 		bounds = boundsLike.AsRectangle()
 	}
-	_ = bounds
+	this.impl.drawRightUnselectedBorder_(gc, bounds, state)
+}
+
+func (this *CTabFolderRenderer) drawRightUnselectedBorder_(gc *GC, bounds *Rectangle, state int32) {
 	var x int32 = bounds.X + bounds.Width - 1
 	var y int32 = bounds.Y
 	var height int32 = bounds.Height
@@ -1208,12 +1342,14 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var bounds *Rectangle
 	if boundsLike != nil {
 		bounds = boundsLike.AsRectangle()
 	}
-	_ = bounds
+	this.impl.drawSelected_(itemIndex, gc, bounds, state)
+}
+
+func (this *CTabFolderRenderer) drawSelected_(itemIndex int32, gc *GC, bounds *Rectangle, state int32) {
 	var item *CTabItem = this.parent.items[itemIndex]
 	var x int32 = bounds.X
 	var y int32 = bounds.Y
@@ -1258,7 +1394,7 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 		var hh int32 = highlight_header - 1
 		var shape []int32 = []int32{xx, yy, xx + ww, yy, xx + ww, yy + hh, xx, yy + hh}
 		if this.parent.selectionGradientColors != (nil) && !this.parent.selectionGradientVertical {
-			this.DrawBackgroundGcShapeSelected(gc, shape, this.parent.ShouldHighlight())
+			this.impl.drawBackgroundGcShapeSelected_(gc, shape, this.parent.ShouldHighlight())
 		} else {
 			var cond741 *Color
 			if this.parent.ShouldHighlight() {
@@ -1382,7 +1518,7 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 			var tabInPaint bool = clipping.IntersectsRect(clipBounds)
 			if tabInPaint {
 				if this.parent.selectionGradientColors != (nil) && !this.parent.selectionGradientVertical {
-					this.DrawBackgroundGcShapeSelected(gc, shape, true)
+					this.impl.drawBackgroundGcShapeSelected_(gc, shape, true)
 				} else {
 					var defaultBackground *Color
 					if this.parent.ShouldHighlight() {
@@ -1402,10 +1538,10 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 					}
 					ww = width
 					hh = height
-					this.DrawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical(gc, shape, xx, yy, ww, hh, defaultBackground, image, colors, percents, vertical)
+					this.impl.drawBackgroundGcShapeXYWidthHeightDefaultBackgroundImageColorsPercentsVertical_(gc, shape, xx, yy, ww, hh, defaultBackground, image, colors, percents, vertical)
 				}
 			}
-			this.DrawHighlight(gc, bounds, state, rightEdge)
+			this.impl.drawHighlight_(gc, bounds, state, rightEdge)
 			if this.parent.selectionHighlightBarThickness > 0 {
 				var previousColor *Color = gc.GetBackground()
 				var cond766 int32
@@ -1457,7 +1593,7 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 		}
 	}
 	if (state & FOREGROUND) != 0 {
-		var trim *Rectangle = this.ComputeTrim(itemIndex, NONE, 0, 0, 0, 0)
+		var trim *Rectangle = this.impl.computeTrim_(itemIndex, NONE, 0, 0, 0, 0)
 		var xDraw int32 = x - trim.X
 		if this.parent.single && this.ShouldAllocateCloseRect(item) {
 			xDraw += item.closeRect.Width
@@ -1498,7 +1634,7 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 			}
 			gc.SetFont(cond768)
 			if item.shortenedText == "" || item.shortenedTextWidth != textWidth {
-				item.shortenedText = this.ShortenText(gc, item.impl.getText_(), textWidth)
+				item.shortenedText = this.impl.shortenText_(gc, item.impl.getText_(), textWidth)
 				item.shortenedTextWidth = textWidth
 			}
 			var extent *Point = gc.TextExtentStringFlags(item.shortenedText, CTabFolderRendererFLAGS)
@@ -1531,7 +1667,7 @@ func (this *CTabFolderRenderer) DrawSelected(itemIndex int32, gcLike GCLike, bou
 			}
 		}
 		if this.ShouldAllocateCloseRect(item) {
-			this.DrawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected(gc, item.closeRect, item.closeImageState, this.ShouldDrawDirtyIndicator(item), true)
+			this.impl.drawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected_(gc, item.closeRect, item.closeImageState, this.ShouldDrawDirtyIndicator(item), true)
 		}
 	}
 }
@@ -1557,12 +1693,14 @@ func (this *CTabFolderRenderer) DrawTabArea(gcLike GCLike, boundsLike RectangleL
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var bounds *Rectangle
 	if boundsLike != nil {
 		bounds = boundsLike.AsRectangle()
 	}
-	_ = bounds
+	this.impl.drawTabArea_(gc, bounds, state)
+}
+
+func (this *CTabFolderRenderer) drawTabArea_(gc *GC, bounds *Rectangle, state int32) {
 	var size *Point = this.parent.impl.getSize_()
 	var borderColor *Color = this.parent.GetDisplay().impl.getSystemColor_(CTabFolderRendererBORDER1_COLOR)
 	var tabHeight int32 = this.parent.tabHeight
@@ -1616,10 +1754,10 @@ func (this *CTabFolderRenderer) DrawTabArea(gcLike GCLike, boundsLike RectangleL
 		}
 		var shape []int32 = []int32{x1, y1, x1, y2, x2, y2, x2, y1}
 		if selectedIndex != -1 && this.parent.selectionGradientColors != (nil) && int32(len(this.parent.selectionGradientColors)) > 1 && !this.parent.selectionGradientVertical {
-			this.DrawBackgroundGcShapeSelected(gc, shape, true)
+			this.impl.drawBackgroundGcShapeSelected_(gc, shape, true)
 		} else {
 			if selectedIndex == -1 && this.parent.gradientColors != (nil) && int32(len(this.parent.gradientColors)) > 1 && !this.parent.gradientVertical {
-				this.DrawBackgroundGcShapeSelected(gc, shape, false)
+				this.impl.drawBackgroundGcShapeSelected_(gc, shape, false)
 			} else {
 				var cond771 *Color
 				if selectedIndex != -1 && this.parent.ShouldHighlight() {
@@ -1708,7 +1846,7 @@ func (this *CTabFolderRenderer) DrawTabArea(gcLike GCLike, boundsLike RectangleL
 	}
 	var single bool = this.parent.single
 	var bkSelected bool = single && selectedIndex != -1
-	this.DrawBackgroundGcShapeSelected(gc, shape, bkSelected)
+	this.impl.drawBackgroundGcShapeSelected_(gc, shape, bkSelected)
 	if selectedIndex == -1 {
 		var x1 int32 = borderLeft
 		var y1 int32
@@ -1732,12 +1870,14 @@ func (this *CTabFolderRenderer) DrawUnselected(index int32, gcLike GCLike, bound
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
 	var bounds *Rectangle
 	if boundsLike != nil {
 		bounds = boundsLike.AsRectangle()
 	}
-	_ = bounds
+	this.impl.drawUnselected_(index, gc, bounds, state)
+}
+
+func (this *CTabFolderRenderer) drawUnselected_(index int32, gc *GC, bounds *Rectangle, state int32) {
 	var item *CTabItem = this.parent.items[index]
 	var x int32 = bounds.X
 	var y int32 = bounds.Y
@@ -1752,14 +1892,14 @@ func (this *CTabFolderRenderer) DrawUnselected(index int32, gcLike GCLike, bound
 	}
 	if (state & BACKGROUND) != 0 {
 		if index > 0 && index < this.parent.selectedIndex {
-			this.DrawLeftUnselectedBorder(gc, bounds, state)
+			this.impl.drawLeftUnselectedBorder_(gc, bounds, state)
 		}
 		if index > this.parent.selectedIndex {
-			this.DrawRightUnselectedBorder(gc, bounds, state)
+			this.impl.drawRightUnselectedBorder_(gc, bounds, state)
 		}
 	}
 	if (state & FOREGROUND) != 0 {
-		var trim *Rectangle = this.ComputeTrim(index, NONE, 0, 0, 0, 0)
+		var trim *Rectangle = this.impl.computeTrim_(index, NONE, 0, 0, 0, 0)
 		var xDraw int32 = x - trim.X
 		var image *Image = item.impl.getImage_()
 		if image != (nil) && !image.impl.isDisposed_() && this.parent.showUnselectedImage {
@@ -1799,7 +1939,7 @@ func (this *CTabFolderRenderer) DrawUnselected(index int32, gcLike GCLike, bound
 			}
 			gc.SetFont(cond789)
 			if item.shortenedText == "" || item.shortenedTextWidth != textWidth {
-				item.shortenedText = this.ShortenText(gc, item.impl.getText_(), textWidth)
+				item.shortenedText = this.impl.shortenText_(gc, item.impl.getText_(), textWidth)
 				item.shortenedTextWidth = textWidth
 			}
 			var extent *Point = gc.TextExtentStringFlags(item.shortenedText, CTabFolderRendererFLAGS)
@@ -1822,12 +1962,16 @@ func (this *CTabFolderRenderer) DrawUnselected(index int32, gcLike GCLike, bound
 			gc.SetFont(gcFont)
 		}
 		if this.ShouldAllocateCloseRect(item) {
-			this.DrawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected(gc, item.closeRect, item.closeImageState, this.ShouldDrawDirtyIndicator(item), false)
+			this.impl.drawCloseGcCloseRectCloseImageStateShowDirtyIndicatorSelected_(gc, item.closeRect, item.closeImageState, this.ShouldDrawDirtyIndicator(item), false)
 		}
 	}
 }
 
 func (this *CTabFolderRenderer) GetFillColor() *Color {
+	return this.impl.getFillColor_()
+}
+
+func (this *CTabFolderRenderer) getFillColor_() *Color {
 	if this.fillColor == (nil) {
 		this.fillColor = NewColorRgb(CTabFolderRendererCLOSE_FILL)
 	}
@@ -1850,6 +1994,10 @@ func (this *CTabFolderRenderer) GetChevronFont(displayLike DisplayLike) *Font {
 }
 
 func (this *CTabFolderRenderer) ResetChevronFont() {
+	this.impl.resetChevronFont_()
+}
+
+func (this *CTabFolderRenderer) resetChevronFont_() {
 	if this.chevronFont != (nil) {
 		this.chevronFont.impl.dispose_()
 		this.chevronFont = nil
@@ -1861,8 +2009,11 @@ func (this *CTabFolderRenderer) ShortenText(gcLike GCLike, text string, width in
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
-	return this.ShortenTextGcTextWidthEllipses(gc, text, width, CTabFolderRendererELLIPSIS)
+	return this.impl.shortenText_(gc, text, width)
+}
+
+func (this *CTabFolderRenderer) shortenText_(gc *GC, text string, width int32) string {
+	return this.impl.shortenTextGcTextWidthEllipses_(gc, text, width, CTabFolderRendererELLIPSIS)
 }
 
 func (this *CTabFolderRenderer) ShortenTextGcTextWidthEllipses(gcLike GCLike, text string, width int32, ellipses string) string {
@@ -1870,7 +2021,10 @@ func (this *CTabFolderRenderer) ShortenTextGcTextWidthEllipses(gcLike GCLike, te
 	if gcLike != nil {
 		gc = gcLike.AsGC()
 	}
-	_ = gc
+	return this.impl.shortenTextGcTextWidthEllipses_(gc, text, width, ellipses)
+}
+
+func (this *CTabFolderRenderer) shortenTextGcTextWidthEllipses_(gc *GC, text string, width int32, ellipses string) string {
 	if gc.TextExtentStringFlags(text, CTabFolderRendererFLAGS).X <= width {
 		return text
 	}

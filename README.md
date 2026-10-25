@@ -64,6 +64,7 @@ Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable pr
 | Dialogs and menus | [dialogs-menus](docs/dialogs-menus.md) | [dialogs](examples/dialogs) |
 | Graphics and images | [graphics](docs/graphics.md) | [graphics](examples/graphics) |
 | Theme and platform look | [theme-look](docs/theme-look.md) | [theme](examples/theme) |
+| One layout for three systems | [cross-platform-look](docs/cross-platform-look.md) | - |
 | Icons | [icons](docs/icons.md) | [icons](examples/icons) |
 | Web view | [webview-browser](docs/webview-browser.md) | [webview](examples/webview) |
 | Testing with the QA driver | [qa](docs/qa.md) | [qa](examples/qa) |

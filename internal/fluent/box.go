@@ -12,9 +12,12 @@ type disposer func()
 
 func (d disposer) WidgetDisposed(*swt.DisposeEvent) { d() }
 
-type listener func(*swt.Event)
+// listener is a pointer type: the event tables compare listeners, and comparing func values panics.
+type listener struct{ f func(*swt.Event) }
 
-func (l listener) HandleEvent(e *swt.Event) { l(e) }
+func newListener(f func(*swt.Event)) *listener { return &listener{f} }
+
+func (l *listener) HandleEvent(e *swt.Event) { l.f(e) }
 
 // FlatBorder replaces the 3D edge (WS_EX_CLIENTEDGE) by a flat 1 px hairline with square corners.
 func FlatBorder(c *swt.Control) {

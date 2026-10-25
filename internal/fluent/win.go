@@ -36,6 +36,8 @@ var (
 	pCreateRectRgn        = gdi32.NewProc("CreateRectRgn")
 	pExcludeClipRect      = gdi32.NewProc("ExcludeClipRect")
 	pSelectObject         = gdi32.NewProc("SelectObject")
+	pSetBkMode            = gdi32.NewProc("SetBkMode")
+	pGetStockObject       = gdi32.NewProc("GetStockObject")
 	pGetTextMetrics       = gdi32.NewProc("GetTextMetricsW")
 	pSetWindowSubclass    = comctl32.NewProc("SetWindowSubclass")
 	pDefSubclassProc      = comctl32.NewProc("DefSubclassProc")
@@ -44,19 +46,20 @@ var (
 )
 
 const (
-	wmNCDestroy  = 0x82
-	wmNCCalcSize = 0x83
-	wmNCPaint    = 0x85
-	wmSetFocus   = 0x7
-	wmKillFocus  = 0x8
-	wmEnable     = 0xA
-	wmGetFont    = 0x31
-	wmMouseWheel = 0x20A
-	wmMouseMove  = 0x200
-	wmMouseLeave = 0x2A3
-	wmPaint      = 0xF
-	wmSize       = 0x5
-	wmEraseBkgnd = 0x14
+	wmNCDestroy      = 0x82
+	wmNCCalcSize     = 0x83
+	wmNCPaint        = 0x85
+	wmSetFocus       = 0x7
+	wmKillFocus      = 0x8
+	wmEnable         = 0xA
+	wmGetFont        = 0x31
+	wmMouseWheel     = 0x20A
+	wmMouseMove      = 0x200
+	wmMouseLeave     = 0x2A3
+	wmPaint          = 0xF
+	wmSize           = 0x5
+	wmEraseBkgnd     = 0x14
+	wmCtlColorStatic = 0x138
 
 	wsBorder  = 0x800000
 	wsVScroll = 0x200000

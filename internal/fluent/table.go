@@ -12,7 +12,7 @@ import (
 // between columns), drops the dotted focus rectangle until a key is used, and draws images of right
 // and centre columns aligned.
 func Table(t *swt.Table) {
-	t.AddListener(swt.EraseItem, listener(func(e *swt.Event) {
+	t.AddListener(swt.EraseItem, newListener(func(e *swt.Event) {
 		hide := call(pSendMessage, uintptr(t.Handle), wmQueryUIState, 0, 0)&uisfHideFocus != 0
 		if e.Detail&(swt.SELECTED|swt.HOT) != 0 && e.Gc != nil && e.Item != nil {
 			if e.Index == 0 {
@@ -27,7 +27,7 @@ func Table(t *swt.Table) {
 			e.Detail &^= swt.FOREGROUND
 		}
 	}))
-	t.AddListener(swt.PaintItem, listener(func(e *swt.Event) {
+	t.AddListener(swt.PaintItem, newListener(func(e *swt.Event) {
 		if movedImage(t, e) {
 			paintAligned(t, e)
 		}

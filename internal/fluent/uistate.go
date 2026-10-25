@@ -26,7 +26,7 @@ func Shell(s *swt.Shell) {
 	setHideFocus(uintptr(s.Handle), true)
 	// The window takes its UI state from the last input again when it is shown.
 	var once bool
-	s.AddListener(swt.Show, listener(func(*swt.Event) {
+	s.AddListener(swt.Show, newListener(func(*swt.Event) {
 		if !once {
 			once = true
 			setHideFocus(uintptr(s.Handle), true)
@@ -37,12 +37,12 @@ func Shell(s *swt.Shell) {
 		return
 	}
 	uiHooked[d] = true
-	d.AddFilter(swt.MouseDown, listener(func(e *swt.Event) {
+	d.AddFilter(swt.MouseDown, newListener(func(e *swt.Event) {
 		if c := d.GetCursorControl(); c != nil {
 			setHideFocus(uintptr(c.GetShell().Handle), true)
 		}
 	}))
-	d.AddFilter(swt.MouseUp, listener(func(e *swt.Event) {
+	d.AddFilter(swt.MouseUp, newListener(func(e *swt.Event) {
 		if c := d.GetCursorControl(); c != nil && c.GetName() == "Link" {
 			// SysLink draws its focused item whatever the UI state says; take the focus off the item.
 			d.AsyncExec(jrt.NewRunnable(func() {
@@ -52,7 +52,7 @@ func Shell(s *swt.Shell) {
 			}))
 		}
 	}))
-	d.AddFilter(swt.KeyDown, listener(func(e *swt.Event) {
+	d.AddFilter(swt.KeyDown, newListener(func(e *swt.Event) {
 		switch e.KeyCode {
 		case swt.ARROW_UP, swt.ARROW_DOWN, swt.ARROW_LEFT, swt.ARROW_RIGHT:
 		default:

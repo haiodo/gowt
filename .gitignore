@@ -5,3 +5,4 @@ tooling/j2go/gtkstubs-gen/
 dist/
 gowt-fieldcheck-*.zip
 .claude/
+gfx/view/mockdemo/embedded/

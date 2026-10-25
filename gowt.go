@@ -489,6 +489,7 @@ func Separator(opts ...Option) Option {
 // Button creates a push button (Check or Radio for other kinds); OnClick gives it an action.
 // Options: Check, Radio, OnClick, OnChange and Checked (Check, Radio), Bind (bool), BindText.
 func Button(text string, opts ...Option) Option {
+	opts = controlHeight(opts)
 	return leaf("Button", sCheck|sRadio, opts, func(p *swt.Composite) Widget {
 		b := swt.NewButton(p, resolve(swt.NONE, opts))
 		b.SetText(text)

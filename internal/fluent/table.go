@@ -96,19 +96,7 @@ func paintRow(t *swt.Table, e *swt.Event, hideFocus bool) {
 	x := e.X - left + 4 // left is 0 for the first cell
 	y, h, w := e.Y+1, e.Height-2, total-8
 	sel, hot := e.Detail&swt.SELECTED != 0, e.Detail&swt.HOT != 0
-	var fill RGB
-	switch {
-	case sel && t.IsFocusControl():
-		a := 0.20
-		if hot {
-			a = 0.28
-		}
-		fill = pal.Accent.over(a, bg)
-	case sel:
-		fill = pal.Black.over(0.09, bg)
-	default:
-		fill = pal.Black.over(0.05, bg)
-	}
+	fill := rowFill(pal, bg, sel, hot, t.IsFocusControl())
 	gc := e.Gc
 	gc.SetAntialias(swt.ON)
 	gc.SetClipping(x-4, y-1, w+8, h+2)
@@ -125,4 +113,19 @@ func paintRow(t *swt.Table, e *swt.Event, hideFocus bool) {
 		gc.SetLineWidth(1)
 		gc.DrawRoundRectangle(x, y, w-1, h-1, 8, 8)
 	}
+}
+
+// rowFill is the colour of the pill of a selected or hot row: accent when the control has the focus.
+func rowFill(pal Palette, bg RGB, sel, hot, focus bool) RGB {
+	switch {
+	case sel && focus:
+		a := 0.20
+		if hot {
+			a = 0.28
+		}
+		return pal.Accent.over(a, bg)
+	case sel:
+		return pal.Black.over(0.09, bg)
+	}
+	return pal.Black.over(0.05, bg)
 }

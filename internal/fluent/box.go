@@ -19,16 +19,20 @@ func newListener(f func(*swt.Event)) *listener { return &listener{f} }
 
 func (l *listener) HandleEvent(e *swt.Event) { l.f(e) }
 
+// flat holds the windows FlatBorder has changed.
+var flat = map[uintptr]bool{}
+
 // FlatBorder replaces the 3D edge (WS_EX_CLIENTEDGE) by a flat 1 px hairline with square corners.
 func FlatBorder(c *swt.Control) {
 	h := uintptr(c.Handle)
-	if h == 0 || handlers[h] != nil || exStyle(h)&wsExEdge == 0 && style(h)&wsBorder == 0 {
+	if h == 0 || flat[h] || exStyle(h)&wsExEdge == 0 && style(h)&wsBorder == 0 {
 		return
 	}
+	flat[h] = true
 	setExStyle(h, exStyle(h)&^wsExEdge)
 	setStyle(h, style(h)|wsBorder)
 	frameChanged(h)
-	attach(h, func(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, bool) {
+	chain(h, func(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, bool) {
 		if msg != wmNCPaint {
 			return 0, false
 		}

@@ -11,6 +11,7 @@ type ComboView struct {
 // Combo creates a combo box with the given items.
 // Options: ReadOnly, Simple, Value, Selected, OnSelect, OnChange, Bind (string: text, int: index).
 func Combo(items []string, opts ...Option) Option {
+	opts = controlHeight(opts)
 	return leaf("Combo", sReadOnly|sSimple, opts, func(p *swt.Composite) Widget {
 		c := swt.NewCombo(p, resolve(swt.NONE, opts))
 		if len(items) > 0 { // SWT rejects a nil items slice
@@ -64,6 +65,7 @@ func List(items []string, opts ...Option) Option {
 	return leaf("List", sMultiSelect|sNoBorder, opts, func(p *swt.Composite) Widget {
 		l := swt.NewList(p, resolve(swt.V_SCROLL|swt.BORDER, opts))
 		scrollOverlay(l)
+		fluentList(l)
 		if len(items) > 0 {
 			l.SetItems(items)
 		}
@@ -410,6 +412,7 @@ func Tree(opts ...Option) Option {
 	return leaf("Tree", sCheck|sMultiSelect|sNoBorder|sCellSelect, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTree(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
 		scrollOverlay(t)
+		fluentTree(t)
 		// The natural height follows the visible rows: lay out again after an expand or collapse.
 		t.AddTreeListener(swt.TreeListenerTreeExpandedAdapter(func(*swt.TreeEvent) { contentChanged(&t.Control) }))
 		t.AddTreeListener(swt.TreeListenerTreeCollapsedAdapter(func(*swt.TreeEvent) { contentChanged(&t.Control) }))

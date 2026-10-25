@@ -10,6 +10,18 @@ func fluentText(*TextView, bool) {}
 
 func fluentBorder(*swt.Control) {}
 
+func fluentCard(*swt.Display) *swt.Color { return nil }
+
+func fluentScroll(*swt.Composite) {}
+
 func fluentTable(*swt.Table) {}
 
+func fluentList(*swt.List) {}
+
+func fluentTree(*swt.Tree) {}
+
 func fluentShell(*swt.Shell) {}
+
+func controlHeight(opts []Option) []Option { return opts }
+
+func fluentRange(opts []Option) []Option { return opts }

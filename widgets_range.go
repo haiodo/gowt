@@ -32,6 +32,7 @@ type ScaleView struct {
 // Scale creates a scale over [min, max] at min; Value sets another start.
 // Options: Vertical, Value, OnChange, Bind (int).
 func Scale(min, max int, opts ...Option) Option {
+	opts = fluentRange(opts)
 	return leaf("Scale", sVertical, opts, func(p *swt.Composite) Widget {
 		s := swt.NewScale(p, resolve(swt.NONE, opts))
 		setRange(s, min, max)
@@ -92,6 +93,7 @@ type SpinnerView struct {
 // Spinner creates a spinner over [min, max] at min; Value sets another start.
 // Options: ReadOnly, Border, Value, OnChange, Bind (int).
 func Spinner(min, max int, opts ...Option) Option {
+	opts = controlHeight(opts)
 	return leaf("Spinner", sReadOnly|sBorder, opts, func(p *swt.Composite) Widget {
 		s := swt.NewSpinner(p, resolve(swt.NONE, opts))
 		setRange(s, min, max)
@@ -122,6 +124,7 @@ type ProgressView struct {
 // Progress creates a progress bar over [0, max].
 // Options: Vertical, Smooth, Indeterminate, Value.
 func Progress(max int, opts ...Option) Option {
+	opts = fluentRange(opts)
 	return leaf("Progress", sVertical|sSmooth|sIndeterminate, opts, func(p *swt.Composite) Widget {
 		b := swt.NewProgressBar(p, resolve(swt.NONE, opts))
 		b.SetMaximum(int32(max))
@@ -150,6 +153,7 @@ type DateTimeView struct {
 // DateTime creates a date picker; DropDown() makes the date field a drop-down calendar.
 // Options: DropDown, AsTime, AsCalendar, Value, OnChange.
 func DateTime(opts ...Option) Option {
+	opts = controlHeight(opts)
 	return leaf("DateTime", sDropDown|sAsTime|sAsCalendar, opts, func(p *swt.Composite) Widget {
 		d := swt.NewDateTime(p, resolve(swt.NONE, opts))
 		return &DateTimeView{base{&d.Control}, d}

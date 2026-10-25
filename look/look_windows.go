@@ -58,8 +58,7 @@ func setBackdrop(s *swt.Shell, b Backdrop) {
 	if margin == 0 {
 		if on, _ := s.GetDataKey(backdropOnKey).(bool); on {
 			s.SetDataKeyValue(backdropOnKey, false)
-			s.SetBackgroundWithColor(nil)
-			s.SetBackgroundMode(swt.INHERIT_NONE)
+			fluent.Background(&s.Composite)
 		}
 		return
 	}

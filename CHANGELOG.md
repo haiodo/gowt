@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+Windows look (Windows 11)
+- The window background is the Fluent colour (F3F3F3, 202020 in the dark theme) instead of the system F0F0F0; labels, groups, tab pages and the content of `Scroll` take it. Inputs and tables keep their own white. `look.SetDarkContent` stays opt-in; nothing turns it on by itself.
+- With `App.SetDensity`, push `Button`, drop-down `Combo`, `Spinner` and `DateTime` are `Spacing.ControlHeight` high (32 at `DensityNative`), `List` and `Tree` rows `Spacing.RowHeight`. Without `SetDensity` the native heights stay. A `Spinner` line is centred in its taller edit.
+- `Progress` is the WinUI bar (hairline track, 3 px rounded accent indicator, red and yellow for error and paused), with its own animation for `Indeterminate()`. `Scale` is the WinUI slider (4 px track, accent up to a round thumb with a dot that grows on hover); the native trackbar still handles mouse, keyboard and accessibility.
+- `List` and `Tree` select with the rounded pill of `Table` (accent when focused, grey otherwise), with a hover fill. `Text` with `Search()` has the Fluent frame and a centred line.
+- `Section` cards are the WinUI card fill (white at 70% over the window colour) instead of a darkened grey.
+
 Linux look (GTK)
 - A default stylesheet is installed by `Run` at GTK application priority (below any app CSS): flat table and tree headers without column dividers, roomier rows (`-GtkTreeView-vertical-separator: 6`), and `Group` as a card with its title above it instead of in the frame line. Theme named colours only, so Adwaita, Yaru, light and dark follow.
 - `look.SetSidebar` marks the sidebar `gowt-sidebar`: a selected row in a List, Table or Tree there is a neutral rounded fill with the normal text colour instead of the accent bar; other lists keep the accent. The rule outranks the portal accent rule. Row insets are not possible with GTK 3 CSS.

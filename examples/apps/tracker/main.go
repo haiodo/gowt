@@ -32,6 +32,7 @@ var issues = []issue{
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
+		app.SetDensity(gowt.DensityNative)
 		w := app.Window("Issues")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(900, 500)
@@ -43,7 +44,7 @@ func main() {
 			look.ToolbarItem{Title: "New Issue", Symbol: "plus", OnClick: func() {}},
 			look.ToolbarItem{Title: "Search", OnSearch: func(string) {}},
 			look.ToolbarItem{Title: "Hide Inspector", Symbol: "sidebar.right", OnClick: func() {}})
-		look.SetInspector(w, content, insp, 340)
+		look.SetInspector(w, content, insp, gowt.Scaled(340))
 		w.Show()
 	})
 	if err != nil {
@@ -52,7 +53,7 @@ func main() {
 }
 
 func contentPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
-	return gowt.VBox(gowt.Ref(ref), gowt.Padding(12), gowt.Gap(10),
+	return gowt.VBox(gowt.Ref(ref), gowt.Padding(gowt.Spacing.MD), gowt.Gap(gowt.Spacing.MD),
 		gowt.Tabs(gowt.Grow(), gowt.Selected(0),
 			gowt.Tab("All issues", filterBar(), table(app)),
 			gowt.Tab("Assigned to me"),
@@ -60,22 +61,22 @@ func contentPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 }
 
 func filterBar() gowt.Option {
-	return gowt.HBox(gowt.Gap(8), gowt.GrowX(),
+	return gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(),
 		gowt.Combo([]string{"Any status", "Todo", "In Progress", "In Review", "Done"}, gowt.ReadOnly(), gowt.Selected(0)),
 		gowt.Combo([]string{"Any assignee", "Alex Morgan", "Priya Raman"}, gowt.ReadOnly(), gowt.Selected(0)),
 		gowt.Combo([]string{"Any priority", "Urgent", "High", "Medium", "Low"}, gowt.ReadOnly(), gowt.Selected(0)),
 		gowt.Spacer(),
-		gowt.Text(gowt.Search(), gowt.Hint("Filter issues"), gowt.Size(220, 0)))
+		gowt.Text(gowt.Search(), gowt.Hint("Filter issues"), gowt.Size(gowt.Scaled(220), 0)))
 }
 
 func table(app *gowt.App) gowt.Option {
 	return gowt.Table(gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-		t.Column("ID", 90)
-		title := t.Column("Title", 400)
-		t.Column("Status", 120)
-		t.Column("Assignee", 130)
-		t.Column("Priority", 80)
-		t.Column("Updated", 90, gowt.Right())
+		t.Column("ID", gowt.Scaled(92)) // Table has no column autosize
+		title := t.Column("Title", gowt.Scaled(400))
+		t.Column("Status", gowt.Scaled(120))
+		t.Column("Assignee", gowt.Scaled(130))
+		t.Column("Priority", gowt.Scaled(80))
+		t.Column("Updated", gowt.Scaled(92), gowt.Right())
 		for _, i := range issues {
 			r := t.Row(i.id, i.title, i.status, i.assignee, i.priority, i.updated)
 			r.SetImageAt(2, kit.Dot(app, statuses[i.status], 12))
@@ -88,23 +89,23 @@ func table(app *gowt.App) gowt.Option {
 func inspectorPane(ref **gowt.Panel) gowt.Option {
 	i := issues[4]
 	field := func(name string, v gowt.Option) gowt.Option {
-		return gowt.HBox(gowt.Gap(8), gowt.GrowX(), gowt.Label(name, kit.Faint(), gowt.Size(80, 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter)), v)
+		return gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(), gowt.Label(name, kit.Faint(), gowt.Size(gowt.Scaled(80), 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter)), v)
 	}
-	return gowt.VBox(gowt.Ref(ref), gowt.Padding(16), gowt.Gap(12),
-		gowt.Label(i.id, kit.Faint(), kit.Caption()),
-		gowt.Label(i.title, kit.Heading(), gowt.Wrap(), gowt.GrowX()),
-		gowt.HBox(gowt.Gap(6), kit.Pill("In Progress", 92, 22, kit.Tint(kit.Orange), kit.Orange), kit.Pill("Urgent", 62, 22, kit.Tint(kit.Red), kit.Red)),
+	return gowt.VBox(gowt.Ref(ref), gowt.Padding(gowt.Spacing.PageMargin), gowt.Gap(gowt.Spacing.MD),
+		gowt.Label(i.id, kit.Faint(), gowt.Typeface(gowt.Type.Caption)),
+		gowt.Label(i.title, gowt.Typeface(gowt.Type.Subtitle), gowt.Wrap(), gowt.GrowX()),
+		gowt.HBox(gowt.Gap(gowt.Spacing.SM), kit.Pill("In Progress", gowt.Scaled(92), gowt.Scaled(24), kit.Tint(kit.Orange), kit.Orange), kit.Pill("Urgent", gowt.Scaled(64), gowt.Scaled(24), kit.Tint(kit.Red), kit.Red)),
 		gowt.Separator(gowt.GrowX()),
 		field("Status", gowt.Combo([]string{"Todo", "In Progress", "In Review", "Done"}, gowt.ReadOnly(), gowt.Selected(1), gowt.GrowX())),
 		field("Assignee", gowt.Combo([]string{"Alex Morgan", "Priya Raman"}, gowt.ReadOnly(), gowt.Selected(0), gowt.GrowX())),
 		field("Due", gowt.Label("30 Oct 2026")),
 		field("Estimate", gowt.Spinner(0, 40, gowt.Value(5))),
-		gowt.Label("Description", kit.Strong()),
-		gowt.Text(gowt.Multiline(), gowt.ReadOnly(), gowt.Border(), gowt.GrowX(), gowt.Size(0, 120),
+		gowt.Label("Description", gowt.Typeface(gowt.Type.BodyStrong)),
+		gowt.Text(gowt.Multiline(), gowt.ReadOnly(), gowt.Border(), gowt.GrowX(), gowt.Size(0, gowt.Scaled(120)),
 			gowt.Value("The window crashes when it is dragged from the laptop display to an external monitor with a different scale factor.")),
 		gowt.Link(`<a href="https://example.com/issues/105">Open in browser</a>`),
 		gowt.Spacer(),
-		gowt.HBox(gowt.Gap(8), gowt.GrowX(), gowt.Spacer(),
+		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(), gowt.Spacer(),
 			gowt.Button("Close Issue", gowt.Foreground(kit.Red)),
 			gowt.Button("Save", gowt.Focused())))
 }

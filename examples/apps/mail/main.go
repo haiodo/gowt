@@ -44,6 +44,7 @@ Priya`
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
+		app.SetDensity(gowt.DensityNative)
 		w := app.Window("Inbox")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(900, 500)
@@ -58,7 +59,7 @@ func main() {
 			look.ToolbarItem{Title: "Delete", Symbol: "trash", OnClick: func() {}},
 			look.ToolbarItem{Title: "Reply", Symbol: "arrowshape.turn.up.left", OnClick: func() {}},
 			look.ToolbarItem{Title: "Search", OnSearch: func(string) {}})
-		look.SetSidebar(w, sidebar, content, 220)
+		look.SetSidebar(w, sidebar, content, gowt.Spacing.SidebarWidth)
 		w.Show()
 	})
 	if err != nil {
@@ -69,7 +70,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-			t.Column("", 200)
+			t.Column("", gowt.Scaled(200)) // Table has no column autosize
 			t.ShowHeader(false)
 			t.ShowLines(false)
 			boxes := []struct {
@@ -100,10 +101,10 @@ func contentPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 
 func list(app *gowt.App) gowt.Option {
 	return gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-		t.Column("", 28)
-		t.Column("From", 150)
-		t.Column("Subject", 330)
-		t.Column("Date", 80, gowt.Right())
+		t.Column("", gowt.Scaled(28)) // Table has no column autosize
+		t.Column("From", gowt.Scaled(150))
+		t.Column("Subject", gowt.Scaled(332))
+		t.Column("Date", gowt.Scaled(80), gowt.Right())
 		t.ShowLines(false)
 		dot := kit.Dot(app, kit.Blue, 12)
 		for _, m := range inbox {
@@ -117,14 +118,14 @@ func list(app *gowt.App) gowt.Option {
 }
 
 func reader() gowt.Option {
-	return gowt.VBox(gowt.Padding(20), gowt.Gap(12),
-		gowt.HBox(gowt.Gap(12), gowt.GrowX(),
-			kit.Avatar("PR", kit.Purple, 44),
-			gowt.VBox(gowt.Gap(2), gowt.GrowX(),
-				gowt.Label("Priya Raman", kit.Strong()),
-				gowt.Label("To: Team", kit.Faint(), kit.Caption())),
-			gowt.Label("Today at 09:41", kit.Faint(), kit.Caption())),
-		gowt.Label("Quarterly planning notes", kit.Heading()),
+	return gowt.VBox(gowt.Padding(gowt.Scaled(20)), gowt.Gap(gowt.Spacing.MD),
+		gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(),
+			kit.Avatar("PR", kit.Purple, gowt.Scaled(44)),
+			gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.GrowX(),
+				gowt.Label("Priya Raman", gowt.Typeface(gowt.Type.BodyStrong)),
+				gowt.Label("To: Team", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
+			gowt.Label("Today at 09:41", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
+		gowt.Label("Quarterly planning notes", gowt.Typeface(gowt.Type.Subtitle)),
 		gowt.Separator(gowt.GrowX()),
 		gowt.Label(body, gowt.Wrap(), gowt.GrowX()),
 		gowt.Link(`<a href="https://example.com/plan">Open the shared document</a>`),

@@ -14,6 +14,7 @@ import (
 
 func main() {
 	err := gowt.Run(func(app *gowt.App) {
+		app.SetDensity(gowt.DensityNative)
 		w := app.Window("Appearance")
 		w.SetSize(kit.Width, kit.Height)
 		w.SetMinSize(800, 500)
@@ -27,7 +28,7 @@ func main() {
 				{Title: "Forward", Symbol: "chevron.forward", OnClick: func() {}}}},
 			look.ToolbarItem{Space: true},
 			look.ToolbarItem{Title: "Search", OnSearch: func(string) {}})
-		look.SetSidebar(w, sidebar, content, 240)
+		look.SetSidebar(w, sidebar, content, gowt.Scaled(240))
 		w.Show()
 	})
 	if err != nil {
@@ -38,7 +39,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Table(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-			t.Column("", 220)
+			t.Column("", gowt.Scaled(220)) // Table has no column autosize
 			t.ShowHeader(false)
 			t.ShowLines(false)
 			cats := []struct {
@@ -61,34 +62,36 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 		})))
 }
 
+// The form row is a plain HBox: labels are not aligned into a column (no form layout yet).
 func row(label string, control gowt.Option) gowt.Option {
-	return gowt.HBox(gowt.Gap(12), gowt.GrowX(), gowt.Label(label, gowt.GrowX(), gowt.Place(gowt.AlignFill, gowt.AlignCenter)), gowt.VBox(gowt.Padding(0), control))
+	return gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(), gowt.Label(label, gowt.GrowX(), gowt.Place(gowt.AlignFill, gowt.AlignCenter)), gowt.VBox(gowt.Padding(0), control))
 }
 
 func contentPane(ref **gowt.Panel) gowt.Option {
-	return gowt.VBox(gowt.Ref(ref), gowt.Padding(24), gowt.Gap(10),
+	return gowt.VBox(gowt.Ref(ref), gowt.Padding(gowt.Scaled(24)), gowt.Gap(gowt.Spacing.MD),
 		gowt.Scroll(gowt.Grow(),
-			gowt.VBox(gowt.Gap(10), gowt.GrowX(), gowt.Padding(0),
-				gowt.Label("Appearance", kit.Title()),
+			gowt.VBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(), gowt.Padding(0),
+				gowt.Label("Appearance", gowt.Typeface(gowt.Type.Title)),
 				gowt.Label("Style", kit.Faint()),
 				gowt.Section(gowt.GrowX(),
 					row("Theme", gowt.Combo([]string{"Light", "Dark", "Automatic"}, gowt.ReadOnly(), gowt.Selected(2))),
 					row("Accent colour", gowt.Combo([]string{"Blue", "Purple", "Green", "Orange"}, gowt.ReadOnly(), gowt.Selected(0))),
-					row("Show scroll bars", gowt.HBox(gowt.Gap(8),
+					row("Show scroll bars", gowt.HBox(gowt.Gap(gowt.Spacing.SM),
 						gowt.Button("Automatically", gowt.Radio(), gowt.Checked(true)),
 						gowt.Button("Always", gowt.Radio())))),
 				gowt.Label("Display", kit.Faint()),
 				gowt.Section(gowt.GrowX(),
-					row("Text size", gowt.Scale(8, 20, gowt.Value(13), gowt.Size(220, 0))),
+					row("Text size", gowt.Scale(8, 20, gowt.Value(13), gowt.Size(gowt.Scaled(220), 0))),
 					row("Sidebar icon size", gowt.Spinner(12, 32, gowt.Value(18))),
 					row("Use large toolbar icons", gowt.Switch("", gowt.Checked(true))),
 					row("Show path in the title", gowt.Button("", gowt.Check(), gowt.Checked(true)))),
 				gowt.Label("Account", kit.Faint()),
 				gowt.Section(gowt.GrowX(),
-					row("Display name", gowt.Text(gowt.Value("Alex Morgan"), gowt.Size(220, 0))),
-					row("Email", gowt.Text(gowt.Hint("name@example.com"), gowt.Size(220, 0))),
-					row("Password", gowt.Text(gowt.Password(), gowt.Value("secret-pass"), gowt.Size(220, 0)))),
-				gowt.HBox(gowt.Gap(8), gowt.GrowX(),
+					row("Display name", gowt.Text(gowt.Value("Alex Morgan"), gowt.Size(gowt.Scaled(220), 0))),
+					row("Email", gowt.Text(gowt.Hint("name@example.com"), gowt.Size(gowt.Scaled(220), 0))),
+					row("Password", gowt.Text(gowt.Password(), gowt.Value("secret-pass"), gowt.Size(gowt.Scaled(220), 0)))),
+				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(),
+					// No primary or destructive button style yet: the foreground and Focused() stand in.
 					gowt.Button("Delete Account...", gowt.Foreground(kit.Red)),
 					gowt.Spacer(),
 					gowt.Button("Cancel"),

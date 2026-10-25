@@ -56,6 +56,14 @@ Values under `DensityNative`, as printed on Windows 11 arm64 and on Ubuntu 26.04
 
 Title, Subtitle, BodyStrong and LargeTitle are Semibold. The values are the base ones times the factor and rounded to 4 px, so a step can jump: at a factor of 1.13, LG 16 becomes 20.
 
+## Idioms from examples/apps
+
+- `Scaled` rounds to 4 px even at factor 1, so `Scaled(26)` is 28 on macOS. Write multiples of 4 (`Scaled(28)`) when the macOS size must stay as designed.
+- Table and Tree column widths, avatar and badge sizes, and fixed field widths go through `Scaled`; `Table` has no column autosize yet.
+- A token in another weight is a copy: `f := gowt.Type.Caption; f.Weight = gowt.Semibold`.
+- Icon sizes (`icons.Size(18)`) are not scaled by `Scaled` in these apps; they stay 18.
+- A `Canvas` callback gets no size, so a chart keeps a fixed plot area and margins; the label font is `Type.Caption`.
+
 ## What to avoid
 
 - A fixed pixel width for text: `Size(120, 0)` for a label or a button that holds a caption. At density 1.13 or with a long translation the caption is cut off. Let the layout take the natural width, or write `Size(gowt.Scaled(120), 0)`.

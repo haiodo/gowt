@@ -121,3 +121,16 @@ func moveToPlainCell(v, cls uintptr) {
 	msg(v, "setCell:", c)
 	msg(c, "release")
 }
+
+// SetButtonDestructive marks the button's action as destructive (NSButton.hasDestructiveAction, macOS 11).
+func SetButtonDestructive(view *NSView) {
+	if v := uintptr(view.Id); respondsTo(v, "setHasDestructiveAction:") {
+		msg(v, "setHasDestructiveAction:", 1)
+	}
+}
+
+// ButtonDestructive reports hasDestructiveAction.
+func ButtonDestructive(view *NSView) bool {
+	v := uintptr(view.Id)
+	return respondsTo(v, "hasDestructiveAction") && msg(v, "hasDestructiveAction")&0xff != 0
+}

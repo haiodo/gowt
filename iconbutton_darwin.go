@@ -13,3 +13,10 @@ func setButtonCircle(b *swt.Button) {
 }
 
 func setAccessibleLabel(c *swt.Control, s string) { cocoa.SetAccessibilityLabel(c.View, s) }
+
+// The default button (Primary) is drawn by AppKit in the accent colour; Destructive adds the system's destructive action.
+func setButtonKind(b *swt.Button, kind int) {
+	if kind&buttonDestructive != 0 {
+		cocoa.SetButtonDestructive(b.View)
+	}
+}

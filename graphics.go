@@ -147,6 +147,10 @@ func (g *GC) TextSize(s string) (w, h int) {
 	return int(p.X), int(p.Y)
 }
 
+// Size returns the width and height of the canvas being painted, in points: what CanvasView.Size
+// returns, read at paint time so a chart can follow a resize.
+func (g *GC) Size() (w, h int) { return g.c.Size() }
+
 // Image draws img with its top left at (x, y).
 func (g *GC) Image(img *Image, x, y int) { g.g.DrawImage(img.i, int32(x), int32(y)) }
 

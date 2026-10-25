@@ -1,6 +1,6 @@
 # Installing gowt
 
-Next: the [getting started](index.md) page. A quick hello is in [`examples/hello`](../examples/hello).
+Next: the [getting started](README.md) page. A quick hello is in [`examples/hello`](../examples/hello).
 
 ```
 go get github.com/haiodo/gowt@latest

@@ -49,7 +49,7 @@ are loaded at run time.
 # Documentation
 
 The guide, one page and one runnable program per topic, starts at
-https://github.com/haiodo/gowt/blob/main/docs/index.md. The programs are in
+https://github.com/haiodo/gowt/blob/main/docs/README.md. The programs are in
 https://github.com/haiodo/gowt/tree/main/examples. The idioms on one page, for people
 and coding agents: https://github.com/haiodo/gowt/blob/main/docs/agents.md.
 

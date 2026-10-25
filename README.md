@@ -76,7 +76,7 @@ func main() {
 
 ## Documentation
 
-Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable program:
+Start at [docs/README.md](docs/README.md). Each topic has a page and a runnable program:
 
 | Topic | Page | Example |
 |---|---|---|

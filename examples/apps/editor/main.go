@@ -111,7 +111,7 @@ func contentPane(ref **gowt.Panel) gowt.Option {
 		gowt.CTabs(gowt.Grow(), gowt.Selected(1),
 			gowt.Tab("main.go", gowt.Closable()),
 			gowt.Tab("queue.go", gowt.Closable(), gowt.Padding(0), gowt.Gap(0),
-				gowt.StyledText(gowt.Scrollbars(), gowt.Borderless(), gowt.Grow(), gowt.LineNumbers(), gowt.Init(editor)))),
+				gowt.StyledText(gowt.Scrollbars(), gowt.Grow(), gowt.LineNumbers(), gowt.Init(editor)))),
 		gowt.Separator(gowt.GrowX()),
 		gowt.HBox(gowt.Gap(gowt.Spacing.LG), gowt.GrowX(), gowt.Padding(gowt.Spacing.SM),
 			gowt.Label("Ln 27, Col 14", gowt.Typeface(gowt.Type.Caption)), gowt.Label("UTF-8", gowt.Typeface(gowt.Type.Caption)), gowt.Label("Go", gowt.Typeface(gowt.Type.Caption)),

@@ -107,6 +107,6 @@ func inspectorPane(ref **gowt.Panel) gowt.Option {
 		gowt.Link(`<a href="https://example.com/issues/105">Open in browser</a>`),
 		gowt.Spacer(),
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(), gowt.Spacer(),
-			gowt.Button("Close Issue", gowt.Foreground(kit.Red)),
-			gowt.Button("Save", gowt.Focused())))
+			gowt.Button("Close Issue", gowt.Destructive()),
+			gowt.Button("Save", gowt.Primary())))
 }

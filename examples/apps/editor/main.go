@@ -108,7 +108,7 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 
 func contentPane(ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
-		gowt.CTabs(gowt.Grow(), gowt.Selected(1),
+		gowt.CTabs(gowt.Grow(), gowt.Selected(1), gowt.Background(gowt.Adaptive{Light: gowt.RGB{R: 255, G: 255, B: 255}, Dark: gowt.RGB{R: 30, G: 30, B: 30}}),
 			gowt.Tab("main.go", gowt.Closable()),
 			gowt.Tab("queue.go", gowt.Closable(), gowt.Padding(0), gowt.Gap(0),
 				gowt.StyledText(gowt.Scrollbars(), gowt.Grow(), gowt.LineNumbers(), gowt.Init(editor)))),

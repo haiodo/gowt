@@ -258,7 +258,12 @@ func (r *tabRenderer) drawChevron(state int32, b *swt.Rectangle, gc *swt.GC) {
 // added before setup, has updated its dark flag by then.
 func redrawOnTheme(f *swt.CTabFolder) {
 	d := f.GetDisplay()
-	l := themeListener(func() { f.Redraw() })
+	l := &tabTheme{f}
 	d.AddListener(swt.Settings, l)
 	f.AddDisposeListener(disposeFunc(func() { d.RemoveListener(swt.Settings, l) }))
 }
+
+// tabTheme is a pointer so that Display.RemoveListener can compare it.
+type tabTheme struct{ f *swt.CTabFolder }
+
+func (t *tabTheme) HandleEvent(*swt.Event) { t.f.Redraw() }

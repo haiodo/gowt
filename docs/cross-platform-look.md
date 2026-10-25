@@ -59,10 +59,28 @@ Title, Subtitle, BodyStrong and LargeTitle are Semibold. The values are the base
 ## Idioms from examples/apps
 
 - `Scaled` rounds to 4 px even at factor 1, so `Scaled(26)` is 28 on macOS. Write multiples of 4 (`Scaled(28)`) when the macOS size must stay as designed.
-- Table and Tree column widths, avatar and badge sizes, and fixed field widths go through `Scaled`; `Table` has no column autosize yet.
+- Table and Tree column widths, avatar and badge sizes, and fixed field widths go through `Scaled`. Let a column follow its content with `Fit()` instead of guessing a width.
 - A token in another weight is a copy: `f := gowt.Type.Caption; f.Weight = gowt.Semibold`.
 - Icon sizes (`icons.Size(18)`) are not scaled by `Scaled` in these apps; they stay 18.
-- A `Canvas` callback gets no size, so a chart keeps a fixed plot area and margins; the label font is `Type.Caption`.
+- A `Canvas` callback has `g.Size()`, the drawable size in points, so a chart fills its cell; take the margins from `g.TextSize` of the label font (`Type.Caption`), not from numbers.
+
+## Controls that differ by design
+
+- Primary and destructive buttons: `gowt.Primary()` and `gowt.Destructive()` take the system's own look, see [widgets.md](widgets.md#primary-and-destructive-buttons). Do not colour a button by hand with `Foreground`.
+- Form labels: `gowt.Fields` puts the labels trailing on macOS and leading on Windows and GNOME, as each OS does, see [widgets.md](widgets.md#forms). A hand-made Grid row aligns them one way on all three.
+- Line numbers: `gowt.LineNumbers()` on a StyledText; the gutter is made of SWT bullets drawn with the lines, so it scrolls with the text and follows its font and the theme.
+
+## Forcing dark or light
+
+`app.SetAppearance(gowt.AppearanceDark | AppearanceLight | AppearanceSystem)` makes `app.Dark()` and the `Adaptive` colours follow the choice and runs `OnThemeChange`. Use it for screenshots and for an app with its own scheme setting; `kit.Appearance` in `examples/apps` reads `GOWT_APPEARANCE=dark|light`.
+
+| | What switches | Live | Verified |
+|---|---|---|---|
+| macOS | everything, through `NSApp.appearance` (controls, title bars, sheets, menus) | yes | not run on a Mac yet |
+| Linux GTK | `gtk-application-prefer-dark-theme`, and the portal no longer overrides it; needs a theme with a dark variant (Adwaita, Yaru) | yes | Docker stand (Adwaita), Ubuntu 26.04 GNOME |
+| Windows | title bars; scroll bars, tables, trees and buttons in the dark controls theme (the undocumented uxtheme path of `look.SetDarkContent`); the controls gowt paints itself read the dark flag of the same switch (the Fluent palette) | title bars yes; content only for windows created after the call, so call it first | Windows 11 arm64 |
+
+On Windows dark content is partial (wave 3 of the look plan): the window background and the StyledText stay light next to the dark scroll bars and title bar, as the editor app shows on Windows 11; other controls were not checked one by one. Do not use `AppearanceDark` for a Windows screenshot of a dark design yet. `AppearanceSystem` after a force on Windows keeps the content theme as it is; restart to get it back.
 
 ## What to avoid
 

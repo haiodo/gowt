@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+API gaps found by examples/apps (TSK-13)
+- New: `Primary()` and `Destructive()` for a push `Button`. Primary is the window's default button (Enter) with the system's prominent look; Destructive marks a deleting action. macOS: the accent default button and `hasDestructiveAction` (not run on a Mac yet); GTK: `suggested-action` and `destructive-action`; Windows: the WinUI accent and critical fills with hover and pressed states, painted by gowt.
+- New: `GC.Size()`, the drawable size at paint time; a chart can follow its cell and font. `CanvasView.Size()` was already right and gives the same numbers.
+- New: `LineNumbers()` and `StyledTextView.SetLineNumbers` for a gutter of line numbers made of SWT bullets: it scrolls with the text, keeps the line and paragraph spacing, follows the font and the theme.
+- New: `Fit()` on a Table or Tree column keeps it as wide as header and widest cell after row changes (also with `Rows` and `Nodes`); `FitColumns()` does it once. Linux measures the texts itself, because SWT's `Pack` gave the header width only.
+- New: `App.AvatarImage(initials, colour, size)` and `App.CircleImage(img, size)`: round images with a smooth edge, drawn again at every display zoom.
+- New: `App.SetAppearance(AppearanceSystem | AppearanceLight | AppearanceDark)` and `App.Appearance()`; `Dark()` and `OnThemeChange` follow it. Live on macOS and Linux; on Windows the title bars switch live and the content only for windows created afterwards, and part of it stays light (docs/cross-platform-look.md). `swt.Display.ForceColorScheme` is the platform call under it.
+- New: `Fields(Field(label, control)...)`, a two-column form whose labels are trailing on macOS and leading on Windows and GNOME; `FieldTop()` for tall controls.
+- Decision: no badge or chip widget. A pill stays a small `Canvas` (docs/widgets.md "Badges and chips").
+- examples/apps use the new calls instead of their workarounds; `kit.Appearance` reads `GOWT_APPEARANCE=dark|light`.
+
 Windows look (Windows 11)
 - The window background is the Fluent colour (F3F3F3, 202020 in the dark theme) instead of the system F0F0F0; labels, groups, tab pages and the content of `Scroll` take it. Inputs and tables keep their own white. `look.SetDarkContent` stays opt-in; nothing turns it on by itself.
 - With `App.SetDensity`, push `Button`, drop-down `Combo`, `Spinner` and `DateTime` are `Spacing.ControlHeight` high (32 at `DensityNative`), `List` and `Tree` rows `Spacing.RowHeight`. Without `SetDensity` the native heights stay. A `Spinner` line is centred in its taller edit.

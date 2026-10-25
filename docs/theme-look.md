@@ -1,6 +1,6 @@
 # Theme and platform look
 
-<img src="img/art/theme-look.png" alt="Gopher at a light switch between a day room and a night room" width="256" align="right">
+<p align="center"><img src="img/art/theme-look.png" alt="Gopher at a light switch between a day room and a night room" width="240"></p>
 
 Example: [`examples/theme`](../examples/theme).
 

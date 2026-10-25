@@ -1,6 +1,6 @@
 # Web view and Browser
 
-<img src="img/art/webview-browser.png" alt="Gopher in a porthole with web pages around" width="256" align="right">
+<p align="center"><img src="img/art/webview-browser.png" alt="Gopher in a porthole with web pages around" width="240"></p>
 
 Examples: [`examples/webview`](../examples/webview), [`examples/browser`](../examples/browser).
 

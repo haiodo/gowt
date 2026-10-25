@@ -1,6 +1,6 @@
 # Widgets
 
-<img src="img/art/widgets.png" alt="Gopher juggling a button, a checkbox, a slider and a switch" width="256" align="right">
+<p align="center"><img src="img/art/widgets.png" alt="Gopher juggling a button, a checkbox, a slider and a switch" width="240"></p>
 
 Example: [`examples/widgets`](../examples/widgets) (three tabs: input, lists, ranges).
 

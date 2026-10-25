@@ -1,6 +1,6 @@
 # Dialogs and menus
 
-<img src="img/art/dialogs-menus.png" alt="Gopher reading a menu with a question bubble" width="256" align="right">
+<p align="center"><img src="img/art/dialogs-menus.png" alt="Gopher reading a menu with a question bubble" width="240"></p>
 
 Example: [`examples/dialogs`](../examples/dialogs).
 

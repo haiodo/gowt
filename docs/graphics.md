@@ -1,6 +1,6 @@
 # Graphics and images
 
-<img src="img/art/graphics.png" alt="Gopher painting on an easel" width="256" align="right">
+<p align="center"><img src="img/art/graphics.png" alt="Gopher painting on an easel" width="240"></p>
 
 Example: [`examples/graphics`](../examples/graphics).
 

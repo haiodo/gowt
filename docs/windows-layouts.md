@@ -1,6 +1,6 @@
 # Windows and layouts
 
-<img src="img/art/windows-layouts.png" alt="Gopher laying out panels on a grid with a ruler" width="256" align="right">
+<p align="center"><img src="img/art/windows-layouts.png" alt="Gopher laying out panels on a grid with a ruler" width="240"></p>
 
 Example: [`examples/layouts`](../examples/layouts).
 

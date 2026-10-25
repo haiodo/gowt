@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/img/art/logo.png" alt="gowt logo: a gopher peeking out of a window" width="200"></p>
+
 # gowt
 
 Native GUI for Go, without cgo. Windows, tables, menus and dialogs are the operating system's own widgets: AppKit on macOS, Win32 on Windows, GTK 3 on Linux. The API is a small idiomatic Go layer (`gowt`) over Eclipse SWT, which is translated from Java to Go and bound to the OS libraries at run time.
@@ -17,6 +19,8 @@ The commands were not run; the Windows and Linux ones are untested. -->
 
 ## Install
 
+<p align="center"><img src="docs/img/art/readme-install.png" alt="Gopher catching a parcel on a parachute" width="160"></p>
+
 ```sh
 go get github.com/haiodo/gowt@latest
 go mod tidy
@@ -27,6 +31,8 @@ Run `go mod tidy` after writing code that imports `gowt`; until then `go.mod` li
 Go 1.27 or newer. No C compiler and no Java. Cross-compiling works from any host: `GOOS=windows go build`. Details and per-OS requirements: [docs/install.md](docs/install.md).
 
 ## Hello
+
+<p align="center"><img src="docs/img/art/readme-hello.png" alt="Gopher pressing a button that pops up a window" width="160"></p>
 
 ```go
 package main
@@ -53,6 +59,8 @@ func main() {
 `Run` returns an `error` (no GTK, no display); [`examples/hello`](examples/hello) is the same program.
 
 ## Documentation
+
+<p align="center"><img src="docs/img/art/readme-docs.png" alt="Gopher reading on a pile of books" width="160"></p>
 
 Start at [docs/index.md](docs/index.md). Each topic has a page and a runnable program:
 
@@ -87,6 +95,8 @@ SWT port, for porting SWT and JFace code (apps and the examples above do not use
 
 ## Compared with Wails and Fyne
 
+<p align="center"><img src="docs/img/art/readme-compare.png" alt="Gopher thinking at a crossroads signpost" width="160"></p>
+
 Only what the pages linked in the table say, as fetched on 2026-10-10 (the wails.io and docs.fyne.io architecture pages returned 403/404 and are not used).
 
 | | gowt | Wails | Fyne |
@@ -99,6 +109,8 @@ Only what the pages linked in the table say, as fetched on 2026-10-10 (the wails
 Not compared because it could not be confirmed from the documentation: how Fyne draws its widgets, Wails' cross-compile limits, binary sizes, performance. gowt is younger and covers fewer widgets than a mature toolkit; see the known gaps below.
 
 ## Tests
+
+<p align="center"><img src="docs/img/art/readme-tests.png" alt="Gopher in a lab coat checking test tubes" width="160"></p>
 
 SWT's own JUnit tests, translated to Go and run per OS by `make test-swt` against `tests/expected*.txt` (a regression fails the gate):
 
@@ -123,6 +135,8 @@ JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts a
 | Linux | glibc (musl distributions such as Alpine are not supported); GTK 3 and a Wayland or X11 display (on a Wayland session GTK uses native Wayland unless `GDK_BACKEND=x11` is set); `librsvg2-common` on a minimal Debian or Ubuntu so that check marks draw; WebKitGTK 4.1 for `webview` |
 
 ## Known gaps
+
+<p align="center"><img src="docs/img/art/readme-gaps.png" alt="Gopher repairing a bridge with missing planks" width="160"></p>
 
 - Windows runs on a real Windows 11 arm64 (UTM virtual machine) and under Wine (CrossOver). Not checked: Mica, Acrylic and rounded corners by eye, a machine with two monitors (the VM has one display), the QA driver. Per-monitor DPI changes while running are not handled by the port itself; they use upstream SWT code and are untested.
 - CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb; Linux was also run on a real GNOME Wayland desktop. macOS and Windows GUI tests are not in CI; they run locally and on the VM.

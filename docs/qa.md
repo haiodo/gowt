@@ -1,6 +1,6 @@
 # Testing an app with the QA driver
 
-<img src="img/art/qa.png" alt="Gopher detective with a magnifying glass and a robot helper" width="256" align="right">
+<p align="center"><img src="img/art/qa.png" alt="Gopher detective with a magnifying glass and a robot helper" width="240"></p>
 
 The QA driver lets a `go test` process use your app like a user: type into fields, press buttons, select rows, wait until the app is quiet, read what is on screen. The checks are ordinary Go tests.
 

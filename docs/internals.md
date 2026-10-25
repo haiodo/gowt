@@ -1,6 +1,6 @@
 # gowt internals: repository map, translator, ports
 
-<img src="img/art/internals.png" alt="Gopher mechanic with a wrench inside a machine" width="256" align="right">
+<p align="center"><img src="img/art/internals.png" alt="Gopher mechanic with a wrench inside a machine" width="240"></p>
 
 How the repository is laid out and how the SWT port is built. To use gowt see [index.md](index.md). Platform status and test numbers: [platforms.md](platforms.md).
 

@@ -53,40 +53,40 @@ func (this *NSLayoutManager) initNSLayoutManagerOverload2(id *id) {
 }
 
 func (this *NSLayoutManager) AddTemporaryAttribute(attrName *NSString, value *id, charRange NSRange) {
-	var cond346 int64
+	var cond334 int64
 	if attrName != (nil) {
-		cond346 = attrName.Id
+		cond334 = attrName.Id
 	} else {
-		cond346 = int64(0)
+		cond334 = int64(0)
 	}
-	var cond347 int64
+	var cond335 int64
 	if value != (nil) {
-		cond347 = value.Id
+		cond335 = value.Id
 	} else {
-		cond347 = int64(0)
+		cond335 = int64(0)
 	}
-	OSObjc_msgSendOverload55(this.Id, OSSel_addTemporaryAttribute_value_forCharacterRange_, cond346, cond347, charRange)
+	OSObjc_msgSendOverload55(this.Id, OSSel_addTemporaryAttribute_value_forCharacterRange_, cond334, cond335, charRange)
 }
 
 func (this *NSLayoutManager) AddTextContainer(container *NSTextContainer) {
-	var cond348 int64
+	var cond336 int64
 	if container != (nil) {
-		cond348 = container.Id
+		cond336 = container.Id
 	} else {
-		cond348 = int64(0)
+		cond336 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addTextContainer_, cond348)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addTextContainer_, cond336)
 }
 
 func (this *NSLayoutManager) BoundingRectForGlyphRange(glyphRange NSRange, container *NSTextContainer) NSRect {
 	var result NSRect = NSRect{}
-	var cond349 int64
+	var cond337 int64
 	if container != (nil) {
-		cond349 = container.Id
+		cond337 = container.Id
 	} else {
-		cond349 = int64(0)
+		cond337 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload10(&result, this.Id, OSSel_boundingRectForGlyphRange_inTextContainer_, glyphRange, cond349)
+	OSObjc_msgSend_stretOverload10(&result, this.Id, OSSel_boundingRectForGlyphRange_inTextContainer_, glyphRange, cond337)
 	return result
 }
 
@@ -95,23 +95,23 @@ func (this *NSLayoutManager) CharacterIndexForGlyphAtIndex(glyphIndex int64) int
 }
 
 func (this *NSLayoutManager) DefaultBaselineOffsetForFont(theFont *NSFont) float64 {
-	var cond350 int64
+	var cond338 int64
 	if theFont != (nil) {
-		cond350 = theFont.Id
+		cond338 = theFont.Id
 	} else {
-		cond350 = int64(0)
+		cond338 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0(this.Id, OSSel_defaultBaselineOffsetForFont_, cond350)
+	return OSObjc_msgSend_fpretIdSelArg0(this.Id, OSSel_defaultBaselineOffsetForFont_, cond338)
 }
 
 func (this *NSLayoutManager) DefaultLineHeightForFont(theFont *NSFont) float64 {
-	var cond351 int64
+	var cond339 int64
 	if theFont != (nil) {
-		cond351 = theFont.Id
+		cond339 = theFont.Id
 	} else {
-		cond351 = int64(0)
+		cond339 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0(this.Id, OSSel_defaultLineHeightForFont_, cond351)
+	return OSObjc_msgSend_fpretIdSelArg0(this.Id, OSSel_defaultLineHeightForFont_, cond339)
 }
 
 func (this *NSLayoutManager) DrawBackgroundForGlyphRange(glyphsToShow NSRange, origin NSPoint) {
@@ -135,13 +135,13 @@ func (this *NSLayoutManager) GlyphIndexForCharacterAtIndex(charIndex int64) int6
 }
 
 func (this *NSLayoutManager) GlyphIndexForPoint(point NSPoint, container *NSTextContainer, partialFraction []float64) int64 {
-	var cond352 int64
+	var cond340 int64
 	if container != (nil) {
-		cond352 = container.Id
+		cond340 = container.Id
 	} else {
-		cond352 = int64(0)
+		cond340 = int64(0)
 	}
-	return OSObjc_msgSendOverload7(this.Id, OSSel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_, point, cond352, partialFraction)
+	return OSObjc_msgSendOverload7(this.Id, OSSel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_, point, cond340, partialFraction)
 }
 
 func (this *NSLayoutManager) GlyphRangeForCharacterRange(charRange NSRange, actualCharRange int64) NSRange {
@@ -152,13 +152,13 @@ func (this *NSLayoutManager) GlyphRangeForCharacterRange(charRange NSRange, actu
 
 func (this *NSLayoutManager) GlyphRangeForTextContainer(container *NSTextContainer) NSRange {
 	var result NSRange = NSRange{}
-	var cond353 int64
+	var cond341 int64
 	if container != (nil) {
-		cond353 = container.Id
+		cond341 = container.Id
 	} else {
-		cond353 = int64(0)
+		cond341 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload8(&result, this.Id, OSSel_glyphRangeForTextContainer_, cond353)
+	OSObjc_msgSend_stretOverload8(&result, this.Id, OSSel_glyphRangeForTextContainer_, cond341)
 	return result
 }
 
@@ -185,33 +185,33 @@ func (this *NSLayoutManager) NumberOfGlyphs() int64 {
 }
 
 func (this *NSLayoutManager) RectArrayForCharacterRange(charRange NSRange, selCharRange NSRange, container *NSTextContainer, rectCount []int64) int64 {
-	var cond354 int64
+	var cond342 int64
 	if container != (nil) {
-		cond354 = container.Id
+		cond342 = container.Id
 	} else {
-		cond354 = int64(0)
+		cond342 = int64(0)
 	}
-	return OSObjc_msgSendOverload10(this.Id, OSSel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_, charRange, selCharRange, cond354, rectCount)
+	return OSObjc_msgSendOverload10(this.Id, OSSel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_, charRange, selCharRange, cond342, rectCount)
 }
 
 func (this *NSLayoutManager) RectArrayForGlyphRange(glyphRange NSRange, selGlyphRange NSRange, container *NSTextContainer, rectCount []int64) int64 {
-	var cond355 int64
+	var cond343 int64
 	if container != (nil) {
-		cond355 = container.Id
+		cond343 = container.Id
 	} else {
-		cond355 = int64(0)
+		cond343 = int64(0)
 	}
-	return OSObjc_msgSendOverload10(this.Id, OSSel_rectArrayForGlyphRange_withinSelectedGlyphRange_inTextContainer_rectCount_, glyphRange, selGlyphRange, cond355, rectCount)
+	return OSObjc_msgSendOverload10(this.Id, OSSel_rectArrayForGlyphRange_withinSelectedGlyphRange_inTextContainer_rectCount_, glyphRange, selGlyphRange, cond343, rectCount)
 }
 
 func (this *NSLayoutManager) RemoveTemporaryAttribute(attrName *NSString, charRange NSRange) {
-	var cond356 int64
+	var cond344 int64
 	if attrName != (nil) {
-		cond356 = attrName.Id
+		cond344 = attrName.Id
 	} else {
-		cond356 = int64(0)
+		cond344 = int64(0)
 	}
-	OSObjc_msgSendOverload50(this.Id, OSSel_removeTemporaryAttribute_forCharacterRange_, cond356, charRange)
+	OSObjc_msgSendOverload50(this.Id, OSSel_removeTemporaryAttribute_forCharacterRange_, cond344, charRange)
 }
 
 func (this *NSLayoutManager) SetBackgroundLayoutEnabled(backgroundLayoutEnabled bool) {
@@ -219,13 +219,13 @@ func (this *NSLayoutManager) SetBackgroundLayoutEnabled(backgroundLayoutEnabled 
 }
 
 func (this *NSLayoutManager) SetTextStorage(textStorage *NSTextStorage) {
-	var cond357 int64
+	var cond345 int64
 	if textStorage != (nil) {
-		cond357 = textStorage.Id
+		cond345 = textStorage.Id
 	} else {
-		cond357 = int64(0)
+		cond345 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTextStorage_, cond357)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTextStorage_, cond345)
 }
 
 func (this *NSLayoutManager) SetUsesScreenFonts(usesScreenFonts bool) {
@@ -234,23 +234,23 @@ func (this *NSLayoutManager) SetUsesScreenFonts(usesScreenFonts bool) {
 
 func (this *NSLayoutManager) Typesetter() *NSTypesetter {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_typesetter)
-	var cond358 *NSTypesetter
+	var cond346 *NSTypesetter
 	if result != 0 {
-		cond358 = NewNSTypesetterOverload1(result)
+		cond346 = NewNSTypesetterOverload1(result)
 	} else {
-		cond358 = nil
+		cond346 = nil
 	}
-	return cond358
+	return cond346
 }
 
 func (this *NSLayoutManager) UsedRectForTextContainer(container *NSTextContainer) NSRect {
 	var result NSRect = NSRect{}
-	var cond359 int64
+	var cond347 int64
 	if container != (nil) {
-		cond359 = container.Id
+		cond347 = container.Id
 	} else {
-		cond359 = int64(0)
+		cond347 = int64(0)
 	}
-	OSObjc_msgSend_stretOverload14(&result, this.Id, OSSel_usedRectForTextContainer_, cond359)
+	OSObjc_msgSend_stretOverload14(&result, this.Id, OSSel_usedRectForTextContainer_, cond347)
 	return result
 }

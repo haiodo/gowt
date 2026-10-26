@@ -52,65 +52,35 @@ func (this *NSMutableString) initNSMutableStringOverload2(id *id) {
 	this.NSString.initNSStringOverload2(id)
 }
 
-func (this *NSMutableString) AppendString(aString *NSString) {
-	var cond440 int64
-	if aString != (nil) {
-		cond440 = aString.Id
-	} else {
-		cond440 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_appendString_, cond440)
-}
-
-func (this *NSMutableString) ReplaceCharactersInRange(range_ NSRange, aString *NSString) {
-	var cond441 int64
-	if aString != (nil) {
-		cond441 = aString.Id
-	} else {
-		cond441 = int64(0)
-	}
-	OSObjc_msgSendOverload11(this.Id, OSSel_replaceCharactersInRange_withString_, range_, cond441)
-}
-
-func (this *NSMutableString) SetString(aString *NSString) {
-	var cond442 int64
-	if aString != (nil) {
-		cond442 = aString.Id
-	} else {
-		cond442 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setString_, cond442)
-}
-
 func NSMutableStringString() *NSMutableString {
 	var result int64 = OSObjc_msgSend(OSClass_NSMutableString, OSSel_string)
-	var cond443 *NSMutableString
+	var cond414 *NSMutableString
 	if result != 0 {
-		cond443 = NewNSMutableStringOverload1(result)
+		cond414 = NewNSMutableStringOverload1(result)
 	} else {
-		cond443 = nil
+		cond414 = nil
 	}
-	return cond443
+	return cond414
 }
 
 func NSMutableStringStringWithCharacters(characters []uint16, length int64) *NSMutableString {
 	var result int64 = OSObjc_msgSendOverload34(OSClass_NSMutableString, OSSel_stringWithCharacters_length_, characters, length)
-	var cond444 *NSMutableString
+	var cond415 *NSMutableString
 	if result != 0 {
-		cond444 = NewNSMutableStringOverload1(result)
+		cond415 = NewNSMutableStringOverload1(result)
 	} else {
-		cond444 = nil
+		cond415 = nil
 	}
-	return cond444
+	return cond415
 }
 
 func NSMutableStringStringWithUTF8String(nullTerminatedCString int64) *NSMutableString {
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableString, OSSel_stringWithUTF8String_, nullTerminatedCString)
-	var cond445 *NSMutableString
+	var cond416 *NSMutableString
 	if result != 0 {
-		cond445 = NewNSMutableStringOverload1(result)
+		cond416 = NewNSMutableStringOverload1(result)
 	} else {
-		cond445 = nil
+		cond416 = nil
 	}
-	return cond445
+	return cond416
 }

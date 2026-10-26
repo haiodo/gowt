@@ -159,7 +159,7 @@ func (this *MessageBox) Open() int32 {
 	}
 	title = cocoa.NSStringStringWith(cond560)
 	var panel *cocoa.NSPanel = alert.Window()
-	panel.Impl().SetTitle(title)
+	panel.SetTitle(title)
 	var cond561 string
 	if this.message != "" {
 		cond561 = this.message

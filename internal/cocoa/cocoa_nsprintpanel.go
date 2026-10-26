@@ -53,25 +53,25 @@ func (this *NSPrintPanel) initNSPrintPanelOverload2(id *id) {
 }
 
 func (this *NSPrintPanel) BeginSheetWithPrintInfo(printInfo *NSPrintInfo, docWindow *NSWindow, delegate *id, didEndSelector int64, contextInfo int64) {
-	var cond588 int64
+	var cond559 int64
 	if printInfo != (nil) {
-		cond588 = printInfo.Id
+		cond559 = printInfo.Id
 	} else {
-		cond588 = int64(0)
+		cond559 = int64(0)
 	}
-	var cond589 int64
+	var cond560 int64
 	if docWindow != (nil) {
-		cond589 = docWindow.Id
+		cond560 = docWindow.Id
 	} else {
-		cond589 = int64(0)
+		cond560 = int64(0)
 	}
-	var cond590 int64
+	var cond561 int64
 	if delegate != (nil) {
-		cond590 = delegate.Id
+		cond561 = delegate.Id
 	} else {
-		cond590 = int64(0)
+		cond561 = int64(0)
 	}
-	OSObjc_msgSendOverload61(this.Id, OSSel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_, cond588, cond589, cond590, didEndSelector, contextInfo)
+	OSObjc_msgSendOverload61(this.Id, OSSel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_, cond559, cond560, cond561, didEndSelector, contextInfo)
 }
 
 func (this *NSPrintPanel) Options() int64 {
@@ -79,13 +79,13 @@ func (this *NSPrintPanel) Options() int64 {
 }
 
 func (this *NSPrintPanel) RunModalWithPrintInfo(printInfo *NSPrintInfo) int64 {
-	var cond591 int64
+	var cond562 int64
 	if printInfo != (nil) {
-		cond591 = printInfo.Id
+		cond562 = printInfo.Id
 	} else {
-		cond591 = int64(0)
+		cond562 = int64(0)
 	}
-	return OSObjc_msgSendOverload44(this.Id, OSSel_runModalWithPrintInfo_, cond591)
+	return OSObjc_msgSendOverload44(this.Id, OSSel_runModalWithPrintInfo_, cond562)
 }
 
 func (this *NSPrintPanel) SetOptions(options int64) {
@@ -94,11 +94,11 @@ func (this *NSPrintPanel) SetOptions(options int64) {
 
 func NSPrintPanelPrintPanel() *NSPrintPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSPrintPanel, OSSel_printPanel)
-	var cond592 *NSPrintPanel
+	var cond563 *NSPrintPanel
 	if result != 0 {
-		cond592 = NewNSPrintPanelOverload1(result)
+		cond563 = NewNSPrintPanelOverload1(result)
 	} else {
-		cond592 = nil
+		cond563 = nil
 	}
-	return cond592
+	return cond563
 }

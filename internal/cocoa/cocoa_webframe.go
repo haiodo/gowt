@@ -54,24 +54,24 @@ func (this *WebFrame) initWebFrameOverload2(id *id) {
 
 func (this *WebFrame) DOMDocument() *DOMDocument {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_DOMDocument)
-	var cond959 *DOMDocument
+	var cond910 *DOMDocument
 	if result != 0 {
-		cond959 = NewDOMDocumentOverload1(result)
+		cond910 = NewDOMDocumentOverload1(result)
 	} else {
-		cond959 = nil
+		cond910 = nil
 	}
-	return cond959
+	return cond910
 }
 
 func (this *WebFrame) DataSource() *WebDataSource {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_dataSource)
-	var cond960 *WebDataSource
+	var cond911 *WebDataSource
 	if result != 0 {
-		cond960 = NewWebDataSourceOverload1(result)
+		cond911 = NewWebDataSourceOverload1(result)
 	} else {
-		cond960 = nil
+		cond911 = nil
 	}
-	return cond960
+	return cond911
 }
 
 func (this *WebFrame) GlobalContext() int64 {
@@ -79,27 +79,27 @@ func (this *WebFrame) GlobalContext() int64 {
 }
 
 func (this *WebFrame) LoadHTMLString(string_ *NSString, URL *NSURL) {
-	var cond961 int64
+	var cond912 int64
 	if string_ != (nil) {
-		cond961 = string_.Id
+		cond912 = string_.Id
 	} else {
-		cond961 = int64(0)
+		cond912 = int64(0)
 	}
-	var cond962 int64
+	var cond913 int64
 	if URL != (nil) {
-		cond962 = URL.Id
+		cond913 = URL.Id
 	} else {
-		cond962 = int64(0)
+		cond913 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_loadHTMLString_baseURL_, cond961, cond962)
+	OSObjc_msgSendOverload54(this.Id, OSSel_loadHTMLString_baseURL_, cond912, cond913)
 }
 
 func (this *WebFrame) LoadRequest(request *NSURLRequest) {
-	var cond963 int64
+	var cond914 int64
 	if request != (nil) {
-		cond963 = request.Id
+		cond914 = request.Id
 	} else {
-		cond963 = int64(0)
+		cond914 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_loadRequest_, cond963)
+	OSObjc_msgSendOverload44(this.Id, OSSel_loadRequest_, cond914)
 }

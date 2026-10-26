@@ -54,13 +54,13 @@ func (this *NSButton) initNSButtonOverload2(id *id) {
 
 func (this *NSButton) AttributedTitle() *NSAttributedString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_attributedTitle)
-	var cond117 *NSAttributedString
+	var cond108 *NSAttributedString
 	if result != 0 {
-		cond117 = NewNSAttributedStringOverload1(result)
+		cond108 = NewNSAttributedStringOverload1(result)
 	} else {
-		cond117 = nil
+		cond108 = nil
 	}
-	return cond117
+	return cond108
 }
 
 func (this *NSButton) BezelStyle() int64 {
@@ -72,13 +72,13 @@ func (this *NSButton) SetAllowsMixedState(allowsMixedState bool) {
 }
 
 func (this *NSButton) SetAttributedTitle(attributedTitle *NSAttributedString) {
-	var cond118 int64
+	var cond109 int64
 	if attributedTitle != (nil) {
-		cond118 = attributedTitle.Id
+		cond109 = attributedTitle.Id
 	} else {
-		cond118 = int64(0)
+		cond109 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setAttributedTitle_, cond118)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setAttributedTitle_, cond109)
 }
 
 func (this *NSButton) SetBezelStyle(bezelStyle int64) {
@@ -94,27 +94,17 @@ func (this *NSButton) SetButtonType(aType int64) {
 }
 
 func (this *NSButton) SetImage(image *NSImage) {
-	var cond119 int64
+	var cond110 int64
 	if image != (nil) {
-		cond119 = image.Id
+		cond110 = image.Id
 	} else {
-		cond119 = int64(0)
+		cond110 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond119)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setImage_, cond110)
 }
 
 func (this *NSButton) SetImagePosition(imagePosition int64) {
 	OSObjc_msgSendOverload44(this.Id, OSSel_setImagePosition_, imagePosition)
-}
-
-func (this *NSButton) SetKeyEquivalent(keyEquivalent *NSString) {
-	var cond120 int64
-	if keyEquivalent != (nil) {
-		cond120 = keyEquivalent.Id
-	} else {
-		cond120 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setKeyEquivalent_, cond120)
 }
 
 func (this *NSButton) SetState(state int64) {
@@ -122,13 +112,13 @@ func (this *NSButton) SetState(state int64) {
 }
 
 func (this *NSButton) SetTitle(title *NSString) {
-	var cond121 int64
+	var cond111 int64
 	if title != (nil) {
-		cond121 = title.Id
+		cond111 = title.Id
 	} else {
-		cond121 = int64(0)
+		cond111 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond121)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond111)
 }
 
 func (this *NSButton) State() int64 {

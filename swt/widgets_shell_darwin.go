@@ -1559,7 +1559,7 @@ func (this *Shell) setText_(string_ string) {
 	}
 	this.Decorations.setText_(string_)
 	var str *cocoa.NSString = cocoa.NSStringStringWith(string_)
-	this.window.Impl().SetTitle(str)
+	this.window.SetTitle(str)
 }
 
 func (this *Shell) setVisible_(visible bool) {

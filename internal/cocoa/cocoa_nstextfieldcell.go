@@ -53,21 +53,21 @@ func (this *NSTextFieldCell) initNSTextFieldCellOverload2(id *id) {
 }
 
 func (this *NSTextFieldCell) SetPlaceholderString(placeholderString *NSString) {
-	var cond769 int64
+	var cond727 int64
 	if placeholderString != (nil) {
-		cond769 = placeholderString.Id
+		cond727 = placeholderString.Id
 	} else {
-		cond769 = int64(0)
+		cond727 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setPlaceholderString_, cond769)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setPlaceholderString_, cond727)
 }
 
 func (this *NSTextFieldCell) SetTextColor(textColor *NSColor) {
-	var cond770 int64
+	var cond728 int64
 	if textColor != (nil) {
-		cond770 = textColor.Id
+		cond728 = textColor.Id
 	} else {
-		cond770 = int64(0)
+		cond728 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond770)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTextColor_, cond728)
 }

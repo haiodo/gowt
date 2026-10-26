@@ -53,13 +53,13 @@ func (this *NSArray) initNSArrayOverload2(id *id) {
 }
 
 func (this *NSArray) ContainsObject(anObject *id) bool {
-	var cond54 int64
+	var cond53 int64
 	if anObject != (nil) {
-		cond54 = anObject.Id
+		cond53 = anObject.Id
 	} else {
-		cond54 = int64(0)
+		cond53 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_containsObject_, cond54)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_containsObject_, cond53)
 }
 
 func (this *NSArray) Count() int64 {
@@ -67,50 +67,50 @@ func (this *NSArray) Count() int64 {
 }
 
 func (this *NSArray) IndexOfObjectIdenticalTo(anObject *id) int64 {
-	var cond55 int64
+	var cond54 int64
 	if anObject != (nil) {
-		cond55 = anObject.Id
+		cond54 = anObject.Id
 	} else {
-		cond55 = int64(0)
+		cond54 = int64(0)
 	}
-	return OSObjc_msgSendOverload44(this.Id, OSSel_indexOfObjectIdenticalTo_, cond55)
+	return OSObjc_msgSendOverload44(this.Id, OSSel_indexOfObjectIdenticalTo_, cond54)
 }
 
 func (this *NSArray) ObjectAtIndex(index int64) *id {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_objectAtIndex_, index)
-	var cond56 *id
+	var cond55 *id
 	if result != 0 {
-		cond56 = NewidOverload1(result)
+		cond55 = NewidOverload1(result)
+	} else {
+		cond55 = nil
+	}
+	return cond55
+}
+
+func NSArrayArray() *NSArray {
+	var result int64 = OSObjc_msgSend(OSClass_NSArray, OSSel_array)
+	var cond56 *NSArray
+	if result != 0 {
+		cond56 = NewNSArrayOverload1(result)
 	} else {
 		cond56 = nil
 	}
 	return cond56
 }
 
-func NSArrayArray() *NSArray {
-	var result int64 = OSObjc_msgSend(OSClass_NSArray, OSSel_array)
-	var cond57 *NSArray
-	if result != 0 {
-		cond57 = NewNSArrayOverload1(result)
-	} else {
-		cond57 = nil
-	}
-	return cond57
-}
-
 func NSArrayArrayWithObject(anObject *id) *NSArray {
-	var cond58 int64
+	var cond57 int64
 	if anObject != (nil) {
-		cond58 = anObject.Id
+		cond57 = anObject.Id
 	} else {
-		cond58 = int64(0)
+		cond57 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSArray, OSSel_arrayWithObject_, cond58)
-	var cond59 *NSArray
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSArray, OSSel_arrayWithObject_, cond57)
+	var cond58 *NSArray
 	if result != 0 {
-		cond59 = NewNSArrayOverload1(result)
+		cond58 = NewNSArrayOverload1(result)
 	} else {
-		cond59 = nil
+		cond58 = nil
 	}
-	return cond59
+	return cond58
 }

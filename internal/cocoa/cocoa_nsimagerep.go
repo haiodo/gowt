@@ -81,18 +81,18 @@ func (this *NSImageRep) SetSize(size NSSize) {
 }
 
 func NSImageRepImageRepWithContentsOfFile(filename *NSString) *NSImageRep {
-	var cond332 int64
+	var cond320 int64
 	if filename != (nil) {
-		cond332 = filename.Id
+		cond320 = filename.Id
 	} else {
-		cond332 = int64(0)
+		cond320 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSImageRep, OSSel_imageRepWithContentsOfFile_, cond332)
-	var cond333 *NSImageRep
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSImageRep, OSSel_imageRepWithContentsOfFile_, cond320)
+	var cond321 *NSImageRep
 	if result != 0 {
-		cond333 = NewNSImageRepOverload1(result)
+		cond321 = NewNSImageRepOverload1(result)
 	} else {
-		cond333 = nil
+		cond321 = nil
 	}
-	return cond333
+	return cond321
 }

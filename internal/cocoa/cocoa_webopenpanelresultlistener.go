@@ -57,11 +57,11 @@ func (this *WebOpenPanelResultListener) Cancel() {
 }
 
 func (this *WebOpenPanelResultListener) ChooseFilename(string_ *NSString) {
-	var cond966 int64
+	var cond917 int64
 	if string_ != (nil) {
-		cond966 = string_.Id
+		cond917 = string_.Id
 	} else {
-		cond966 = int64(0)
+		cond917 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_chooseFilename_, cond966)
+	OSObjc_msgSendOverload44(this.Id, OSSel_chooseFilename_, cond917)
 }

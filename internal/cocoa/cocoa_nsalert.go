@@ -103,23 +103,13 @@ func (this *NSAlert) SetIcon(icon *NSImage) {
 	OSObjc_msgSendOverload44(this.Id, OSSel_setIcon_, cond13)
 }
 
-func (this *NSAlert) SetMessageText(messageText *NSString) {
-	var cond14 int64
-	if messageText != (nil) {
-		cond14 = messageText.Id
-	} else {
-		cond14 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setMessageText_, cond14)
-}
-
 func (this *NSAlert) Window() *NSPanel {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_window)
-	var cond15 *NSPanel
+	var cond14 *NSPanel
 	if result != 0 {
-		cond15 = NewNSPanelOverload1(result)
+		cond14 = NewNSPanelOverload1(result)
 	} else {
-		cond15 = nil
+		cond14 = nil
 	}
-	return cond15
+	return cond14
 }

@@ -57,13 +57,13 @@ func (this *NSGradient) DrawFromPoint(startingPoint NSPoint, endingPoint NSPoint
 }
 
 func (this *NSGradient) DrawInBezierPath(path *NSBezierPath, angle float64) {
-	var cond285 int64
+	var cond273 int64
 	if path != (nil) {
-		cond285 = path.Id
+		cond273 = path.Id
 	} else {
-		cond285 = int64(0)
+		cond273 = int64(0)
 	}
-	OSObjc_msgSendOverload53(this.Id, OSSel_drawInBezierPath_angle_, cond285, angle)
+	OSObjc_msgSendOverload53(this.Id, OSSel_drawInBezierPath_angle_, cond273, angle)
 }
 
 func (this *NSGradient) DrawInRect(rect NSRect, angle float64) {
@@ -71,53 +71,53 @@ func (this *NSGradient) DrawInRect(rect NSRect, angle float64) {
 }
 
 func (this *NSGradient) InitWithColors(colorArray *NSArray) *NSGradient {
-	var cond286 int64
+	var cond274 int64
 	if colorArray != (nil) {
-		cond286 = colorArray.Id
+		cond274 = colorArray.Id
 	} else {
-		cond286 = int64(0)
+		cond274 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithColors_, cond286)
-	var cond287 *NSGradient
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithColors_, cond274)
+	var cond275 *NSGradient
 	if result == this.Id {
-		cond287 = this
+		cond275 = this
 	} else {
-		var cond288 *NSGradient
+		var cond276 *NSGradient
 		if result != 0 {
-			cond288 = NewNSGradientOverload1(result)
+			cond276 = NewNSGradientOverload1(result)
 		} else {
-			cond288 = nil
+			cond276 = nil
 		}
-		cond287 = (cond288)
+		cond275 = (cond276)
 	}
-	return cond287
+	return cond275
 }
 
 func (this *NSGradient) InitWithStartingColor(startingColor *NSColor, endingColor *NSColor) *NSGradient {
-	var cond289 int64
+	var cond277 int64
 	if startingColor != (nil) {
-		cond289 = startingColor.Id
+		cond277 = startingColor.Id
 	} else {
-		cond289 = int64(0)
+		cond277 = int64(0)
 	}
-	var cond290 int64
+	var cond278 int64
 	if endingColor != (nil) {
-		cond290 = endingColor.Id
+		cond278 = endingColor.Id
 	} else {
-		cond290 = int64(0)
+		cond278 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithStartingColor_endingColor_, cond289, cond290)
-	var cond291 *NSGradient
+	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_initWithStartingColor_endingColor_, cond277, cond278)
+	var cond279 *NSGradient
 	if result == this.Id {
-		cond291 = this
+		cond279 = this
 	} else {
-		var cond292 *NSGradient
+		var cond280 *NSGradient
 		if result != 0 {
-			cond292 = NewNSGradientOverload1(result)
+			cond280 = NewNSGradientOverload1(result)
 		} else {
-			cond292 = nil
+			cond280 = nil
 		}
-		cond291 = (cond292)
+		cond279 = (cond280)
 	}
-	return cond291
+	return cond279
 }

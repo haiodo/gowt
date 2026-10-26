@@ -54,13 +54,13 @@ func (this *NSDictionary) initNSDictionaryOverload2(id *id) {
 
 func (this *NSDictionary) AllKeys() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_allKeys)
-	var cond233 *NSArray
+	var cond221 *NSArray
 	if result != 0 {
-		cond233 = NewNSArrayOverload1(result)
+		cond221 = NewNSArrayOverload1(result)
 	} else {
-		cond233 = nil
+		cond221 = nil
 	}
-	return cond233
+	return cond221
 }
 
 func (this *NSDictionary) Count() int64 {
@@ -69,68 +69,68 @@ func (this *NSDictionary) Count() int64 {
 
 func (this *NSDictionary) ObjectEnumerator() *NSEnumerator {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_objectEnumerator)
-	var cond234 *NSEnumerator
+	var cond222 *NSEnumerator
 	if result != 0 {
-		cond234 = NewNSEnumeratorOverload1(result)
+		cond222 = NewNSEnumeratorOverload1(result)
 	} else {
-		cond234 = nil
+		cond222 = nil
 	}
-	return cond234
+	return cond222
 }
 
 func (this *NSDictionary) ObjectForKey(aKey *id) *id {
-	var cond235 int64
+	var cond223 int64
 	if aKey != (nil) {
-		cond235 = aKey.Id
+		cond223 = aKey.Id
 	} else {
-		cond235 = int64(0)
+		cond223 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_objectForKey_, cond235)
-	var cond236 *id
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_objectForKey_, cond223)
+	var cond224 *id
 	if result != 0 {
-		cond236 = NewidOverload1(result)
+		cond224 = NewidOverload1(result)
 	} else {
-		cond236 = nil
+		cond224 = nil
 	}
-	return cond236
+	return cond224
 }
 
 func (this *NSDictionary) ValueForKey(key *NSString) *id {
-	var cond237 int64
+	var cond225 int64
 	if key != (nil) {
-		cond237 = key.Id
+		cond225 = key.Id
 	} else {
-		cond237 = int64(0)
+		cond225 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_valueForKey_, cond237)
-	var cond238 *id
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_valueForKey_, cond225)
+	var cond226 *id
 	if result != 0 {
-		cond238 = NewidOverload1(result)
+		cond226 = NewidOverload1(result)
 	} else {
-		cond238 = nil
+		cond226 = nil
 	}
-	return cond238
+	return cond226
 }
 
 func NSDictionaryDictionaryWithObject(object *id, key *id) *NSDictionary {
-	var cond239 int64
+	var cond227 int64
 	if object != (nil) {
-		cond239 = object.Id
+		cond227 = object.Id
 	} else {
-		cond239 = int64(0)
+		cond227 = int64(0)
 	}
-	var cond240 int64
+	var cond228 int64
 	if key != (nil) {
-		cond240 = key.Id
+		cond228 = key.Id
 	} else {
-		cond240 = int64(0)
+		cond228 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload54(OSClass_NSDictionary, OSSel_dictionaryWithObject_forKey_, cond239, cond240)
-	var cond241 *NSDictionary
+	var result int64 = OSObjc_msgSendOverload54(OSClass_NSDictionary, OSSel_dictionaryWithObject_forKey_, cond227, cond228)
+	var cond229 *NSDictionary
 	if result != 0 {
-		cond241 = NewNSDictionaryOverload1(result)
+		cond229 = NewNSDictionaryOverload1(result)
 	} else {
-		cond241 = nil
+		cond229 = nil
 	}
-	return cond241
+	return cond229
 }

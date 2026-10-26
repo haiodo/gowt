@@ -54,11 +54,11 @@ func (this *NSComboBoxCell) initNSComboBoxCellOverload2(id *id) {
 
 func (this *NSComboBoxCell) ObjectValues() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_objectValues)
-	var cond196 *NSArray
+	var cond185 *NSArray
 	if result != 0 {
-		cond196 = NewNSArrayOverload1(result)
+		cond185 = NewNSArrayOverload1(result)
 	} else {
-		cond196 = nil
+		cond185 = nil
 	}
-	return cond196
+	return cond185
 }

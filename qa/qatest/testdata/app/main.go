@@ -57,6 +57,12 @@ func main() {
 			gowt.Button("Off", gowt.ID("off"), gowt.Disabled(), gowt.OnClick(func() { off.Set(off.Get() + 1) })),
 			view.New(scene, func(v *view.View) {
 				gv = v
+				fill := gowt.PopupMenu(v.Canvas())
+				fill.OnShow(func() {
+					if fill.Unwrap().GetItemCount() == 0 {
+						fill.Item("Duplicate", func() { note("duplicate") })
+					}
+				})
 				v.OnPointer(func(p *view.Pointer) {
 					note("gfx kind=%d button=%d count=%d at %.0f,%.0f drag=%v node=%v mods=%v", p.Kind, p.Button, p.Count, p.Pos.X, p.Pos.Y, p.Drag, p.Node != nil, p.Mods.Shift)
 					if p.Kind == view.PointerDown && p.Count == 2 {
@@ -96,6 +102,12 @@ func main() {
 				})),
 			gowt.Tree(gowt.ID("lazy"), gowt.OnActivate(func(n *gowt.Node) { note("activate tree %s", n.Text()) }),
 				gowt.Init(func(t *gowt.TreeView) {
+					tm := gowt.PopupMenu(t)
+					tm.OnShow(func() {
+						if tm.Unwrap().GetItemCount() == 0 {
+							tm.Item("Refresh", func() { note("refresh") })
+						}
+					})
 					t.Node("remote").Node("loading")
 					t.OnExpand(func(n *gowt.Node) {
 						note("expand %s", n.Text())

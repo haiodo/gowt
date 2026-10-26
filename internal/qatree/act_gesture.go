@@ -164,6 +164,12 @@ func pointer(d *swt.Display, e *entry, args []byte) error {
 			break
 		}
 	}
+	if a.Button == 3 && (a.Kind == "down" || a.Kind == "click" || a.Kind == "doubleclick") && !c.IsDisposed() {
+		// The popup menu opens on the press; QA shows it to the app (OnShow) without a native menu.
+		if m := c.GetMenu(); m != nil && m.GetStyle()&swt.POP_UP != 0 {
+			showPopup(m)
+		}
+	}
 	flush(d)
 	return nil
 }

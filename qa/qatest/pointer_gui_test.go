@@ -149,3 +149,23 @@ func TestPopover(t *testing.T) {
 		t.Errorf("the popover did not close: %q", events(t, app))
 	}
 }
+
+// Items an OnShow handler adds to an empty context menu are reachable after a right click, on a gfx
+// view and on a tree, and by Find alone.
+func TestPopupMenuFilledInOnShow(t *testing.T) {
+	guiOnly(t)
+	app := qatest.App(t)
+	app.Find(qa.ID("gfx")).RightClickAt(20, 20)
+	if !app.Find(qa.Text("Duplicate")).Exists() {
+		t.Fatal("Duplicate is not in the dump after the right click")
+	}
+	app.Find(qa.Text("Duplicate")).Click()
+	if !hasEvent(t, app, "duplicate") {
+		t.Errorf("events %q", events(t, app))
+	}
+	app.Find(qa.ID("lazy")).RightClickAt(5, 5)
+	app.Find(qa.Text("Refresh")).Click()
+	if !hasEvent(t, app, "refresh") {
+		t.Errorf("events %q", events(t, app))
+	}
+}

@@ -52,6 +52,7 @@ func main() {
 		}
 		wv.OnMessage = func(msg string) { status.Set("page says: " + msg) }
 		wv.OnNavigationFinished = func(url string) { status.Set("loaded " + url) }
+		wv.OnNavigationFailed = func(url string, err error) { status.Set("failed: " + err.Error()) }
 
 		w.Show()
 		wv.Navigate("app://localhost/")

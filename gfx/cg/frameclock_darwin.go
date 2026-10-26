@@ -27,6 +27,7 @@ type FrameClock struct {
 	seq     atomic.Uint64
 	lastDL  atomic.Int64 // hostNow of the last link tick, 0 before the first
 	done    chan struct{}
+	closed  atomic.Bool
 	wg      sync.WaitGroup
 }
 
@@ -64,11 +65,15 @@ func (c *FrameClock) Start() {
 }
 
 func (c *FrameClock) Close() {
+	c.closed.Store(true) // a link tick already in flight must not reach fn after Close
 	close(c.done)
 	c.wg.Wait()
 }
 
 func (c *FrameClock) emit(fi gfx.FrameInfo) {
+	if c.closed.Load() {
+		return
+	}
 	fi.Seq = c.seq.Add(1)
 	c.fn(fi)
 }

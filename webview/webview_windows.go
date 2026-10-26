@@ -126,7 +126,7 @@ func (e *wv2Engine) start() {
 		return sOK
 	})
 	exe, _ := os.Executable()
-	err := createEnvironment(e.dll, userDataDir(os.Getenv("LOCALAPPDATA"), exe), opts.ptr(), h.ptr())
+	err := createEnvironment(e.dll, userDataDir(os.Getenv("LOCALAPPDATA"), exe, names), opts.ptr(), h.ptr())
 	release(h.ptr())
 	release(opts.ptr())
 	if err != nil {

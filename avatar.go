@@ -51,6 +51,10 @@ func (p *circleProvider) GetImageData(zoom int32) *swt.ImageData {
 	p.draw(gc, n)
 	gc.Dispose()
 	data := tmp.GetImageDataAtCurrentZoom()
+	if data.Width != px || data.Height != px {
+		// n is rounded up to whole points: at 150% the image is a pixel too big, Size says 41 for 40.
+		data = data.ScaledTo(px, px)
+	}
 	roundAlpha(data)
 	return data
 }

@@ -45,9 +45,15 @@ func TestScrollOnScroll(t *testing.T) {
 				}
 				s.SetOrigin(30, 120) // no move, no call
 				// A move every 4 ms, faster than a frame: at most one call per frame.
-				for i := 1; i <= 5; i++ {
-					app.After(time.Duration(4*i)*time.Millisecond, func() { s.SetOrigin(30, 120+10*i) })
+				// Chained: Windows runs timers that expire in one tick in any order, so five Afters could end at 130.
+				var move func(i int)
+				move = func(i int) {
+					s.SetOrigin(30, 120+10*i)
+					if i < 5 {
+						app.After(4*time.Millisecond, func() { move(i + 1) })
+					}
 				}
+				app.After(4*time.Millisecond, func() { move(1) })
 			})
 			app.After(3*step, func() {
 				burst := calls[1:]

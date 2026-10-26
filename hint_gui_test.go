@@ -5,6 +5,7 @@ import (
 	"image/png"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -63,8 +64,13 @@ func pixelDiff(a, b image.Image) int {
 		return a.Bounds().Dx() * a.Bounds().Dy()
 	}
 	n := 0
-	for y := a.Bounds().Min.Y; y < a.Bounds().Max.Y; y++ {
-		for x := a.Bounds().Min.X; x < a.Bounds().Max.X; x++ {
+	r := a.Bounds()
+	if runtime.GOOS == "windows" {
+		// The DWM shadow and corners blend with whatever is behind the window: skip the frame and title bar.
+		r = image.Rect(r.Min.X+12, r.Min.Y+40, r.Max.X-12, r.Max.Y-12)
+	}
+	for y := r.Min.Y; y < r.Max.Y; y++ {
+		for x := r.Min.X; x < r.Max.X; x++ {
 			r1, g1, b1, _ := a.At(x, y).RGBA()
 			r2, g2, b2, _ := b.At(x, y).RGBA()
 			if r1 != r2 || g1 != g2 || b1 != b2 {

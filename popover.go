@@ -108,7 +108,7 @@ func (p *Popover) Dispose() {
 	}
 }
 
-// Unwrap returns the underlying shell. On macOS it is never shown: its content view is moved into the NSPopover.
+// Unwrap returns the underlying shell. On macOS it is never shown and keeps its window; its body view is moved into the NSPopover while the popover is on screen.
 func (p *Popover) Unwrap() *swt.Shell { return p.shell }
 
 func (p *Popover) show(anchor *swt.Control, local popRect, edge PopoverEdge) {

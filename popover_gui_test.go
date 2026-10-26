@@ -42,6 +42,22 @@ func TestPopoverGUI(t *testing.T) {
 					if p.native.onScreen(p) && !p.native.focused(p, &field.t.Control) {
 						fail("the search field has no focus")
 					}
+					p.shell.Layout()
+					if ca := p.shell.GetClientArea(); ca.Width <= 0 || ca.Height <= 0 {
+						fail("the shell client area is empty while shown")
+					}
+					p.shell.GetBounds()
+					var walk func(c *swt.Composite)
+					walk = func(c *swt.Composite) {
+						c.GetClientArea()
+						for _, ch := range c.GetChildren() {
+							ch.GetBounds()
+							if sub, ok := ch.Impl().(*swt.Composite); ok {
+								walk(sub)
+							}
+						}
+					}
+					walk(&p.shell.Composite)
 					a := btn.ctl.ToDisplay(0, 0)
 					b := p.native.bounds(p)
 					t.Logf("popover %d,%d %dx%d", b.X, b.Y, b.Width, b.Height)

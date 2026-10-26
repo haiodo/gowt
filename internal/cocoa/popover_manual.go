@@ -37,7 +37,8 @@ const (
 // popoverState remembers where the content view lives while the popover is closed.
 type popoverState struct {
 	content *NSView
-	window  uintptr
+	home    *NSView // the superview of content at NewPopover, in the Shell's window
+	host    uintptr // the view of the popover's view controller
 	onClose func()
 	focus   *NSView // given the first responder when the popover is on screen
 }
@@ -51,17 +52,18 @@ func (st *popoverState) applyFocus() {
 	}
 }
 
-// restore puts the content back as the contentView of its window, so SWT keeps a valid hierarchy
-// while the popover is not on screen. It does nothing when the view is already there.
+// restore puts the content back into its home view in the Shell's window, so SWT keeps a valid
+// hierarchy while the popover is not on screen. The Shell's own contentView never moves, which is why
+// SWT calls on the Shell work while the popover is shown. It does nothing when the view is home.
 func (st *popoverState) restore() {
-	if st.window == 0 || msg(st.window, "contentView") == uintptr(st.content.Id) {
+	if st.home == nil || msg(uintptr(st.content.Id), "superview") == uintptr(st.home.Id) {
 		return
 	}
-	msg(st.window, "setContentView:", uintptr(st.content.Id))
+	msg(uintptr(st.home.Id), "addSubview:", uintptr(st.content.Id))
 }
 
-// NewPopover creates an NSPopover that shows content, the content view of a hidden SWT window. The
-// view is in the popover only while it is shown. onClose runs after the popover closed, whoever closed it.
+// NewPopover creates an NSPopover that shows content, the top view of the one child of a hidden SWT
+// Shell. The view is in the popover only while it is shown. onClose runs after the popover closed, whoever closed it.
 func NewPopover(content *NSView, onClose func()) uintptr {
 	popoverOnce.Do(func() {
 		objcInit()
@@ -88,17 +90,15 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 	})
 	pop := msg(msg(class("NSPopover"), "alloc"), "init")
 	vc := msg(msg(class("NSViewController"), "alloc"), "init")
-	msg(vc, "setView:", uintptr(content.Id))
+	host := msg(msg(class("NSView"), "alloc"), "init")
+	msg(vc, "setView:", host)
+	msg(host, "release")
 	msg(pop, "setContentViewController:", vc)
 	msg(vc, "release")
 	msg(pop, "setBehavior:", popoverBehaviorTransient)
 	msg(pop, "setAnimates:", 1)
 	msg(pop, "setDelegate:", popoverDelegate)
-	var window uintptr
-	if w := content.Window(); w != nil {
-		window = uintptr(w.Id)
-	}
-	popovers[pop] = &popoverState{content: content, window: window, onClose: onClose}
+	popovers[pop] = &popoverState{content: content, home: content.Superview(), host: host, onClose: onClose}
 	return pop
 }
 
@@ -122,8 +122,10 @@ func ShowPopover(pop uintptr, anchor *NSView, r NSRect, edge int, size NSSize) {
 		side = sides[1]
 	}
 	popoverSizeFn(pop, sel("setContentSize:"), size)
+	st := popovers[pop]
+	msg(st.host, "addSubview:", uintptr(st.content.Id))
 	popoverShowFn(pop, sel("showRelativeToRect:ofView:preferredEdge:"), r, v, side)
-	if w := popovers[pop].content.Window(); w != nil {
+	if w := st.content.Window(); w != nil {
 		msg(uintptr(w.Id), "makeKeyWindow")
 	}
 }

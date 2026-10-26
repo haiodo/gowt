@@ -5,8 +5,8 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// The shell is never shown: its content view lives in the NSPopover while it is on screen and
-// returns to the shell's window when it closes.
+// The shell is never shown and keeps its window and contentView. Its child, the popover body, lives
+// in the NSPopover while it is on screen and returns to the shell's view when it closes.
 const (
 	popoverStyle     = swt.NO_TRIM | swt.ON_TOP
 	popoverBodyStyle = swt.NONE
@@ -38,7 +38,7 @@ func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edg
 	p.shell.SetSize(int32(w), int32(h))
 	p.shell.Layout()
 	if n.pop == 0 {
-		n.pop = cocoa.NewPopover(p.shell.View, p.dismissed)
+		n.pop = cocoa.NewPopover(p.c.TopView(), p.dismissed)
 	}
 	r := cocoa.NSRect{X: float64(local.X), Y: float64(local.Y), Width: float64(local.W), Height: float64(local.H)}
 	cocoa.ShowPopover(n.pop, anchor.TopView(), r, int(edge), cocoa.NSSize{Width: float64(w), Height: float64(h)})

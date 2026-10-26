@@ -31,9 +31,16 @@ func TestPopoverGUI(t *testing.T) {
 
 			// An inactive application finishes the show animation late, and AppKit resets the first
 			// responder of the popover window when it does: the focus is final only then.
-			focusWait := 0
+			focusWait, shownWait := 0, 0
 			var step func(n int)
 			step = func(n int) {
+				// A loaded machine delivers AppKit's notifications late: the shown state is read after a bounded wait.
+				if (n == 1 || n == 2) && !p.Shown() && shownWait < 40 {
+					shownWait++
+					wait(50*time.Millisecond, func() { step(n) })
+					return
+				}
+				shownWait = 0
 				switch n {
 				case 0:
 					p.ShowAt(btn, PopoverBelow)

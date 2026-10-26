@@ -24,6 +24,7 @@ func main() {
 		var events []string
 		var w *gowt.Window
 		var gv *view.View
+		var ed *view.Editor
 		var popBtn *gowt.ButtonView
 		var pop *gowt.Popover
 		var resizes [][2]int
@@ -152,12 +153,21 @@ func main() {
 			<-ctx.Done()
 			return nil
 		}, gowt.BackgroundJob())
+		qa.Handle("edit-open", func(qa.Args) error {
+			ed = gv.Edit(view.EditOptions{Rect: gfx.R(10, 155, 160, 30), Text: "old", Font: gowt.Font{Size: 14},
+				Opts: []gowt.Option{gowt.ID("shot-edit")}})
+			return nil
+		})
 		qa.Handle("reset", func(qa.Args) error {
 			clicks.Set(0)
 			off.Set(0)
 			report.Set("")
 			events, vetoClose = nil, false
 			pop.Close()
+			if ed != nil {
+				ed.Cancel()
+				ed = nil
+			}
 			gv.Compositor().SetCamera(gfx.Camera{Zoom: 1})
 			return nil
 		})

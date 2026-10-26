@@ -303,6 +303,7 @@ func (e *expander) newRN(m map[string]any, typ, mode string) *rn {
 	if y, ok := get[float64](m, "y"); ok {
 		n.Y = y
 	}
+	n.Absolute = m["layoutPosition"] == "absolute"
 	if v, ok := get[float64](m, "opacity"); ok {
 		n.opacity = v
 	}

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+gfx/pen absolute children
+- Fixed: `gfx/pen` reads `layoutPosition: "absolute"`. Such a child sits at its x and y in the parent, takes no gap slot and does not grow a hug parent; before, it was laid out in the flow.
+
 CTabs look
 - Changed: `CTabs` draws a modern document tab bar on every OS: a flat strip with a hairline in the system separator colour, the selected tab in the folder's background (so it joins the content) with a 2 px accent line, secondary text on the other tabs with a hover fill, the Type.Body font, the tab height from Spacing.ControlHeight, a round close button shown on the selected and the hovered tab, and an accent ring on the selected tab while the folder has the focus. Set the folder's `Background` to the editor's colour so that the tab joins it. A `CTabs` now selects its first tab when created; SWT did so only when the folder got the focus.
 - Changed: j2go has `dispatch.properties`: a class listed there dispatches through `impl` and exports its protected constructors, so Go code can subclass it. `swt.CTabFolderRenderer` is the first: embed it, `NewCTabFolderRenderer(folder)`, `SetImpl_(x)`, define `Draw_`, `ComputeSize_`, `ComputeTrim_`, `Dispose_`, then `CTabFolder.SetRenderer(x)`.

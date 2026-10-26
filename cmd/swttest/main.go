@@ -82,6 +82,7 @@ func main() {
 			}
 			continue
 		}
+		g0, u0 := guiCounts()
 		if res := classStep(c.BeforeAll); res.status != "" {
 			// JUnit: a failed @BeforeAll fails every test of the class, a failed assumption skips them.
 			for _, t := range tests {
@@ -126,6 +127,7 @@ func main() {
 			report(name, res)
 			failed++
 		}
+		logHandles(c.Name, g0, u0)
 	}
 	if *listFlag {
 		return

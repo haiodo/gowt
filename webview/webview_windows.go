@@ -15,6 +15,9 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
+// creationTimeout is in milliseconds; a cold WebView2 start takes a few seconds.
+const creationTimeout = 20000
+
 type disposeFunc func()
 
 func (f disposeFunc) WidgetDisposed(*swt.DisposeEvent) { f() }
@@ -96,6 +99,13 @@ func (e *wv2Engine) start() {
 		return
 	}
 	e.started = true
+	// A broken runtime or a session without a desktop can leave the creation callbacks unanswered; without
+	// this the pending loads would wait for ever and OnNavigationFailed would never fire.
+	e.host.GetDisplay().TimerExec(creationTimeout, jrt.NewRunnable(func() {
+		if !e.isReady && !e.disposed {
+			e.fail(errors.New("webview: the WebView2 view was not created in time (runtime broken, or no desktop session)"))
+		}
+	}))
 	if e.popup != nil {
 		// A window of the page lives in the environment of its opener.
 		op, ok := e.popup.opener.(*wv2Engine)

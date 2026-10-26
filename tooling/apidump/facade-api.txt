@@ -405,6 +405,31 @@ gowt Panel.SetTooltip(s string)
 gowt Panel.SetVisible(v bool)
 gowt Panel.Unwrap() *github.com/haiodo/gowt/swt.Composite
 gowt Panel.Visible() bool
+gowt Popover.Add(children ...Option)
+gowt Popover.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt Popover.Clear()
+gowt Popover.Close()
+gowt Popover.Dispose()
+gowt Popover.Enabled() bool
+gowt Popover.Focus() bool
+gowt Popover.OnClose(f func())
+gowt Popover.OnDispose(f func())
+gowt Popover.OnEscape(f func() bool)
+gowt Popover.Relayout()
+gowt Popover.SetBackground(c Paint)
+gowt Popover.SetEnabled(v bool)
+gowt Popover.SetFont(f Font)
+gowt Popover.SetForeground(c Paint)
+gowt Popover.SetHeight(h int)
+gowt Popover.SetMaxHeight(h int)
+gowt Popover.SetSize(width int, height int)
+gowt Popover.SetTooltip(s string)
+gowt Popover.SetVisible(v bool)
+gowt Popover.ShowAt(anchor Widget, edge PopoverEdge)
+gowt Popover.ShowAtPoint(anchor Widget, x int, y int, edge PopoverEdge)
+gowt Popover.Shown() bool
+gowt Popover.Unwrap() *github.com/haiodo/gowt/swt.Shell
+gowt Popover.Visible() bool
 gowt ProgressView.Dispose()
 gowt ProgressView.Enabled() bool
 gowt ProgressView.Focus() bool
@@ -843,6 +868,7 @@ gowt Window.MessageBox(m Message) Answer
 gowt Window.OnClose(f func() bool)
 gowt Window.OnDispose(f func())
 gowt Window.OnKey(keys string, f func())
+gowt Window.Popover(opts ...Option) *Popover
 gowt Window.Relayout()
 gowt Window.SetBackground(c Paint)
 gowt Window.SetEnabled(v bool)
@@ -891,6 +917,10 @@ gowt const OpCopy Op = 1
 gowt const OpLink Op = 4
 gowt const OpMove Op = 2
 gowt const OpNone Op = 0
+gowt const PopoverAbove PopoverEdge = 1
+gowt const PopoverBelow PopoverEdge = 0
+gowt const PopoverLeft PopoverEdge = 3
+gowt const PopoverRight PopoverEdge = 2
 gowt const Regular Weight = 400
 gowt const SecondaryText systemPaint = 0
 gowt const Semibold Weight = 600
@@ -1070,6 +1100,8 @@ gowt type Option
 gowt type PagesView struct
 gowt type Paint
 gowt type Panel struct
+gowt type Popover struct
+gowt type PopoverEdge int
 gowt type ProgressView struct
 gowt type RGB struct
 gowt type SashView struct

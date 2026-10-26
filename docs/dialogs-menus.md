@@ -51,6 +51,25 @@ view.Item("Word wrap", nil, gowt.Check()).SetChecked(true)
 - `Menu.OnShow(f)` runs just before the menu opens; refresh enabled states there.
 - Context menu: `gowt.PopupMenu(widget)` returns the widget's menu; a right click opens it, `Show()` opens it by hand. It is a function, not a method.
 
+## Popover
+
+A floating panel next to a control or a point: a quick panel, an operation box, a "go to" search. Its content is ordinary widgets.
+
+```go
+p := w.Popover()                       // Gap, Padding and children as in Window; Padding defaults to Spacing.SM
+p.Add(gowt.Text(gowt.Focused(), gowt.Ref(&field)), gowt.List(nil, gowt.Ref(&list)))
+p.OnClose(func() { ... })
+p.ShowAt(button, gowt.PopoverBelow)    // at the control; or p.ShowAtPoint(canvas, x, y, gowt.PopoverAbove)
+```
+
+- `ShowAt(anchor, edge)` opens it at the control's rectangle, `ShowAtPoint(anchor, x, y, edge)` at a point in the control's points. A gfx view is an anchor through `view.Canvas()`; the caller converts a scene point to a canvas point.
+- `edge` is `PopoverBelow` (default), `PopoverAbove`, `PopoverRight` or `PopoverLeft`. Where the popover does not fit it opens on the opposite side; Windows and Linux also move it to stay on the screen of the anchor.
+- It closes by a click outside, Esc and loss of the application focus. `Close()` closes it by hand, `OnClose(f)` runs after every close. A closed popover keeps its content and can be shown again; `Dispose()` destroys it.
+- The control given `Focused()` takes the keyboard focus when the popover opens.
+- `SetSize(w, h)` fixes the content size; otherwise it is the preferred size.
+- Esc closes the popover. `OnEscape(f)` runs first and keeps it open when it returns true. Enter is the app's: use `OnActivate` of the text field or the list, as the `examples/dialogs` "Go to item..." does.
+- macOS shows an `NSPopover` with the arrow and the system material. Windows and Linux show a borderless window with a frame; Windows 11 rounds its corners. The shadow comes from the window manager where it draws one. Linux on Wayland cannot place a window itself, so the compositor decides where it opens.
+
 ## Tool bar and tray
 
 `w.ToolBar()` with `Item(text, onClick)` and `Separator()`; items have `SetImage`, `SetTooltip`, `SetEnabled`, `SetChecked`.

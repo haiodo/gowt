@@ -13,6 +13,7 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		w := app.Window("Dialogs and menus")
 		var out *gowt.TextView
+		var goBtn *gowt.ButtonView
 
 		bar := w.MenuBar()
 		file := bar.Submenu("&File")
@@ -72,6 +73,9 @@ func main() {
 					say(fmt.Sprintf("colour: #%02x%02x%02x", c.R, c.G, c.B))
 				}
 			})),
+			gowt.Button("Go to item...", gowt.Ref(&goBtn), gowt.OnClick(func() {
+				gotoItem(app, w, goBtn, say)
+			})),
 			gowt.Button("Font", gowt.OnClick(func() {
 				if f, ok := w.FontDialog(gowt.Font{Name: "Helvetica", Size: 12}); ok {
 					say(fmt.Sprintf("font: %s %d bold=%v", f.Name, f.Size, f.Bold))
@@ -87,4 +91,41 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+var items = []string{"Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India", "Juliet", "Kilo", "Lima"}
+
+// gotoItem opens a search field over a list that narrows as you type. Enter or a double click picks
+// the selected item, or the first match; Esc and a click outside close the popover.
+func gotoItem(app *gowt.App, w *gowt.Window, anchor gowt.Widget, say func(string)) {
+	var field *gowt.TextView
+	var list *gowt.ListView
+	var matches []string
+	p := w.Popover()
+	pick := func(i int) {
+		if i < 0 || i >= len(matches) {
+			return
+		}
+		say("go to: " + matches[i])
+		p.Close()
+	}
+	filter := func() {
+		matches = matches[:0]
+		for _, it := range items {
+			if strings.Contains(strings.ToLower(it), strings.ToLower(field.Text())) {
+				matches = append(matches, it)
+			}
+		}
+		list.SetItems(matches)
+		list.Select(0)
+	}
+	p.Add(
+		gowt.Text(gowt.Focused(), gowt.Hint("Go to item"), gowt.GrowX(), gowt.Ref(&field)),
+		gowt.List(nil, gowt.Grow(), gowt.Size(240, 160), gowt.Ref(&list),
+			gowt.OnActivate(pick)))
+	field.OnChange(func(string) { filter() })
+	field.OnActivate(func() { pick(max(list.Index(), 0)) })
+	p.OnClose(func() { app.Async(p.Dispose) })
+	filter()
+	p.ShowAt(anchor, gowt.PopoverBelow)
 }

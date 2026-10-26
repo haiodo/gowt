@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+Quit hook
+- New: `App.OnQuit(func() bool)`; false cancels the quit. It runs on Cmd+Q, the app menu and the Dock (macOS), logout and shutdown (macOS, Windows) and the close of the last window, after every open window's `Window.OnClose` agreed (asked in creation order, the first refusal stops). `app.Unwrap().Close()` takes the same path for an own Quit item; `app.Quit()` still ends without asking. A `MessageBox` from a handler works during the system's quit request. Linux has no session-end path (GTK 3 without `GtkApplication`). Several `Window.OnClose` calls on one window now stop at the first false. Tests `TestQuit*` (`GOWT_GUI_TEST=1`) run on Linux under Xvfb and on the Windows VM; macOS not run. `examples/quit`, docs/events.md.
+
 Emoji in text (TSK-2026-10-24-gfx-tenniarb-11 D3, TSK-2026-10-03-product-36)
 - Fixed: editing text with surrogate pairs (emoji, ZWJ sequences, flags) no longer panics in `StyledText`. The cause was in `jrt` (UTF-16 indices over UTF-8 strings, no lone surrogates) and was fixed earlier by the WTF-8 work and the `toCharArray`/`charAt`/`new String(char[])` generation; the defect note in the docs was stale. New tests pin it: `swt/custom_defaultcontent_test.go` (no window, fails on the commits before that work) and `swt/custom_styledtext_surrogates_gui_test.go` (`GOWT_GUI_TEST=1`: typing, paste, cut, delete, caret moves, selection, wrap, `StyleRange` inside a pair, `Text`, `Combo`, `Label`). Run on Linux only; macOS and Windows not run.
 

@@ -22,7 +22,7 @@ w.Show()
 - The window stacks its children top to bottom like a `VBox`, `Spacing.SM` apart and `Spacing.PageMargin` from the window edge. `Padding(0)` puts the content against the edge.
 - Children can go straight into `app.Window(title, children...)`. A child whose callback uses the window goes into `w.Add(...)` after that call, because `w` is not set while `app.Window` runs.
 - `Show` sizes the window to its content unless `SetSize` was called. `SetMinSize(w, h)` keeps the user from making it smaller; `app.ScreenSize()` is the area a window can take on the primary monitor.
-- `SetTitle`, `Close` (as if the user closed it) and `OnClose(func() bool)` exist; returning false from `OnClose` keeps the window open.
+- `SetTitle`, `Close` (as if the user closed it) and `OnClose(func() bool)` exist; returning false from `OnClose` keeps the window open. Quitting the app asks every window's `OnClose` too, see [events](events.md#quitting).
 - More than one window: call `app.Window` again. `Run` returns when the last one is closed.
 
 ## Containers

@@ -17,6 +17,7 @@ gowt App.Jobs() []JobInfo
 gowt App.LoadImage(path string) (img *Image, err error)
 gowt App.OnError(f func(error))
 gowt App.OnJobs(f func([]JobInfo))
+gowt App.OnQuit(f func() bool)
 gowt App.OnThemeChange(f func(dark bool))
 gowt App.Pending() int
 gowt App.Quit()

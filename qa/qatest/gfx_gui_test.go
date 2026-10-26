@@ -80,6 +80,35 @@ func TestGfxResize(t *testing.T) {
 	}
 }
 
+// veilPixels counts the pixels of the translucent square over the red one: its colour once composed
+// (255 * 2/3 = 170) and as it would be composed twice (255 * 4/9 = 113).
+func veilPixels(t *testing.T, path string) (once, twice int) {
+	t.Helper()
+	f, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	img, err := png.Decode(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b := img.Bounds()
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
+			r, g, bl, _ := img.At(x, y).RGBA()
+			r, g, bl = r>>8, g>>8, bl>>8
+			switch {
+			case g < 5 && bl < 5 && r >= 167 && r <= 173:
+				once++
+			case g < 5 && bl < 5 && r >= 109 && r <= 117:
+				twice++
+			}
+		}
+	}
+	return once, twice
+}
+
 func redPixels(t *testing.T, path string) int {
 	t.Helper()
 	f, err := os.Open(path)
@@ -108,8 +137,12 @@ func redPixels(t *testing.T, path string) int {
 func TestGfxShotWaitsForFrame(t *testing.T) {
 	guiOnly(t)
 	app := qatest.App(t)
-	if n := redPixels(t, app.Shot("gfx-before")); n < 5000 {
+	first := app.Shot("gfx-before")
+	if n := redPixels(t, first); n < 5000 {
 		t.Fatalf("the scene is not in the first shot: %d red pixels", n)
+	}
+	if once, twice := veilPixels(t, first); once < 5000 || twice > 0 {
+		t.Errorf("translucent square: %d pixels of the single colour 170, %d of the doubled 113", once, twice)
 	}
 	app.State("camera-set", "x", 5000, "y", 5000)
 	if n := redPixels(t, app.Shot("gfx-after")); n > 0 {

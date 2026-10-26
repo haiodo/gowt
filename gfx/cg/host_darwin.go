@@ -215,6 +215,20 @@ func (l *layer) Remove() {
 	}
 }
 
+// SetHidden hides or shows all three groups at once, without animation: a view capture then has
+// the layers or not, whichever way that capture treats them.
+func (h *Host) SetHidden(hidden bool) {
+	var v uintptr
+	if hidden {
+		v = 1
+	}
+	h.Begin()
+	for _, g := range h.groups {
+		msgInt(g, sels.setHidden, v)
+	}
+	h.Commit()
+}
+
 // Render draws the layers as the window server would show them, from their own images and not from
 // the screen, so it works with a sleeping display and needs no screen recording permission. The
 // result covers wpt by hpt points of the root layer at scale pixels per point; what lies outside is cut.

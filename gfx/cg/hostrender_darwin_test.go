@@ -36,6 +36,14 @@ func TestHostRender(t *testing.T) {
 			t.Errorf("outside the layer at %v: %+v", p, c)
 		}
 	}
+	h.SetHidden(true)
+	if send0(h.groups[gfx.GroupTiles], sels.isHidden) == 0 {
+		t.Error("SetHidden left the tile group shown")
+	}
+	h.SetHidden(false)
+	if send0(h.groups[gfx.GroupTiles], sels.isHidden) != 0 {
+		t.Error("SetHidden(false) left the tile group hidden")
+	}
 	l.Remove()
 	if c := h.Render(100, 100, 1).NRGBAAt(25, 40); c.A != 0 {
 		t.Errorf("after Remove: %+v", c)

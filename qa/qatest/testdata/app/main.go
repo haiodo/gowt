@@ -31,9 +31,16 @@ func main() {
 		red := gfx.NewNode(1)
 		rec := gfx.NewRecorder()
 		rec.FillRRect(gfx.R(0, 0, 400, 400), 0, gfx.RGB(255, 0, 0))
+		// a black square of alpha 1/3 over the red: 255 * 2/3 = 170 once, 113 when composited twice
+		veil := gfx.NewNode(2)
+		vrec := gfx.NewRecorder()
+		vrec.FillRRect(gfx.R(0, 0, 100, 100), 0, gfx.RGBA(0, 0, 0, 1.0/3))
 		scene.Update(func(tx *gfx.Tx) {
 			tx.Add(nil, red)
 			tx.SetPicture(red, rec.Finish())
+			tx.Add(nil, veil)
+			tx.SetPicture(veil, vrec.Finish())
+			tx.Move(veil, 100, 50)
 		})
 		vetoClose := false
 		note := func(format string, a ...any) { events = append(events, fmt.Sprintf(format, a...)) }

@@ -81,8 +81,9 @@ func (o PDFOptions) Layout(area Rect) (PageLayout, error) {
 	return l, nil
 }
 
-// pdfItems is items clipped to area, with the background first.
-func pdfItems(items []Item, area Rect, bg Color) []Item {
+// ClipItems returns items clipped to area, with a background of the whole area first when bg is
+// not transparent: what a page of a fixed size gets, so that nothing lies outside the area.
+func ClipItems(items []Item, area Rect, bg Color) []Item {
 	clip := Clip{M: Identity(), Kind: ClipRect, Rect: area}
 	out := make([]Item, 0, len(items)+1)
 	if bg.A > 0 {
@@ -114,7 +115,7 @@ func WriteSubtreePDF(r PDFRenderer, w io.Writer, s *Scene, root *Node, area Rect
 	}
 	var b Items
 	s.CollectSubtree(root, area, &b)
-	return writePDF(r, w, l, pdfItems(b.List, area, o.Background))
+	return writePDF(r, w, l, ClipItems(b.List, area, o.Background))
 }
 
 // WritePicturePDF writes one picture, the whole of its bounds, as a one-page PDF.
@@ -123,7 +124,7 @@ func WritePicturePDF(r PDFRenderer, w io.Writer, p *Picture, o PDFOptions) error
 	if err != nil {
 		return err
 	}
-	return writePDF(r, w, l, pdfItems([]Item{{Pic: p, M: Identity(), Alpha: 1}}, p.Bounds, o.Background))
+	return writePDF(r, w, l, ClipItems([]Item{{Pic: p, M: Identity(), Alpha: 1}}, p.Bounds, o.Background))
 }
 
 func writePDF(r PDFRenderer, w io.Writer, l PageLayout, items []Item) error {

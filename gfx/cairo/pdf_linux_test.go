@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"github.com/haiodo/gowt/gfx"
-	"github.com/haiodo/gowt/gfx/internal/pdfcheck"
 	"github.com/haiodo/gowt/gfx/internal/pdftest"
+	"github.com/haiodo/gowt/internal/pdfcheck"
 )
 
 func TestPDFShared(t *testing.T) {

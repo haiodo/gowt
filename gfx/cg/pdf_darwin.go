@@ -93,3 +93,32 @@ func (d *pdfDoc) Close() error {
 	cfRelease(d.data)
 	return err
 }
+
+type ctxPage struct {
+	r    *Renderer
+	ctx  uintptr
+	f, h float64
+}
+
+// OnContext returns a Page that draws on ctx, a CGContext the caller owns and keeps, such as the
+// context of a print operation. The context's units are 1/unitsPerPoint points; height is the
+// page height in those units. A context with y up (the usual one of a print view) is flipped so
+// that the page is y down, as for every gfx.Page; one that is flipped already is used as it is.
+func (r *Renderer) OnContext(ctx uintptr, unitsPerPoint, height float64) gfx.Page {
+	return ctxPage{r, ctx, unitsPerPoint, height}
+}
+
+// Draw paints the items; see gfx.Page.
+func (p ctxPage) Draw(scale float64, origin gfx.Point, items []gfx.Item) {
+	s := &Surface{r: p.r, ctx: p.ctx, scale: scale, eff: scale}
+	cgSaveGState(s.ctx)
+	if cgGetCTM(s.ctx).D > 0 {
+		cgTranslate(s.ctx, 0, p.h)
+		cgScale(s.ctx, 1, -1)
+	}
+	cgScale(s.ctx, p.f, p.f)
+	cgScale(s.ctx, scale, scale)
+	cgTranslate(s.ctx, -origin.X, -origin.Y)
+	s.Draw(items)
+	cgRestoreGSt(s.ctx)
+}

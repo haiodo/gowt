@@ -13,9 +13,9 @@ import (
 	"golang.org/x/image/font/gofont/goregular"
 
 	"github.com/haiodo/gowt/gfx"
-	"github.com/haiodo/gowt/gfx/internal/pdfcheck"
 	"github.com/haiodo/gowt/gfx/internal/pdftest"
 	"github.com/haiodo/gowt/gfx/pdf"
+	"github.com/haiodo/gowt/internal/pdfcheck"
 )
 
 type goFonts struct{}

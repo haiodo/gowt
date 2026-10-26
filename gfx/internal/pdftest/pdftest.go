@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/haiodo/gowt/gfx"
-	"github.com/haiodo/gowt/gfx/internal/pdfcheck"
+	"github.com/haiodo/gowt/internal/pdfcheck"
 )
 
 // Options say which text face to draw and which font name the file must then list.

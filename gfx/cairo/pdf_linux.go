@@ -110,3 +110,29 @@ func (d *pdfDoc) Close() error {
 	}
 	return nil
 }
+
+type ctxPage struct {
+	r  *Renderer
+	cr uintptr
+	f  float64
+}
+
+// OnContext returns a Page that draws on cr, a cairo_t the caller owns and keeps, such as the context
+// of a print job. The context's units are 1/unitsPerPoint points, its origin the top left corner of
+// the page; the page's own units are points.
+func (r *Renderer) OnContext(cr uintptr, unitsPerPoint float64) gfx.Page {
+	return ctxPage{r, cr, unitsPerPoint}
+}
+
+// Draw paints the items; see gfx.Page.
+func (p ctxPage) Draw(sc float64, origin gfx.Point, items []gfx.Item) {
+	t := &Target{r: p.r, cr: p.cr, scale: sc, eff: sc}
+	save(p.cr)
+	if p.f != 1 {
+		scale(p.cr, p.f, p.f)
+	}
+	scaleBy(p.cr, sc)
+	translate(p.cr, -origin.X, -origin.Y)
+	t.Draw(items)
+	restore(p.cr)
+}

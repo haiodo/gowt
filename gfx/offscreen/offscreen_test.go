@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/haiodo/gowt/gfx"
-	"github.com/haiodo/gowt/gfx/internal/pdfcheck"
+	"github.com/haiodo/gowt/internal/pdfcheck"
 )
 
 func TestNewRendersPNG(t *testing.T) {

@@ -13,9 +13,9 @@ import (
 	"github.com/ebitengine/purego"
 
 	"github.com/haiodo/gowt/gfx"
-	"github.com/haiodo/gowt/gfx/internal/pdfcheck"
 	"github.com/haiodo/gowt/gfx/internal/pdftest"
 	"github.com/haiodo/gowt/gfx/pdf"
+	"github.com/haiodo/gowt/internal/pdfcheck"
 )
 
 // shapesPicture draws without text, so the three renderers can be compared pixel by pixel.

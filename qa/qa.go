@@ -126,11 +126,12 @@ type Job struct {
 
 // Dialog is a scripted answer for qatest's Answer, or a dialog the app asked for as Dialogs reports it.
 // Kind is "message" (Window.MessageBox), "confirm" (Window.Confirm), "file" (FileDialog), "dir"
-// (DirDialog), "color" (ColorDialog) or "font" (FontDialog).
+// (DirDialog), "color" (ColorDialog), "font" (FontDialog) or "print" (PrintDialog).
 //
 // Reply by kind: a button name ("OK", "Cancel", "Yes", "No", "Retry", "Abort", "Ignore") for message;
 // a bool for confirm; a path, or a list of paths for a Multi dialog, for file; a path for dir; "#rrggbb"
-// for color; a Font object ({"Name": "Menlo", "Size": 12, "Bold": true}) for font. Cancel answers as
+// for color; a Font object ({"Name": "Menlo", "Size": 12, "Bold": true}) for font; the path of the PDF
+// file the job is written to for print. Cancel answers as
 // the user who dismissed the dialog and needs no Reply.
 //
 // In what Dialogs returns, Reply and Cancel are what the app received, and Unanswered marks a dialog

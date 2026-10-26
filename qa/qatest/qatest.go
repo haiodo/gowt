@@ -337,6 +337,36 @@ func (e *Element) ScrollEvent(ev qa.ScrollEvent) { e.c.t.Helper(); e.act("scroll
 // Pinch delivers one pinch step to a gfx view, through the router the native events use.
 func (e *Element) Pinch(ev qa.PinchEvent) { e.c.t.Helper(); e.act("pinch", ev) }
 
+// Pointer delivers a mouse event at a point of the control, in its coordinates. A gfx view gets it
+// through its router, as the native events arrive, so OnPointer, drags and inline editors see it; any
+// other control gets the listener events MouseDown, MouseMove and MouseUp. Nothing goes through the
+// operating system: the window needs no focus, and a press focuses the control. See qa.PointerEvent.
+func (e *Element) Pointer(ev qa.PointerEvent) { e.c.t.Helper(); e.act("pointer", ev) }
+
+// ClickAt presses and releases the left button at the point.
+func (e *Element) ClickAt(x, y float64) {
+	e.c.t.Helper()
+	e.Pointer(qa.PointerEvent{Kind: "click", X: x, Y: y})
+}
+
+// DoubleClickAt clicks twice at the point; the second press has click count 2.
+func (e *Element) DoubleClickAt(x, y float64) {
+	e.c.t.Helper()
+	e.Pointer(qa.PointerEvent{Kind: "doubleclick", X: x, Y: y})
+}
+
+// RightClickAt presses and releases the right button at the point.
+func (e *Element) RightClickAt(x, y float64) {
+	e.c.t.Helper()
+	e.Pointer(qa.PointerEvent{Kind: "click", X: x, Y: y, Button: 3})
+}
+
+// DragTo presses the left button at (x, y), moves to (toX, toY) in four steps and releases it there.
+func (e *Element) DragTo(x, y, toX, toY float64) {
+	e.c.t.Helper()
+	e.Pointer(qa.PointerEvent{Kind: "drag", X: x, Y: y, ToX: toX, ToY: toY})
+}
+
 // SelectText selects the item with exactly this text in a list, combo, table, tree or tab folder.
 func (e *Element) SelectText(text string) {
 	e.c.t.Helper()

@@ -1226,6 +1226,15 @@ gowt/qa PinchEvent.Mods field string
 gowt/qa PinchEvent.Phase field string
 gowt/qa PinchEvent.X field float64
 gowt/qa PinchEvent.Y field float64
+gowt/qa PointerEvent.Button field int
+gowt/qa PointerEvent.Count field int
+gowt/qa PointerEvent.Kind field string
+gowt/qa PointerEvent.Mods field string
+gowt/qa PointerEvent.Steps field int
+gowt/qa PointerEvent.ToX field float64
+gowt/qa PointerEvent.ToY field float64
+gowt/qa PointerEvent.X field float64
+gowt/qa PointerEvent.Y field float64
 gowt/qa ScrollEvent.DX field float64
 gowt/qa ScrollEvent.DY field float64
 gowt/qa ScrollEvent.Mods field string
@@ -1254,6 +1263,7 @@ gowt/qa type Dialog struct
 gowt/qa type Job struct
 gowt/qa type Node struct
 gowt/qa type PinchEvent struct
+gowt/qa type PointerEvent struct
 gowt/qa type ScrollEvent struct
 gowt/qa type Selector struct
 gowt/qa/qatest Client.Answer(d github.com/haiodo/gowt/qa.Dialog)
@@ -1270,8 +1280,11 @@ gowt/qa/qatest Client.State(name string, kv ...any) encoding/json.RawMessage
 gowt/qa/qatest Element.Activate()
 gowt/qa/qatest Element.Check(on bool)
 gowt/qa/qatest Element.Click()
+gowt/qa/qatest Element.ClickAt(x float64, y float64)
 gowt/qa/qatest Element.Close()
 gowt/qa/qatest Element.Collapse()
+gowt/qa/qatest Element.DoubleClickAt(x float64, y float64)
+gowt/qa/qatest Element.DragTo(x float64, y float64, toX float64, toY float64)
 gowt/qa/qatest Element.Exists() bool
 gowt/qa/qatest Element.Expand()
 gowt/qa/qatest Element.Focus()
@@ -1279,6 +1292,8 @@ gowt/qa/qatest Element.Key(keys string)
 gowt/qa/qatest Element.Node() github.com/haiodo/gowt/qa.Node
 gowt/qa/qatest Element.Nodes() []github.com/haiodo/gowt/qa.Node
 gowt/qa/qatest Element.Pinch(ev github.com/haiodo/gowt/qa.PinchEvent)
+gowt/qa/qatest Element.Pointer(ev github.com/haiodo/gowt/qa.PointerEvent)
+gowt/qa/qatest Element.RightClickAt(x float64, y float64)
 gowt/qa/qatest Element.ScrollBy(dx int, dy int)
 gowt/qa/qatest Element.ScrollEvent(ev github.com/haiodo/gowt/qa.ScrollEvent)
 gowt/qa/qatest Element.ScrollIntoView()

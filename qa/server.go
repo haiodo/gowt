@@ -237,9 +237,20 @@ func (s *server) ui(timeout time.Duration, f func() (any, error)) (any, error) {
 	}
 }
 
+// shells are the windows a test can address: open ones, not the popovers, which belong to their window.
+func (s *server) shells() []*swt.Shell {
+	var out []*swt.Shell
+	for _, sh := range s.h.Display.GetShells() {
+		if _, pop := qaview.PopoverOf(sh); !pop && !sh.IsDisposed() && sh.GetVisible() {
+			out = append(out, sh)
+		}
+	}
+	return out
+}
+
 func (s *server) windows() []map[string]any {
 	var out []map[string]any
-	for i, sh := range s.h.Display.GetShells() {
+	for i, sh := range s.shells() {
 		b := sh.GetBounds()
 		out = append(out, map[string]any{
 			"index": i, "title": sh.GetText(), "visible": sh.GetVisible(),
@@ -350,10 +361,16 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		if err := shot.WindowPNG(s.h.ShotHandle(sh), path); err != nil {
+		shot.Passive = len(qaview.Popovers(s.h.Display, sh)) > 0
+		defer func() { shot.Passive = false }()
+		frame, err := shot.Capture(s.h.ShotHandle(sh), path)
+		if err != nil {
 			return nil, err
 		}
-		return nil, qaview.OverlayPNG(sh, path)
+		if err := qaview.OverlayPNG(sh, path); err != nil {
+			return nil, err
+		}
+		return nil, s.addPopovers(sh, path, frame)
 	})
 	if err != nil {
 		return nil, err
@@ -368,8 +385,24 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 	return map[string]string{"png": base64.StdEncoding.EncodeToString(b)}, nil
 }
 
+// addPopovers draws the popovers of sh that are on screen into the capture at path.
+func (s *server) addPopovers(sh *swt.Shell, path string, frame shot.Frame) error {
+	for _, ps := range qaview.Popovers(s.h.Display, sh) {
+		tmp := path + ".popover.png"
+		pf, err := shot.Capture(s.h.ShotHandle(ps), tmp)
+		if err == nil {
+			frame, err = shot.Compose(path, frame, tmp, pf)
+		}
+		os.Remove(tmp)
+		if err != nil {
+			return fmt.Errorf("shot: popover: %w", err)
+		}
+	}
+	return nil
+}
+
 func (s *server) shell(window int) (*swt.Shell, error) {
-	shells := s.h.Display.GetShells()
+	shells := s.shells()
 	if window < 0 || window >= len(shells) {
 		return nil, fmt.Errorf("shot: window %d, the app has %d", window, len(shells))
 	}

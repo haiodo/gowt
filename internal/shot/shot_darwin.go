@@ -14,10 +14,11 @@ type nsRect struct {
 	X, Y, W, H float64
 }
 
-// WindowPNG writes the window that holds the NSView view (Shell.View.Id) as a PNG. It renders the view
+// Capture writes the window that holds the NSView view (Shell.View.Id) as a PNG. It renders the view
 // tree with cacheDisplayInRect:toBitmapImageRep:; screencapture needs Screen Recording permission.
 // GOWT_SNAP_LAYERS=1 renders the layer tree instead (layerPNG); the reference images keep the default.
-func WindowPNG(view int64, path string) error {
+// It returns where the window lies on the screen, in points, y down.
+func Capture(view int64, path string) (Frame, error) {
 	win := objc.ID(view).Send(objc.RegisterName("window"))
 	v := win.Send(objc.RegisterName("contentView")).Send(objc.RegisterName("superview"))
 	if os.Getenv("GOWT_SNAP_NOFOCUS") == "1" {
@@ -27,10 +28,10 @@ func WindowPNG(view int64, path string) error {
 		noFocusRings(v)
 	}
 	if os.Getenv("GOWT_SNAP_SCREEN") == "1" {
-		return screenPNG(v, path)
+		return frameOf(win), screenPNG(v, path)
 	}
 	if os.Getenv("GOWT_SNAP_LAYERS") == "1" && v.Send(objc.RegisterName("layer")) != 0 {
-		return layerPNG(v, path)
+		return frameOf(win), layerPNG(v, path)
 	}
 	bounds := objc.Send[nsRect](v, objc.RegisterName("bounds"))
 	rep := v.Send(objc.RegisterName("bitmapImageRepForCachingDisplayInRect:"), bounds)
@@ -39,9 +40,18 @@ func WindowPNG(view int64, path string) error {
 	data := rep.Send(objc.RegisterName("representationUsingType:properties:"), 4, dict)
 	nsPath := objc.ID(objc.GetClass("NSString")).Send(objc.RegisterName("stringWithUTF8String:"), path)
 	if !objc.Send[bool](data, objc.RegisterName("writeToFile:atomically:"), nsPath, true) {
-		return fmt.Errorf("writing %s failed", path)
+		return Frame{}, fmt.Errorf("writing %s failed", path)
 	}
-	return nil
+	return frameOf(win), nil
+}
+
+// frameOf is the frame of an NSWindow with the origin at the top left of the primary screen.
+func frameOf(win objc.ID) Frame {
+	sel := objc.RegisterName
+	fr := objc.Send[nsRect](win, sel("frame"))
+	screens := objc.ID(objc.GetClass("NSScreen")).Send(sel("screens"))
+	primary := objc.Send[nsRect](screens.Send(sel("objectAtIndex:"), 0), sel("frame"))
+	return Frame{fr.X, primary.H - fr.Y - fr.H, fr.W, fr.H}
 }
 
 // noFocusRings sets NSFocusRingTypeNone on v, its cell and every view below it. The process ends with

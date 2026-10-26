@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+QA driver for editors (Tenniarb)
+- New: QA mouse input. `Element.ClickAt`, `DoubleClickAt`, `RightClickAt`, `DragTo` and `Pointer(qa.PointerEvent)` (action `pointer`) deliver a press, moves and a release at a point. A gfx view gets them through its input router like the native events (`OnPointer`, `View.Drag`, inline editors); any other control gets `MouseDown`, `MouseMove`, `MouseUp` and `MouseDoubleClick` listener events. A press over a control placed on the view is refused. See docs/qa.md.
+- Fixed: QA `Type`, `Key` and `Activate` on a control that has the focus asked for the focus again, which on macOS ends the edit of a text field, so an inline `view.Edit` field committed before the text arrived. They now leave the focus alone when the control has it; `Focus` too. The macOS cause is a hypothesis (the field editor, not the field, is the first responder) and was not reproduced; the Linux and Windows runs pass with and without the change.
+- Fixed: a QA pointer press focuses the view without activating the window (the view's own `SetFocus` needs an active window, which a QA run on macOS never has). `docs/qa.md` has the pattern: press, then `app.Key`.
+- New: the QA dump lists the context menu of a control (`gowt.PopupMenu`) as a `Menu` node with its `MenuItem`s, and an open `Popover` as a root with class `Popover`. `Click` on a context menu item runs `OnShow` first, then the item. `Close` on a popover closes it. `Shot` draws the open popovers of the window into its image, which grows when one reaches past the window; on Windows it then does not bring the window to the front, which would close the popover. The shot's window index and the `windows` command skip popover shells (a popover created at start was window 0 on Windows).
+- The `qa/qatest` suite ran on the Windows 11 arm64 VM and under Xvfb (Docker stand): `TestGfxPointerAndEditor`, `TestPointerPlainControl`, `TestPopupMenu`, `TestPopover`; macOS not run.
+
 gfx shadows, ArcTo, SVG (Tenniarb request)
 - New: `Recorder.FillShadowPath(p, fill, sh)`, `StrokeShadowPath(p, st, c, sh)` and `TextShadow(s, x, y, font, c, sh)`: a blurred drop shadow under any path fill, any stroke (ellipses, `RoundRectPath4`, boxes with no fill, lines) and under text, on cg, cairo and d2d. New ops `OpFillShadow`, `OpStrokeShadow`, `OpTextShadow`, appended after `OpEndLayer`. `FillShadowRRect` is unchanged.
 - New: `Path.ArcTo(x1, y1, x2, y2, r)` with HTML canvas `arcTo` semantics; tests against the canvas results. `Path.Arc` no longer splits an exact quarter turn in two cubics because of rounding.

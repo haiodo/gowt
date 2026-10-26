@@ -36,11 +36,11 @@ type bmi struct {
 	ClrUsed, ClrImportant  uint32
 }
 
-// WindowPNG writes the whole window hwnd as a PNG: title bar and DWM frame, without the invisible resize border
-// (DWMWA_EXTENDED_FRAME_BOUNDS). It copies that rectangle from the screen, so the window must be on top and
+// Capture writes the whole window hwnd as a PNG: title bar and DWM frame, without the invisible resize border
+// (DWMWA_EXTENDED_FRAME_BOUNDS), and returns where it lies on the screen, in pixels. It copies that rectangle from the screen, so the window must be on top and
 // on screen; the screen copy also holds the WebView2 child windows. GOWT_SNAP_FULL=1 uses PrintWindow
 // (PW_RENDERFULLCONTENT) instead, which renders Mica and acrylic backdrops wrongly.
-func WindowPNG(hwnd int64, path string) error {
+func Capture(hwnd int64, path string) (Frame, error) {
 	var wr, fr rect
 	getRect.Call(uintptr(hwnd), uintptr(unsafe.Pointer(&wr)))
 	// DWMWA_EXTENDED_FRAME_BOUNDS is 9; it fails without DWM, then the window rect is the frame.
@@ -49,11 +49,16 @@ func WindowPNG(hwnd int64, path string) error {
 	}
 	fw, fh := int(fr.R-fr.L), int(fr.B-fr.T)
 	if fw <= 0 || fh <= 0 {
-		return fmt.Errorf("empty window")
+		return Frame{}, fmt.Errorf("empty window")
 	}
 	user32.NewProc("UpdateWindow").Call(uintptr(hwnd))
-	user32.NewProc("BringWindowToTop").Call(uintptr(hwnd))
-	user32.NewProc("SetForegroundWindow").Call(uintptr(hwnd))
+	if Passive {
+		const hwndTop, noSizeMoveActivate = 0, 0x0001 | 0x0002 | 0x0010
+		user32.NewProc("SetWindowPos").Call(uintptr(hwnd), hwndTop, 0, 0, 0, 0, noSizeMoveActivate)
+	} else {
+		user32.NewProc("BringWindowToTop").Call(uintptr(hwnd))
+		user32.NewProc("SetForegroundWindow").Call(uintptr(hwnd))
+	}
 	full := os.Getenv("GOWT_SNAP_FULL") == "1"
 	ww, wh := fw, fh
 	src, sx, sy := uintptr(0), int(fr.L), int(fr.T)
@@ -71,15 +76,15 @@ func WindowPNG(hwnd int64, path string) error {
 	gdi32.NewProc("SelectObject").Call(mem, bmp)
 	if full {
 		if r, _, _ := user32.NewProc("PrintWindow").Call(uintptr(hwnd), mem, 2); r == 0 {
-			return fmt.Errorf("PrintWindow failed")
+			return Frame{}, fmt.Errorf("PrintWindow failed")
 		}
 	} else if r, _, _ := gdi32.NewProc("BitBlt").Call(mem, 0, 0, uintptr(ww), uintptr(wh), dc, uintptr(sx), uintptr(sy), srccopy|captureblt); r == 0 {
-		return fmt.Errorf("BitBlt failed")
+		return Frame{}, fmt.Errorf("BitBlt failed")
 	}
 	hdr := bmi{Size: uint32(unsafe.Sizeof(bmi{})), W: int32(ww), H: -int32(wh), Planes: 1, BitCount: 32}
 	buf := make([]byte, ww*wh*4)
 	if r, _, _ := gdi32.NewProc("GetDIBits").Call(mem, bmp, 0, uintptr(wh), uintptr(unsafe.Pointer(&buf[0])), uintptr(unsafe.Pointer(&hdr)), 0); r == 0 {
-		return fmt.Errorf("GetDIBits failed")
+		return Frame{}, fmt.Errorf("GetDIBits failed")
 	}
 	ox, oy := 0, 0
 	if full {
@@ -99,10 +104,13 @@ func WindowPNG(hwnd int64, path string) error {
 	}
 	f, err := os.Create(path)
 	if err != nil {
-		return err
+		return Frame{}, err
 	}
 	defer f.Close()
-	return png.Encode(f, img)
+	if err := png.Encode(f, img); err != nil {
+		return Frame{}, err
+	}
+	return Frame{float64(fr.L), float64(fr.T), float64(fw), float64(fh)}, nil
 }
 
 // outsideCorner reports whether the pixel lies outside the rounded corner arc of a w x h window.

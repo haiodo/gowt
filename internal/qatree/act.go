@@ -6,13 +6,14 @@ import (
 	"regexp"
 	"slices"
 
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/swt"
 )
 
 // Act runs click, type {"text"}, check {"on"}, select {"index"} / {"text"}, activate, expand,
 // collapse, focus, close, scroll {"to": selector} / {"dx", "dy"}, scrollevent {"x", "y", "dx", "dy",
-// "precise", "phase", "momentum", "mods"}, pinch {"x", "y", "magnification", "phase", "mods"} or key
-// {"keys"} on the one control s picks; key with an empty s goes to the focus control. Hidden, disabled, in a closed window or
+// "precise", "phase", "momentum", "mods"}, pinch {"x", "y", "magnification", "phase", "mods"}, pointer
+// {"kind", "x", "y", "button", "count", "mods", "tox", "toy", "steps"} or key {"keys"} on the one control s picks; key with an empty s goes to the focus control. Hidden, disabled, in a closed window or
 // under a modal window: refused.
 func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err error) {
 	defer func() {
@@ -31,6 +32,24 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 		return fmt.Errorf("qatree: %s on %s: %d controls match%s", action, s, len(es), paths(es))
 	}
 	e := es[0]
+	if it, ok := e.obj.(*swt.MenuItem); ok && action == "click" {
+		if root := popupRoot(it); root != nil {
+			// As a right click: the app refreshes its items in OnShow before the user sees the menu.
+			root.NotifyListeners(swt.Show, swt.NewEvent())
+			defer func() {
+				if !root.IsDisposed() {
+					root.NotifyListeners(swt.Hide, swt.NewEvent())
+				}
+			}()
+			if es, err = resolve(walk(d), s); err != nil {
+				return err
+			}
+			if len(es) != 1 {
+				return fmt.Errorf("qatree: %s on %s: %d controls match after the menu was shown%s", action, s, len(es), paths(es))
+			}
+			e = es[0]
+		}
+	}
 	if err := reachable(d, e); err != nil {
 		return fmt.Errorf("qatree: %s on %s: %w", action, e.n.Path, err)
 	}
@@ -42,7 +61,7 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 		if err := parse(args, &a); err != nil {
 			return err
 		}
-		return typeText(e, a.Text)
+		return typeText(d, e, a.Text)
 	case "check":
 		a := struct{ On bool }{true}
 		if err := parse(args, &a); err != nil {
@@ -59,7 +78,7 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 		}
 		return selectItem(e, a.Index, a.Text)
 	case "activate":
-		return activate(e)
+		return activate(d, e)
 	case "expand", "collapse":
 		return setExpanded(e, action == "expand")
 	case "focus":
@@ -77,6 +96,8 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 		return scroll(d, e, a.To, a.DX, a.DY)
 	case "scrollevent", "pinch":
 		return gesture(e, action, args)
+	case "pointer":
+		return pointer(d, e, args)
 	case "key":
 		var a struct{ Keys string }
 		if err := parse(args, &a); err != nil {
@@ -86,7 +107,7 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 		if err != nil {
 			return err
 		}
-		swt.QAFocus(c)
+		ensureFocus(d, c)
 		return key(d, c, a.Keys)
 	}
 	return fmt.Errorf("qatree: unknown action %q", action)
@@ -100,7 +121,7 @@ func parse(args json.RawMessage, v any) error {
 }
 
 func reachable(d *swt.Display, e *entry) error {
-	if e.shell.IsDisposed() || !e.shell.GetVisible() {
+	if e.shell.IsDisposed() || !e.shell.GetVisible() && !qaview.OnScreen(e.shell) {
 		return fmt.Errorf("its window is closed")
 	}
 	if !e.n.Visible {
@@ -210,7 +231,7 @@ func check(e *entry, on bool) error {
 
 // typeText replaces the text one character at a time: KeyDown (a listener may veto the character),
 // the text with the character added, which fires Modify, then KeyUp.
-func typeText(e *entry, text string) error {
+func typeText(d *swt.Display, e *entry, text string) error {
 	var c *swt.Control
 	var get func() string
 	var set func(string)
@@ -234,7 +255,7 @@ func typeText(e *entry, text string) error {
 	default:
 		return fmt.Errorf("qatree: type does not apply to %s %s", e.n.Class, e.n.Path)
 	}
-	swt.QAFocus(c)
+	ensureFocus(d, c)
 	if get() != "" {
 		set("")
 	}

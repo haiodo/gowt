@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -40,21 +41,27 @@ type comboItem struct {
 type walker struct {
 	focus  *swt.Control
 	shell  *swt.Shell
-	ox, oy int // window origin on the screen
+	pop    bool // shell is a popover on screen; it counts as visible even where its own window is not
+	ox, oy int  // window origin on the screen
 }
 
-// walk lists the open shells with everything in them.
+// walk lists the open shells with everything in them: the windows and the popovers on screen.
 func walk(d *swt.Display) []*entry {
 	w := &walker{focus: d.GetFocusControl()}
 	var out []*entry
 	for _, s := range d.GetShells() {
-		if s.IsDisposed() || !s.GetVisible() {
+		w.pop = qaview.OnScreen(s)
+		if s.IsDisposed() || !s.GetVisible() && !w.pop {
 			continue
 		}
 		w.shell = s
 		o := s.ToDisplay(0, 0)
 		w.ox, w.oy = int(o.X), int(o.Y)
-		out = append(out, w.control(&s.Control, true, true))
+		e := w.control(&s.Control, true, true)
+		if w.pop {
+			e.n.Class = "Popover"
+		}
+		out = append(out, e)
 	}
 	for i, e := range out {
 		setPaths(e, strconv.Itoa(i))
@@ -91,7 +98,8 @@ func (w *walker) bounds(e *entry, r *swt.Rectangle, parent *entry) {
 func (w *walker) control(c *swt.Control, vis, en bool) *entry {
 	impl := c.Impl()
 	e := &entry{obj: impl, shell: w.shell}
-	e.n = Node{ID: idOf(&c.Widget), Class: c.GetName(), Visible: vis && c.GetVisible(), Enabled: en && c.GetEnabled(), Focused: c == w.focus}
+	shown := c.GetVisible() || w.pop && c == &w.shell.Control
+	e.n = Node{ID: idOf(&c.Widget), Class: c.GetName(), Visible: vis && shown, Enabled: en && c.GetEnabled(), Focused: c == w.focus}
 	p, sz := c.ToDisplay(0, 0), c.GetSize()
 	e.n.Bounds = [4]int{int(p.X) - w.ox, int(p.Y) - w.oy, int(sz.X), int(sz.Y)}
 	var pages map[*swt.Control]bool // a page of a TabFolder that is not selected
@@ -192,6 +200,12 @@ func (w *walker) control(c *swt.Control, vis, en bool) *entry {
 			}
 			e.kids = append(e.kids, w.control(k, kvis, e.n.Enabled))
 		}
+	}
+	// The context menu is listed as if open, so its items can be run; it has no place on the screen.
+	if m := c.GetMenu(); m != nil && m.GetStyle()&swt.POP_UP != 0 {
+		me := w.item(&m.Widget, "Menu", "", e.n.Visible, e.n.Enabled, m)
+		me.kids = w.menu(m, e.n.Visible, e.n.Enabled)
+		e.kids = append(e.kids, me)
 	}
 	return e
 }

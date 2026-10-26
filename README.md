@@ -171,7 +171,7 @@ JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts a
 
 <img src="docs/img/art/readme-gaps.png" alt="Gopher repairing a bridge with missing planks" width="160" align="right">
 
-- Windows runs on a real Windows 11 arm64 (UTM virtual machine) and under Wine (CrossOver). Not checked: Mica, Acrylic and rounded corners by eye, a machine with two monitors (the VM has one display), the QA driver. Per-monitor DPI changes while running are not handled by the port itself; they use upstream SWT code and are untested.
+- Windows runs on a real Windows 11 arm64 (UTM virtual machine) and under Wine (CrossOver). Not checked: Mica, Acrylic and rounded corners by eye, a machine with two monitors (the VM has one display), the QA driver beyond the `qa/qatest` suite. Per-monitor DPI changes while running are not handled by the port itself; they use upstream SWT code and are untested.
 - CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb; Linux was also run on a real GNOME Wayland desktop. Hosted `windows-latest` and `macos-latest` runners build, vet and run the non-GUI tests; their GUI tests are a separate job that is allowed to fail, since a desktop session on those runners is unverified (the workflow has not been run yet). The swt and jface gates for macOS and Windows run locally and on the VM.
 - Linux: GTK 3 only.
 - `Browser` does not support the Authentication event; see [docs/webview-browser.md](docs/webview-browser.md) for the rest.

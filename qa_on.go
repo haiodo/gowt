@@ -11,8 +11,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/qa"
 	"github.com/haiodo/gowt/rx"
+	"github.com/haiodo/gowt/swt"
 )
 
 func init() {
@@ -21,7 +23,15 @@ func init() {
 			Name: c.Name, Save: c.Save, Multi: c.Multi, Filters: c.Filters})
 	}
 	qaDialogFailed = qa.Failed
+	qaPopover = func(p *Popover) { p.shell.SetDataKeyValue(qaview.PopoverKey, popoverQA{p}) }
 }
+
+// popoverQA is what the QA driver sees of a Popover.
+type popoverQA struct{ p *Popover }
+
+func (q popoverQA) OnScreen() bool    { return q.p.shown && q.p.native.onScreen(q.p) }
+func (q popoverQA) Owner() *swt.Shell { return q.p.owner }
+func (q popoverQA) Close()            { q.p.Close() }
 
 // qaStart serves the QA driver (package qa) when GOWT_QA_SOCKET is set.
 func qaStart(a *App) {

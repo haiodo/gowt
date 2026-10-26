@@ -1,6 +1,6 @@
 # Demo apps
 
-Seven small apps in [`examples/apps`](../examples/apps) use only the `gowt` facade and `look`, with static data and a fixed selection. They are designed for macOS first and are the standing check of the look on macOS, Windows 11 and Linux GNOME, see [look-check.md](look-check.md). Each shot below is the whole window with its frame, light appearance, at the same size on every OS (`kit.SnapWidth` x `kit.SnapHeight` points, exported at 2 px per point), so the three pictures of an app compare side by side. How they are made: [screenshots.md](screenshots.md#app-shots). Single widgets: [components.md](components.md).
+Eight small apps in [`examples/apps`](../examples/apps) use only the `gowt` facade and `look`, with static data and a fixed selection. They are designed for macOS first and are the standing check of the look on macOS, Windows 11 and Linux GNOME, see [look-check.md](look-check.md). Each shot below is the whole window with its frame, light appearance, at the same size on every OS (`kit.SnapWidth` x `kit.SnapHeight` points, exported at 2 px per point), so the three pictures of an app compare side by side. How they are made: [screenshots.md](screenshots.md#app-shots). Single widgets: [components.md](components.md).
 
 ## chat
 
@@ -57,5 +57,13 @@ Seven small apps in [`examples/apps`](../examples/apps) use only the `gowt` faca
 | macOS | Windows | Linux |
 |---|---|---|
 | ![tracker, macOS](img/app-tracker-macos.png) | ![tracker, Windows](img/app-tracker-windows.png) | ![tracker, Linux](img/app-tracker-linux.png) |
+
+## monitor
+
+[`examples/apps/monitor`](../examples/apps/monitor): live host monitor, CPU, memory and network history charts drawn with `gfx`, per-core bars, native cards and a sortable process table over the real system counters.
+
+| macOS | Windows | Linux |
+|---|---|---|
+| ![monitor, macOS](img/app-monitor-macos.png) | ![monitor, Windows](img/app-monitor-windows.png) | ![monitor, Linux](img/app-monitor-linux.png) |
 
 Windows is a Windows 11 virtual machine, Linux an Ubuntu GNOME desktop on Wayland in a virtual machine (light theme); `docs/img/source-<os>.txt` records the stand.

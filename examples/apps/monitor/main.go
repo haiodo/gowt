@@ -191,9 +191,9 @@ func (m *monitor) build() {
 
 	w := app.Window("Monitor")
 	m.win = w
-	w.SetSize(kit.Width, kit.Height)
-	w.SetMinSize(1040, 640)
-	w.Add(gowt.VBox(gowt.Grow(), gowt.Padding(gowt.Scaled(20)), gowt.Gap(gowt.Spacing.MD),
+	kit.Size(w)
+	w.SetMinSize(900, 520)
+	w.Add(gowt.VBox(gowt.Grow(), gowt.Padding(gowt.Scaled(14)), gowt.Gap(gowt.Spacing.MD),
 		m.header(),
 		gowt.HBox(gowt.Grow(), gowt.Gap(gowt.Spacing.MD),
 			gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.MD), m.cpuCard(), m.memCard(), m.netCard()),
@@ -239,7 +239,7 @@ func (m *monitor) cpuCard() gowt.Option {
 	return m.card(gowt.GrowX(), gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS),
 		head("CPU", m.legend("User", func(p *palette) gfx.Color { return p.accent }), m.legend("System", func(p *palette) gfx.Color { return p.orange }),
 			gowt.Spacer(), lbl(&m.cpuValue, "-", gowt.Typeface(gowt.Type.Title))),
-		m.cpu.option(gowt.Scaled(300), gowt.Scaled(100))))
+		m.cpu.option(gowt.Scaled(300), gowt.Scaled(60))))
 }
 
 func (m *monitor) memCard() gowt.Option {
@@ -253,7 +253,7 @@ func (m *monitor) memCard() gowt.Option {
 	legend = append(legend, gowt.Spacer(), lbl(&m.swapNote, "", kit.Faint(), gowt.Typeface(gowt.Type.Caption)))
 	return m.card(gowt.Grow(), gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS),
 		head("Memory", gowt.Spacer(), lbl(&m.memNote, "", kit.Faint()), lbl(&m.memValue, "-", gowt.Typeface(gowt.Type.Title))),
-		m.mem.option(gowt.Scaled(300), gowt.Scaled(76)),
+		m.mem.option(gowt.Scaled(300), gowt.Scaled(48)),
 		m.bar.strip(gowt.Scaled(16)),
 		gowt.HBox(append([]gowt.Option{gowt.GrowX(), gowt.Gap(gowt.Scaled(20))}, legend...)...)))
 }
@@ -263,13 +263,13 @@ func (m *monitor) netCard() gowt.Option {
 		head("Network", gowt.Spacer(),
 			m.legend("Received", func(p *palette) gfx.Color { return p.accent }), lbl(&m.rxValue, "-", gowt.Typeface(gowt.Type.Subtitle)),
 			m.legend("Sent", func(p *palette) gfx.Color { return p.orange }), lbl(&m.txValue, "-", gowt.Typeface(gowt.Type.Subtitle))),
-		m.net.option(gowt.Scaled(300), gowt.Scaled(64))))
+		m.net.option(gowt.Scaled(300), gowt.Scaled(44))))
 }
 
 func (m *monitor) coresCard() gowt.Option {
-	return m.card(gowt.GrowX(), gowt.VBox(gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS), gowt.Size(0, gowt.Scaled(236)),
+	return m.card(gowt.GrowX(), gowt.VBox(gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS), gowt.Size(0, gowt.Scaled(190)),
 		head("Cores", gowt.Spacer(), lbl(&m.coresNote, "", kit.Faint())),
-		m.cores.option(gowt.Scaled(200), gowt.Scaled(150))))
+		m.cores.option(gowt.Scaled(200), gowt.Scaled(110))))
 }
 
 var columns = []struct {
@@ -281,7 +281,7 @@ var columns = []struct {
 func (m *monitor) procCard() gowt.Option {
 	return gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM),
 		head("Processes", gowt.Spacer(), gowt.Label("CPU is percent of one core", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
-		gowt.Table(gowt.Grow(), gowt.Size(0, gowt.Scaled(160)), gowt.Tooltip("100% is one core fully busy, as in Activity Monitor"), gowt.Init(func(t *gowt.TableView) {
+		gowt.Table(gowt.Grow(), gowt.Size(0, gowt.Scaled(110)), gowt.Tooltip("100% is one core fully busy, as in Activity Monitor"), gowt.Init(func(t *gowt.TableView) {
 			m.table = t
 			for i, c := range columns {
 				opts := []gowt.Option{}
@@ -442,4 +442,5 @@ func (m *monitor) apply(s sampler.Snapshot) {
 		m.procCount.SetText(fmt.Sprint(len(s.Procs)))
 		m.fillTable()
 	}
+	m.repaintCards()
 }

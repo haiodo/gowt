@@ -214,12 +214,7 @@ func (c *CanvasView) OnMouseMove(f func(Mouse)) {
 }
 
 // Redraw schedules a repaint, which calls the paint callback.
-func (c *CanvasView) Redraw() {
-	c.c.Redraw()
-	if a := appOf(&c.c.Control); a != nil {
-		a.repaintShell(&c.c.Control)
-	}
-}
+func (c *CanvasView) Redraw() { c.c.Redraw() }
 
 // Unwrap returns the underlying swt.Canvas for the full API.
 func (c *CanvasView) Unwrap() *swt.Canvas { return c.c }

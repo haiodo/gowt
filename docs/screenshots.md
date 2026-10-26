@@ -59,7 +59,7 @@ To add a widget to the catalog, add a line to `samples` in `examples/catalog/mai
 
 ## App shots
 
-`docs/img/app-<name>-<os>.png` for the seven apps of `examples/apps` (shown on [apps.md](apps.md)). Under `GOWT_SNAP` the apps open at `kit.SnapWidth` x `kit.SnapHeight` points (examples/apps/internal/kit) and set `GOWT_SNAP_SIZE`, so every shot is 2080x1200, light appearance (`GOWT_APPEARANCE=light`). `make shot-sizes` checks them with the catalog samples.
+`docs/img/app-<name>-<os>.png` for the eight apps of `examples/apps` (shown on [apps.md](apps.md)). Under `GOWT_SNAP` the apps open at `kit.SnapWidth` x `kit.SnapHeight` points (examples/apps/internal/kit) and set `GOWT_SNAP_SIZE`, so every shot is 2080x1200, light appearance (`GOWT_APPEARANCE=light`). `make shot-sizes` checks them with the catalog samples.
 
 | OS | Command |
 |---|---|

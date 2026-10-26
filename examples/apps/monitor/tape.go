@@ -193,12 +193,15 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 func recordAxis(pal *palette, p *tapeParams, label func(float64) string) *gfx.Picture {
 	r := gfx.NewRecorder()
 	r.FillRect(gfx.R(0, 0, p.margin, p.h), pal.card)
+	last := p.y(0)
 	for _, f := range p.fracs {
-		if f == 0 {
+		y := math.Round(p.y(f * p.yMax))
+		if f == 0 || last-y < pal.small.Size*1.5 { // a short chart keeps the labels that do not touch
 			continue
 		}
+		last = y
 		s := label(f * p.yMax)
-		r.Text(s, p.margin-8-gfx.DefaultMeasurer.MeasureText(s, pal.small).Width, math.Round(p.y(f*p.yMax))+pal.small.Size*0.36, pal.small, pal.label)
+		r.Text(s, p.margin-8-gfx.DefaultMeasurer.MeasureText(s, pal.small).Width, y+pal.small.Size*0.36, pal.small, pal.label)
 	}
 	return r.Finish()
 }

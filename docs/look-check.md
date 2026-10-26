@@ -1,6 +1,6 @@
 # Look check
 
-Seven small apps in [`examples/apps`](../examples/apps) are the standing visual check for the look on macOS, Windows 11 and Linux GNOME. Each one is designed for macOS first, uses only the `gowt` facade and `look`, has static data and opens at 1280x800 with a fixed selection, so a shot is the same on every run.
+Eight small apps in [`examples/apps`](../examples/apps) are the standing visual check for the look on macOS, Windows 11 and Linux GNOME. Each one is designed for macOS first, uses only the `gowt` facade and `look`, has static data and opens at 1280x800 with a fixed selection, so a shot is the same on every run.
 
 | App | Widgets |
 |---|---|

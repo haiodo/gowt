@@ -60,15 +60,6 @@ func TestShotOfOtherWindow(t *testing.T) {
 	wantErr(t, err, "no window titled")
 }
 
-// freshApp starts a new app process: on macOS a popover opened a second time in an inactive process
-// never gets its window, so every test that opens one gets its own.
-func freshApp(t *testing.T) *qatest.Client {
-	t.Helper()
-	qatest.RestartPerTest = true
-	defer func() { qatest.RestartPerTest = false }()
-	return qatest.App(t)
-}
-
 func openPopover(t *testing.T, app *qatest.Client) *qatest.Element {
 	t.Helper()
 	app.Find(qa.ID("pop")).Click()
@@ -89,7 +80,7 @@ func wantClosed(t *testing.T, app *qatest.Client, pop *qatest.Element, how strin
 // Esc reaches the open popover, whatever has the focus.
 func TestPopoverEscape(t *testing.T) {
 	guiOnly(t)
-	app := freshApp(t)
+	app := qatest.App(t)
 	pop := openPopover(t, app)
 	app.Key("Esc")
 	wantClosed(t, app, pop, "app.Key(Esc)")
@@ -97,7 +88,7 @@ func TestPopoverEscape(t *testing.T) {
 
 func TestPopoverEscapeOnControl(t *testing.T) {
 	guiOnly(t)
-	app := freshApp(t)
+	app := qatest.App(t)
 	pop := openPopover(t, app)
 	app.Find(qa.ID("pop-ok")).Key("Esc")
 	wantClosed(t, app, pop, "Esc on a control of the popover")
@@ -106,7 +97,7 @@ func TestPopoverEscapeOnControl(t *testing.T) {
 // Close on the root of a popover closes it like a click outside.
 func TestPopoverCloseRoot(t *testing.T) {
 	guiOnly(t)
-	app := freshApp(t)
+	app := qatest.App(t)
 	pop := openPopover(t, app)
 	pop.Close()
 	wantClosed(t, app, pop, "Close")

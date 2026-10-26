@@ -115,3 +115,42 @@ func TestFrameClockSilentLink(t *testing.T) {
 	n := ticks.Load()
 	waitFor(t, "timer after silence", func() bool { return ticks.Load() > n+10 })
 }
+
+// Close waits for a tick that is inside fn, so fn never runs after Close returns.
+func TestFrameClockCloseWaitsForTick(t *testing.T) {
+	for _, viaLink := range []bool{false, true} {
+		var calls atomic.Int64
+		entered, release := make(chan struct{}, 1), make(chan struct{})
+		c := NewFrameClock(func(gfx.FrameInfo) {
+			calls.Add(1)
+			select {
+			case entered <- struct{}{}:
+				<-release
+			default:
+			}
+		})
+		c.period, c.retry = 2*time.Millisecond, 20*time.Millisecond
+		c.newLink = func(fn func(gfx.FrameInfo)) (tickLink, error) {
+			if !viaLink {
+				return nil, errors.New("asleep")
+			}
+			return newFakeLink(fn), nil
+		}
+		c.Start()
+		<-entered
+		closed := make(chan struct{})
+		go func() { c.Close(); close(closed) }()
+		select {
+		case <-closed:
+			t.Fatalf("viaLink=%v: Close returned while fn was running", viaLink)
+		case <-time.After(20 * time.Millisecond):
+		}
+		close(release)
+		<-closed
+		n := calls.Load()
+		time.Sleep(20 * time.Millisecond)
+		if calls.Load() != n {
+			t.Errorf("viaLink=%v: fn ran after Close", viaLink)
+		}
+	}
+}

@@ -28,6 +28,7 @@ type FrameClock struct {
 	lastDL  atomic.Int64 // hostNow of the last link tick, 0 before the first
 	done    chan struct{}
 	closed  atomic.Bool
+	inFn    sync.RWMutex // read side held while fn runs; Close takes the write side
 	wg      sync.WaitGroup
 }
 
@@ -65,12 +66,16 @@ func (c *FrameClock) Start() {
 }
 
 func (c *FrameClock) Close() {
-	c.closed.Store(true) // a link tick already in flight must not reach fn after Close
+	c.closed.Store(true)
+	c.inFn.Lock() // waits for a tick in flight; fn must not call Close itself
+	c.inFn.Unlock()
 	close(c.done)
 	c.wg.Wait()
 }
 
 func (c *FrameClock) emit(fi gfx.FrameInfo) {
+	c.inFn.RLock()
+	defer c.inFn.RUnlock()
 	if c.closed.Load() {
 		return
 	}

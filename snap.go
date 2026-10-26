@@ -38,24 +38,27 @@ func (a *App) armSnap(path string, errp *error) func() {
 			a.display.Wake()
 		}
 	}()
-	moves := 0
 	var clearedAt time.Time
+	debug := os.Getenv("GOWT_SNAP_DEBUG") == "1"
+	why := ""
+	wait := func(reason string) { // GOWT_SNAP_DEBUG=1 prints each change of what the capture waits for
+		if debug && reason != why {
+			fmt.Fprintf(os.Stderr, "gowt: snap waits: %s\n", reason)
+		}
+		why = reason
+	}
+	// Whatever else is waited for, the capture is taken this long after it was due.
+	hard := due.Add(40 * time.Second)
 	return func() {
 		now := time.Now()
-		// Placed again until it stays: the window can be put back after Show, and the capture
-		// must come a few turns after the last move.
-		if shells := a.display.GetShells(); len(shells) > 0 && moves < 5 && shot.PlaceOnRetina(shotHandle(shells[0])) {
-			moves++
-			clearedAt = time.Time{}
-			if limitDue := now.Add(time.Second); due.Before(limitDue) {
-				due = limitDue
-			}
-		}
+		forced := now.After(hard)
 		if a.quit.Load() || now.Before(due) {
+			wait("delay")
 			return
 		}
-		if now.Before(limit) {
+		if now.Before(limit) && !forced {
 			if !shot.Settled() {
+				wait("web view")
 				return
 			}
 			if settledAt.IsZero() {
@@ -66,6 +69,7 @@ func (a *App) armSnap(path string, errp *error) func() {
 				hold = 2 * time.Second
 			}
 			if now.Sub(settledAt) < hold {
+				wait("web view paint")
 				return
 			}
 		}
@@ -77,11 +81,16 @@ func (a *App) armSnap(path string, errp *error) func() {
 			shot.ClearFocus(shotHandle(shells[0]))
 			clearedAt = now
 		}
-		if frames != nil && !frames() && now.Before(framesBy) {
+		if frames != nil && !frames() && now.Before(framesBy) && !forced {
+			wait("gfx frame")
 			return
 		}
-		if now.Sub(clearedAt) < 500*time.Millisecond {
+		if now.Sub(clearedAt) < 500*time.Millisecond && !forced {
+			wait("focus clear")
 			return
+		}
+		if debug {
+			fmt.Fprintf(os.Stderr, "gowt: snap captures (forced %v)\n", forced)
 		}
 		if len(shells) == 0 {
 			*errp = fmt.Errorf("gowt: GOWT_SNAP: no window")

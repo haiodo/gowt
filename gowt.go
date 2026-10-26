@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/internal/shot"
 	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
@@ -593,6 +594,8 @@ func (w *Window) Show() {
 		// Shell.Open, and windowDidBecomeKey on macOS, give the focus to the saved control first.
 		w.shell.SetSavedFocus(c)
 	}
+	// Before the window shows: moved while on screen, the window did not come back on the Retina screen.
+	shot.PlaceOnRetina(shotHandle(w.shell))
 	if qaQuiet() {
 		w.shell.SetVisible(true) // orderFront without key on macOS, no activation on Windows
 	} else {

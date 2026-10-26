@@ -121,7 +121,6 @@ func (c *chart) attach(v *view.View) {
 	c.ringSp = comp.NewSprite(nil, gfx.SpaceScreen, gfx.Point{})
 	for _, s := range append([]*gfx.Sprite{c.lineSp, c.bubbleSp, c.ringSp}, append(c.dots, c.live...)...) {
 		s.SetOpacity(0)
-		s.SetPos(gfx.Point{X: -100, Y: -100}) // opacity 0 is not enough on macOS: a corner of each dot showed at the plot's top-left
 	}
 	c.resize()
 }

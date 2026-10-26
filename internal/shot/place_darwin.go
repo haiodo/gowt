@@ -35,8 +35,9 @@ func PlaceOnRetina(view int64) bool {
 			continue
 		}
 		vf := objc.Send[nsRect](s, sel("visibleFrame"))
+		fmt.Fprintln(os.Stderr, "gowt: snap moves the window to a Retina screen")
 		win.Send(sel("setFrameTopLeftPoint:"), nsPoint{X: vf.X + 40, Y: vf.Y + vf.H - 40})
-		fmt.Fprintln(os.Stderr, "gowt: snap moved the window to a Retina screen")
+		fmt.Fprintln(os.Stderr, "gowt: snap moved the window")
 		return true
 	}
 	return false

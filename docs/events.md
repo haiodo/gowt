@@ -68,6 +68,37 @@ w.OnClose(func() bool {
 
 Example: [`examples/quit`](../examples/quit).
 
+## Opening files
+
+`app.OnOpenFiles(func(paths []string))` runs on the UI thread with the files the system or another process asks the app to open. Paths are absolute and without duplicates within one call; files that arrive in the same turn of the event loop come in one call. Several calls add several handlers. Files that arrive before the first handler (a launch by double click) are kept and given to it once it is set. A `file:` URL becomes a path; other URL schemes are ignored.
+
+| Source | OS |
+|---|---|
+| Finder: double click, Open With, a drop on the Dock icon, `open -a App.app file`, at launch and while running (`application:openFile(s):` into the SWT `OpenDocument` event) | macOS |
+| Command-line arguments that name an existing file or folder, delivered once after setup (Explorer and file managers start the program with the file) | all |
+| A second launch that forwards its arguments to the running app, see `gowt.SingleInstance` | Windows, Linux |
+| Another program calling `org.freedesktop.Application.Open` on the app's name, such as a file manager or `gio open` with `DBusActivatable=true` | Linux |
+
+`gowt.SingleInstance(id)` is opt-in. Call it before `Run` with a reverse-DNS id; false means another instance got this process's files and this one should return:
+
+```go
+func main() {
+	if first, err := gowt.SingleInstance("org.example.MyApp"); !first {
+		return
+	} else if err != nil {
+		log.Println(err) // no session bus or a bad id: this is an ordinary extra instance
+	}
+	gowt.Run(func(app *gowt.App) {
+		app.OnOpenFiles(func(paths []string) { open(paths) })
+		...
+	})
+}
+```
+
+The running instance also raises its first window when a second launch arrives, with or without files. Linux uses the session bus (the id is the D-Bus name, a small client written from the D-Bus specification, no libgio call); Windows uses a Unix socket in the user's temp folder; macOS leaves it to Launch Services and the call does nothing. A missing session bus, or a malformed id, is returned as the error and the program runs without the feature (command-line files still work). Ceilings: on Windows two first launches in the same instant may both win, and a crashed instance leaves a file that the next launch replaces; on Linux the name is lost if the bus connection drops. `app.Unwrap().AddListener(swt.OpenDocument, ...)` still fires on macOS for code that uses `Unwrap`; on Linux and Windows it does not, the facade is the only path.
+
+Associating a file type with the program and giving it a document icon is in [packaging.md](packaging.md#file-association-and-document-icon). Example: [`examples/openfiles`](../examples/openfiles).
+
 ## The UI thread rule
 
 All widgets belong to the UI thread: the goroutine inside `gowt.Run`'s setup function and every callback. `Run` locks it to its OS thread. Touching a widget from another goroutine is a bug. Three methods are safe from any goroutine:

@@ -32,6 +32,8 @@ type App struct {
 	clip       *Clipboard
 	onError    func(error)
 	onQuit     []func() bool
+	open       openBox
+	openPend   []string  // paths of this turn of the event loop, see openIn
 	windows    []*Window // in creation order, asked in turn when the app quits
 	asking     bool      // a quit question is open: a second request is refused
 	dark       bool      // the theme the Adaptive colours were last applied for
@@ -72,6 +74,8 @@ func Run(setup func(*App)) (err error) {
 	defer a.disposeClipboard()
 	apps.Store(a.display, a)
 	a.display.AddListener(swt.Close, quitListener(func() bool { return a.askQuit(nil) }))
+	a.display.AddListener(swt.OpenDocument, openListener(a.openIn))
+	defer a.attachInbox()()
 	defer apps.Delete(a.display)
 	// Deferred last, so rx stops waking the loop before the display is disposed.
 	defer rx.Attach(func(tick func()) func() {
@@ -84,6 +88,9 @@ func Run(setup func(*App)) (err error) {
 	densityChosen, densityFactor = Density{}, 1
 	Type, _, _, _ = resolveTokens(a.systemInfo(), DensityNative)
 	setup(a)
+	if files := argFiles(os.Args[1:]); len(files) > 0 {
+		a.openIn(files...)
+	}
 	snapTick := func() {}
 	if p := os.Getenv("GOWT_SNAP"); p != "" {
 		snapTick = a.armSnap(p, &err)
@@ -275,6 +282,22 @@ func (a *App) Quit() {
 // on the UI thread inside the system's quit request. To ask from your own Quit item call
 // app.Unwrap().Close(), which does the same; app.Quit ends the loop without asking.
 func (a *App) OnQuit(f func() bool) { a.onQuit = append(a.onQuit, f) }
+
+// OnOpenFiles registers f, called on the UI thread with the files the system or another process asks
+// the app to open: Finder (double click, "Open With", a drop on the Dock icon) on macOS, the command
+// line on every OS (Explorer and file managers start the program with the file as argument), and,
+// with SingleInstance, a second launch forwarding its arguments to the running app. Paths are
+// absolute and without duplicates within one call; URLs other than file: are ignored. Files that
+// arrive before the first handler (a launch by double click) are kept and delivered to it once it is
+// set. Several calls add several handlers. Users of Unwrap can still add an swt.OpenDocument
+// listener. See docs/events.md and docs/packaging.md.
+func (a *App) OnOpenFiles(f func(paths []string)) {
+	a.open.handlers = append(a.open.handlers, f)
+	if q := a.open.queue; len(q) > 0 {
+		a.open.queue = nil
+		a.openIn(q...)
+	}
+}
 
 type quitListener func() bool
 

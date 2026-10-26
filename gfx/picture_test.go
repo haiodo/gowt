@@ -30,8 +30,8 @@ func TestPictureRoundTrip(t *testing.T) {
 	r.FillGradient(&tri, g)
 	r.StrokeGradient(&tri, StrokeStyle{Width: 1}, NewRadialGradient(Point{1, 1}, 0, Point{2, 2}, 9, Stop{0, Color{}}, Stop{1, Color{1, 1, 1, 1}}))
 	r.FillShadowRRect(0, 0, 20, 10, 3, Color{1, 1, 1, 1}, Shadow{DX: 1, DY: 2, Blur: 4, Color: Color{0, 0, 0, 0.5}})
-	r.Text("héllo", 3, 9, Font{"Helvetica", 12}, Color{0, 0, 1, 1})
-	r.Text("again", 3, 19, Font{"Helvetica", 12}, Color{0, 0, 1, 1})
+	r.Text("héllo", 3, 9, Font{Name: "Helvetica", Size: 12}, Color{0, 0, 1, 1})
+	r.Text("again", 3, 19, Font{Name: "Helvetica", Size: 12}, Color{0, 0, 1, 1})
 	img := NewRaster(2, 2)
 	r.DrawImage(img, 0, 0, 4, 4)
 	r.EndLayer()
@@ -155,7 +155,7 @@ func (fixedText) MeasureText(s string, f Font) TextMetrics { return TextMetrics{
 
 func TestTextBoundsFromMeasurer(t *testing.T) {
 	r := NewRecorderWith(fixedText{})
-	r.Text("x", 50, 50, Font{"F", 10}, Color{A: 1})
+	r.Text("x", 50, 50, Font{Name: "F", Size: 10}, Color{A: 1})
 	b := r.Finish().Bounds
 	if !approx(b.Min.Y, 40, 1e-9) || !approx(b.Max.Y, 54, 1e-9) || b.W() < 100 {
 		t.Errorf("text bounds %+v", b)
@@ -172,8 +172,8 @@ func TestPictureFootprint(t *testing.T) {
 	r.FillShadowRRect(0, 0, 140, 66, 8, Color{1, 1, 1, 1}, Shadow{DY: 3, Blur: 8, Color: Color{A: 0.3}})
 	r.StrokePath(&rr, StrokeStyle{Width: 1, MiterLimit: 10}, Color{0.7, 0.7, 0.7, 1})
 	r.FillPath(&dot, Color{0.2, 0.5, 0.95, 1})
-	r.Text("Button 1234", 10, 22, Font{"Helvetica Neue", 13}, Color{A: 1})
-	r.Text("Primary action label", 10, 42, Font{"Helvetica Neue", 11}, Color{A: 1})
+	r.Text("Button 1234", 10, 22, Font{Name: "Helvetica Neue", Size: 13}, Color{A: 1})
+	r.Text("Primary action label", 10, 42, Font{Name: "Helvetica Neue", Size: 11}, Color{A: 1})
 	p := r.Finish()
 	t.Logf("stream %d B, picture %d B", p.Len(), p.Size())
 	if p.Size() > 800 {
@@ -187,7 +187,7 @@ func TestIterNoAllocs(t *testing.T) {
 	rr.RoundRect(0, 0, 10, 10, 2)
 	r.FillPath(&rr, Color{A: 1})
 	r.StrokePath(&rr, StrokeStyle{Width: 1, Dash: []float64{2, 2}}, Color{A: 1})
-	r.Text("a", 0, 0, Font{"F", 9}, Color{A: 1})
+	r.Text("a", 0, 0, Font{Name: "F", Size: 9}, Color{A: 1})
 	p := r.Finish()
 	var it Iter
 	it.Reset(p)

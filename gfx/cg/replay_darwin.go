@@ -28,11 +28,11 @@ func (t target) Snapshot(wpt, hpt float64) gfx.Image { return t.Surface.Snapshot
 // MeasureText returns the CoreText extents of s, cached per font and string.
 func (r *Renderer) MeasureText(s string, f gfx.Font) gfx.TextMetrics {
 	font := r.font(f)
-	k := lineKey{font, s}
+	k := lineKey{font, s, f.Spacing}
 	if v, ok := r.metrics.Load(k); ok {
 		return v.(gfx.TextMetrics)
 	}
-	line := r.newLine(s, font)
+	line := r.newLine(s, font, f.Spacing)
 	var a, d, l float64
 	w := ctLineTypographicBounds(line, &a, &d, &l)
 	cfRelease(line)

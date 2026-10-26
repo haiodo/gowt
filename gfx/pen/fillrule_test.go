@@ -46,7 +46,7 @@ func TestPathFillRule(t *testing.T) {
 
 func TestWrapBreaksAfterHyphen(t *testing.T) {
 	l := &layouter{
-		d:   &Doc{o: Options{Measurer: gfx.EstimateText{}, FontName: func(string, int) string { return "x" }}},
+		d:   &Doc{o: Options{Measurer: gfx.EstimateText{}}},
 		cnt: &Counters{},
 	}
 	n := &rn{content: "go push-notif x", fsize: 10}

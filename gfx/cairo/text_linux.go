@@ -149,17 +149,46 @@ func pangoWeight(w int32) int32 {
 }
 
 type fontKey struct {
-	name string
-	size float64
+	name, family string
+	weight       int
+	italic       bool
+	size         float64
 }
 
-// desc returns the PangoFontDescription for f, made once per name and size.
+// faceOf is the face of f: Name as an exact name, else Family at Weight and Italic. A family
+// fontconfig lacks falls to its default sans at that weight, which is what an empty one asks for.
+func faceOf(f gfx.Font) face {
+	if f.Name != "" || (f.Family == "" && f.Weight == 0 && !f.Italic) {
+		return resolve(f.Name)
+	}
+	fc := face{family: f.Family, weight: 400}
+	if f.Weight != 0 {
+		fc.weight = int32(f.Weight)
+	}
+	if f.Italic {
+		fc.style = 2
+	}
+	return fc
+}
+
+// setSpacing gives the layout a letter spacing of sp points; Pango adds it to every character.
+func setSpacing(l uintptr, sp float64) {
+	if sp == 0 {
+		return
+	}
+	list := attrListNew()
+	attrListInsert(list, attrLetterSpacing(int32(math.Round(sp*pangoScale))))
+	layoutSetAttrs(l, list)
+	attrListUnref(list)
+}
+
+// desc returns the PangoFontDescription for f, made once per face and size.
 func (r *Renderer) desc(f gfx.Font) uintptr {
-	k := fontKey{f.Name, f.Size}
+	k := fontKey{f.Name, f.Family, f.Weight, f.Italic, f.Size}
 	if v, ok := r.descs.Load(k); ok {
 		return v.(uintptr)
 	}
-	fc := resolve(f.Name)
+	fc := faceOf(f)
 	d := fdNew()
 	fdSetFamily(d, fc.family)
 	fdSetWeight(d, fc.weight)
@@ -191,11 +220,16 @@ func (r *Renderer) MeasureText(s string, f gfx.Font) gfx.TextMetrics {
 	l := layoutNew(r.mctx)
 	layoutSetFont(l, r.desc(f))
 	layoutSetText(l, s, -1)
+	setSpacing(l, f.Spacing)
 	var ink, logical pangoRect
 	layoutExtents(l, &ink, &logical)
 	base := layoutBaseline(l)
 	objectUnref(l)
 	r.pmu.Unlock()
+	if f.Spacing != 0 && s != "" {
+		// Pango puts the spacing between characters only; the width of gfx.Font has it after the last too
+		logical.w += int32(math.Round(f.Spacing * pangoScale))
+	}
 	m := gfx.TextMetrics{
 		Width:   float64(logical.w) / pangoScale,
 		Ascent:  float64(base) / pangoScale,
@@ -249,6 +283,7 @@ func (s *Target) text(str string, op *gfx.Op) {
 	l := layoutNew(ctx)
 	layoutSetFont(l, r.desc(op.Font))
 	layoutSetText(l, str, -1)
+	setSpacing(l, op.Font.Spacing)
 	base := float64(layoutBaseline(l)) / pangoScale
 	save(cr)
 	setSourceRGBA(cr, op.Color.R, op.Color.G, op.Color.B, op.Color.A*alpha)

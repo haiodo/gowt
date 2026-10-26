@@ -70,11 +70,23 @@ type Shadow struct {
 	Color        Color
 }
 
-// Font names a face and its size in points. An empty Name is the default sans face of the backend;
-// a name no backend knows falls back to it.
+// Font is a face, a size in points and a tracking.
+//
+// Name is an exact face name (a PostScript name such as "IBMPlexSans-SmBld", or a family); when it is
+// set, Family, Weight and Italic are not read. Without a Name the backend picks the face of Family
+// whose weight is closest to Weight (CSS scale 100..900, 0 means 400) and whose slant matches
+// Italic, among installed fonts and those registered with RegisterFonts. An empty Family or one the
+// backend does not have is the default sans face of the backend, at that weight and slant.
+//
+// Spacing is added after every character, in points, in drawing and in measuring: the width of a
+// line is its natural width plus Spacing for each rune, the last one included, as in CSS.
 type Font struct {
-	Name string
-	Size float64
+	Name    string
+	Family  string
+	Weight  int
+	Italic  bool
+	Size    float64
+	Spacing float64
 }
 
 // Image is a raster a backend can draw. *Raster is the portable one; a backend may add its own.
@@ -114,7 +126,7 @@ type Picture struct {
 func (p *Picture) Size() int {
 	n := len(p.data) + 88
 	if p.res != nil {
-		n += 72 + len(p.res.fonts)*24 + len(p.res.images)*16
+		n += 72 + len(p.res.fonts)*64 + len(p.res.images)*16
 		for _, s := range p.res.strs {
 			n += len(s) + 16
 		}
@@ -161,13 +173,13 @@ type TextMeasurer interface {
 // EstimateText is the measurer used until a backend sets one: 0.6 em per rune, ascent 0.8 em, descent 0.25 em.
 type EstimateText struct{}
 
-// MeasureText estimates the size of s from the number of runes.
+// MeasureText estimates the size of s from the number of runes; Spacing counts for each of them.
 func (EstimateText) MeasureText(s string, f Font) TextMetrics {
 	n := 0
 	for range s {
 		n++
 	}
-	return TextMetrics{float64(n) * f.Size * 0.6, f.Size * 0.8, f.Size * 0.25}
+	return TextMetrics{float64(n) * (f.Size*0.6 + f.Spacing), f.Size * 0.8, f.Size * 0.25}
 }
 
 // DefaultMeasurer is what NewRecorder uses. Importing a backend (gfx/cg, gfx/cairo, gfx/d2d, and
@@ -661,6 +673,11 @@ func (r *Recorder) FillRRect(rc Rect, radius float64, c Color) {
 	r.FillPath(RoundRectPath(rc, radius), c)
 }
 
+// FillRRect4 fills rc with a radius per corner (top left, top right, bottom right, bottom left).
+func (r *Recorder) FillRRect4(rc Rect, radii [4]float64, c Color) {
+	r.FillPath(RoundRectPath4(rc, radii), c)
+}
+
 // FillEllipse fills the ellipse that fits in rc.
 func (r *Recorder) FillEllipse(rc Rect, c Color) { r.FillPath(EllipsePath(rc), c) }
 
@@ -672,6 +689,12 @@ func (r *Recorder) StrokeRect(rc Rect, st StrokeStyle, c Color) {
 // StrokeRRect strokes the outline of rc with corners rounded by radius.
 func (r *Recorder) StrokeRRect(rc Rect, radius float64, st StrokeStyle, c Color) {
 	r.StrokePath(RoundRectPath(rc, radius), st, c)
+}
+
+// StrokeRRect4 strokes the outline of rc with a radius per corner (top left, top right, bottom right,
+// bottom left).
+func (r *Recorder) StrokeRRect4(rc Rect, radii [4]float64, st StrokeStyle, c Color) {
+	r.StrokePath(RoundRectPath4(rc, radii), st, c)
 }
 
 // StrokeEllipse strokes the outline of the ellipse that fits in rc.

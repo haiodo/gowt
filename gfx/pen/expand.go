@@ -38,6 +38,8 @@ type rn struct {
 	content, family string
 	fsize, lh       float64
 	weight          int
+	italic          bool
+	ls              float64 // letterSpacing, in px
 	growW           bool
 	talign          string
 	lines           []tline
@@ -348,6 +350,9 @@ func (e *expander) newRN(m map[string]any, typ, mode string) *rn {
 		}
 		n.lh, _ = get[float64](m, "lineHeight")
 		n.weight = parseWeight(m["fontWeight"])
+		fs, _ := get[string](m, "fontStyle")
+		n.italic = fs == "italic"
+		n.ls, _ = get[float64](m, "letterSpacing")
 		g, _ := get[string](m, "textGrowth")
 		n.growW = g == "fixed-width" || g == "fixed-width-height"
 		n.talign, _ = get[string](m, "textAlign")
@@ -560,39 +565,12 @@ func (e *expander) parseShadow(v any, mode string) *shadow {
 	return s
 }
 
-// systemFont maps IBM Plex Sans to its PostScript names when the renderer has the font (installed or
-// registered for the process), and to Helvetica Neue otherwise. A missing font measures as the
-// fallback without an error, so the probe compares it with a name nobody has.
-func systemFont(m gfx.TextMeasurer) func(string, int) string {
-	const probe = "Hamburgefonstiv 0123 Жуков"
-	have := m.MeasureText(probe, gfx.Font{Name: "IBMPlexSans", Size: 100}) != m.MeasureText(probe, gfx.Font{Name: "NoSuchFont-Probe", Size: 100})
-	return func(family string, weight int) string {
-		if have && strings.HasPrefix(family, "IBM Plex Sans") {
-			switch {
-			case weight >= 700:
-				return "IBMPlexSans-Bold"
-			case weight >= 600:
-				return "IBMPlexSans-SmBld"
-			case weight >= 500:
-				return "IBMPlexSans-Medm"
-			case weight <= 300:
-				return "IBMPlexSans-Light"
-			}
-			return "IBMPlexSans"
-		}
-		switch {
-		case weight >= 700:
-			return "HelveticaNeue-Bold"
-		case weight >= 500:
-			return "HelveticaNeue-Medium"
-		}
-		return "HelveticaNeue"
-	}
-}
-
-// FontFallback reports whether text falls back to the system font.
+// FontFallback reports whether IBM Plex Sans falls back to the system font. A missing font measures
+// as the fallback without an error, so the probe compares it with a family nobody has.
 func (d *Doc) FontFallback() bool {
-	return !strings.HasPrefix(d.o.FontName("IBM Plex Sans", 400), "IBMPlex")
+	const probe = "Hamburgefonstiv 0123 Жуков"
+	m := d.o.Measurer
+	return m.MeasureText(probe, gfx.Font{Family: "IBM Plex Sans", Size: 100}) == m.MeasureText(probe, gfx.Font{Family: "NoSuchFont-Probe", Size: 100})
 }
 
 // addr is the id pen.dev reports for a node. A node of a component is its instance's path plus its id

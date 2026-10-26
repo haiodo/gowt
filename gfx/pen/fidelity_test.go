@@ -3,7 +3,6 @@ package pen
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/haiodo/gowt/gfx"
@@ -15,7 +14,7 @@ type fracText struct{}
 
 func (fracText) MeasureText(s string, f gfx.Font) gfx.TextMetrics {
 	w := 0.55 * f.Size * float64(len([]rune(s)))
-	if strings.HasPrefix(f.Name, "IBMPlexSans") {
+	if f.Family == "IBM Plex Sans" {
 		w *= 1.1
 	}
 	return gfx.TextMetrics{Width: w, Ascent: 0.8 * f.Size, Descent: 0.25 * f.Size}
@@ -111,19 +110,23 @@ func TestReplacedNodeIds(t *testing.T) {
 	}
 }
 
-func TestPlexNamesNeedTheFont(t *testing.T) {
-	f := systemFont(fracText{})
-	if got := f("IBM Plex Sans", 500); got != "IBMPlexSans-Medm" {
-		t.Errorf("medium is %q", got)
+func TestFontFromNode(t *testing.T) {
+	l := &layouter{}
+	n := &rn{family: "IBM Plex Sans", weight: 600, italic: true, fsize: 12, ls: 0.5}
+	want := gfx.Font{Family: "IBM Plex Sans", Weight: 600, Italic: true, Size: 12, Spacing: 0.5}
+	if got := l.font(n); got != want {
+		t.Errorf("font %+v, want %+v", got, want)
 	}
-	if got := f("IBM Plex Sans", 600); got != "IBMPlexSans-SmBld" {
-		t.Errorf("semibold is %q", got)
+}
+
+func TestFontFallbackProbe(t *testing.T) {
+	d := &Doc{o: Options{Measurer: fracText{}}}
+	if d.FontFallback() {
+		t.Error("a measurer that tells Plex apart reports a fallback")
 	}
-	if got := f("Other", 400); got != "HelveticaNeue" {
-		t.Errorf("other family is %q", got)
-	}
-	if got := systemFont(gfx.EstimateText{})("IBM Plex Sans", 400); got != "HelveticaNeue" {
-		t.Errorf("without the font: %q", got)
+	d.o.Measurer = gfx.EstimateText{}
+	if !d.FontFallback() {
+		t.Error("a measurer that cannot tell Plex apart reports the font")
 	}
 }
 

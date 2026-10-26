@@ -90,6 +90,30 @@ func (p *Path) RoundRect(x, y, w, h, r float64) {
 	p.Close()
 }
 
+// RoundRect4 adds a rectangle with its own radius at each corner, in the order top left, top right,
+// bottom right, bottom left. Each radius is clamped to half the shorter side.
+func (p *Path) RoundRect4(x, y, w, h float64, r [4]float64) {
+	if r[0] == r[1] && r[1] == r[2] && r[2] == r[3] {
+		p.RoundRect(x, y, w, h, r[0])
+		return
+	}
+	lim := math.Min(w, h) / 2
+	for i := range r {
+		r[i] = math.Min(r[i], lim)
+	}
+	const k = 1 - kappa
+	p.MoveTo(x+r[0], y)
+	p.LineTo(x+w-r[1], y)
+	p.CubicTo(x+w-r[1]*k, y, x+w, y+r[1]*k, x+w, y+r[1])
+	p.LineTo(x+w, y+h-r[2])
+	p.CubicTo(x+w, y+h-r[2]*k, x+w-r[2]*k, y+h, x+w-r[2], y+h)
+	p.LineTo(x+r[3], y+h)
+	p.CubicTo(x+r[3]*k, y+h, x, y+h-r[3]*k, x, y+h-r[3])
+	p.LineTo(x, y+r[0])
+	p.CubicTo(x, y+r[0]*k, x+r[0]*k, y, x+r[0], y)
+	p.Close()
+}
+
 // kappa is the cubic control distance for a quarter circle of radius 1.
 const kappa = 0.5522847498307936
 
@@ -235,6 +259,14 @@ func RectPath(r Rect) *Path {
 func RoundRectPath(r Rect, radius float64) *Path {
 	p := &Path{}
 	p.RoundRect(r.Min.X, r.Min.Y, r.W(), r.H(), radius)
+	return p
+}
+
+// RoundRectPath4 returns RectPath with each corner rounded by its own radius (top left, top right,
+// bottom right, bottom left).
+func RoundRectPath4(r Rect, radii [4]float64) *Path {
+	p := &Path{}
+	p.RoundRect4(r.Min.X, r.Min.Y, r.W(), r.H(), radii)
 	return p
 }
 

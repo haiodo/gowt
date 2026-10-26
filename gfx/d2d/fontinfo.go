@@ -142,10 +142,7 @@ func resolveName(name string, registered map[string]FaceInfo, hasFamily func(fam
 	if i := strings.IndexByte(name, '-'); i > 0 {
 		base = name[:i]
 	}
-	lb := strings.ToLower(strings.ReplaceAll(base, " ", ""))
-	switch {
-	case strings.HasPrefix(lb, "helvetica"), strings.HasPrefix(lb, "sfpro"), strings.HasPrefix(lb, "sanfrancisco"),
-		lb == ".sfnstext", lb == "system-ui", lb == "-apple-system", lb == "systemfont", lb == "inter":
+	if isMacSans(base) {
 		return Resolved{systemSans, w, it, false}
 	}
 	if hasFamily(name, false) {
@@ -155,4 +152,26 @@ func resolveName(name string, registered map[string]FaceInfo, hasFamily func(fam
 		return Resolved{base, w, it, false}
 	}
 	return Resolved{systemSans, w, it, false}
+}
+
+// isMacSans reports whether a family name is one of the macOS system sans faces.
+func isMacSans(family string) bool {
+	lb := strings.ToLower(strings.ReplaceAll(family, " ", ""))
+	return strings.HasPrefix(lb, "helvetica") || strings.HasPrefix(lb, "sfpro") || strings.HasPrefix(lb, "sanfrancisco") ||
+		lb == ".sfnstext" || lb == "system-ui" || lb == "-apple-system" || lb == "systemfont" || lb == "inter"
+}
+
+// resolveFamily is the request for a family at a CSS weight (0 is 400) and slant: the registered
+// collection first, then the system one, the macOS sans names and anything else land on Segoe UI.
+func resolveFamily(family string, weight int, italic bool, hasFamily func(family string, custom bool) bool) Resolved {
+	if weight == 0 {
+		weight = 400
+	}
+	switch {
+	case family != "" && hasFamily(family, true):
+		return Resolved{family, weight, italic, true}
+	case family != "" && !isMacSans(family) && hasFamily(family, false):
+		return Resolved{family, weight, italic, false}
+	}
+	return Resolved{systemSans, weight, italic, false}
 }

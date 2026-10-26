@@ -17,7 +17,7 @@ const localCompJSON = `{"version":"2.21","children":[
 // pen.dev rounds the sum of ascent and descent, not each of them: 12 px Plex gives 16, not 15.
 func TestLineHeightRoundsSum(t *testing.T) {
 	l := &layouter{
-		d:   &Doc{o: Options{Measurer: gfx.EstimateText{}, FontName: func(string, int) string { return "x" }}},
+		d:   &Doc{o: Options{Measurer: gfx.EstimateText{}}},
 		cnt: &Counters{},
 	}
 	// EstimateText: ascent 0.8 em, descent 0.25 em, 6 px gives 4.8 + 1.5

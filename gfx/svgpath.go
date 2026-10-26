@@ -1,18 +1,16 @@
-package pen
+package gfx
 
 import (
 	"errors"
 	"math"
 	"strconv"
-
-	"github.com/haiodo/gowt/gfx"
 )
 
-// ParseSVGPath reads the d attribute of an SVG path into a gfx.Path.
-func ParseSVGPath(d string) (*gfx.Path, error) {
+// ParseSVGPath reads the d attribute of an SVG path into a Path.
+func ParseSVGPath(d string) (*Path, error) {
 	sc := &scan{s: d}
-	p := &gfx.Path{}
-	var cur, start, lastC gfx.Point // lastC is the last control point, for the smooth commands
+	p := &Path{}
+	var cur, start, lastC Point // lastC is the last control point, for the smooth commands
 	var cmd, prev byte
 	for {
 		sc.skip()
@@ -27,11 +25,11 @@ func ParseSVGPath(d string) (*gfx.Path, error) {
 		}
 		rel := cmd >= 'a'
 		up := cmd &^ 0x20
-		pt := func(x, y float64) gfx.Point {
+		pt := func(x, y float64) Point {
 			if rel {
-				return gfx.Point{X: cur.X + x, Y: cur.Y + y}
+				return Point{X: cur.X + x, Y: cur.Y + y}
 			}
-			return gfx.Point{X: x, Y: y}
+			return Point{X: x, Y: y}
 		}
 		switch up {
 		case 'M':
@@ -91,7 +89,7 @@ func ParseSVGPath(d string) (*gfx.Path, error) {
 			}
 			c1 := cur
 			if prev == 'C' || prev == 'S' {
-				c1 = gfx.Point{X: 2*cur.X - lastC.X, Y: 2*cur.Y - lastC.Y}
+				c1 = Point{X: 2*cur.X - lastC.X, Y: 2*cur.Y - lastC.Y}
 			}
 			c2, e := pt(v[0], v[1]), pt(v[2], v[3])
 			p.CubicTo(c1.X, c1.Y, c2.X, c2.Y, e.X, e.Y)
@@ -111,7 +109,7 @@ func ParseSVGPath(d string) (*gfx.Path, error) {
 			}
 			c := cur
 			if prev == 'Q' || prev == 'T' {
-				c = gfx.Point{X: 2*cur.X - lastC.X, Y: 2*cur.Y - lastC.Y}
+				c = Point{X: 2*cur.X - lastC.X, Y: 2*cur.Y - lastC.Y}
 			}
 			e := pt(v[0], v[1])
 			p.QuadTo(c.X, c.Y, e.X, e.Y)
@@ -227,7 +225,7 @@ func (s *scan) arc() ([7]float64, bool) {
 }
 
 // arcTo appends the elliptical arc from p0 to p1 as cubics (SVG endpoint parameterization).
-func arcTo(p *gfx.Path, p0 gfx.Point, rx, ry, rotDeg float64, large, sweep bool, p1 gfx.Point) {
+func arcTo(p *Path, p0 Point, rx, ry, rotDeg float64, large, sweep bool, p1 Point) {
 	rx, ry = math.Abs(rx), math.Abs(ry)
 	if rx == 0 || ry == 0 || p0 == p1 {
 		p.LineTo(p1.X, p1.Y)
@@ -266,10 +264,10 @@ func arcTo(p *gfx.Path, p0 gfx.Point, rx, ry, rotDeg float64, large, sweep bool,
 	n := int(math.Ceil(math.Abs(dth) / (math.Pi / 2)))
 	step := dth / float64(n)
 	k := 4.0 / 3 * math.Tan(step/4)
-	at := func(t float64) (gfx.Point, gfx.Point) {
+	at := func(t float64) (Point, Point) {
 		s, c := math.Sincos(t)
-		pt := gfx.Point{X: cx + cphi*rx*c - sphi*ry*s, Y: cy + sphi*rx*c + cphi*ry*s}
-		d := gfx.Point{X: -cphi*rx*s - sphi*ry*c, Y: -sphi*rx*s + cphi*ry*c}
+		pt := Point{X: cx + cphi*rx*c - sphi*ry*s, Y: cy + sphi*rx*c + cphi*ry*s}
+		d := Point{X: -cphi*rx*s - sphi*ry*c, Y: -sphi*rx*s + cphi*ry*c}
 		return pt, d
 	}
 	for i := 0; i < n; i++ {

@@ -85,6 +85,11 @@ var (
 	getSource             func(cr uintptr) uintptr
 	patternSetFilter      func(p uintptr, f int32)
 	fontOptionsCreate     func() uintptr
+	pdfCreateForStream    func(write uintptr, closure uintptr, w, h float64) uintptr
+	pdfSetSize            func(s uintptr, w, h float64)
+	showPage              func(cr uintptr)
+	surfaceFinish         func(s uintptr)
+	surfaceStatus         func(s uintptr) int32
 	fontOptionsSetAA      func(o uintptr, v int32)
 	fontOptionsSetHint    func(o uintptr, v int32)
 	fontOptionsSetMetrics func(o uintptr, v int32)
@@ -177,6 +182,8 @@ func bind() (err error) {
 				"cairo_pattern_set_filter": &patternSetFilter, "cairo_font_options_create": &fontOptionsCreate,
 				"cairo_font_options_set_antialias": &fontOptionsSetAA, "cairo_font_options_set_hint_style": &fontOptionsSetHint,
 				"cairo_font_options_set_hint_metrics": &fontOptionsSetMetrics,
+				"cairo_pdf_surface_create_for_stream": &pdfCreateForStream, "cairo_pdf_surface_set_size": &pdfSetSize,
+				"cairo_show_page": &showPage, "cairo_surface_finish": &surfaceFinish, "cairo_surface_status": &surfaceStatus,
 			}},
 			{pc, map[string]any{
 				"pango_cairo_font_map_new": &fmNew, "pango_cairo_context_set_font_options": &ctxSetFontOptions,

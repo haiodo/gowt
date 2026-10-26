@@ -85,7 +85,7 @@ func answerCmd(raw json.RawMessage) error {
 		return fmt.Errorf("answer: %w", err)
 	}
 	switch a.Kind {
-	case "message", "confirm", "file", "dir", "color", "font":
+	case "message", "confirm", "file", "dir", "color", "font", "print":
 	default:
 		return fmt.Errorf("answer: unknown dialog kind %q", a.Kind)
 	}

@@ -98,6 +98,7 @@ Start at [docs/README.md](docs/README.md). Each topic has a page and a runnable 
 | Events and the UI thread | [events](docs/events.md) | [events](examples/events) |
 | Dialogs and menus | [dialogs-menus](docs/dialogs-menus.md) | [dialogs](examples/dialogs) |
 | Graphics and images | [graphics](docs/graphics.md) | [graphics](examples/graphics) |
+| Printing and PDF export | [printing](docs/printing.md) | [print](examples/print) |
 | Theme and platform look | [theme-look](docs/theme-look.md) | [theme](examples/theme) |
 | One layout for three systems | [cross-platform-look](docs/cross-platform-look.md) | - |
 | Icons | [icons](docs/icons.md) | [icons](examples/icons) |

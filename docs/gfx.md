@@ -148,6 +148,10 @@ took the offset as y-down device pixels (it negated `DY`), so a content with a n
 mirrored shadow, and a rotated one a shadow that did not rotate; cg now reads the CTM and derives the device offset
 and the blur from it. The blur is isotropic: its radius scales with the square root of the absolute determinant.
 
+## PDF and printing
+
+A scene or picture can be written as a vector PDF (`offscreen.PDF`, `gfx.WriteSubtreePDF`) and drawn on the pages of a print job (`gfx/printing`); see [printing.md](printing.md). The backends implement `gfx.PDFRenderer`: `cg` with a CoreGraphics PDF context, `cairo` with a cairo PDF surface, `d2d` with the pure Go writer `gfx/pdf`.
+
 ## Text
 
 `gfx.Font` is `Name`, `Family`, `Weight`, `Italic`, `Size` and `Spacing`. `Name` is an exact face name (a PostScript

@@ -2,6 +2,8 @@
 // picks the headless gfx.Renderer of the running OS (CoreGraphics on macOS, cairo and Pango on
 // Linux, Direct2D on Windows). On any other OS every call returns an error.
 //
+// PDF and NewPDF write the same scene as a vector PDF.
+//
 // PNG is the whole flow for one image:
 //
 //	png, err := offscreen.PNG(scene, node, 2, gfx.White)
@@ -11,6 +13,8 @@
 package offscreen
 
 import (
+	"errors"
+	"io"
 	"sync"
 
 	"github.com/haiodo/gowt/gfx"
@@ -51,4 +55,36 @@ func PNG(s *gfx.Scene, root *gfx.Node, scale float64, bg gfx.Color) ([]byte, err
 		return nil, err
 	}
 	return raster.PNG()
+}
+
+func pdfRenderer() (gfx.PDFRenderer, error) {
+	r, err := Default()
+	if err != nil {
+		return nil, err
+	}
+	p, ok := r.(gfx.PDFRenderer)
+	if !ok {
+		return nil, errors.New("gfx/offscreen: the renderer of this OS cannot write PDF")
+	}
+	return p, nil
+}
+
+// NewPDF starts a PDF file written to w by Close, with a page for each NewPage call: CoreGraphics
+// on macOS, cairo on Linux, the PDF writer of gfx/pdf on Windows.
+func NewPDF(w io.Writer) (gfx.Document, error) {
+	r, err := pdfRenderer()
+	if err != nil {
+		return nil, err
+	}
+	return r.NewPDF(w)
+}
+
+// PDF writes root and its subtree (the whole scene when root is nil) as a one-page PDF; o sizes
+// the page and fits the subtree on it. Text stays text and shapes stay vector.
+func PDF(w io.Writer, s *gfx.Scene, root *gfx.Node, o gfx.PDFOptions) error {
+	r, err := pdfRenderer()
+	if err != nil {
+		return err
+	}
+	return gfx.WriteSubtreePDF(r, w, s, root, gfx.Rect{}, o)
 }

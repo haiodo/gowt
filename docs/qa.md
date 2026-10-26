@@ -224,7 +224,7 @@ Real pointer drags are checked by `TestDndRealMouse` in the repository root (`xd
 
 ## Dialogs
 
-In a QA build `MessageBox`, `Confirm`, `FileDialog`, `DirDialog`, `ColorDialog` and `FontDialog` are not shown. Queue the answer before the action:
+In a QA build `MessageBox`, `Confirm`, `FileDialog`, `DirDialog`, `ColorDialog`, `FontDialog` and `PrintDialog` are not shown. Queue the answer before the action:
 
 ```go
 app.Answer(qa.Dialog{Kind: "confirm", Reply: true})
@@ -240,6 +240,7 @@ d := app.Dialogs()[0] // Kind, Title, Message, Buttons, Dir, Filters ...
 | `dir` | a path |
 | `color` | `"#rrggbb"` |
 | `font` | `gowt.Font` fields, e.g. `map[string]any{"Name": "Menlo", "Size": 12}` |
+| `print` | the path of a PDF file: `PrintDialog` returns a job that writes it, as `PrintToPDF` does |
 
 `Cancel: true` answers as a dismissed dialog. Answers are used in order per kind. A dialog with no answer gets Cancel and fails the action that opened it, so a test never hangs on a native dialog. `App(t)` clears answers and the record.
 

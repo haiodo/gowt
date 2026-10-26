@@ -2,7 +2,7 @@
 
 <img src="img/art/events.png" alt="Gopher dispatching a train of envelopes on one track" width="220" align="right">
 
-Examples: [`examples/events`](../examples/events), [`examples/rows`](../examples/rows) (rows bound to state), [`examples/boundary`](../examples/boundary) (errors shown in place).
+Examples: [`examples/events`](../examples/events), [`examples/quit`](../examples/quit) (Save changes on quit), [`examples/rows`](../examples/rows) (rows bound to state), [`examples/boundary`](../examples/boundary) (errors shown in place).
 
 <br clear="right">
 
@@ -32,6 +32,41 @@ The initial state goes in options too: `Hint(s)` for Text, `Checked(b)` for Swit
 The `OnX` methods of the same names (`text.OnChange(f)`, `table.OnSelect(f)`) add a handler to a widget that exists already, through `Ref`. Calling `OnX` again adds another listener; nothing is replaced. Menu and tool items take their callback as an argument: `menu.Item("Quit", app.Quit)`; `nil` means none.
 
 `Window.OnClose(func() bool)` can veto closing: return false to keep the window open.
+
+## Quitting
+
+`app.OnQuit(func() bool)` runs before the app quits; false cancels. The question is asked on every way out except `app.Quit()`:
+
+| Quit | How it reaches the handlers |
+|---|---|
+| macOS Cmd+Q, app menu Quit, Dock Quit, logout, shutdown | `applicationShouldTerminate:` sends the SWT `Close` event to the display |
+| Windows logout and shutdown | `WM_QUERYENDSESSION` sends the same event (`WM_ENDSESSION` then ends the process) |
+| Closing the last window (any OS) | its `OnClose` handlers, then `OnQuit` |
+| Your own Quit item | `app.Unwrap().Close()` sends the same event |
+
+Linux has no session-end path: GTK 3 without `GtkApplication` exposes none, so logout reaches the app as a signal or a killed process, not as a question.
+
+On a quit that is not the close of the last window, each open window is asked first, in creation order, through its `OnClose` handlers. The first refusal cancels the quit and nothing after it is asked; no window closes until every answer is yes. Then the `OnQuit` handlers run, in order, and the first false cancels. A second quit request while a question is open is refused.
+
+A handler may show a dialog: it runs on the UI thread inside the system's quit request and `MessageBox` and `Confirm` work there on every OS. On macOS the question is answered inside `applicationShouldTerminate:` (as in SWT and Eclipse), not by `NSTerminateLater`.
+
+```go
+w.OnClose(func() bool {
+	if !dirty {
+		return true
+	}
+	switch w.MessageBox(gowt.Message{Title: "Save changes?", Buttons: gowt.ButtonsYesNoCancel, Icon: gowt.IconQuestion}) {
+	case gowt.AnswerYes:
+		save()
+		return true
+	case gowt.AnswerNo:
+		return true
+	}
+	return false
+})
+```
+
+Example: [`examples/quit`](../examples/quit).
 
 ## The UI thread rule
 

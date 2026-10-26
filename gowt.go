@@ -31,7 +31,10 @@ type App struct {
 	body       *Font                 // the font new widgets get when it differs from the system font
 	clip       *Clipboard
 	onError    func(error)
-	dark       bool // the theme the Adaptive colours were last applied for
+	onQuit     []func() bool
+	windows    []*Window // in creation order, asked in turn when the app quits
+	asking     bool      // a quit question is open: a second request is refused
+	dark       bool      // the theme the Adaptive colours were last applied for
 	appearance Appearance
 	paints     map[*swt.Control]*painted // controls given an Adaptive colour
 	// controls whose preferred size changed in this event-loop turn; see sizing
@@ -68,6 +71,7 @@ func Run(setup func(*App)) (err error) {
 	defer a.disposeImages()
 	defer a.disposeClipboard()
 	apps.Store(a.display, a)
+	a.display.AddListener(swt.Close, quitListener(func() bool { return a.askQuit(nil) }))
 	defer apps.Delete(a.display)
 	// Deferred last, so rx stops waking the loop before the display is disposed.
 	defer rx.Attach(func(tick func()) func() {
@@ -255,6 +259,62 @@ func (a *App) Quit() {
 	defer ignoreDisposed()
 	a.quit.Store(true)
 	a.display.Wake()
+}
+
+// OnQuit registers f, asked before the app quits in every way but Quit: Cmd+Q, the app menu and the
+// Dock on macOS, the end of the session (logout, shutdown) on macOS and Windows, and the close of
+// the last window. false cancels the quit. Several calls add several handlers, asked in order;
+// the first false stops the rest.
+//
+// On a quit that is not the close of the last window, the open windows are asked first, in creation
+// order, through their OnClose handlers: the first refusal cancels the quit and no window or OnQuit
+// handler after it is asked. No window closes before every answer is yes. Closing the last window
+// asks that window's OnClose, then OnQuit.
+//
+// f and the OnClose handlers may show a dialog (Window.MessageBox, Confirm): the question runs
+// on the UI thread inside the system's quit request. To ask from your own Quit item call
+// app.Unwrap().Close(), which does the same; app.Quit ends the loop without asking.
+func (a *App) OnQuit(f func() bool) { a.onQuit = append(a.onQuit, f) }
+
+type quitListener func() bool
+
+func (l quitListener) HandleEvent(e *swt.Event) {
+	if !l() {
+		e.Doit = false
+	}
+}
+
+// askQuit asks every window and then the OnQuit handlers, skipping except (the window whose close
+// started the question).
+func (a *App) askQuit(except *Window) bool {
+	if a.asking {
+		return false
+	}
+	a.asking = true
+	defer func() { a.asking = false }()
+	live := a.windows[:0]
+	for _, w := range a.windows {
+		if !w.shell.IsDisposed() {
+			live = append(live, w)
+		}
+	}
+	a.windows = live
+	for _, w := range append([]*Window(nil), live...) {
+		if w == except || w.shell.IsDisposed() {
+			continue
+		}
+		e := swt.NewEvent()
+		w.shell.NotifyListeners(swt.Close, e)
+		if !e.Doit {
+			return false
+		}
+	}
+	for _, f := range a.onQuit {
+		if !f() {
+			return false
+		}
+	}
+	return true
 }
 
 // Unwrap returns the underlying display.
@@ -541,6 +601,8 @@ type Window struct {
 	sized bool
 	inset int // top inset requested by SetTopInset
 	done  int // part of inset already in the top margin
+
+	onClose []func() bool
 }
 
 // SetTopInset adds points to the top margin of the window layout on top of its Padding.
@@ -578,6 +640,8 @@ func (a *App) Window(title string, opts ...Option) *Window {
 	gap, pad := spacingOf(opts, Spacing.PageMargin)
 	s.SetLayout(newBox(false, gap, pad))
 	w := &Window{panel: newPanel(&s.Composite), shell: s}
+	a.windows = append(a.windows, w)
+	s.AddShellListener(swt.ShellListenerShellClosedAdapter(func(e *swt.ShellEvent) { a.windowClosing(w, e) }))
 	finish(w, 0, opts)
 	return w
 }
@@ -666,13 +730,26 @@ const minSizeHookKey = "gowt.look.minSize"
 // Close closes the window as the user would, running OnClose.
 func (w *Window) Close() { w.shell.Close() }
 
-// OnClose registers f; returning false keeps the window open.
-func (w *Window) OnClose(f func() bool) {
-	w.shell.AddShellListener(swt.ShellListenerShellClosedAdapter(func(e *swt.ShellEvent) {
+// OnClose registers f; returning false keeps the window open. Several handlers are asked in order
+// and the first false stops the rest. Closing the last window then asks App.OnQuit.
+func (w *Window) OnClose(f func() bool) { w.onClose = append(w.onClose, f) }
+
+// windowClosing runs the OnClose handlers, then, for the last window, the OnQuit ones. Window listeners
+// of swt added through Unwrap run after this one; during a quit question the window is not the last
+// one asked, so OnQuit is left to askQuit.
+func (a *App) windowClosing(w *Window, e *swt.ShellEvent) {
+	for _, f := range w.onClose {
 		if !f() {
 			e.Doit = false
+			return
 		}
-	}))
+	}
+	if a.asking || len(a.display.GetShells()) != 1 {
+		return
+	}
+	if !a.askQuit(w) {
+		e.Doit = false
+	}
 }
 
 // Unwrap returns the underlying shell.

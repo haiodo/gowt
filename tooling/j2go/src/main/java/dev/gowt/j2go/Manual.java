@@ -331,6 +331,7 @@ public class Manual {
 	public static String manualMethod(String erasureKey) {
 		// The hand-written updateImage draws through NSGraphicsContext; win32 translates the Java one.
 		if (erasureKey.equals("org.eclipse.swt.widgets.TaskItem#updateImage()") && GoTypes.platform == Platform.WIN32) return null;
+		if (erasureKey.equals("org.eclipse.swt.graphics.TextLayout#_getOffset(I,I,Z)") && GoTypes.platform != Platform.COCOA) return null;
 		return MANUAL_METHODS.get(erasureKey);
 	}
 

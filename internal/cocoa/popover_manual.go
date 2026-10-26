@@ -206,7 +206,8 @@ func FocusPopover(pop uintptr, v *NSView) {
 // reports the close, only the delegate does. performClose: does nothing in an inactive application.
 func CloseBehindBack(pop uintptr) {
 	PopLog("CloseBehindBack")
- msg(pop, "close") }
+	msg(pop, "close")
+}
 
 // FirstResponderIn reports whether the first responder of the window of v is v or inside v, as the
 // field editor of a text field is.

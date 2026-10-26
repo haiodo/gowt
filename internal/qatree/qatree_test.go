@@ -5,8 +5,30 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/swt"
 )
+
+func TestUnmnemonic(t *testing.T) {
+	for in, want := range map[string]string{"&File": "File", "Sa&ve": "Save", "Fish && Chips": "Fish & Chips", "Open...": "Open...", "": ""} {
+		if got := unmnemonic(in); got != want {
+			t.Errorf("unmnemonic(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+func TestParseMods(t *testing.T) {
+	m, err := parseMods("Shift+Alt")
+	if err != nil || !m.Shift || !m.Alt || m.Ctrl || m.Cmd {
+		t.Errorf("Shift+Alt: %+v, %v", m, err)
+	}
+	if m, err := parseMods(""); err != nil || m != (qaview.Mods{}) {
+		t.Errorf("empty: %+v, %v", m, err)
+	}
+	if _, err := parseMods("Hyper"); err == nil {
+		t.Error("Hyper gave no error")
+	}
+}
 
 func leaf(class, id, text, value string, kids ...*entry) *entry {
 	return &entry{n: Node{Class: class, ID: id, Text: text, Value: value, Path: id}, kids: kids}

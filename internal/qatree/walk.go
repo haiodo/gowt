@@ -199,7 +199,9 @@ func (w *walker) control(c *swt.Control, vis, en bool) *entry {
 func (w *walker) menu(m *swt.Menu, vis, en bool) []*entry {
 	var out []*entry
 	for _, it := range m.GetItems() {
-		e := w.item(&it.Widget, "MenuItem", it.GetText(), vis, en && it.GetEnabled(), it)
+		title, accel, _ := strings.Cut(it.GetText(), "\t")
+		e := w.item(&it.Widget, "MenuItem", unmnemonic(title), vis, en && it.GetEnabled(), it)
+		e.n.Value = accel
 		if it.GetStyle()&(swt.CHECK|swt.RADIO) != 0 {
 			e.n.Checked = ptr(it.GetSelection())
 		}
@@ -209,6 +211,22 @@ func (w *walker) menu(m *swt.Menu, vis, en bool) []*entry {
 		out = append(out, e)
 	}
 	return out
+}
+
+// unmnemonic drops the "&" that marks a mnemonic and keeps "&&" as one "&".
+func unmnemonic(s string) string {
+	var b strings.Builder
+	for i := 0; i < len(s); i++ {
+		if s[i] == '&' {
+			if i+1 < len(s) && s[i+1] == '&' {
+				b.WriteByte('&')
+				i++
+			}
+			continue
+		}
+		b.WriteByte(s[i])
+	}
+	return b.String()
 }
 
 // table lists the rows; the cells after the first go to Value, tab separated.

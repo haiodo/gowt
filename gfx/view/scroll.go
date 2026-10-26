@@ -101,11 +101,7 @@ func (a *scrollAcc) step(ft time.Duration) (dx, dy float64) {
 		a.lead = scrollLeadInit
 	}
 	if ft-last.t > scrollIdle+scrollExtrap {
-		dx, dy = a.cx-a.ax, a.cy-a.ay
-		a.ax, a.ay = a.cx, a.cy
-		a.hist = a.hist[len(a.hist)-1:]
-		a.wake.Store(false)
-		return dx, dy
+		return a.drain()
 	}
 	x, y := a.position(ft - a.lead)
 	dx, dy = x-a.ax, y-a.ay
@@ -114,6 +110,26 @@ func (a *scrollAcc) step(ft time.Duration) (dx, dy float64) {
 		a.hist = a.hist[i-1:]
 	}
 	return dx, dy
+}
+
+// drain hands out what the camera has not got of the total yet.
+func (a *scrollAcc) drain() (dx, dy float64) {
+	dx, dy = a.cx-a.ax, a.cy-a.ay
+	a.ax, a.ay = a.cx, a.cy
+	a.hist = a.hist[len(a.hist)-1:]
+	a.wake.Store(false)
+	return dx, dy
+}
+
+// flushScroll pans by the whole collected delta at once, without waiting for frames: the QA driver
+// wants the camera where the gesture leads when the call returns.
+func (r *router) flushScroll() {
+	if len(r.acc.hist) == 0 {
+		return
+	}
+	if dx, dy := r.acc.drain(); dx != 0 || dy != 0 {
+		r.pan(dx, dy)
+	}
 }
 
 // tick moves the camera for the frame shown at ft and returns how far it moved (view points) and

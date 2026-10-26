@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/gfx"
+	"github.com/haiodo/gowt/gfx/view"
 	"github.com/haiodo/gowt/qa"
 	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
@@ -21,6 +23,16 @@ func main() {
 	err := gowt.Run(func(app *gowt.App) {
 		var events []string
 		var w *gowt.Window
+		var gv *view.View
+		var resizes [][2]int
+		scene := gfx.NewScene()
+		red := gfx.NewNode(1)
+		rec := gfx.NewRecorder()
+		rec.FillRRect(gfx.R(0, 0, 400, 400), 0, gfx.RGB(255, 0, 0))
+		scene.Update(func(tx *gfx.Tx) {
+			tx.Add(nil, red)
+			tx.SetPicture(red, rec.Finish())
+		})
 		vetoClose := false
 		note := func(format string, a ...any) { events = append(events, fmt.Sprintf(format, a...)) }
 		clicks := rx.New(0)
@@ -34,6 +46,10 @@ func main() {
 			gowt.Label("", gowt.BindText(text), gowt.ID("count")),
 			gowt.Button("Click", gowt.ID("click"), gowt.OnClick(func() { clicks.Set(clicks.Get() + 1) })),
 			gowt.Button("Off", gowt.ID("off"), gowt.Disabled(), gowt.OnClick(func() { off.Set(off.Get() + 1) })),
+			view.New(scene, func(v *view.View) {
+				gv = v
+				v.OnResize(func(w, h int) { resizes = append(resizes, [2]int{w, h}) })
+			}, gowt.ID("gfx"), gowt.Size(300, 200)),
 			gowt.Text(gowt.ID("name"), gowt.OnChange(func(s string) { name.Set(s) }),
 				gowt.OnActivate(func() { note("activate name") }),
 				gowt.OnFocus(func(on bool) { note("focus name %v", on) }),
@@ -109,7 +125,20 @@ func main() {
 			off.Set(0)
 			report.Set("")
 			events, vetoClose = nil, false
+			gv.Compositor().SetCamera(gfx.Camera{Zoom: 1})
 			return nil
+		})
+		qa.Handle("camera-set", func(a qa.Args) error {
+			gv.Compositor().SetCamera(gfx.Camera{Origin: gfx.Point{X: float64(a.Int("x")), Y: float64(a.Int("y"))}, Zoom: 1})
+			return nil
+		})
+		qa.HandleValue("camera", func(qa.Args) (any, error) {
+			c := gv.Compositor().Camera()
+			return map[string]float64{"x": c.Origin.X, "y": c.Origin.Y, "zoom": c.Zoom}, nil
+		})
+		qa.HandleValue("gfx-size", func(qa.Args) (any, error) {
+			w, h := gv.Canvas().Size()
+			return map[string]any{"w": w, "h": h, "resizes": resizes}, nil
 		})
 		qa.HandleValue("events", func(qa.Args) (any, error) { return events, nil })
 		qa.Handle("veto", func(a qa.Args) error { vetoClose = a.Bool("on"); return nil })

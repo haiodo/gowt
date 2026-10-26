@@ -20,6 +20,8 @@ w.Add(gowt.Canvas(func(g *gowt.GC) {
 }, gowt.Size(400, 200), gowt.Ref(&canvas)))
 ```
 
+`canvas.OnResize(func(w, h int))` runs with the size `Size()` returns after layout gave the canvas a new one, and once when the first size other than 0 by 0 is known (on the next turn of the event loop if the canvas has it when you call `OnResize`). Use it for what depends on the size but is not drawing: fitting a camera or a model to the window. A size with a zero side is not reported.
+
 The `*GC` is valid only inside the callback. There is nothing to dispose: the canvas shares the fonts `SetFont` uses with the widgets and releases them with itself. Give the canvas a size with `Size(w, h)`, or it will be small.
 
 | Method | Draws |

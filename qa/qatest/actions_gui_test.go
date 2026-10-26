@@ -227,3 +227,21 @@ func TestEventually(t *testing.T) {
 	n := 0
 	app.Eventually(2*time.Second, func() (any, bool) { n++; return n, n >= 3 })
 }
+
+// The window's menu bar is in the dump, nested, and its items click like any other control.
+func TestMenuBar(t *testing.T) {
+	guiOnly(t)
+	app := qatest.App(t)
+	file := app.Find(qa.Selector{Class: "MenuItem", Text: "File"}).Node()
+	// Text is the title alone; where swt keeps the accelerator in the text ("Run\tCtrl+R") it is in Value.
+	if len(file.Children) != 1 {
+		t.Fatalf("File menu in the dump: %+v", file)
+	}
+	run := file.Children[0]
+	if run.Class != "MenuItem" || run.Text != "Run" || !run.Enabled || (runtime.GOOS == "linux" && run.Value != "Ctrl+R") {
+		t.Fatalf("File menu in the dump: %+v", file)
+	}
+	app.Find(qa.Selector{Class: "MenuItem", Text: "Run"}).Click()
+	wantEvents(t, app, "menu run")
+	wantErr(t, actErr(app, qa.Selector{Class: "MenuItem", Text: "File"}, "click", nil), "submenu")
+}

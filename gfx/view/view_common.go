@@ -26,6 +26,8 @@ type View struct {
 	gone     atomic.Bool
 	dpr      float64
 	resize   atomic.Bool
+	frames   atomic.Uint64 // frames started
+	force    atomic.Bool   // a QA capture asked for a frame
 	r        *router
 	onKey    func(*Key)
 	stops    []func()
@@ -76,13 +78,21 @@ func New(scene *gfx.Scene, init func(*View), opts ...g.Option) g.Option {
 		if err != nil {
 			panic(err)
 		}
+		v.registerQA()
 		if init != nil {
 			init(v)
 		}
 	}))...)
 }
 
+// wantsFrame is what the frame clock asks on every tick, from its own thread.
+func (v *View) wantsFrame() bool {
+	return v.comp.NeedsFrame() || v.resize.Load() || v.r.acc.wake.Load() || v.r.autoWake.Load() || v.force.Load()
+}
+
 func (v *View) frame(fi gfx.FrameInfo) {
+	v.frames.Add(1)
+	v.force.Store(false)
 	if v.resize.Swap(false) {
 		w, h := v.cv.Size()
 		v.syncScale()
@@ -101,6 +111,11 @@ func (v *View) frame(fi gfx.FrameInfo) {
 		v.report(r)
 	}
 }
+
+// OnResize sets f to run with the view size in points when layout gave it a new one, and once for
+// the first size known; see g.CanvasView.OnResize. The camera is yours to set there, for example to
+// fit the content to the window the first time.
+func (v *View) OnResize(f func(w, h int)) { v.cv.OnResize(f) }
 
 // Canvas is the underlying gowt canvas: mouse listeners, focus, size.
 func (v *View) Canvas() *g.CanvasView { return v.cv }

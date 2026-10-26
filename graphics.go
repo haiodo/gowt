@@ -213,6 +213,26 @@ func (c *CanvasView) OnMouseMove(f func(Mouse)) {
 	c.c.AddMouseMoveListener(mover(func(e *swt.MouseEvent) { f(mouseOf(e)) }))
 }
 
+// OnResize runs f with the client size in points, as Size gives it, after layout gave the canvas a new
+// size, and once for the first size known, also when the canvas has it already (f then runs on the
+// next turn of the event loop). A size with a zero side is not reported.
+func (c *CanvasView) OnResize(f func(w, h int)) {
+	lw, lh := 0, 0
+	report := func() {
+		if c.c.IsDisposed() {
+			return
+		}
+		if w, h := c.Size(); w > 0 && h > 0 && (w != lw || h != lh) {
+			lw, lh = w, h
+			f(w, h)
+		}
+	}
+	c.c.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { report() }))
+	if w, h := c.Size(); w > 0 && h > 0 {
+		c.c.GetDisplay().AsyncExec(jrt.NewRunnable(report))
+	}
+}
+
 // Redraw schedules a repaint, which calls the paint callback.
 func (c *CanvasView) Redraw() { c.c.Redraw() }
 

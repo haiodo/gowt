@@ -79,6 +79,7 @@ gowt CanvasView.OnDispose(f func())
 gowt CanvasView.OnMouseDown(f func(Mouse))
 gowt CanvasView.OnMouseMove(f func(Mouse))
 gowt CanvasView.OnMouseUp(f func(Mouse))
+gowt CanvasView.OnResize(f func(w int, h int))
 gowt CanvasView.Redraw()
 gowt CanvasView.SetBackground(c Paint)
 gowt CanvasView.SetChildBounds(child Widget, x int, y int, w int, h int)
@@ -1220,6 +1221,19 @@ gowt/qa Node.Selected field []int
 gowt/qa Node.Text field string
 gowt/qa Node.Value field string
 gowt/qa Node.Visible field bool
+gowt/qa PinchEvent.Magnification field float64
+gowt/qa PinchEvent.Mods field string
+gowt/qa PinchEvent.Phase field string
+gowt/qa PinchEvent.X field float64
+gowt/qa PinchEvent.Y field float64
+gowt/qa ScrollEvent.DX field float64
+gowt/qa ScrollEvent.DY field float64
+gowt/qa ScrollEvent.Mods field string
+gowt/qa ScrollEvent.Momentum field string
+gowt/qa ScrollEvent.Phase field string
+gowt/qa ScrollEvent.Precise field bool
+gowt/qa ScrollEvent.X field float64
+gowt/qa ScrollEvent.Y field float64
 gowt/qa Selector.Class field string
 gowt/qa Selector.ID field string
 gowt/qa Selector.In(parent Selector) Selector
@@ -1239,6 +1253,8 @@ gowt/qa type Args struct
 gowt/qa type Dialog struct
 gowt/qa type Job struct
 gowt/qa type Node struct
+gowt/qa type PinchEvent struct
+gowt/qa type ScrollEvent struct
 gowt/qa type Selector struct
 gowt/qa/qatest Client.Answer(d github.com/haiodo/gowt/qa.Dialog)
 gowt/qa/qatest Client.Call(cmd string, arg any) (encoding/json.RawMessage, error)
@@ -1262,7 +1278,9 @@ gowt/qa/qatest Element.Focus()
 gowt/qa/qatest Element.Key(keys string)
 gowt/qa/qatest Element.Node() github.com/haiodo/gowt/qa.Node
 gowt/qa/qatest Element.Nodes() []github.com/haiodo/gowt/qa.Node
+gowt/qa/qatest Element.Pinch(ev github.com/haiodo/gowt/qa.PinchEvent)
 gowt/qa/qatest Element.ScrollBy(dx int, dy int)
+gowt/qa/qatest Element.ScrollEvent(ev github.com/haiodo/gowt/qa.ScrollEvent)
 gowt/qa/qatest Element.ScrollIntoView()
 gowt/qa/qatest Element.ScrollTo(target github.com/haiodo/gowt/qa.Selector)
 gowt/qa/qatest Element.Select(index int)

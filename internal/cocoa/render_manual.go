@@ -21,7 +21,8 @@ func RenderView(v *NSView) *image.NRGBA {
 	if rep.BitmapData() == 0 || spp < 4 {
 		return nil
 	}
-	src := unsafe.Slice((*byte)(unsafe.Pointer(uintptr(rep.BitmapData()))), stride*h)
+	data := uintptr(rep.BitmapData()) // memory of AppKit, not of the Go heap
+	src := unsafe.Slice(*(**byte)(unsafe.Pointer(&data)), stride*h)
 	img := image.NewNRGBA(image.Rect(0, 0, w, h))
 	for y := 0; y < h; y++ {
 		copy(img.Pix[y*img.Stride:y*img.Stride+4*w], src[y*stride:y*stride+4*w])

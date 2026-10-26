@@ -15,9 +15,10 @@ permissions:
 env:
   CGO_ENABLED: "0"
 
-# The macOS GUI gates (make test-swt, snap-check, cmd/* windows) are not run here: a hosted macOS runner has
-# no usable window server session for AppKit, so they stay local. Windows GUI runs need a WebView2 runtime and
-# a desktop session, which hosted runners do not provide either; Windows is built and vetted only.
+# On the Linux runner the GUI gates run in the Docker stand under Xvfb. On the hosted Windows and macOS runners
+# the native jobs build, vet and run the non-GUI tests; their GUI job is separate and may fail without failing
+# the workflow (continue-on-error): whether a hosted runner gives AppKit a window server and Win32 an
+# interactive desktop is not verified. The swt and jface gates (make test-swt, cmd/swttest) stay local.
 jobs:
   build-vet:
     name: build and vet ${{ matrix.goos }}/${{ matrix.goarch }}
@@ -40,6 +41,56 @@ jobs:
       - run: go build ./...
       # vet type-checks the test files too.
       - run: go vet ./...
+
+  # The code was only cross-built for Windows and macOS here, so a crash that exists on windows/amd64 alone went unseen.
+  native:
+    name: ${{ matrix.os }} build, vet and test
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - run: go build ./...
+      - run: go vet ./...
+      # No GOWT_GUI_TEST: the tests that open windows skip themselves.
+      - run: go test -count=1 -timeout 20m ./...
+
+  # Real windows. Packages with GOWT_GUI_TEST tests run one after another (-p 1), as make check-gui does; bash so
+  # that one package list works on both runners (make is not assumed on Windows).
+  native-gui:
+    name: ${{ matrix.os }} gui tests
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    env:
+      GOWT_GUI_TEST: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Packages with GOWT_GUI_TEST tests
+        shell: bash
+        run: |
+          pkgs=$(git ls-files '*_test.go' | xargs grep -l GOWT_GUI_TEST | xargs -n1 dirname | sort -u | sed 's|^|./|' |
+            xargs go list -e -f '{{if or .GoFiles .CgoFiles .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}')
+          echo "$pkgs"
+          # shellcheck disable=SC2086
+          go test -count=1 -p 1 -timeout 25m $pkgs
+          go test -count=1 -tags gowtqa -run 'TestQATreeFocus' .
+          go test -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$' ./look
 
   checks:
     name: xcheck, api-check, licence-check and docs-counts

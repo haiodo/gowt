@@ -50,7 +50,7 @@ go mod tidy
 
 Run `go mod tidy` after writing code that imports `gowt`; until then `go.mod` lists it as `// indirect`. What to expect: the module is 5.2 MB; the first build with a cold cache took about 15 s (measured on a Mac for the hello program).
 
-Go 1.27 or newer. No C compiler and no Java. Cross-compiling works from any host: `GOOS=windows go build`. Details and per-OS requirements: [docs/install.md](docs/install.md).
+Go 1.27 or newer. No C compiler and no Java. Cross-compiling works from any host: `GOOS=windows go build`. Details, per-OS requirements and the errors a missing dependency gives: [docs/install.md](docs/install.md).
 
 <br clear="right">
 
@@ -171,7 +171,7 @@ JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts a
 <img src="docs/img/art/readme-gaps.png" alt="Gopher repairing a bridge with missing planks" width="160" align="right">
 
 - Windows runs on a real Windows 11 arm64 (UTM virtual machine) and under Wine (CrossOver). Not checked: Mica, Acrylic and rounded corners by eye, a machine with two monitors (the VM has one display), the QA driver. Per-monitor DPI changes while running are not handled by the port itself; they use upstream SWT code and are untested.
-- CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb; Linux was also run on a real GNOME Wayland desktop. macOS and Windows GUI tests are not in CI; they run locally and on the VM.
+- CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb; Linux was also run on a real GNOME Wayland desktop. Hosted `windows-latest` and `macos-latest` runners build, vet and run the non-GUI tests; their GUI tests are a separate job that is allowed to fail, since a desktop session on those runners is unverified (the workflow has not been run yet). The swt and jface gates for macOS and Windows run locally and on the VM.
 - Linux: GTK 3 only.
 - `Browser` does not support the Authentication event; see [docs/webview-browser.md](docs/webview-browser.md) for the rest.
 - Clipboard, drag and drop and `StyledText` are in the facade (`App.Clipboard`, `DragFrom`/`DropOn`, `StyledText`). Not verified: drag and drop with a real mouse on any OS; cross-application clipboard transfer (the peer-process SWT tests are skipped); `StyledText` style rendering on macOS (upstream tests skipped). `Accessible` is a stub on all three OSes.

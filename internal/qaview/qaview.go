@@ -210,3 +210,28 @@ func Popovers(d *swt.Display, owner *swt.Shell) []*swt.Shell {
 	}
 	return out
 }
+
+// ToolbarSearchKey is the data key of a shell whose native toolbar has a search field (macOS
+// NSSearchToolbarItem), which is no swt control and so is not in the control tree.
+const ToolbarSearchKey = "gowt.qa.toolbarsearch"
+
+// ToolbarSearch is what such a shell tells the QA driver.
+type ToolbarSearch interface {
+	ID() string
+	Placeholder() string
+	Text() string
+	// SetText replaces the text without running the search.
+	SetText(string)
+	Focus() bool
+	Focused() bool
+	// Submit runs the search with the text, as Return does.
+	Submit()
+	// Collapse folds an empty field back into its button, as Esc does.
+	Collapse()
+}
+
+// ToolbarSearchOf returns the toolbar search field of s.
+func ToolbarSearchOf(s *swt.Shell) (ToolbarSearch, bool) {
+	t, ok := s.GetDataKey(ToolbarSearchKey).(ToolbarSearch)
+	return t, ok
+}

@@ -7,6 +7,7 @@ import (
 
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
@@ -204,13 +205,18 @@ func toolbarItems(items []ToolbarItem) []cocoa.ToolbarItem {
 	ci := make([]cocoa.ToolbarItem, len(items))
 	for i, it := range items {
 		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick,
-			Group: toolbarItems(it.Group), Nav: it.Nav, Sidebar: it.Sidebar, Search: it.OnSearch, Disabled: it.Enabled != nil && !it.Enabled.Peek()}
+			Group: toolbarItems(it.Group), Nav: it.Nav, Sidebar: it.Sidebar, Search: it.OnSearch, ID: it.ID, Disabled: it.Enabled != nil && !it.Enabled.Peek()}
 	}
 	return ci
 }
 
 func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
 	ok := cocoa.InstallToolbar(s.View, toolbarItems(items))
+	if f := cocoa.ToolbarSearch(s.View); ok && f != nil {
+		s.SetDataKeyValue(qaview.ToolbarSearchKey, f)
+	} else {
+		s.SetDataKeyValue(qaview.ToolbarSearchKey, nil)
+	}
 	if stop := toolbarBindings[s]; stop != nil {
 		stop()
 		delete(toolbarBindings, s)

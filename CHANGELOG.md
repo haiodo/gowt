@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+QA shot overlay on macOS
+- Fixed: a QA `Shot` and `GOWT_SNAP` of a gfx view on macOS drew the tiles twice where `cacheDisplayInRect` already had the layers (Darwin 25.5): translucent pixels such as shadows came out darker (alpha 1/3 gave 0.56). The canvas rectangle is now captured with the tile layers hidden, the tiles are drawn over it from the compositor's images, and the result replaces the rectangle, whichever way the capture treats layers. `TestGfxShotWaitsForFrame` checks a translucent square for the exact colour; the macOS run is still to do.
+
 gfx shadows, ArcTo, SVG (Tenniarb request)
 - New: `Recorder.FillShadowPath(p, fill, sh)`, `StrokeShadowPath(p, st, c, sh)` and `TextShadow(s, x, y, font, c, sh)`: a blurred drop shadow under any path fill, any stroke (ellipses, `RoundRectPath4`, boxes with no fill, lines) and under text, on cg, cairo and d2d. New ops `OpFillShadow`, `OpStrokeShadow`, `OpTextShadow`, appended after `OpEndLayer`. `FillShadowRRect` is unchanged.
 - New: `Path.ArcTo(x1, y1, x2, y2, r)` with HTML canvas `arcTo` semantics; tests against the canvas results. `Path.Arc` no longer splits an exact quarter turn in two cubics because of rounding.

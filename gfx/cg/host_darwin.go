@@ -3,6 +3,8 @@
 package cg
 
 import (
+	"image"
+	"slices"
 	"sync"
 	"unsafe"
 
@@ -71,6 +73,7 @@ func send0(recv, sel uintptr) uintptr { return msgInt(recv, sel, 0) }
 type Host struct {
 	groups [3]uintptr
 	scale  float64
+	layers [3][]*layer // in the order the layers were added: the z order within a group
 }
 
 // NewHost adds the group layers to root. scale is the backing scale of the screen (contents scale).
@@ -137,10 +140,14 @@ func (h *Host) NewLayer(g gfx.Group) gfx.Layer {
 		msgInt(l, sels.setMinFilter, filterTrilinear)
 	}
 	msgInt(h.groups[g], sels.addSublayer, l)
-	return &layer{ref: l}
+	nl := &layer{ref: l, host: h, group: g}
+	h.layers[g] = append(h.layers[g], nl)
+	return nl
 }
 
 type layer struct {
+	host   *Host
+	group  gfx.Group
 	ref    uintptr
 	frame  gfx.Rect
 	anchor gfx.Point
@@ -198,8 +205,66 @@ func (l *layer) SetHidden(h bool) {
 
 func (l *layer) Remove() {
 	if l.ref != 0 {
+		ls := l.host.layers[l.group]
+		if i := slices.Index(ls, l); i >= 0 {
+			l.host.layers[l.group] = slices.Delete(ls, i, i+1)
+		}
 		send0(l.ref, sels.removeFromSuperlayer)
 		send0(l.ref, sels.release)
 		l.ref = 0
 	}
+}
+
+// Render draws the layers as the window server would show them, from their own images and not from
+// the screen, so it works with a sleeping display and needs no screen recording permission. The
+// result covers wpt by hpt points of the root layer at scale pixels per point; what lies outside is cut.
+func (h *Host) Render(wpt, hpt, scale float64) *image.NRGBA {
+	initHost()
+	wpx, hpx := int(wpt*scale+0.5), int(hpt*scale+0.5)
+	out := image.NewNRGBA(image.Rect(0, 0, wpx, hpx))
+	if wpx <= 0 || hpx <= 0 {
+		return out
+	}
+	cs := cgColorSpaceCreateDeviceRGB()
+	defer cgColorSpaceRelease(cs)
+	ctx := cgBitmapContextCreate(0, uintptr(wpx), uintptr(hpx), 8, uintptr(wpx*4), cs, bitmapInfoBGRA)
+	if ctx == 0 {
+		return out
+	}
+	defer cgContextRelease(ctx)
+	cgTranslate(ctx, 0, float64(hpx))
+	cgScale(ctx, scale, -scale) // y down, in points, as the root layer's
+	for _, ls := range h.layers {
+		for _, l := range ls {
+			l.render(ctx)
+		}
+	}
+	data := cgBitmapContextGetData(ctx)
+	px := unsafe.Slice((*byte)(*(*unsafe.Pointer)(unsafe.Pointer(&data))), wpx*hpx*4)
+	for i := 0; i < wpx*hpx; i++ {
+		b, g, r, a := px[i*4], px[i*4+1], px[i*4+2], px[i*4+3]
+		if a != 0 && a != 255 {
+			b, g, r = byte(int(b)*255/int(a)), byte(int(g)*255/int(a)), byte(int(r)*255/int(a))
+		}
+		out.Pix[i*4], out.Pix[i*4+1], out.Pix[i*4+2], out.Pix[i*4+3] = r, g, b, a
+	}
+	return out
+}
+
+func (l *layer) render(ctx uintptr) {
+	img := msgInt(l.ref, sels.contents, 0)
+	op := float64(msgF32Ret(l.ref, sels.opacity))
+	if img == 0 || op <= 0 || msgInt(l.ref, sels.isHidden, 0) != 0 || !l.placed {
+		return
+	}
+	w, hh := l.frame.W(), l.frame.H()
+	cgSaveGState(ctx)
+	cgTranslate(ctx, l.frame.Min.X+l.anchor.X, l.frame.Min.Y+l.anchor.Y)
+	cgConcat(ctx, cgAffine{l.m[0], l.m[1], l.m[2], l.m[3], l.m[4], l.m[5]})
+	cgTranslate(ctx, -l.anchor.X, -l.anchor.Y)
+	cgSetAlpha(ctx, op)
+	cgTranslate(ctx, 0, hh) // CGContextDrawImage puts the image upright in a y-up space
+	cgScale(ctx, 1, -1)
+	cgDrawImage(ctx, cgRect{0, 0, w, hh}, img)
+	cgRestoreGSt(ctx)
 }

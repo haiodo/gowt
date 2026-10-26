@@ -11,7 +11,7 @@ Any program built on `gowt.Run` honours two environment variables:
 | `GOWT_SNAP=<file.png>` | after the event loop has run for a while, write the first window as a PNG, close it and let `Run` return |
 | `GOWT_SNAP_LAYERS=1` | macOS: render the window's layer tree (`CALayer renderInContext:`) instead of `cacheDisplayInRect:`, so layer-only content such as `Section` cards shows; glass and blurred backdrops stay empty. The reference images use the default |
 | `GOWT_SNAP_SCREEN=1` | macOS: capture the window as the window server composites it (`CGWindowListCreateImage`), so glass, backdrops and the toolbar show; only this window, no desktop behind it. It may need Screen Recording permission |
-| `GOWT_SNAP_DELAY=<ms>` | that wait, default 800. With a web view in the program the capture also waits until its last navigation has finished (plus 2 s for the first paint), at most 30 s more |
+| `GOWT_SNAP_DELAY=<ms>` | that wait, default 800. With a web view in the program the capture also waits until its last navigation has finished (plus 2 s for the first paint), at most 30 s more. A gfx view in the window must also have presented a frame after that wait, with no tile queued, for at most 3 s more. On macOS the tiles of a gfx view are drawn into the capture from the compositor's images (not with `GOWT_SNAP_SCREEN=1`, which has them from the window server) |
 
 ```sh
 GOWT_SNAP=/tmp/hello.png go run ./examples/hello

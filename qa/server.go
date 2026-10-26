@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt/internal/qatree"
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/internal/shot"
 	"github.com/haiodo/gowt/swt"
 )
@@ -333,12 +334,26 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 		path = f.Name()
 		defer os.Remove(path)
 	}
-	_, err := s.ui(cmdTimeout, func() (any, error) {
-		shells := s.h.Display.GetShells()
-		if a.Window < 0 || a.Window >= len(shells) {
-			return nil, fmt.Errorf("shot: window %d, the app has %d", a.Window, len(shells))
+	var done func() bool
+	if _, err := s.ui(cmdTimeout, func() (any, error) {
+		sh, err := s.shell(a.Window)
+		if err == nil {
+			done = qaview.Request(sh)
 		}
-		return nil, shot.WindowPNG(s.h.ShotHandle(shells[a.Window]), path)
+		return nil, err
+	}); err != nil {
+		return nil, err
+	}
+	s.waitFrames(done)
+	_, err := s.ui(cmdTimeout, func() (any, error) {
+		sh, err := s.shell(a.Window)
+		if err != nil {
+			return nil, err
+		}
+		if err := shot.WindowPNG(s.h.ShotHandle(sh), path); err != nil {
+			return nil, err
+		}
+		return nil, qaview.OverlayPNG(sh, path)
 	})
 	if err != nil {
 		return nil, err
@@ -351,6 +366,31 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 		return nil, err
 	}
 	return map[string]string{"png": base64.StdEncoding.EncodeToString(b)}, nil
+}
+
+func (s *server) shell(window int) (*swt.Shell, error) {
+	shells := s.h.Display.GetShells()
+	if window < 0 || window >= len(shells) {
+		return nil, fmt.Errorf("shot: window %d, the app has %d", window, len(shells))
+	}
+	return shells[window], nil
+}
+
+// frameWait bounds the wait of a shot for the gfx views; a view that animates all the time never
+// gets quiet.
+const frameWait = 3 * time.Second
+
+// waitFrames returns when done reports that the views presented a frame after the request, or after
+// frameWait; the capture then goes ahead with what is on screen.
+func (s *server) waitFrames(done func() bool) {
+	deadline := time.Now().Add(frameWait)
+	for time.Now().Before(deadline) {
+		ok := false
+		if _, err := s.ui(cmdTimeout, func() (any, error) { ok = done(); return nil, nil }); err != nil || ok {
+			return
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
 }
 
 // state calls the handler the app registered with Handle under args.name.

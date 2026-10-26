@@ -6,8 +6,13 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/internal/shot"
 )
+
+// snapFrameWait bounds the wait for the gfx views of the window; a view that animates all the time
+// never gets quiet.
+const snapFrameWait = 3 * time.Second
 
 // armSnap implements GOWT_SNAP=<file.png>: after GOWT_SNAP_DELAY milliseconds (default 800) of the
 // event loop, and once every web view has finished loading, it writes the first window as a PNG and quits. It returns the tick Run calls between
@@ -24,6 +29,8 @@ func (a *App) armSnap(path string, errp *error) func() {
 	// A web view paints after its load finishes: wait for that, not for a longer fixed delay.
 	limit := due.Add(30 * time.Second)
 	var settledAt time.Time
+	var frames func() bool // gfx views have presented a frame since the capture was due
+	var framesBy time.Time
 	go func() {
 		defer func() { recover() }() // Wake panics once the display is disposed
 		for !a.display.IsDisposed() {
@@ -52,9 +59,17 @@ func (a *App) armSnap(path string, errp *error) func() {
 			}
 		}
 		shells := a.display.GetShells()
+		if frames == nil && len(shells) > 0 {
+			frames, framesBy = qaview.Request(shells[0]), now.Add(snapFrameWait)
+		}
+		if frames != nil && !frames() && now.Before(framesBy) {
+			return
+		}
 		if len(shells) == 0 {
 			*errp = fmt.Errorf("gowt: GOWT_SNAP: no window")
 		} else if err := shot.WindowPNG(shotHandle(shells[0]), path); err != nil {
+			*errp = fmt.Errorf("gowt: GOWT_SNAP: %w", err)
+		} else if err := qaview.OverlayPNG(shells[0], path); err != nil {
 			*errp = fmt.Errorf("gowt: GOWT_SNAP: %w", err)
 		} else if err := shot.Finish(path); err != nil {
 			*errp = fmt.Errorf("gowt: GOWT_SNAP: %w", err)

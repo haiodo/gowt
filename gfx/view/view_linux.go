@@ -5,6 +5,7 @@ package view
 import (
 	"fmt"
 	"os"
+	"sync/atomic"
 	"time"
 
 	"github.com/ebitengine/purego"
@@ -25,6 +26,7 @@ type platform struct {
 	seq     uint64
 	cursor  map[Cursor]*swt.Cursor
 	scrolls scrollState
+	queued  atomic.Bool // a draw is queued and the widget has not painted since
 }
 
 func traceOut(format string, a ...any) { fmt.Fprintf(os.Stderr, format+"\n", a...) }
@@ -47,7 +49,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	}
 	// Control.Redraw invalidates the whole GdkWindow the canvas shares with its siblings, children
 	// excluded, which blanks the siblings (labels in the same card); queue_draw invalidates the canvas only.
-	host, err := cairo.NewHost(func() { queueDraw(v.handle) })
+	host, err := cairo.NewHost(func() { v.queued.Store(true); queueDraw(v.handle) })
 	if err != nil {
 		return nil, err
 	}
@@ -59,6 +61,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	v.wireInput()
 	c.AddPaintListener(painter(func(e *swt.PaintEvent) {
 		if cr := e.Gc.GetGCData().Cairo; cr != 0 && !v.gone.Load() {
+			v.queued.Store(false)
 			t := time.Now()
 			host.Paint(uintptr(cr))
 			v.paint = time.Since(t)
@@ -70,7 +73,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 		if v.gone.Load() {
 			return 0
 		}
-		if !(v.comp.NeedsFrame() || v.resize.Load() || v.r.acc.wake.Load() || v.r.autoWake.Load()) {
+		if !v.wantsFrame() {
 			return 1
 		}
 		now := clockTime(clock)
@@ -102,3 +105,6 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 // syncScale follows the window to a monitor with another scale factor. The CPU host draws
 // images by their size in points, so only the compositor needs the new value.
 func (v *View) syncScale() { v.dpr = float64(max(scaleFactor(v.handle), 1)) }
+
+// unpainted is true while a frame's output waits for the widget to paint.
+func (v *View) unpainted() bool { return v.queued.Load() }

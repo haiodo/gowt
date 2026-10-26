@@ -91,6 +91,28 @@ type Node struct {
 	Children []Node `json:"children,omitempty"`
 }
 
+// ScrollEvent is one scroll event for Element.ScrollEvent, delivered to a gfx view's input router.
+// X and Y are the point in the control's coordinates. Without Precise the deltas are mouse wheel lines;
+// with it, points as a trackpad reports them. Phase and Momentum are "", "mayBegin", "began",
+// "changed", "ended" or "cancelled"; Momentum is the phase of the coasting after the fingers left.
+// Mods is "Shift", "Mod+Alt" and so on, as for Key without the key; Mod with a wheel zooms.
+type ScrollEvent struct {
+	X, Y            float64
+	DX, DY          float64
+	Precise         bool
+	Phase, Momentum string
+	Mods            string
+}
+
+// PinchEvent is one pinch step for Element.Pinch. Magnification is the change of the zoom: 0.1 makes
+// it 10 percent larger, -0.1 smaller. X and Y are the point the zoom keeps in place.
+type PinchEvent struct {
+	X, Y          float64
+	Magnification float64
+	Phase         string // "", "began", "changed", "ended" or "cancelled"
+	Mods          string
+}
+
 // Job is one running Job or Track of the app, as the "jobs" command reports it; it mirrors gowt.JobInfo.
 type Job struct {
 	Name       string `json:"name"`

@@ -240,7 +240,13 @@ v.OnSmartZoom(func(z *view.SmartZoom) bool { return false }) // false = toggle z
 v.OnKey(func(k *view.Key) { /* k.Down, k.Code (SWT key code), k.Char, k.Mods */ })
 v.SetCursor(view.CursorGrab) // Arrow Hand Grab Grabbing Crosshair Text ResizeH ResizeV NotAllowed
 v.Pan(dx, dy); v.SetZoomLimits(0.02, 64)
+v.OnResize(func(w, h int) { /* view size in points */ })
 ```
+
+`OnResize` is `CanvasView.OnResize` of the canvas under the view: it runs after layout gave the view a
+new size, and once for the first size known, so fit-to-window needs no wait for the first frame report.
+The camera is the app's to set there; the compositor viewport follows on the next frame. A size with a
+zero side is not reported.
 
 - **Capture.** After a press the moves and the release keep coming outside the view (AppKit keeps the
   mouse-down view as the target) until the last button is up. The release is also read from the NSEvent,

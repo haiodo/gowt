@@ -82,7 +82,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	display := cv.Unwrap().GetDisplay()
 	clock, err := d2d.NewFrameClock(func(fi gfx.FrameInfo) {
 		// runs on the clock goroutine: only decide, then hand over to the UI thread
-		if v.gone.Load() || !(v.comp.NeedsFrame() || v.resize.Load() || v.r.acc.wake.Load() || v.r.autoWake.Load()) || !v.posted.CompareAndSwap(false, true) {
+		if v.gone.Load() || !v.wantsFrame() || !v.posted.CompareAndSwap(false, true) {
 			return
 		}
 		defer func() { _ = recover() }() // the display may be gone as the window closes
@@ -123,3 +123,6 @@ func (v *View) syncScale() {
 	}
 	v.host.Invalidate()
 }
+
+// unpainted is false: Frame puts the output on screen itself.
+func (v *View) unpainted() bool { return false }

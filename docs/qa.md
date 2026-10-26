@@ -127,7 +127,7 @@ Items have their own classes:
 | `ListItem`, `ComboItem` | `List`, `Combo`; swt has no item objects, so these have no `ID` | the entry |
 | `TabItem`, `CTabItem` | `TabFolder`, `CTabFolder` | tab title |
 | `ToolItem` | `ToolBar` | item text |
-| `MenuItem` | the window's menu bar, nested for submenus | item text |
+| `MenuItem` | the window's menu bar, nested for submenus | the title without the mnemonic `&`; an accelerator that swt keeps in the text after a tab (`Run\tCtrl+R`) is in `Value` |
 
 ## Actions
 
@@ -162,10 +162,25 @@ More actions:
 | `Close()` | Closes a window like its close button; `OnClose` may veto. |
 | `Key("Mod+K")`, `app.Key(...)` | A key or combo: `Enter`, `Esc`, `Shift+Tab`, `F5`, `Mod+K`. `Mod` is Cmd on macOS, Ctrl elsewhere. `app.Key` goes to the focus control. |
 | `ScrollTo(sel)`, `ScrollBy(dx, dy)`, `ScrollIntoView()` | Scroll a ScrollView to a control, by pixels, or the ScrollView holding this control. `OnScroll` runs. |
+| `ScrollEvent(qa.ScrollEvent{...})`, `Pinch(qa.PinchEvent{...})` | Scroll and pinch events for a gfx view (`gfx/view`), see Scroll and pinch. |
 
 `Key`: a menu item with that accelerator runs and the control sees nothing, as with macOS key equivalents. Otherwise `Window.OnKey` filters and the control's key listeners get KeyDown, then KeyUp; Enter that was not vetoed also activates. A key does not type text; use `Type`.
 
 `app.Eventually(timeout, func() (observed any, ok bool))` polls for what settle cannot see (a server push, a file); the error shows the last observed value.
+
+## Scroll and pinch
+
+`Element.ScrollEvent` and `Element.Pinch` hand one scroll or pinch step to a `gfx/view` view, through the router its native events use, so `View.OnScroll` and `View.OnMagnify` run and, when they do not take the event, the camera pans or zooms. No OS event is sent, the window needs no focus, and the camera has moved when the call returns (the scroll smoothing is skipped: the whole delta is applied at once). Any other control fails with `takes no scroll or pinch events`.
+
+```go
+v := app.Find(qa.ID("canvas"))
+v.ScrollEvent(qa.ScrollEvent{DX: -30, DY: 20, Precise: true, Phase: "changed"}) // trackpad: points
+v.ScrollEvent(qa.ScrollEvent{DY: 1})                                          // wheel: one line
+v.ScrollEvent(qa.ScrollEvent{DY: 40, Precise: true, Mods: "Mod"})             // Cmd or Ctrl and scroll zooms
+v.Pinch(qa.PinchEvent{X: 100, Y: 100, Magnification: 0.5, Phase: "changed"})  // 50 percent more, about (100, 100)
+```
+
+`X`, `Y` are in the control's coordinates (the default 0, 0 is its top left corner). `Phase` and `Momentum` are `""` (a wheel), `"mayBegin"`, `"began"`, `"changed"`, `"ended"` or `"cancelled"`. `Mods` is `Shift`, `Alt`, `Ctrl`, `Cmd` (macOS) or `Mod`, joined by `+`. Without `Precise` the deltas are wheel lines (16 points each), with it points. Read the result from the camera, for example through a `qa.HandleValue` that returns `v.Compositor().Camera()`.
 
 ## Dialogs
 
@@ -238,7 +253,7 @@ The click that starts this job returns after the job and its `Then` have finishe
 
 ## Screenshots and artifacts
 
-- `app.Shot("name")` saves `name.png` of the first window and returns the path. For another window call `app.Call("shot", map[string]any{"window": 1})`.
+- `app.Shot("name")` saves `name.png` of the first window and returns the path. For another window call `app.Call("shot", map[string]any{"window": 1})`. Before the capture the shot asks every `gfx/view` view in that window for a frame and waits, for at most 3 s, until one came and no tile is queued or being drawn, so a camera change made just before shows. A view that animates all the time is captured as it is after 3 s. On macOS the view capture leaves out CALayer content, so the shot draws the view's tile layers over it from the compositor's own images (no window server, no screen recording permission).
 - A failed test saves the following into `$GOWT_QA_ARTIFACTS/<test name>` (a new temp directory when the variable is unset; the path is logged):
 
 | File | Content |
@@ -252,7 +267,7 @@ If the connection to the app is already lost, the screenshot and the dump are sk
 
 ## Limits
 
-- Not in the dump: the items of a native toolbar set with `look.SetToolbar` (NSToolbar), column headers of a table, context menus of controls (only the window's menu bar is walked), the tray, and the content of a `Browser` or web view. Native dialogs (message boxes, file choosers) are not in the dump either; see Dialogs.
+- Not in the dump: the items of a native toolbar set with `look.SetToolbar` (NSToolbar), column headers of a table, context menus of controls (only the window's menu bar is walked, from the window's own menu bar object, not from the macOS application menu), the tray, and the content of a `Browser` or web view. Native dialogs (message boxes, file choosers) are not in the dump either; see Dialogs.
 - A modal dialog the facade does not route (one opened through `Unwrap()` or a custom modal `Shell` loop) blocks the UI thread. Commands that need it fail after 10 seconds with `the UI thread did not answer in 10s (a modal dialog?)`.
 - There is no true headless mode on macOS and Windows: the app opens real windows on the desktop, without taking the focus. On Linux run the test under Xvfb (`xvfb-run go test ...`). The gowt stand for Linux is Docker with Xvfb.
 - The QA driver was never run on Windows. The Windows port itself runs on a real Windows 11 arm64 virtual machine and under CrossOver/Wine; see [platforms.md](platforms.md).

@@ -329,6 +329,14 @@ func (e *Element) ScrollBy(dx, dy int) {
 // ScrollIntoView scrolls the ScrollView that holds the control until the control is shown.
 func (e *Element) ScrollIntoView() { e.c.t.Helper(); e.act("scroll", nil) }
 
+// ScrollEvent delivers one scroll event with deltas and phases to a gfx view, through the router the
+// native events use: the view pans, zooms with Mod held, or its OnScroll handler takes it. The
+// camera has moved when the call returns. No OS event is sent and the window needs no focus.
+func (e *Element) ScrollEvent(ev qa.ScrollEvent) { e.c.t.Helper(); e.act("scrollevent", ev) }
+
+// Pinch delivers one pinch step to a gfx view, through the router the native events use.
+func (e *Element) Pinch(ev qa.PinchEvent) { e.c.t.Helper(); e.act("pinch", ev) }
+
 // SelectText selects the item with exactly this text in a list, combo, table, tree or tab folder.
 func (e *Element) SelectText(text string) {
 	e.c.t.Helper()

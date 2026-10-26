@@ -140,7 +140,7 @@ func (h *Host) NewLayer(g gfx.Group) gfx.Layer {
 		msgInt(l, sels.setMinFilter, filterTrilinear)
 	}
 	msgInt(h.groups[g], sels.addSublayer, l)
-	nl := &layer{ref: l, host: h, group: g}
+	nl := &layer{ref: l, host: h, group: g, op: 1} // a CALayer starts opaque
 	h.layers[g] = append(h.layers[g], nl)
 	return nl
 }

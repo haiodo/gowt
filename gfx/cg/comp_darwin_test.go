@@ -211,3 +211,16 @@ func TestCompositorHeadless(t *testing.T) {
 		}
 	}
 }
+
+// TestNewLayerOpacity: a fresh CALayer is opaque, so SetOpacity(0) on it must reach the layer.
+func TestNewLayerOpacity(t *testing.T) {
+	initHost()
+	root := send0(send0(clsLayer, sels.alloc), sels.init)
+	host := NewHost(root, 2)
+	defer host.Close()
+	l := host.NewLayer(gfx.GroupOverlay)
+	l.SetOpacity(0)
+	if op := msgF32Ret(l.(*layer).ref, sels.opacity); op != 0 {
+		t.Errorf("opacity %v after SetOpacity(0), want 0", op)
+	}
+}

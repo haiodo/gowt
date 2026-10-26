@@ -3,4 +3,4 @@
 package shot
 
 // PlaceOnRetina is for macOS only.
-func PlaceOnRetina(int64) {}
+func PlaceOnRetina(int64) bool { return false }

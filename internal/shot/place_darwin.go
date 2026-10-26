@@ -1,6 +1,7 @@
 package shot
 
 import (
+	"fmt"
 	"os"
 	"structs"
 
@@ -13,19 +14,28 @@ type nsPoint struct {
 }
 
 // PlaceOnRetina moves the window to the first Retina screen unless it is on one, so a SNAP_SCREEN capture
-// is not a 1x display stretched. Call it early: the window needs a few loop turns there before the capture.
-func PlaceOnRetina(view int64) {
+// is not a 1x display stretched, and reports whether it moved it. The window needs a few loop turns there.
+func PlaceOnRetina(view int64) bool {
 	if os.Getenv("GOWT_SNAP_SCREEN") != "1" {
-		return
+		return false
 	}
 	sel := objc.RegisterName
+	debug := os.Getenv("GOWT_SNAP_DEBUG") == "1"
 	win := objc.ID(view).Send(sel("window"))
 	if win == 0 {
-		return
+		if debug {
+			fmt.Fprintln(os.Stderr, "gowt: snap place: the view has no window yet")
+		}
+		return false
 	}
 	scale := func(screen objc.ID) float64 { return objc.Send[float64](screen, sel("backingScaleFactor")) }
-	if cur := win.Send(sel("screen")); cur != 0 && scale(cur) >= 2 {
-		return
+	cur := win.Send(sel("screen"))
+	if debug {
+		f := objc.Send[nsRect](win, sel("frame"))
+		fmt.Fprintf(os.Stderr, "gowt: snap place: window frame %v, screen %v\n", f, cur != 0 && scale(cur) >= 2)
+	}
+	if cur != 0 && scale(cur) >= 2 {
+		return false
 	}
 	screens := objc.ID(objc.GetClass("NSScreen")).Send(sel("screens"))
 	for i, n := uint64(0), objc.Send[uint64](screens, sel("count")); i < n; i++ {
@@ -34,7 +44,10 @@ func PlaceOnRetina(view int64) {
 			continue
 		}
 		vf := objc.Send[nsRect](s, sel("visibleFrame"))
+		fmt.Fprintln(os.Stderr, "gowt: snap moves the window to a Retina screen")
 		win.Send(sel("setFrameTopLeftPoint:"), nsPoint{X: vf.X + 40, Y: vf.Y + vf.H - 40})
-		return
+		fmt.Fprintln(os.Stderr, "gowt: snap moved the window")
+		return true
 	}
+	return false
 }

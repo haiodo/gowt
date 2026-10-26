@@ -354,6 +354,11 @@ gowt Mouse.Count field int
 gowt Mouse.Mods field Mods
 gowt Mouse.X field int
 gowt Mouse.Y field int
+gowt NativeContext.GC field *github.com/haiodo/gowt/swt.GC
+gowt NativeContext.Handle field uintptr
+gowt NativeContext.Height field float64
+gowt NativeContext.UnitsPerPoint field float64
+gowt NativeContext.Width field float64
 gowt Node.Checked() bool
 gowt Node.Children() []*Node
 gowt Node.Data() any
@@ -433,6 +438,20 @@ gowt Popover.ShowAtPoint(anchor Widget, x int, y int, edge PopoverEdge)
 gowt Popover.Shown() bool
 gowt Popover.Unwrap() *github.com/haiodo/gowt/swt.Shell
 gowt Popover.Visible() bool
+gowt PrintArea.H field float64
+gowt PrintArea.W field float64
+gowt PrintArea.X field float64
+gowt PrintArea.Y field float64
+gowt PrintJob.PageRange() (first int, last int)
+gowt PrintJob.Print(pages int, draw func(*PrintPage)) (err error)
+gowt PrintOptions.Margin field float64
+gowt PrintOptions.Title field string
+gowt PrintPage.Area field PrintArea
+gowt PrintPage.GC() *github.com/haiodo/gowt/swt.GC
+gowt PrintPage.Native() NativeContext
+gowt PrintPage.Number field int
+gowt PrintPage.Paper field PrintArea
+gowt PrintPage.Printable field PrintArea
 gowt ProgressView.Dispose()
 gowt ProgressView.Enabled() bool
 gowt ProgressView.Focus() bool
@@ -872,6 +891,7 @@ gowt Window.OnClose(f func() bool)
 gowt Window.OnDispose(f func())
 gowt Window.OnKey(keys string, f func())
 gowt Window.Popover(opts ...Option) *Popover
+gowt Window.PrintDialog(o PrintOptions) (job *PrintJob, ok bool)
 gowt Window.Relayout()
 gowt Window.SetBackground(c Paint)
 gowt Window.SetEnabled(v bool)
@@ -1014,6 +1034,7 @@ gowt func Percent(pct int, offset int) Edge
 gowt func Place(h Align, v Align) Option
 gowt func PopupMenu(w Widget) *Menu
 gowt func Primary() Option
+gowt func PrintToPDF(path string, o PrintOptions) (*PrintJob, error)
 gowt func Progress(max int, opts ...Option) Option
 gowt func Radio() Option
 gowt func ReadOnly() Option
@@ -1098,6 +1119,7 @@ gowt type MenuItem struct
 gowt type Message struct
 gowt type Mods struct
 gowt type Mouse struct
+gowt type NativeContext struct
 gowt type Node struct
 gowt type Op int
 gowt type Option
@@ -1106,6 +1128,10 @@ gowt type Paint
 gowt type Panel struct
 gowt type Popover struct
 gowt type PopoverEdge int
+gowt type PrintArea struct
+gowt type PrintJob struct
+gowt type PrintOptions struct
+gowt type PrintPage struct
 gowt type ProgressView struct
 gowt type RGB struct
 gowt type SashView struct

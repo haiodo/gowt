@@ -69,6 +69,8 @@ func (a *App) armSnap(path string, errp *error) func() {
 			*errp = fmt.Errorf("gowt: GOWT_SNAP: no window")
 		} else if err := shot.WindowPNG(shotHandle(shells[0]), path); err != nil {
 			*errp = fmt.Errorf("gowt: GOWT_SNAP: %w", err)
+		} else if err := qaview.OverlayPNG(shells[0], path); err != nil {
+			*errp = fmt.Errorf("gowt: GOWT_SNAP: %w", err)
 		} else if err := shot.Finish(path); err != nil {
 			*errp = fmt.Errorf("gowt: GOWT_SNAP: %w", err)
 		}

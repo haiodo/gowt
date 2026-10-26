@@ -350,7 +350,10 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		return nil, shot.WindowPNG(s.h.ShotHandle(sh), path)
+		if err := shot.WindowPNG(s.h.ShotHandle(sh), path); err != nil {
+			return nil, err
+		}
+		return nil, qaview.OverlayPNG(sh, path)
 	})
 	if err != nil {
 		return nil, err

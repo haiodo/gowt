@@ -4,6 +4,10 @@
 package qaview
 
 import (
+	"image"
+	"image/draw"
+	"image/png"
+	"os"
 	"sync"
 
 	"github.com/haiodo/gowt/swt"
@@ -67,4 +71,52 @@ func Request(shell *swt.Shell) (done func() bool) {
 		}
 		return true
 	}
+}
+
+// Painter is a Source whose pixels a window capture can miss (macOS: CALayer content is not in the
+// view capture). Overlay draws them into img, the capture of the shell's frame view, in place.
+type Painter interface {
+	Overlay(shell *swt.Shell, img *image.NRGBA) error
+}
+
+// OverlayPNG lets the painters of shell draw into the PNG that WindowPNG wrote at path. It does
+// nothing when no source paints, and with GOWT_SNAP_SCREEN=1, where the window server's own picture
+// has the layers.
+func OverlayPNG(shell *swt.Shell, path string) error {
+	if os.Getenv("GOWT_SNAP_SCREEN") == "1" {
+		return nil
+	}
+	mu.Lock()
+	var ps []Painter
+	for s := range sources {
+		if p, ok := s.(Painter); ok {
+			ps = append(ps, p)
+		}
+	}
+	mu.Unlock()
+	if len(ps) == 0 {
+		return nil
+	}
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	src, err := png.Decode(f)
+	f.Close()
+	if err != nil {
+		return err
+	}
+	img := image.NewNRGBA(src.Bounds())
+	draw.Draw(img, img.Bounds(), src, src.Bounds().Min, draw.Src)
+	for _, p := range ps {
+		if err := p.Overlay(shell, img); err != nil {
+			return err
+		}
+	}
+	out, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	return png.Encode(out, img)
 }

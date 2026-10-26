@@ -253,7 +253,7 @@ The click that starts this job returns after the job and its `Then` have finishe
 
 ## Screenshots and artifacts
 
-- `app.Shot("name")` saves `name.png` of the first window and returns the path. For another window call `app.Call("shot", map[string]any{"window": 1})`. Before the capture the shot asks every `gfx/view` view in that window for a frame and waits, for at most 3 s, until one came and no tile is queued or being drawn, so a camera change made just before shows. A view that animates all the time is captured as it is after 3 s.
+- `app.Shot("name")` saves `name.png` of the first window and returns the path. For another window call `app.Call("shot", map[string]any{"window": 1})`. Before the capture the shot asks every `gfx/view` view in that window for a frame and waits, for at most 3 s, until one came and no tile is queued or being drawn, so a camera change made just before shows. A view that animates all the time is captured as it is after 3 s. On macOS the view capture leaves out CALayer content, so the shot draws the view's tile layers over it from the compositor's own images (no window server, no screen recording permission).
 - A failed test saves the following into `$GOWT_QA_ARTIFACTS/<test name>` (a new temp directory when the variable is unset; the path is logged):
 
 | File | Content |

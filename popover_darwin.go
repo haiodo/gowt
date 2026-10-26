@@ -15,17 +15,11 @@ const (
 // popoverNative is an NSPopover.
 type popoverNative struct{ pop uintptr }
 
-// A transient NSPopover does not close when the owner window is activated from code.
 func (n *popoverNative) init(p *Popover) {
 	popLog = cocoa.PopLog
 	p.shell.AddShellListener(swt.ShellListenerShellActivatedAdapter(func(*swt.ShellEvent) { popLog("shell activated") }))
 	p.shell.AddListener(swt.Show, popLogListener("shell Show event"))
 	p.shell.AddListener(swt.Hide, popLogListener("shell Hide event"))
-	p.owner.AddShellListener(swt.ShellListenerShellActivatedAdapter(func(*swt.ShellEvent) {
-		if p.shown {
-			p.Close()
-		}
-	}))
 }
 
 func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edge PopoverEdge) {

@@ -88,8 +88,9 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 		cls := newClass("GowtPopoverDelegate", []string{"NSPopoverDelegate"}, map[string]objcMethod{
 			"popoverDidShow:": {purego.NewCallback(func(self, _, note uintptr) {
 				PopLog("delegate didShow")
-				if st := popovers[msg(note, "object")]; st != nil {
-					st.applyFocus()
+				// The notification is late when the app is inactive: the popover may be closed by now.
+				if pop := msg(note, "object"); popovers[pop] != nil && msg(pop, "isShown")&0xff != 0 {
+					popovers[pop].applyFocus()
 				}
 			}), "v@:@"},
 			"popoverDidClose:": {purego.NewCallback(func(self, _, note uintptr) {
@@ -173,7 +174,10 @@ func PopoverShown(pop uintptr) bool { return msg(pop, "isShown")&0xff != 0 }
 // close itself; the delegate reports the ones the user made.
 func ClosePopover(pop uintptr) {
 	PopLog("ClosePopover")
+	// An animated close keeps the popover "shown" for a while, and a show in that time is dropped.
+	msg(pop, "setAnimates:", 0)
 	msg(pop, "close")
+	msg(pop, "setAnimates:", 1)
 	if st := popovers[pop]; st != nil {
 		st.restore()
 	}

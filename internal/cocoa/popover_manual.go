@@ -39,6 +39,16 @@ type popoverState struct {
 	content *NSView
 	window  uintptr
 	onClose func()
+	focus   *NSView // given the first responder when the popover is on screen
+}
+
+func (st *popoverState) applyFocus() {
+	if st.focus == nil {
+		return
+	}
+	if w := st.focus.Window(); w != nil {
+		msg(uintptr(w.Id), "makeFirstResponder:", uintptr(st.focus.Id))
+	}
 }
 
 // restore puts the content back as the contentView of its window, so SWT keeps a valid hierarchy
@@ -58,6 +68,11 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 		purego.RegisterFunc(&popoverShowFn, objcMsgSend)
 		purego.RegisterFunc(&popoverSizeFn, objcMsgSend)
 		cls := newClass("GowtPopoverDelegate", []string{"NSPopoverDelegate"}, map[string]objcMethod{
+			"popoverDidShow:": {purego.NewCallback(func(self, _, note uintptr) {
+				if st := popovers[msg(note, "object")]; st != nil {
+					st.applyFocus()
+				}
+			}), "v@:@"},
 			"popoverDidClose:": {purego.NewCallback(func(self, _, note uintptr) {
 				pop := msg(note, "object")
 				st := popovers[pop]
@@ -83,7 +98,7 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 	if w := content.Window(); w != nil {
 		window = uintptr(w.Id)
 	}
-	popovers[pop] = &popoverState{content, window, onClose}
+	popovers[pop] = &popoverState{content: content, window: window, onClose: onClose}
 	return pop
 }
 
@@ -149,13 +164,34 @@ func ReleasePopover(pop uintptr) {
 	msg(pop, "release")
 }
 
-// IsFirstResponder reports whether v, or the field editor working for v, is the first responder of
-// its window, which is what a popover window can have while the application is not active.
-func IsFirstResponder(v *NSView) bool {
+// FocusPopover makes v the first responder of the popover window, now and again when the popover
+// has appeared; it needs no active application, unlike the key window.
+func FocusPopover(pop uintptr, v *NSView) {
+	st := popovers[pop]
+	st.focus = v
+	if msg(pop, "isShown")&0xff != 0 {
+		st.applyFocus()
+	}
+}
+
+// PerformClosePopover closes pop the way a click outside does: with the animation and the delegate.
+func PerformClosePopover(pop uintptr) { msg(pop, "performClose:", 0) }
+
+// FirstResponderIn reports whether the first responder of the window of v is v or inside v, as the
+// field editor of a text field is.
+func FirstResponderIn(v *NSView) bool {
 	w := v.Window()
 	if w == nil {
 		return false
 	}
-	fr := msg(uintptr(w.Id), "firstResponder")
-	return fr != 0 && (fr == uintptr(v.Id) || (msg(fr, "respondsToSelector:", sel("delegate"))&0xff != 0 && msg(fr, "delegate") == uintptr(v.Id)))
+	for r := msg(uintptr(w.Id), "firstResponder"); r != 0; {
+		if r == uintptr(v.Id) {
+			return true
+		}
+		if msg(r, "respondsToSelector:", sel("superview"))&0xff == 0 {
+			return false
+		}
+		r = msg(r, "superview")
+	}
+	return false
 }

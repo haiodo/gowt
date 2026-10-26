@@ -81,7 +81,7 @@ func TestPopoverGUI(t *testing.T) {
 					}
 					p.ShowAt(btn, PopoverBelow)
 				case 4:
-					w.shell.ForceActive()
+					p.native.outsideClick(p)
 				case 5:
 					if p.Shown() || closed != 4 {
 						fail("activating the window did not close the popover")

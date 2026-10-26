@@ -44,15 +44,17 @@ func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edg
 	cocoa.ShowPopover(n.pop, anchor.TopView(), r, int(edge), cocoa.NSSize{Width: float64(w), Height: float64(h)})
 }
 
-// focus makes the popover window key and gives c the first responder: SWT's own SetFocus refuses
-// because its shell is not visible.
-func (n *popoverNative) focus(c *swt.Control) { c.ForceFocusFocusView(c.FocusView()) }
+// focus gives c the first responder of the popover window; SWT's own SetFocus refuses because its
+// shell is not visible. It is repeated when the popover has appeared.
+func (n *popoverNative) focus(c *swt.Control) { cocoa.FocusPopover(n.pop, c.FocusView()) }
 
 // focused is first-responder based: the key window is the active application's, which a test
 // process may not be.
-func (n *popoverNative) focused(p *Popover, c *swt.Control) bool {
-	return cocoa.IsFirstResponder(c.FocusView())
-}
+func (n *popoverNative) focused(p *Popover, c *swt.Control) bool { return cocoa.FirstResponderIn(c.FocusView()) }
+
+// outsideClick closes the popover the way a click outside does; an inactive test process cannot
+// observe the owner window being activated.
+func (n *popoverNative) outsideClick(p *Popover) { cocoa.PerformClosePopover(n.pop) }
 
 func (n *popoverNative) onScreen(p *Popover) bool { return n.pop != 0 && cocoa.PopoverShown(n.pop) }
 

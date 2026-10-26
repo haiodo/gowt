@@ -11,3 +11,9 @@ func tabSeparator(_ *swt.Display, bg, fg RGB, _ bool) RGB { return mixRGB(bg, fg
 func tabAccent(d *swt.Display, _ bool) RGB {
 	return rgbOf(d.GetSystemColor(swt.COLOR_LIST_SELECTION).GetRGB())
 }
+
+// tabRadius is the corner radius of the selected tab, tabDividers whether unselected neighbours have a divider.
+const (
+	tabRadius   = 6
+	tabDividers = false
+)

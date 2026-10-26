@@ -13,6 +13,9 @@ type tabRenderer struct {
 	*swt.CTabFolderRenderer
 	f      *swt.CTabFolder
 	colors map[RGB]*swt.Color
+	// keys is true after a navigation key and false after a mouse press, the rule of the OS focus
+	// rings: none for a click and none for the focus a window starts with.
+	keys bool
 }
 
 // newTabRenderer installs the renderer on f and sets the tab height from the density tokens.
@@ -21,6 +24,7 @@ func newTabRenderer(f *swt.CTabFolder) *tabRenderer {
 	r.CTabFolderRenderer = swt.NewCTabFolderRenderer(f)
 	r.SetImpl_(r)
 	f.SetRenderer(r)
+	r.trackKeys()
 	f.SetTabHeight(int32(Spacing.ControlHeight - 1))
 	return r
 }
@@ -39,7 +43,7 @@ func (r *tabRenderer) palette() tabPalette {
 	}
 	d := r.f.GetDisplay()
 	p := tabPalette{base: rgbOf(r.f.GetBackground().GetRGB()), fg: rgbOf(r.f.GetForeground().GetRGB())}
-	shade := 0.05
+	shade := 0.06
 	if dark {
 		shade = 0.25
 	}
@@ -161,14 +165,26 @@ func (r *tabRenderer) drawTab(i, state int32, b *swt.Rectangle, gc *swt.GC) {
 	}
 	switch {
 	case sel:
-		r.fill(gc, p.base, b.X, b.Y, b.Width, b.Height)
-		iy := b.Y
-		if r.bottom() {
-			iy = b.Y + b.Height - 2
+		// The tab is the content's surface with round top corners and covers the hairline under it.
+		old := gc.GetClipping()
+		gc.SetClipping(b.X, b.Y, b.Width, b.Height)
+		gc.SetBackground(r.c(p.base))
+		if tabRadius == 0 {
+			gc.FillRectangle(b.X, b.Y, b.Width, b.Height)
+		} else {
+			gc.SetAntialias(swt.ON)
+			y := b.Y
+			if r.bottom() {
+				y -= tabRadius
+			}
+			gc.FillRoundRectangle(b.X, y, b.Width, b.Height+tabRadius, 2*tabRadius, 2*tabRadius)
 		}
-		r.fill(gc, p.accent, b.X, iy, b.Width, 2)
+		gc.SetClipping(old.X, old.Y, old.Width, old.Height)
 	case hot:
 		r.fill(gc, p.hover, b.X, bodyY, b.Width, bodyH)
+	}
+	if tabDividers && !sel && !hot && i+1 < r.f.GetItemCount() && i+1 != r.f.GetSelectionIndex() {
+		r.fill(gc, p.line, b.X+b.Width-1, bodyY+8, 1, bodyH-16)
 	}
 	x, right := b.X+int32(Spacing.MD), b.X+b.Width-int32(Spacing.MD)
 	var closeR *swt.Rectangle
@@ -184,9 +200,14 @@ func (r *tabRenderer) drawTab(i, state int32, b *swt.Rectangle, gc *swt.GC) {
 		}
 	}
 	if w := right - x; w > 0 {
+		// Fit the title with a GC like the layout's: once the paint GC has drawn antialiased shapes
+		// (GDI+ on Windows) it measures text 1 px wider, and a title that fits would be cut.
+		m := swt.NewGCDrawable(r.f)
+		m.SetFont(item.GetFont())
+		text := r.ShortenText(m, item.GetText(), w)
+		ext := m.TextExtentStringFlags(text, swt.CTabFolderRendererFLAGS)
+		m.Dispose()
 		gc.SetFont(item.GetFont())
-		text := r.ShortenText(gc, item.GetText(), w)
-		ext := gc.TextExtentStringFlags(text, swt.CTabFolderRendererFLAGS)
 		col := p.dim
 		if sel || hot {
 			col = p.fg
@@ -194,7 +215,7 @@ func (r *tabRenderer) drawTab(i, state int32, b *swt.Rectangle, gc *swt.GC) {
 		gc.SetForeground(r.c(col))
 		gc.DrawTextStringXYFlags(text, x, bodyY+(bodyH-ext.Y)/2, swt.CTabFolderRendererFLAGS)
 	}
-	if sel && r.f.IsFocusControl() {
+	if sel && r.keys && r.f.IsFocusControl() {
 		gc.SetAntialias(swt.ON)
 		gc.SetLineWidth(2)
 		gc.SetForeground(r.c(p.accent))
@@ -267,3 +288,37 @@ func redrawOnTheme(f *swt.CTabFolder) {
 type tabTheme struct{ f *swt.CTabFolder }
 
 func (t *tabTheme) HandleEvent(*swt.Event) { t.f.Redraw() }
+
+// trackKeys follows the keyboard: a navigation key shows the focus ring, a mouse press hides it.
+func (r *tabRenderer) trackKeys() {
+	d := r.f.GetDisplay()
+	l := &tabKeys{r}
+	d.AddFilter(swt.KeyDown, l)
+	d.AddFilter(swt.MouseDown, l)
+	r.f.AddDisposeListener(disposeFunc(func() {
+		d.RemoveFilter(swt.KeyDown, l)
+		d.RemoveFilter(swt.MouseDown, l)
+	}))
+}
+
+type tabKeys struct{ r *tabRenderer }
+
+func (t *tabKeys) HandleEvent(e *swt.Event) {
+	keys := e.Type == swt.KeyDown
+	if keys {
+		switch e.KeyCode {
+		case swt.ARROW_UP, swt.ARROW_DOWN, swt.ARROW_LEFT, swt.ARROW_RIGHT:
+		default:
+			keys = e.Character == '\t' || e.Character == ' '
+			if !keys {
+				return
+			}
+		}
+	}
+	if t.r.keys != keys {
+		t.r.keys = keys
+		if !t.r.f.IsDisposed() {
+			t.r.f.Redraw()
+		}
+	}
+}

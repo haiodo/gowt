@@ -12,3 +12,9 @@ func tabAccent(d *swt.Display, _ bool) RGB {
 	a := fluent.Current(d).Accent
 	return RGB{a.R, a.G, a.B}
 }
+
+// tabRadius is the corner radius of the selected tab, tabDividers whether unselected neighbours have a divider.
+const (
+	tabRadius   = 8
+	tabDividers = true
+)

@@ -18,3 +18,9 @@ func tabSeparator(_ *swt.Display, bg, _ RGB, dark bool) RGB {
 func tabAccent(_ *swt.Display, dark bool) RGB {
 	return overRGB(cocoa.AccentRGBA(dark), RGB{})
 }
+
+// tabRadius is the corner radius of the selected tab, tabDividers whether unselected neighbours have a divider.
+const (
+	tabRadius   = 0
+	tabDividers = true
+)

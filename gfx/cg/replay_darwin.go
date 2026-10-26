@@ -413,8 +413,14 @@ func (s *Surface) stroke(p *gfx.Path, st *gfx.StrokeStyle, c gfx.Color) {
 func (s *Surface) shadowState(sh gfx.Shadow) {
 	m := cgGetCTM(s.ctx)
 	off := cgSize{m.A*sh.DX + m.C*sh.DY, m.B*sh.DX + m.D*sh.DY}
+	blur := sh.Blur * math.Sqrt(math.Abs(m.A*m.D-m.B*m.C))
+	if sh.Screen {
+		// the device is y-up here, the screen y-down
+		k := s.screenScale()
+		off, blur = cgSize{sh.DX * k, -sh.DY * k}, sh.Blur*k
+	}
 	col := cgColorCreate(sh.Color.R, sh.Color.G, sh.Color.B, sh.Color.A)
-	cgSetShadow(s.ctx, off, sh.Blur*math.Sqrt(math.Abs(m.A*m.D-m.B*m.C)), col)
+	cgSetShadow(s.ctx, off, blur, col)
 	cgColorRelase(col)
 }
 
@@ -443,7 +449,7 @@ func (s *Surface) shadowBox(op *gfx.Op) {
 	if s.r.opts.LOD && s.eff < 0.5 {
 		sh.Color.A *= math.Max(0, s.eff*4-1) // a shadow under half scale is a smudge: fade it out to a quarter
 	}
-	if sh.Color.A > 0 && s.r.opts.ShadowSprite && w > 2*(r+1.5*sh.Blur) && h > 2*(r+1.5*sh.Blur) {
+	if sh.Color.A > 0 && !sh.Screen && s.r.opts.ShadowSprite && w > 2*(r+1.5*sh.Blur) && h > 2*(r+1.5*sh.Blur) {
 		s.r.sprite(r, sh.Blur, sh.Color, s.eff, math.Max(math.Abs(sh.DX), math.Abs(sh.DY)), op.Color.A >= 1).draw(s, x+sh.DX, y+sh.DY, w, h)
 	} else if sh.Color.A > 0 {
 		cgSaveGState(ctx)

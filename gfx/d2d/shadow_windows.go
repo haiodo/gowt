@@ -184,12 +184,18 @@ func (rp *replayer) shadowBox(op *gfx.Op) {
 	if rp.ctm.Det() == 0 {
 		return
 	}
+	var rr gfx.Path
+	rr.RoundRect(x, y, w, h, r)
+	if sh.Screen {
+		rp.shadowUnder(gfx.R(x, y, w, h), sh, func(mrp *replayer) { mrp.fill(&rr, gfx.Color{A: 1}) })
+		rp.applyM()
+		rp.fill(&rr, op.Color)
+		return
+	}
 	rp.applyM()
 	if sh.Color.A > 0 {
 		rp.drawShadow(x+sh.DX, y+sh.DY, w, h, r, sh)
 	}
-	var rr gfx.Path
-	rr.RoundRect(x, y, w, h, r)
 	rp.fill(&rr, op.Color)
 }
 
@@ -257,16 +263,22 @@ func (rp *replayer) shadowUnder(local gfx.Rect, sh gfx.Shadow, draw func(mrp *re
 	}
 	m := rp.ctm
 	sd := sh.Blur / 2 * m.Scale()
+	// the offset in device pixels
+	ddx, ddy := m[0]*sh.DX+m[2]*sh.DY, m[1]*sh.DX+m[3]*sh.DY
+	if sh.Screen {
+		k := rp.t.screenScale()
+		ddx, ddy, sd = sh.DX*k, sh.DY*k, sh.Blur/2*k
+	}
 	margin := int(math.Ceil(3 * sd))
-	box := m.Bounds(local.Translate(gfx.Point{X: sh.DX, Y: sh.DY}))
+	box := m.Bounds(local).Translate(gfx.Point{X: ddx, Y: ddy})
 	ox, oy := int(math.Floor(box.Min.X))-margin, int(math.Floor(box.Min.Y))-margin
 	w, h := int(math.Ceil(box.Max.X))+margin-ox, int(math.Ceil(box.Max.Y))+margin-oy
 	if w <= 0 || h <= 0 || w > 4096 || h > 4096 {
 		return
 	}
 	mm := m
-	mm[4] += m[0]*sh.DX + m[2]*sh.DY - float64(ox)
-	mm[5] += m[1]*sh.DX + m[3]*sh.DY - float64(oy)
+	mm[4] += ddx - float64(ox)
+	mm[5] += ddy - float64(oy)
 	mrp, bmp, done := rp.maskReplayer(w, h, mm)
 	if mrp == nil {
 		return
@@ -315,4 +327,14 @@ func (rp *replayer) shadowText(op *gfx.Op) {
 	mask.Color = gfx.Color{A: 1}
 	rp.shadowUnder(box, op.Shadow, func(mrp *replayer) { mrp.text(op.Text, &mask) })
 	rp.text(op.Text, op)
+}
+
+// SetScreenScale sets the device pixels one screen point of a gfx.Shadow with Screen is.
+func (t *Target) SetScreenScale(v float64) { t.screen = v }
+
+func (t *Target) screenScale() float64 {
+	if t.screen > 0 {
+		return t.screen
+	}
+	return 1
 }

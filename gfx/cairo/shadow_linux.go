@@ -92,11 +92,16 @@ func (t *Target) blurredShape(local gfx.Rect, sh gfx.Shadow, draw func(sub *Targ
 	var m matrix
 	getMatrix(cr, &m)
 	sd := sh.Blur / 2 * math.Sqrt(math.Abs(m.xx*m.yy-m.xy*m.yx))
+	// the offset in device pixels
+	ddx, ddy := m.xx*sh.DX+m.xy*sh.DY, m.yx*sh.DX+m.yy*sh.DY
+	if sh.Screen {
+		k := t.screenScale()
+		ddx, ddy, sd = sh.DX*k, sh.DY*k, sh.Blur/2*k
+	}
 	margin := int(math.Ceil(3 * sd))
 	x0, y0, x1, y1 := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
 	for _, c := range [4]gfx.Point{local.Min, {X: local.Max.X, Y: local.Min.Y}, {X: local.Min.X, Y: local.Max.Y}, local.Max} {
-		lx, ly := c.X+sh.DX, c.Y+sh.DY
-		dx, dy := m.xx*lx+m.xy*ly+m.x0, m.yx*lx+m.yy*ly+m.y0
+		dx, dy := m.xx*c.X+m.xy*c.Y+m.x0+ddx, m.yx*c.X+m.yy*c.Y+m.y0+ddy
 		x0, y0, x1, y1 = math.Min(x0, dx), math.Min(y0, dy), math.Max(x1, dx), math.Max(y1, dy)
 	}
 	ox, oy := int(math.Floor(x0))-margin, int(math.Floor(y0))-margin
@@ -108,7 +113,7 @@ func (t *Target) blurredShape(local gfx.Rect, sh gfx.Shadow, draw func(sub *Targ
 	defer surfaceDestroy(mask)
 	mcr := create(mask)
 	mm := matrix{m.xx, m.yx, m.xy, m.yy,
-		m.x0 + m.xx*sh.DX + m.xy*sh.DY - float64(ox), m.y0 + m.yx*sh.DX + m.yy*sh.DY - float64(oy)}
+		m.x0 + ddx - float64(ox), m.y0 + ddy - float64(oy)}
 	setMatrix(mcr, &mm)
 	setSourceRGBA(mcr, 0, 0, 0, 1)
 	setFillRule(mcr, fillRuleWinding)

@@ -547,6 +547,9 @@ func (c *Compositor) worker() {
 		start := time.Now()
 		rect := j.s.rect(j.t.key)
 		c.scene.Collect(rect, &items)
+		if ss, ok := t.(ScreenScaler); ok {
+			ss.SetScreenScale(j.s.dpr)
+		}
 		t.Begin(j.s.scale, rect.Min, Color{})
 		t.Draw(items.List)
 		img := t.Snapshot(float64(c.o.TilePx)/j.s.dpr, float64(c.o.TilePx)/j.s.dpr)

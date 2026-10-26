@@ -39,6 +39,11 @@ type Target interface {
 	Close()
 }
 
+// ScreenScaler is implemented by the Targets of the backends that draw Shadow.Screen: it sets how many
+// device pixels one screen point of such a shadow is. The Compositor sets the display's backing scale
+// before every tile; a Target that was not told uses 1.
+type ScreenScaler interface{ SetScreenScale(devicePerPoint float64) }
+
 // Renderer is a drawing backend: CoreGraphics on macOS. It is safe for concurrent use, its Targets
 // are not shared.
 type Renderer interface {

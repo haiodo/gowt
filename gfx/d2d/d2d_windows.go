@@ -270,6 +270,7 @@ type Target struct {
 	maskDC, maskBrush uintptr // second device context for shadow masks, made on first use
 	w, h              int
 	scale             float64
+	screen            float64 // device pixels per screen point of a Shadow.Screen; 0 is 1
 	base              gfx.Affine
 	pix               []byte
 	pixOK             bool

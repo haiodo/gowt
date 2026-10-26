@@ -106,6 +106,17 @@ type Surface struct {
 	eff    float64 // scale times the scale of the item transform being drawn
 	it     gfx.Iter
 	layers int
+	screen float64 // device pixels per screen point of a Shadow.Screen; 0 is 1
+}
+
+// SetScreenScale sets the device pixels one screen point of a gfx.Shadow with Screen is.
+func (s *Surface) SetScreenScale(v float64) { s.screen = v }
+
+func (s *Surface) screenScale() float64 {
+	if s.screen > 0 {
+		return s.screen
+	}
+	return 1
 }
 
 // NewSurface returns a bitmap surface of wpx by hpx pixels.

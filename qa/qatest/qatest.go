@@ -199,8 +199,43 @@ func (c *Client) Shot(name string) string {
 	return path
 }
 
-func (c *Client) shotTo(path string) error {
-	r, err := c.Call("shot", nil)
+// ShotOf is Shot of the window that holds the control sel picks: a Preferences or a second document
+// window. A control in a popover gives the window the popover belongs to.
+func (c *Client) ShotOf(name string, sel qa.Selector) string {
+	c.t.Helper()
+	return c.shotWith(name, map[string]any{"selector": sel})
+}
+
+// ShotWindow is Shot of the window at index in the order of the dump, popovers not counted.
+func (c *Client) ShotWindow(name string, index int) string {
+	c.t.Helper()
+	return c.shotWith(name, map[string]any{"window": index})
+}
+
+// ShotTitle is Shot of the first window with exactly this title.
+func (c *Client) ShotTitle(name, title string) string {
+	c.t.Helper()
+	return c.shotWith(name, map[string]any{"title": title})
+}
+
+func (c *Client) shotWith(name string, args map[string]any) string {
+	c.t.Helper()
+	path := filepath.Join(c.artifactDir(), name+".png")
+	if err := c.shotArgsTo(path, args); err != nil {
+		c.t.Fatalf("qatest: shot: %v", err)
+	}
+	c.t.Logf("qatest: shot %s", path)
+	return path
+}
+
+func (c *Client) shotTo(path string) error { return c.shotArgsTo(path, nil) }
+
+func (c *Client) shotArgsTo(path string, args map[string]any) error {
+	var arg any
+	if args != nil {
+		arg = args
+	}
+	r, err := c.Call("shot", arg)
 	if err != nil {
 		return err
 	}

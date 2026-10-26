@@ -326,10 +326,7 @@ func describe(pending string, changing bool) string {
 
 // shot writes the PNG of one window to args.path, or returns it base64 encoded in "png".
 func (s *server) shot(raw json.RawMessage) (any, error) {
-	var a struct {
-		Window int    `json:"window"`
-		Path   string `json:"path"`
-	}
+	var a shotArgs
 	if len(raw) > 0 {
 		if err := json.Unmarshal(raw, &a); err != nil {
 			return nil, fmt.Errorf("shot: %w", err)
@@ -347,7 +344,7 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 	}
 	var done func() bool
 	if _, err := s.ui(cmdTimeout, func() (any, error) {
-		sh, err := s.shell(a.Window)
+		sh, err := s.shellOf(a)
 		if err == nil {
 			done = qaview.Request(sh)
 		}
@@ -357,7 +354,7 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 	}
 	s.waitFrames(done)
 	_, err := s.ui(cmdTimeout, func() (any, error) {
-		sh, err := s.shell(a.Window)
+		sh, err := s.shellOf(a)
 		if err != nil {
 			return nil, err
 		}
@@ -389,7 +386,12 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 func (s *server) addPopovers(sh *swt.Shell, path string, frame shot.Frame) error {
 	for _, ps := range qaview.Popovers(s.h.Display, sh) {
 		tmp := path + ".popover.png"
-		pf, err := shot.Capture(s.h.ShotHandle(ps), tmp)
+		pf, err := shot.CaptureView(s.h.ShotHandle(ps), tmp)
+		if err == nil && pf.W == 0 {
+			p, _ := qaview.PopoverOf(ps)
+			x, y, w, h := p.Bounds()
+			pf = shot.Frame{X: float64(x), Y: float64(y), W: float64(w), H: float64(h)}
+		}
 		if err == nil {
 			frame, err = shot.Compose(path, frame, tmp, pf)
 		}
@@ -399,6 +401,30 @@ func (s *server) addPopovers(sh *swt.Shell, path string, frame shot.Frame) error
 		}
 	}
 	return nil
+}
+
+// shotArgs say which window a shot takes: the one that holds the Selector's control, else the first
+// whose title is Title, else the one at index Window (0 is the first).
+type shotArgs struct {
+	Window   int              `json:"window"`
+	Title    string           `json:"title"`
+	Selector *qatree.Selector `json:"selector"`
+	Path     string           `json:"path"`
+}
+
+func (s *server) shellOf(a shotArgs) (*swt.Shell, error) {
+	switch {
+	case a.Selector != nil:
+		return qatree.ShellOf(s.h.Display, *a.Selector)
+	case a.Title != "":
+		for _, sh := range s.shells() {
+			if sh.GetText() == a.Title {
+				return sh, nil
+			}
+		}
+		return nil, fmt.Errorf("shot: no window titled %q", a.Title)
+	}
+	return s.shell(a.Window)
 }
 
 func (s *server) shell(window int) (*swt.Shell, error) {

@@ -45,6 +45,8 @@ type popoverState struct {
 	onClose func()
 	keyWin  uintptr // the popover window observed for becoming key
 	focus   *NSView // given the first responder when the popover is on screen
+	// appeared is set by popoverDidShow:; before it the window server has no content of the popover.
+	appeared bool
 }
 
 func (st *popoverState) applyFocus() {
@@ -120,6 +122,7 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 				PopLog("delegate didShow")
 				// The notification is late when the app is inactive: the popover may be closed by now.
 				if pop := msg(note, "object"); popovers[pop] != nil && msg(pop, "isShown")&0xff != 0 {
+					popovers[pop].appeared = true
 					popovers[pop].applyFocus()
 				}
 			}), "v@:@"},
@@ -180,6 +183,7 @@ func ShowPopover(pop uintptr, anchor *NSView, r NSRect, edge int, size NSSize) {
 	popoverSizeFn(pop, sel("setContentSize:"), size)
 	st := popovers[pop]
 	PopLog("ShowPopover: hold, contentView is content: %v", msg(st.window, "contentView") == uintptr(st.content.Id))
+	st.appeared = false
 	st.hold()
 	// A new controller per show: a popover whose controller keeps the same view does not attach the
 	// view again after it was taken out, and shows nothing until the animation ends.
@@ -209,6 +213,11 @@ func PopoverContentRect(pop uintptr, primaryHeight float64) (x, y, w, h float64)
 	return top.X, primaryHeight - top.Y, b.Width, b.Height
 }
 
+// PopoverAppeared reports whether pop is shown and AppKit has said so; a capture before that is empty.
+func PopoverAppeared(pop uintptr) bool {
+	return msg(pop, "isShown")&0xff != 0 && popovers[pop].appeared
+}
+
 // PopoverShown reports whether pop is on screen.
 func PopoverShown(pop uintptr) bool { return msg(pop, "isShown")&0xff != 0 }
 
@@ -221,6 +230,7 @@ func ClosePopover(pop uintptr) {
 	msg(pop, "close")
 	msg(pop, "setAnimates:", 1)
 	if st := popovers[pop]; st != nil {
+		st.appeared = false
 		st.restore()
 	}
 }

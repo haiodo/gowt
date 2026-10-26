@@ -266,6 +266,10 @@ func keyFocused(d *swt.Display, args json.RawMessage) error {
 	}
 	c, err := keyTarget(d)
 	if err != nil {
+		// A popover on macOS has no focus control of the application to name.
+		if strings.EqualFold(a.Keys, "Esc") && escapePopover(d, nil) {
+			return nil
+		}
 		return err
 	}
 	if m := blocker(d, c.GetShell()); m != nil {
@@ -350,6 +354,10 @@ func key(d *swt.Display, c *swt.Control, keys string) error {
 	if err != nil {
 		return err
 	}
+	if state == 0 && code == int32(swt.ESC) && escapePopover(d, c) {
+		flush(d)
+		return nil
+	}
 	if bar := c.GetShell().GetMenuBar(); bar != nil {
 		if it := accelerated(bar, state, code); it != nil {
 			return click(&entry{obj: it, n: Node{Path: "accelerator " + keys}})
@@ -370,6 +378,29 @@ func key(d *swt.Display, c *swt.Control, keys string) error {
 	}
 	flush(d)
 	return nil
+}
+
+// escapePopover gives Esc to the popover that has it: the one c is in, else the last one on screen
+// when c is in an ordinary window, as the popover filter of a real Esc would. Esc posted to a control
+// does not pass the display filters the popover listens with.
+func escapePopover(d *swt.Display, c *swt.Control) bool {
+	if c != nil {
+		if p, ok := qaview.PopoverOf(c.GetShell()); ok {
+			p.Escape()
+			return true
+		}
+	}
+	var last qaview.Popover
+	for _, s := range d.GetShells() {
+		if p, ok := qaview.PopoverOf(s); ok && !s.IsDisposed() && p.OnScreen() {
+			last = p
+		}
+	}
+	if last == nil {
+		return false
+	}
+	last.Escape()
+	return true
 }
 
 // accelerated finds the enabled item of m, submenus included, that has the accelerator state|code.

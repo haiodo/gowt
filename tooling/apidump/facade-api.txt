@@ -1277,6 +1277,9 @@ gowt/qa/qatest Client.Jobs() []github.com/haiodo/gowt/qa.Job
 gowt/qa/qatest Client.Key(keys string)
 gowt/qa/qatest Client.Settle()
 gowt/qa/qatest Client.Shot(name string) string
+gowt/qa/qatest Client.ShotOf(name string, sel github.com/haiodo/gowt/qa.Selector) string
+gowt/qa/qatest Client.ShotTitle(name string, title string) string
+gowt/qa/qatest Client.ShotWindow(name string, index int) string
 gowt/qa/qatest Client.State(name string, kv ...any) encoding/json.RawMessage
 gowt/qa/qatest Element.Activate()
 gowt/qa/qatest Element.Check(on bool)

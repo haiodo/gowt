@@ -136,6 +136,56 @@ type Popover interface {
 	Owner() *swt.Shell
 	// Close hides the popover as a click outside would.
 	Close()
+	// Opening reports a popover that was shown and is not on screen yet.
+	Opening() bool
+	// Escape is what Esc in the popover does: OnEscape, which may keep it open, then Close.
+	Escape()
+	// Bounds is the popover's content on the screen, y down.
+	Bounds() (x, y, w, h int)
+}
+
+var popovers = map[*swt.Shell]struct{}{}
+
+// AddPopover registers the shell of a popover and returns the function that removes it. Display.GetShells
+// does not list a popover shell on macOS while its window holds a placeholder, so the driver looks here.
+func AddPopover(s *swt.Shell) (remove func()) {
+	mu.Lock()
+	popovers[s] = struct{}{}
+	mu.Unlock()
+	return func() { mu.Lock(); delete(popovers, s); mu.Unlock() }
+}
+
+// PopoverOpening reports whether a registered popover is still opening, which a settle waits for.
+func PopoverOpening() bool {
+	mu.Lock()
+	var all []*swt.Shell
+	for s := range popovers {
+		all = append(all, s)
+	}
+	mu.Unlock()
+	for _, s := range all {
+		if p, ok := PopoverOf(s); ok && !s.IsDisposed() && p.Opening() {
+			return true
+		}
+	}
+	return false
+}
+
+// PopoverShells lists the registered popover shells that are on screen.
+func PopoverShells() []*swt.Shell {
+	mu.Lock()
+	var all []*swt.Shell
+	for s := range popovers {
+		all = append(all, s)
+	}
+	mu.Unlock()
+	var out []*swt.Shell
+	for _, s := range all {
+		if !s.IsDisposed() && OnScreen(s) {
+			out = append(out, s)
+		}
+	}
+	return out
 }
 
 // PopoverOf returns the popover whose shell s is, shown or not.
@@ -153,8 +203,8 @@ func OnScreen(s *swt.Shell) bool {
 // Popovers returns the shells of the popovers on screen that belong to the window owner.
 func Popovers(d *swt.Display, owner *swt.Shell) []*swt.Shell {
 	var out []*swt.Shell
-	for _, s := range d.GetShells() {
-		if p, ok := PopoverOf(s); ok && !s.IsDisposed() && p.OnScreen() && p.Owner() == owner {
+	for _, s := range PopoverShells() {
+		if p, _ := PopoverOf(s); p.Owner() == owner {
 			out = append(out, s)
 		}
 	}

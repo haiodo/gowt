@@ -2,6 +2,7 @@ package gowt
 
 import (
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/internal/jrt"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -44,8 +45,20 @@ func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edg
 }
 
 // focus gives c the first responder of the popover window; SWT's own SetFocus refuses because its
-// shell is not visible. It is repeated when the popover has appeared.
-func (n *popoverNative) focus(c *swt.Control) { cocoa.FocusPopover(n.pop, c.FocusView()) }
+// shell is not visible. The view has no window until AppKit has attached it to the popover, which
+// can take longer than the show call, so the attempt is repeated every 20 ms for a second.
+func (n *popoverNative) focus(p *Popover, c *swt.Control) {
+	var try func(left int)
+	try = func(left int) {
+		if !p.shown || c.IsDisposed() {
+			return
+		}
+		if !cocoa.FocusPopover(n.pop, c.FocusView()) && left > 0 {
+			p.shell.GetDisplay().TimerExec(20, jrt.NewRunnable(func() { try(left - 1) }))
+		}
+	}
+	try(50)
+}
 
 // focused is first-responder based: the key window is the active application's, which a test
 // process may not be.

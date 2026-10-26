@@ -43,15 +43,44 @@ type popoverState struct {
 	window  uintptr // the Shell's window
 	holder  uintptr // stands in for content as the contentView of window while content is in the popover
 	onClose func()
+	keyWin  uintptr // the popover window observed for becoming key
 	focus   *NSView // given the first responder when the popover is on screen
 }
 
 func (st *popoverState) applyFocus() {
-	if st.focus == nil {
+	if st.focus == nil || st.focus.Window() == nil {
+		PopLog("applyFocus: nothing to do (focus view %v, window %v)", st.focus != nil, st.focus != nil && st.focus.Window() != nil)
 		return
 	}
 	if w := st.focus.Window(); w != nil {
-		msg(uintptr(w.Id), "makeFirstResponder:", uintptr(st.focus.Id))
+		ok := msg(uintptr(w.Id), "makeFirstResponder:", uintptr(st.focus.Id))&0xff != 0
+		PopLog("applyFocus: makeFirstResponder=%v responder=%s key=%v", ok, className(msg(uintptr(w.Id), "firstResponder")),
+			msg(uintptr(w.Id), "isKeyWindow")&0xff != 0)
+	}
+}
+
+func className(o uintptr) string {
+	if o == 0 {
+		return "nil"
+	}
+	return goString(msg(o, "className"))
+}
+
+// observeKey asks for gowtPopoverKey: when the popover window becomes key: in an application that
+// activates after the popover appeared, the first responder is set again then.
+func (st *popoverState) observeKey(on bool) {
+	center := msg(class("NSNotificationCenter"), "defaultCenter")
+	name := nsString("NSWindowDidBecomeKeyNotification")
+	if on {
+		w := st.content.Window()
+		if w == nil || st.keyWin == uintptr(w.Id) {
+			return
+		}
+		st.keyWin = uintptr(w.Id)
+		msg(center, "addObserver:selector:name:object:", popoverDelegate, sel("gowtPopoverKey:"), name, st.keyWin)
+	} else if st.keyWin != 0 {
+		msg(center, "removeObserver:name:object:", popoverDelegate, name, st.keyWin)
+		st.keyWin = 0
 	}
 }
 
@@ -71,6 +100,7 @@ func (st *popoverState) hold() {
 
 // restore gives content back to the window as its contentView. It does nothing when it is there.
 func (st *popoverState) restore() {
+	st.observeKey(false)
 	PopLog("restore")
 	if st.window == 0 || msg(st.window, "contentView") == uintptr(st.content.Id) {
 		return
@@ -93,6 +123,15 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 					popovers[pop].applyFocus()
 				}
 			}), "v@:@"},
+			"gowtPopoverKey:": {purego.NewCallback(func(self, _, note uintptr) {
+				w := msg(note, "object")
+				for pop, st := range popovers {
+					if win := st.content.Window(); win != nil && uintptr(win.Id) == w && msg(pop, "isShown")&0xff != 0 {
+						PopLog("popover window became key")
+						st.applyFocus()
+					}
+				}
+			}), "v@:@"},
 			"popoverDidClose:": {purego.NewCallback(func(self, _, note uintptr) {
 				pop := msg(note, "object")
 				st := popovers[pop]
@@ -108,10 +147,6 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 		popoverDelegate = msg(msg(cls, "alloc"), "init")
 	})
 	pop := msg(msg(class("NSPopover"), "alloc"), "init")
-	vc := msg(msg(class("NSViewController"), "alloc"), "init")
-	msg(vc, "setView:", uintptr(content.Id))
-	msg(pop, "setContentViewController:", vc)
-	msg(vc, "release")
 	msg(pop, "setBehavior:", popoverBehaviorTransient)
 	msg(pop, "setAnimates:", 1)
 	msg(pop, "setDelegate:", popoverDelegate)
@@ -146,8 +181,15 @@ func ShowPopover(pop uintptr, anchor *NSView, r NSRect, edge int, size NSSize) {
 	st := popovers[pop]
 	PopLog("ShowPopover: hold, contentView is content: %v", msg(st.window, "contentView") == uintptr(st.content.Id))
 	st.hold()
+	// A new controller per show: a popover whose controller keeps the same view does not attach the
+	// view again after it was taken out, and shows nothing until the animation ends.
+	vc := msg(msg(class("NSViewController"), "alloc"), "init")
+	msg(vc, "setView:", uintptr(st.content.Id))
+	msg(pop, "setContentViewController:", vc)
+	msg(vc, "release")
 	popoverShowFn(pop, sel("showRelativeToRect:ofView:preferredEdge:"), r, v, side)
 	PopLog("ShowPopover: shown=%v", msg(pop, "isShown")&0xff != 0)
+	st.observeKey(true)
 	if w := st.content.Window(); w != nil {
 		msg(uintptr(w.Id), "makeKeyWindow")
 	}
@@ -198,12 +240,15 @@ func ReleasePopover(pop uintptr) {
 
 // FocusPopover makes v the first responder of the popover window, now and again when the popover
 // has appeared; it needs no active application, unlike the key window.
-func FocusPopover(pop uintptr, v *NSView) {
+// It reports whether the view was in the window and got the focus.
+func FocusPopover(pop uintptr, v *NSView) bool {
 	st := popovers[pop]
 	st.focus = v
-	if msg(pop, "isShown")&0xff != 0 {
-		st.applyFocus()
+	if msg(pop, "isShown")&0xff == 0 || v.Window() == nil {
+		return false
 	}
+	st.applyFocus()
+	return true
 }
 
 // CloseBehindBack closes pop as AppKit does for a click outside: nothing here restores the view or

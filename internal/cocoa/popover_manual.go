@@ -148,3 +148,14 @@ func ReleasePopover(pop uintptr) {
 	delete(popovers, pop)
 	msg(pop, "release")
 }
+
+// IsFirstResponder reports whether v, or the field editor working for v, is the first responder of
+// its window, which is what a popover window can have while the application is not active.
+func IsFirstResponder(v *NSView) bool {
+	w := v.Window()
+	if w == nil {
+		return false
+	}
+	fr := msg(uintptr(w.Id), "firstResponder")
+	return fr != 0 && (fr == uintptr(v.Id) || (msg(fr, "respondsToSelector:", sel("delegate"))&0xff != 0 && msg(fr, "delegate") == uintptr(v.Id)))
+}

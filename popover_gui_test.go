@@ -38,7 +38,7 @@ func TestPopoverGUI(t *testing.T) {
 						fail("not shown after ShowAt")
 						break
 					}
-					if app.display.GetFocusControl() != &field.t.Control && p.native.onScreen(p) {
+					if p.native.onScreen(p) && !p.native.focused(p, &field.t.Control) {
 						fail("the search field has no focus")
 					}
 					a := btn.ctl.ToDisplay(0, 0)

@@ -246,6 +246,8 @@ public class Manual {
 			Map.entry("org.eclipse.swt.widgets.Widget#getTypedListeners(I,java.lang.Class)", "GetTypedListeners"),
 			// Draws through a bitmap NSGraphicsContext, not the deprecated NSImage.lockFocus (swt/widgets_taskitem_manual_darwin.go).
 			Map.entry("org.eclipse.swt.widgets.TaskItem#updateImage()", "UpdateImage"),
+			// Cluster movement over grapheme clusters (swt/graphics_textlayout_manual_darwin.go).
+			Map.entry("org.eclipse.swt.graphics.TextLayout#_getOffset(I,I,Z)", "_getOffset"),
 			// swt.dll resources in SWT, drawn at run time in swt/widgets_texticon_manual_windows.go.
 			Map.entry("org.eclipse.swt.widgets.Display#getTextSearchIcon(I)", "GetTextSearchIcon"),
 			Map.entry("org.eclipse.swt.widgets.Display#getTextCancelIcon(I)", "GetTextCancelIcon"),

@@ -38,11 +38,11 @@ func TestPopoverGUI(t *testing.T) {
 						fail("not shown after ShowAt")
 						break
 					}
-					if app.display.GetFocusControl() != &field.t.Control && p.shell.GetVisible() {
+					if app.display.GetFocusControl() != &field.t.Control && p.native.onScreen(p) {
 						fail("the search field has no focus")
 					}
 					a := btn.ctl.ToDisplay(0, 0)
-					b := p.shell.GetBounds()
+					b := p.native.bounds(p)
 					t.Logf("popover %d,%d %dx%d", b.X, b.Y, b.Width, b.Height)
 					if b.Y < a.Y+btn.ctl.GetSize().Y {
 						fail("the popover overlaps its anchor")

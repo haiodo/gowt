@@ -5,7 +5,8 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// The shell is never shown: its content view lives in the NSPopover.
+// The shell is never shown: its content view lives in the NSPopover while it is on screen and
+// returns to the shell's window when it closes.
 const (
 	popoverStyle     = swt.NO_TRIM | swt.ON_TOP
 	popoverBodyStyle = swt.NONE
@@ -14,7 +15,14 @@ const (
 // popoverNative is an NSPopover.
 type popoverNative struct{ pop uintptr }
 
-func (n *popoverNative) init(p *Popover) {}
+// A transient NSPopover does not close when the owner window is activated from code.
+func (n *popoverNative) init(p *Popover) {
+	p.owner.AddShellListener(swt.ShellListenerShellActivatedAdapter(func(*swt.ShellEvent) {
+		if p.shown {
+			p.Close()
+		}
+	}))
+}
 
 func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edge PopoverEdge) {
 	w, h := p.w, p.h
@@ -34,6 +42,18 @@ func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edg
 	}
 	r := cocoa.NSRect{X: float64(local.X), Y: float64(local.Y), Width: float64(local.W), Height: float64(local.H)}
 	cocoa.ShowPopover(n.pop, anchor.TopView(), r, int(edge), cocoa.NSSize{Width: float64(w), Height: float64(h)})
+}
+
+// focus makes the popover window key and gives c the first responder: SWT's own SetFocus refuses
+// because its shell is not visible.
+func (n *popoverNative) focus(c *swt.Control) { c.ForceFocusFocusView(c.FocusView()) }
+
+func (n *popoverNative) onScreen(p *Popover) bool { return n.pop != 0 && cocoa.PopoverShown(n.pop) }
+
+// bounds is the popover content in screen points; the shell's own bounds belong to the hidden window.
+func (n *popoverNative) bounds(p *Popover) *swt.Rectangle {
+	x, y, w, h := cocoa.PopoverContentRect(n.pop, p.shell.GetDisplay().GetPrimaryFrame().Height)
+	return swt.NewRectangle(int32(x), int32(y), int32(w), int32(h))
 }
 
 func (n *popoverNative) hide(p *Popover) { cocoa.ClosePopover(n.pop) }

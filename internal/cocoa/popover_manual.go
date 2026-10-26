@@ -13,7 +13,7 @@ var (
 	popoverOnce     sync.Once
 	popoverShowFn   func(self, sel uintptr, r NSRect, view, edge uintptr)
 	popoverSizeFn   func(self, sel uintptr, s NSSize)
-	popoverClosed   = map[uintptr]func(){}
+	popovers        = map[uintptr]*popoverState{}
 	popoverDelegate uintptr
 )
 
@@ -34,8 +34,24 @@ const (
 	popoverBehaviorTransient = 1 // NSPopoverBehaviorTransient: closes on a click outside and on Esc
 )
 
-// NewPopover creates an NSPopover that shows content, a view SWT built, moved out of its hidden
-// window. onClose runs after the popover closed, whoever closed it.
+// popoverState remembers where the content view lives while the popover is closed.
+type popoverState struct {
+	content *NSView
+	window  uintptr
+	onClose func()
+}
+
+// restore puts the content back as the contentView of its window, so SWT keeps a valid hierarchy
+// while the popover is not on screen. It does nothing when the view is already there.
+func (st *popoverState) restore() {
+	if st.window == 0 || msg(st.window, "contentView") == uintptr(st.content.Id) {
+		return
+	}
+	msg(st.window, "setContentView:", uintptr(st.content.Id))
+}
+
+// NewPopover creates an NSPopover that shows content, the content view of a hidden SWT window. The
+// view is in the popover only while it is shown. onClose runs after the popover closed, whoever closed it.
 func NewPopover(content *NSView, onClose func()) uintptr {
 	popoverOnce.Do(func() {
 		objcInit()
@@ -43,9 +59,14 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 		purego.RegisterFunc(&popoverSizeFn, objcMsgSend)
 		cls := newClass("GowtPopoverDelegate", []string{"NSPopoverDelegate"}, map[string]objcMethod{
 			"popoverDidClose:": {purego.NewCallback(func(self, _, note uintptr) {
-				if f := popoverClosed[msg(note, "object")]; f != nil {
-					f()
+				pop := msg(note, "object")
+				st := popovers[pop]
+				// A late notification of an earlier close must not take the view from a shown popover.
+				if st == nil || msg(pop, "isShown")&0xff != 0 {
+					return
 				}
+				st.restore()
+				st.onClose()
 			}), "v@:@"},
 		})
 		popoverDelegate = msg(msg(cls, "alloc"), "init")
@@ -58,7 +79,11 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 	msg(pop, "setBehavior:", popoverBehaviorTransient)
 	msg(pop, "setAnimates:", 1)
 	msg(pop, "setDelegate:", popoverDelegate)
-	popoverClosed[pop] = onClose
+	var window uintptr
+	if w := content.Window(); w != nil {
+		window = uintptr(w.Id)
+	}
+	popovers[pop] = &popoverState{content, window, onClose}
 	return pop
 }
 
@@ -83,14 +108,43 @@ func ShowPopover(pop uintptr, anchor *NSView, r NSRect, edge int, size NSSize) {
 	}
 	popoverSizeFn(pop, sel("setContentSize:"), size)
 	popoverShowFn(pop, sel("showRelativeToRect:ofView:preferredEdge:"), r, v, side)
+	if w := popovers[pop].content.Window(); w != nil {
+		msg(uintptr(w.Id), "makeKeyWindow")
+	}
 }
 
-// ClosePopover closes pop; its onClose runs.
-func ClosePopover(pop uintptr) { msg(pop, "close") }
+// PopoverContentRect returns the content of a shown pop in screen points with the origin at the
+// top-left of the primary screen of height primaryHeight.
+func PopoverContentRect(pop uintptr, primaryHeight float64) (x, y, w, h float64) {
+	v := popovers[pop].content
+	win := v.Window()
+	if win == nil || msg(pop, "isShown")&0xff == 0 {
+		return
+	}
+	b := v.Bounds()
+	r := v.ConvertRect_toView_(b, nil)
+	top := win.ConvertBaseToScreen(NSPoint{X: r.X, Y: r.Y + r.Height})
+	return top.X, primaryHeight - top.Y, b.Width, b.Height
+}
+
+// PopoverShown reports whether pop is on screen.
+func PopoverShown(pop uintptr) bool { return msg(pop, "isShown")&0xff != 0 }
+
+// ClosePopover closes pop at once and gives the view back to its window. The caller reports this
+// close itself; the delegate reports the ones the user made.
+func ClosePopover(pop uintptr) {
+	msg(pop, "close")
+	if st := popovers[pop]; st != nil {
+		st.restore()
+	}
+}
 
 // ReleasePopover closes pop and forgets it.
 func ReleasePopover(pop uintptr) {
-	delete(popoverClosed, pop)
 	msg(pop, "close")
+	if st := popovers[pop]; st != nil {
+		st.restore()
+	}
+	delete(popovers, pop)
 	msg(pop, "release")
 }

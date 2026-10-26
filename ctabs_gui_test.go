@@ -39,7 +39,7 @@ func TestCTabsRendererOverride(t *testing.T) {
 			steps(app,
 				func() {
 					f := tabs.Unwrap()
-					height = f.GetTabHeight()
+					height = f.GetTabHeight() + 1 // the strip is the tab height plus the 1 px border line
 					probe = &probeRenderer{}
 					probe.CTabFolderRenderer = swt.NewCTabFolderRenderer(f)
 					probe.SetImpl_(probe)

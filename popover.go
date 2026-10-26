@@ -120,8 +120,10 @@ func (p *Popover) show(anchor *swt.Control, local popRect, edge PopoverEdge) {
 	p.shown = true
 	p.filters = newPopoverFilter(p)
 	p.native.show(p, anchor, local, edge)
-	if c := p.initialFocus(); c != nil {
-		p.native.focus(c)
+	c := p.initialFocus()
+	popLog("initial focus control %v", c != nil)
+	if c != nil {
+		p.native.focus(p, c)
 	}
 }
 

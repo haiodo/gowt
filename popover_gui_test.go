@@ -29,6 +29,9 @@ func TestPopoverGUI(t *testing.T) {
 			w.Show()
 			wait := func(d time.Duration, f func()) { app.After(d, f) }
 
+			// An inactive application finishes the show animation late, and AppKit resets the first
+			// responder of the popover window when it does: the focus is final only then.
+			focusWait := 0
 			var step func(n int)
 			step = func(n int) {
 				switch n {
@@ -40,7 +43,11 @@ func TestPopoverGUI(t *testing.T) {
 						break
 					}
 					if p.native.onScreen(p) && !p.native.focused(p, &field.t.Control) {
-						fail("the search field has no focus")
+						if focusWait++; focusWait <= 40 {
+							wait(50*time.Millisecond, func() { step(1) })
+							return
+						}
+						fail("the search field has no focus within 2 s")
 					}
 					if !p.shell.GetVisible() || !field.t.IsVisible() {
 						fail("the shell or its field is not visible while shown")

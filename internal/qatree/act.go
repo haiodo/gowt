@@ -24,6 +24,7 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 	if action == "key" && s == (Selector{}) {
 		return keyFocused(d, args)
 	}
+	actGen++ // a context menu shows again, so OnShow refreshes it for this action
 	es, err := resolve(walk(d), s)
 	if err != nil {
 		return err
@@ -35,7 +36,7 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 	if it, ok := e.obj.(*swt.MenuItem); ok && action == "click" {
 		if root := popupRoot(it); root != nil {
 			// As a right click: the app refreshes its items in OnShow before the user sees the menu.
-			root.NotifyListeners(swt.Show, swt.NewEvent())
+			showPopup(root)
 			defer func() {
 				if !root.IsDisposed() {
 					root.NotifyListeners(swt.Hide, swt.NewEvent())

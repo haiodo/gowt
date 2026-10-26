@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+QA context menus filled in OnShow
+- Fixed: items that an `OnShow` handler adds to an empty `PopupMenu` (on a gfx canvas, a tree) were not reachable in QA. A dump or `Find` now sends Show to an empty context menu once per action, a QA right click (`RightClickAt`, `Pointer` button 3) sends it to the menu of the control, and `Click` on an item still runs `OnShow` first. No native menu opens. Test `TestPopupMenuFilledInOnShow` on Xvfb, the Windows 11 arm64 VM and the second Mac.
+- Fixed: the macOS QA dump panicked on an open `Popover` (the shell's client area is gone once its view is in the NSPopover); `TestPopover` now passes there. `TestFocus` and `TestKeys` fail on that Mac on main too.
+
 QA driver for editors (Tenniarb)
 - New: QA mouse input. `Element.ClickAt`, `DoubleClickAt`, `RightClickAt`, `DragTo` and `Pointer(qa.PointerEvent)` (action `pointer`) deliver a press, moves and a release at a point. A gfx view gets them through its input router like the native events (`OnPointer`, `View.Drag`, inline editors); any other control gets `MouseDown`, `MouseMove`, `MouseUp` and `MouseDoubleClick` listener events. A press over a control placed on the view is refused. See docs/qa.md.
 - Fixed: QA `Type`, `Key` and `Activate` on a control that has the focus asked for the focus again, which on macOS ends the edit of a text field, so an inline `view.Edit` field committed before the text arrived. They now leave the focus alone when the control has it; `Focus` too. The macOS cause is a hypothesis (the field editor, not the field, is the first responder) and was not reproduced; the Linux and Windows runs pass with and without the change.

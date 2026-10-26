@@ -106,6 +106,14 @@ func (w *walker) control(c *swt.Control, vis, en bool) *entry {
 	switch v := impl.(type) {
 	case *swt.Shell:
 		e.n.Text = v.GetText()
+		if w.pop {
+			// On macOS the content view lives in the NSPopover and the shell's own client area is gone.
+			if kids := v.GetChildren(); len(kids) > 0 {
+				sz := kids[0].GetSize()
+				e.n.Bounds = [4]int{0, 0, int(sz.X), int(sz.Y)}
+			}
+			break
+		}
 		ca := v.GetClientArea()
 		e.n.Bounds = [4]int{0, 0, int(ca.Width), int(ca.Height)}
 		if bar := v.GetMenuBar(); bar != nil {
@@ -203,11 +211,30 @@ func (w *walker) control(c *swt.Control, vis, en bool) *entry {
 	}
 	// The context menu is listed as if open, so its items can be run; it has no place on the screen.
 	if m := c.GetMenu(); m != nil && m.GetStyle()&swt.POP_UP != 0 {
+		if m.GetItemCount() == 0 {
+			showPopup(m) // only an empty menu: an OnShow handler fills it
+		}
 		me := w.item(&m.Widget, "Menu", "", e.n.Visible, e.n.Enabled, m)
 		me.kids = w.menu(m, e.n.Visible, e.n.Enabled)
 		e.kids = append(e.kids, me)
 	}
 	return e
+}
+
+// shownKey marks a context menu with the action generation it was shown in.
+const shownKey = "gowt.qa.shown"
+
+// actGen counts the actions; the dump and Find run on the same UI thread.
+var actGen int
+
+// showPopup sends Show to a context menu once per action, as a right click does before the menu opens,
+// so items an OnShow handler adds are in the dump. No native menu opens.
+func showPopup(m *swt.Menu) {
+	if g, ok := m.GetDataKey(shownKey).(int); ok && g == actGen {
+		return
+	}
+	m.SetDataKeyValue(shownKey, actGen)
+	m.NotifyListeners(swt.Show, swt.NewEvent())
 }
 
 func (w *walker) menu(m *swt.Menu, vis, en bool) []*entry {

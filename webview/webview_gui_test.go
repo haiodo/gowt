@@ -309,6 +309,7 @@ func TestWebViewWindows(t *testing.T) {
 				t.Error("engine lacks the new window handler")
 			}
 			wv.OnNavigationFinished = func(string) { finished++ }
+			wv.OnNavigationFailed = func(u string, e error) { t.Errorf("navigation to %s failed: %v", u, e) }
 			wv.OnTitleChanged = func(s string) { title = s }
 			w.SetSize(500, 400)
 			w.Show()

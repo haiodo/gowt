@@ -17,14 +17,15 @@ import (
 // first responder without activating the app.
 
 // Without a list in the content, a macOS window is its own first responder: no control has the focus.
-// Elsewhere SWT keeps its choice. A content list and Focused win as in a sidebar window.
+// On Linux, where the QA run keeps Open, SWT keeps its choice.
+// A content list and Focused win as in a sidebar window.
 func TestInspectorFocus(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
 	}
 	sink := "popup"
-	if runtime.GOOS == "darwin" {
-		sink = "nothing"
+	if runtime.GOOS == "darwin" || runtime.GOOS == "windows" {
+		sink = "nothing" // Windows: the quiet Show does not activate the shell, so nothing takes the focus
 	}
 	for _, tc := range []struct {
 		name    string

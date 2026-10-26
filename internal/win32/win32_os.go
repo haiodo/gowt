@@ -8790,7 +8790,7 @@ func OSScriptStringOut(ssa int64, iX int32, iY int32, uOptions int32, prc *RECT,
 		p_prc = unsafe.Pointer(&b_prc)
 		prc.toC(p_prc)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSScriptStringOut.addr(), uintptr(ssa), uintptr(iX), uintptr(iY), uintptr(uOptions), uintptr(p_prc), uintptr(iMinSel), uintptr(iMaxSel), boolToUintptr(fDisabled))
+	r, _, _ := syscall.SyscallN(proc_OSScriptStringOut.addr(), derefPtr(ssa), uintptr(iX), uintptr(iY), uintptr(uOptions), uintptr(p_prc), uintptr(iMinSel), uintptr(iMaxSel), boolToUintptr(fDisabled))
 	if prc != nil {
 		prc.fromC(p_prc)
 	}

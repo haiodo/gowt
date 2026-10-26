@@ -19,6 +19,9 @@ final class WinNativeEmitter {
 			"DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE", "-3", "DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2", "-4", "DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED", "-5");
 	private static final java.util.Set<String> CUSTOM = java.util.Set.of("GetLibraryHandle", "AllowDarkModeForWindow", "SetPreferredAppMode", "IsDarkModeAvailable", "GID_ROTATE_ANGLE_FROM_ARGUMENT", "TreeView_GetItemRect", "PathToPIDL");
 
+	// os.c stubs that dereference a pointer argument before the call: Java name -> index of that argument.
+	private static final Map<String, Integer> DEREF = Map.of("ScriptStringOut", 0);
+
 	private final Emitter emitter;
 	// Statements around the call for struct arguments: toC into a C-layout buffer before, fromC after.
 	private final StringBuilder pre = new StringBuilder();
@@ -91,6 +94,7 @@ final class WinNativeEmitter {
 		post.setLength(0);
 		for (int i = 0; i < types.length; i++) {
 			String arg = argExpr(md, types[i], i);
+			if (arg != null && DEREF.getOrDefault(javaName, -1) == i) arg = "derefPtr(" + paramName(md, i) + ")";
 			if (arg == null) {
 				emitter.emitUnsupportedNative(md, ci, out);
 				return;

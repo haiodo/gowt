@@ -184,13 +184,7 @@ func (s *Surface) replayOps(p *gfx.Picture) {
 		case gfx.OpTransform:
 			s.concat(op.M)
 		case gfx.OpFill:
-			cgFillColor(ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A)
-			s.addPath(op.Path)
-			if op.Path.EvenOdd {
-				cgEOFillPath(ctx)
-			} else {
-				cgFillPath(ctx)
-			}
+			s.fill(op.Path, op.Color)
 		case gfx.OpFillGrad:
 			cgSaveGState(ctx)
 			s.addPath(op.Path)
@@ -210,8 +204,14 @@ func (s *Surface) replayOps(p *gfx.Picture) {
 			s.dashed = false
 		case gfx.OpShadowBox:
 			s.shadowBox(op)
+		case gfx.OpFillShadow:
+			s.withShadow(op.Shadow, func() { s.fill(op.Path, op.Color) })
+		case gfx.OpStrokeShadow:
+			s.withShadow(op.Shadow, func() { s.stroke(op.Path, op.Style, op.Color) })
 		case gfx.OpText:
 			s.text(op.Text, op)
+		case gfx.OpTextShadow:
+			s.withShadow(op.Shadow, func() { s.text(op.Text, op) })
 		case gfx.OpImage:
 			img := s.r.cgImage(op.Image)
 			if img == nil {
@@ -390,11 +390,48 @@ func dashDuty(d []float64) float64 {
 	return on / all
 }
 
+func (s *Surface) fill(p *gfx.Path, c gfx.Color) {
+	cgFillColor(s.ctx, c.R, c.G, c.B, c.A)
+	s.addPath(p)
+	if p.EvenOdd {
+		cgEOFillPath(s.ctx)
+	} else {
+		cgFillPath(s.ctx)
+	}
+}
+
 func (s *Surface) stroke(p *gfx.Path, st *gfx.StrokeStyle, c gfx.Color) {
 	duty := s.strokeStyle(st)
 	cgStrokeColor(s.ctx, c.R, c.G, c.B, c.A*duty)
 	s.addPath(p)
 	cgStrokePath(s.ctx)
+}
+
+// shadowState sets the shadow of sh on the context; clearShadow ends it. CoreGraphics reads the
+// offset in device pixels and ignores the transform, so it is taken through the current one: a
+// content flipped or turned by a transform keeps its shadow on the side the node's own axes say.
+func (s *Surface) shadowState(sh gfx.Shadow) {
+	m := cgGetCTM(s.ctx)
+	off := cgSize{m.A*sh.DX + m.C*sh.DY, m.B*sh.DX + m.D*sh.DY}
+	col := cgColorCreate(sh.Color.R, sh.Color.G, sh.Color.B, sh.Color.A)
+	cgSetShadow(s.ctx, off, sh.Blur*math.Sqrt(math.Abs(m.A*m.D-m.B*m.C)), col)
+	cgColorRelase(col)
+}
+
+func (s *Surface) clearShadow() { cgSetShadow(s.ctx, cgSize{}, 0, 0) }
+
+// withShadow runs draw with the shadow of sh under what it paints.
+func (s *Surface) withShadow(sh gfx.Shadow, draw func()) {
+	if s.r.opts.LOD && s.eff < 0.5 {
+		sh.Color.A *= math.Max(0, s.eff*4-1)
+	}
+	if sh.Color.A <= 0 {
+		draw()
+		return
+	}
+	s.shadowState(sh)
+	draw()
+	s.clearShadow()
 }
 
 func (s *Surface) shadowBox(op *gfx.Op) {
@@ -409,15 +446,12 @@ func (s *Surface) shadowBox(op *gfx.Op) {
 	if sh.Color.A > 0 && s.r.opts.ShadowSprite && w > 2*(r+1.5*sh.Blur) && h > 2*(r+1.5*sh.Blur) {
 		s.r.sprite(r, sh.Blur, sh.Color, s.eff, math.Max(math.Abs(sh.DX), math.Abs(sh.DY)), op.Color.A >= 1).draw(s, x+sh.DX, y+sh.DY, w, h)
 	} else if sh.Color.A > 0 {
-		col := cgColorCreate(sh.Color.R, sh.Color.G, sh.Color.B, sh.Color.A)
 		cgSaveGState(ctx)
-		// the shadow offset lives in unflipped device pixels, so y goes negative
-		cgSetShadow(ctx, cgSize{sh.DX * s.eff, -sh.DY * s.eff}, sh.Blur*s.eff, col)
+		s.shadowState(sh)
 		cgFillColor(ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A)
 		s.addPath(&rr)
 		cgFillPath(ctx)
 		cgRestoreGSt(ctx)
-		cgColorRelase(col)
 		return
 	}
 	cgFillColor(ctx, op.Color.R, op.Color.G, op.Color.B, op.Color.A)

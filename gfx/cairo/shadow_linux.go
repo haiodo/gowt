@@ -14,14 +14,13 @@ import (
 func (t *Target) shadowBox(op *gfx.Op) {
 	cr := t.cr
 	x, y, w, h, rad := op.A, op.B, op.C, op.D, op.E
-	sh := op.Shadow
 	var rr gfx.Path
 	rr.RoundRect(x, y, w, h, rad)
-	if t.r.opts.LOD && t.eff < 0.5 {
-		sh.Color.A *= math.Max(0, t.eff*4-1) // a shadow under half scale is a smudge: fade it out
-	}
-	if sh.Color.A > 0 && w > 0 && h > 0 {
-		t.blurredShape(x+sh.DX, y+sh.DY, w, h, rad, sh.Blur/2, sh.Color)
+	if w > 0 && h > 0 {
+		t.shadowUnder(gfx.R(x, y, w, h), op.Shadow, func(sub *Target) {
+			sub.addPath(&rr)
+			fill(sub.cr)
+		})
 	}
 	setSourceRGBA(cr, op.Color.R, op.Color.G, op.Color.B, op.Color.A)
 	t.addPath(&rr)
@@ -29,15 +28,75 @@ func (t *Target) shadowBox(op *gfx.Op) {
 	fill(cr)
 }
 
-func (t *Target) blurredShape(x, y, w, h, rad, sigma float64, col gfx.Color) {
+// shadowPath draws the path of op, stroked or filled, over its shadow.
+func (t *Target) shadowPath(op *gfx.Op, stroked bool) {
+	cr := t.cr
+	p, st := op.Path, op.Style
+	if !stroked {
+		st = nil
+	}
+	box := p.Bounds()
+	if st != nil {
+		limit := math.Max(st.MiterLimit, 10)
+		box = box.Expand(st.Width / 2 * math.Max(limit, math.Sqrt2))
+	}
+	t.shadowUnder(box, op.Shadow, func(sub *Target) {
+		sub.addPath(p)
+		if st == nil {
+			sub.setRule(p)
+			fill(sub.cr)
+			return
+		}
+		sub.strokeStyle(st)
+		stroke(sub.cr)
+	})
+	if st == nil {
+		setSourceRGBA(cr, op.Color.R, op.Color.G, op.Color.B, op.Color.A)
+		t.addPath(p)
+		t.setRule(p)
+		fill(cr)
+		return
+	}
+	duty := t.strokeStyle(st)
+	setSourceRGBA(cr, op.Color.R, op.Color.G, op.Color.B, op.Color.A*duty)
+	t.addPath(p)
+	stroke(cr)
+}
+
+// shadowText draws the text over its shadow.
+func (t *Target) shadowText(op *gfx.Op) {
+	m := t.r.MeasureText(op.Text, op.Font)
+	f := op.Font.Size
+	box := gfx.R(op.A-f*0.1, op.B-m.Ascent, m.Width+f*0.2, m.Ascent+m.Descent)
+	mask := *op
+	mask.Color = gfx.Color{A: 1}
+	t.shadowUnder(box, op.Shadow, func(sub *Target) { sub.text(op.Text, &mask) })
+	t.text(op.Text, op)
+}
+
+// shadowUnder paints the shadow sh of what draw puts in local, which bounds it before the offset.
+func (t *Target) shadowUnder(local gfx.Rect, sh gfx.Shadow, draw func(sub *Target)) {
+	if t.r.opts.LOD && t.eff < 0.5 {
+		sh.Color.A *= math.Max(0, t.eff*4-1) // a shadow under half scale is a smudge: fade it out
+	}
+	if sh.Color.A > 0 {
+		t.blurredShape(local, sh, draw)
+	}
+}
+
+// blurredShape renders draw into an A8 mask under the current transform moved by the offset of sh
+// in local coordinates, so the offset turns and mirrors with the transform, blurs it and paints
+// sh.Color through it.
+func (t *Target) blurredShape(local gfx.Rect, sh gfx.Shadow, draw func(sub *Target)) {
 	cr := t.cr
 	var m matrix
 	getMatrix(cr, &m)
-	sd := sigma * math.Sqrt(math.Abs(m.xx*m.yy-m.xy*m.yx))
+	sd := sh.Blur / 2 * math.Sqrt(math.Abs(m.xx*m.yy-m.xy*m.yx))
 	margin := int(math.Ceil(3 * sd))
 	x0, y0, x1, y1 := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
-	for _, c := range [4][2]float64{{x, y}, {x + w, y}, {x, y + h}, {x + w, y + h}} {
-		dx, dy := m.xx*c[0]+m.xy*c[1]+m.x0, m.yx*c[0]+m.yy*c[1]+m.y0
+	for _, c := range [4]gfx.Point{local.Min, {X: local.Max.X, Y: local.Min.Y}, {X: local.Min.X, Y: local.Max.Y}, local.Max} {
+		lx, ly := c.X+sh.DX, c.Y+sh.DY
+		dx, dy := m.xx*lx+m.xy*ly+m.x0, m.yx*lx+m.yy*ly+m.y0
 		x0, y0, x1, y1 = math.Min(x0, dx), math.Min(y0, dy), math.Max(x1, dx), math.Max(y1, dy)
 	}
 	ox, oy := int(math.Floor(x0))-margin, int(math.Floor(y0))-margin
@@ -48,14 +107,12 @@ func (t *Target) blurredShape(x, y, w, h, rad, sigma float64, col gfx.Color) {
 	mask := imageSurfaceCreate(formatA8, int32(bw), int32(bh))
 	defer surfaceDestroy(mask)
 	mcr := create(mask)
-	mm := matrix{m.xx, m.yx, m.xy, m.yy, m.x0 - float64(ox), m.y0 - float64(oy)}
+	mm := matrix{m.xx, m.yx, m.xy, m.yy,
+		m.x0 + m.xx*sh.DX + m.xy*sh.DY - float64(ox), m.y0 + m.yx*sh.DX + m.yy*sh.DY - float64(oy)}
 	setMatrix(mcr, &mm)
 	setSourceRGBA(mcr, 0, 0, 0, 1)
-	var rr gfx.Path
-	rr.RoundRect(x, y, w, h, rad)
-	sub := &Target{r: t.r, cr: mcr}
-	sub.addPath(&rr)
-	fill(mcr)
+	setFillRule(mcr, fillRuleWinding)
+	draw(&Target{r: t.r, cr: mcr, eff: t.eff})
 	destroy(mcr)
 	surfaceFlush(mask)
 	if sd > 0.3 {
@@ -63,6 +120,7 @@ func (t *Target) blurredShape(x, y, w, h, rad, sigma float64, col gfx.Color) {
 		blurA8(unsafe.Slice((*byte)(ptr(imageSurfaceGetData(mask))), stride*bh), bw, bh, stride, sd)
 		surfaceMarkDirty(mask)
 	}
+	col := sh.Color
 	save(cr)
 	identityMatrix(cr)
 	setSourceRGBA(cr, col.R, col.G, col.B, col.A)

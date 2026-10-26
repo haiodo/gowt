@@ -138,7 +138,7 @@ func (p *Path) Arc(cx, cy, r, a0, a1 float64) {
 		p.LineTo(cx+r*c, cy+r*s)
 	}
 	sweep := a1 - a0
-	n := int(math.Ceil(math.Abs(sweep) / (math.Pi / 2)))
+	n := int(math.Ceil(math.Abs(sweep)/(math.Pi/2) - 1e-9)) // rounding must not split a quarter turn
 	if n == 0 {
 		return
 	}
@@ -151,6 +151,65 @@ func (p *Path) Arc(cx, cy, r, a0, a1 float64) {
 		s1, c1 := math.Sincos(b1)
 		p.CubicTo(cx+r*(c0-k*s0), cy+r*(s0+k*c0), cx+r*(c1+k*s1), cy+r*(s1-k*c1), cx+r*c1, cy+r*s1)
 	}
+}
+
+// ArcTo adds the arc of radius r that is tangent to the line from the current point to (x1, y1) and
+// to the line from (x1, y1) to (x2, y2), as the HTML canvas arcTo does: a straight segment to the
+// first tangent point, then the arc to the second. A zero radius, a repeated point or three points
+// on a line give a straight segment to (x1, y1); without a current point the path starts at (x1, y1).
+func (p *Path) ArcTo(x1, y1, x2, y2, r float64) {
+	if len(p.Verbs) == 0 {
+		p.MoveTo(x1, y1)
+		return
+	}
+	p0, p1, p2 := p.current(), Point{x1, y1}, Point{x2, y2}
+	d1, d2 := p0.Sub(p1), p2.Sub(p1)
+	l1, l2 := d1.Len(), d2.Len()
+	if l1 == 0 || l2 == 0 || r <= 0 {
+		p.LineTo(x1, y1)
+		return
+	}
+	d1, d2 = d1.Mul(1/l1), d2.Mul(1/l2)
+	cross := d1.X*d2.Y - d1.Y*d2.X
+	if math.Abs(cross) < 1e-12 {
+		p.LineTo(x1, y1)
+		return
+	}
+	half := math.Acos(math.Max(-1, math.Min(1, d1.Dot(d2)))) / 2 // half the angle at p1
+	t := r / math.Tan(half)
+	c := p1.Add(d1.Add(d2).Unit().Mul(r / math.Sin(half)))
+	t1, t2 := p1.Add(d1.Mul(t)), p1.Add(d2.Mul(t))
+	a0, a1 := math.Atan2(t1.Y-c.Y, t1.X-c.X), math.Atan2(t2.Y-c.Y, t2.X-c.X)
+	sweep := a1 - a0
+	for sweep > math.Pi {
+		sweep -= 2 * math.Pi
+	}
+	for sweep < -math.Pi {
+		sweep += 2 * math.Pi
+	}
+	p.Arc(c.X, c.Y, r, a0, a0+sweep)
+}
+
+// current is the end of the path: its last point, or the start of the last subpath after a Close.
+func (p *Path) current() Point {
+	if n := len(p.Verbs); n == 0 || p.Verbs[n-1] != ClosePath {
+		return p.Pts[len(p.Pts)-1]
+	}
+	i, start := 0, 0
+	for _, v := range p.Verbs {
+		switch v {
+		case MoveTo:
+			start = i
+			i++
+		case LineTo:
+			i++
+		case QuadTo:
+			i += 2
+		case CubicTo:
+			i += 3
+		}
+	}
+	return p.Pts[start]
 }
 
 // Transform returns a copy of p with every point mapped by m.

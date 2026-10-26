@@ -266,8 +266,14 @@ func (rp *replayer) replayOps(p *gfx.Picture) {
 			}
 		case gfx.OpShadowBox:
 			rp.shadowBox(op)
+		case gfx.OpFillShadow:
+			rp.shadowFill(op)
+		case gfx.OpStrokeShadow:
+			rp.shadowStroke(op)
 		case gfx.OpText:
 			rp.text(op.Text, op)
+		case gfx.OpTextShadow:
+			rp.shadowText(op)
 		case gfx.OpImage:
 			rp.image(op)
 		case gfx.OpClipRect:

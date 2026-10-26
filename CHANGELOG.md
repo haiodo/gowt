@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+gfx shadows, ArcTo, SVG (Tenniarb request)
+- New: `Recorder.FillShadowPath(p, fill, sh)`, `StrokeShadowPath(p, st, c, sh)` and `TextShadow(s, x, y, font, c, sh)`: a blurred drop shadow under any path fill, any stroke (ellipses, `RoundRectPath4`, boxes with no fill, lines) and under text, on cg, cairo and d2d. New ops `OpFillShadow`, `OpStrokeShadow`, `OpTextShadow`, appended after `OpEndLayer`. `FillShadowRRect` is unchanged.
+- New: `Path.ArcTo(x1, y1, x2, y2, r)` with HTML canvas `arcTo` semantics; tests against the canvas results. `Path.Arc` no longer splits an exact quarter turn in two cubics because of rounding.
+- New: `gfx.WriteSubtreeSVGWith(..., SVGOptions{Background})` fills a rect behind the content. Text with neither `Name` nor `Family` writes `font-family="Helvetica Neue, Helvetica, Arial, sans-serif"`, which changes the SVG of such text.
+- Fixed: cg took the shadow offset as y-down device pixels, so a node under a negative-determinant transform (`Scale(1, -1)`) had a mirrored shadow, and a rotated one an unrotated shadow. The offset is now taken through the CTM, as cairo and d2d always did. Tested on macOS (cg), Linux Docker (cairo) and the Windows 11 arm64 VM (d2d); the shadow tests are new, `TestHashAcrossRuns` in d2d fails the same way before this change.
+
 Emoji in text (TSK-2026-10-24-gfx-tenniarb-11 D3, TSK-2026-10-03-product-36)
 - Fixed: editing text with surrogate pairs (emoji, ZWJ sequences, flags) no longer panics in `StyledText`. The cause was in `jrt` (UTF-16 indices over UTF-8 strings, no lone surrogates) and was fixed earlier by the WTF-8 work and the `toCharArray`/`charAt`/`new String(char[])` generation; the defect note in the docs was stale. New tests pin it: `swt/custom_defaultcontent_test.go` (no window, fails on the commits before that work) and `swt/custom_styledtext_surrogates_gui_test.go` (`GOWT_GUI_TEST=1`: typing, paste, cut, delete, caret moves, selection, wrap, `StyleRange` inside a pair, `Text`, `Combo`, `Label`). Run on Linux only; macOS and Windows not run.
 

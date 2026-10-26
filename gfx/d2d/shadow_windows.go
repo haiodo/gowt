@@ -192,3 +192,127 @@ func (rp *replayer) shadowBox(op *gfx.Op) {
 	rr.RoundRect(x, y, w, h, r)
 	rp.fill(&rr, op.Color)
 }
+
+// Direct2D slots of the shadow path: ID2D1DeviceContext::CreateEffect and DrawImage, and ID2D1Effect
+// SetValue, SetInput and GetOutput.
+const (
+	d2DCCreateEffect = 63
+	d2DCDrawImage    = 83
+	d2PropSetValue   = 9
+	d2EffectSetInput = 14
+	d2EffectGetOut   = 18
+
+	d2PropFloat   = 5
+	d2PropVector4 = 8
+)
+
+var clsidShadow = mkGUID(0xc67ea361, 0x1863, 0x4e69, 0x89, 0xdb, 0x69, 0x5d, 0x3e, 0x9a, 0x5b, 0x6b)
+
+// maskReplayer returns a replayer that draws into a fresh transparent bitmap of w x h pixels on a
+// second device context of the target, with the transform m; done ends the drawing, the caller frees the bitmap.
+func (rp *replayer) maskReplayer(w, h int, m gfx.Affine) (mrp *replayer, bmp uintptr, done func()) {
+	t := rp.t
+	if t.maskDC == 0 {
+		dc, err := t.r.NewDeviceContext()
+		if err != nil {
+			return nil, 0, nil
+		}
+		col := &colorF{0, 0, 0, 1}
+		var br uintptr
+		if hr := vcall(dc, d2DCCreateSolidBrush, ref(col), ui(0), ref(&br)); failed(hr) {
+			release(dc)
+			return nil, 0, nil
+		}
+		vcall(dc, d2DCSetDpi, fl(96), fl(96))
+		vcall(dc, d2DCSetTextAntialias, ui(2))
+		t.maskDC, t.maskBrush = dc, br
+	}
+	bmp, err := newBitmap(t.maskDC, w, h, nil, 0, bmpTarget)
+	if err != nil {
+		return nil, 0, nil
+	}
+	vcall(t.maskDC, d2DCSetTarget, ui(bmp))
+	vcall(t.maskDC, d2DCBeginDraw)
+	vcall(t.maskDC, d2DCClear, ref(&colorF{}))
+	sub := &Target{r: t.r, dc: t.maskDC, brush: t.maskBrush, scale: t.scale}
+	mrp = &replayer{}
+	mrp.init(sub)
+	mrp.ctm, mrp.eff = m, rp.eff
+	return mrp, bmp, func() {
+		vcall(t.maskDC, d2DCEndDraw, ui(0), ui(0))
+		vcall(t.maskDC, d2DCSetTarget, ui(0))
+	}
+}
+
+// shadowUnder paints the shadow sh of what draw puts in local, which bounds it before the offset:
+// the shape is drawn in black into a bitmap under the current transform moved by the offset, and
+// the Direct2D shadow effect blurs it and tints it with sh.Color. The offset is in local
+// coordinates, so it turns and mirrors with the transform.
+func (rp *replayer) shadowUnder(local gfx.Rect, sh gfx.Shadow, draw func(mrp *replayer)) {
+	if rp.r.opts.LOD && rp.eff < 0.5 {
+		sh.Color.A *= math.Max(0, rp.eff*4-1)
+	}
+	if sh.Color.A <= 0 || rp.ctm.Det() == 0 {
+		return
+	}
+	m := rp.ctm
+	sd := sh.Blur / 2 * m.Scale()
+	margin := int(math.Ceil(3 * sd))
+	box := m.Bounds(local.Translate(gfx.Point{X: sh.DX, Y: sh.DY}))
+	ox, oy := int(math.Floor(box.Min.X))-margin, int(math.Floor(box.Min.Y))-margin
+	w, h := int(math.Ceil(box.Max.X))+margin-ox, int(math.Ceil(box.Max.Y))+margin-oy
+	if w <= 0 || h <= 0 || w > 4096 || h > 4096 {
+		return
+	}
+	mm := m
+	mm[4] += m[0]*sh.DX + m[2]*sh.DY - float64(ox)
+	mm[5] += m[1]*sh.DX + m[3]*sh.DY - float64(oy)
+	mrp, bmp, done := rp.maskReplayer(w, h, mm)
+	if mrp == nil {
+		return
+	}
+	draw(mrp)
+	done()
+	var fx uintptr
+	if hr := vcall(rp.dc, d2DCCreateEffect, ref(clsidShadow), ref(&fx)); failed(hr) {
+		release(bmp)
+		return
+	}
+	sigma := float32(sd)
+	col := [4]float32{float32(sh.Color.R), float32(sh.Color.G), float32(sh.Color.B), float32(sh.Color.A)}
+	vcall(fx, d2EffectSetInput, ui(0), ui(bmp), ui(1))
+	vcall(fx, d2PropSetValue, ui(0), ui(d2PropFloat), ref(&sigma), ui(4))
+	vcall(fx, d2PropSetValue, ui(1), ui(d2PropVector4), ref(&col), ui(16))
+	var img uintptr
+	vcall(fx, d2EffectGetOut, ref(&img))
+	vcall(rp.dc, d2DCSetTransform, ref(&matrix{1, 0, 0, 1, 0, 0}))
+	rp.setOK = false
+	vcall(rp.dc, d2DCDrawImage, ui(img), ref(&point2F{float32(ox), float32(oy)}), ui(0), ui(0), ui(0))
+	release(img)
+	release(fx)
+	release(bmp)
+}
+
+func (rp *replayer) shadowFill(op *gfx.Op) {
+	p := op.Path
+	rp.shadowUnder(p.Bounds(), op.Shadow, func(mrp *replayer) { mrp.fill(p, gfx.Color{A: 1}) })
+	rp.fill(p, op.Color)
+}
+
+func (rp *replayer) shadowStroke(op *gfx.Op) {
+	p, st := op.Path, op.Style
+	limit := math.Max(st.MiterLimit, 10)
+	box := p.Bounds().Expand(st.Width / 2 * math.Max(limit, math.Sqrt2))
+	rp.shadowUnder(box, op.Shadow, func(mrp *replayer) { mrp.stroke(p, st, gfx.Color{A: 1}, 0) })
+	rp.stroke(p, st, op.Color, 0)
+}
+
+func (rp *replayer) shadowText(op *gfx.Op) {
+	m := rp.r.MeasureText(op.Text, op.Font)
+	f := op.Font.Size
+	box := gfx.R(op.A-f*0.1, op.B-m.Ascent, m.Width+f*0.2, m.Ascent+m.Descent)
+	mask := *op
+	mask.Color = gfx.Color{A: 1}
+	rp.shadowUnder(box, op.Shadow, func(mrp *replayer) { mrp.text(op.Text, &mask) })
+	rp.text(op.Text, op)
+}

@@ -13,24 +13,27 @@ type OpKind uint8
 
 // The operands of each kind are in the fields of Op named after it.
 const (
-	OpSave       OpKind = iota
-	OpRestore           //
-	OpTranslate         // A, B
-	OpScale             // A, B
-	OpRotate            // A
-	OpTransform         // M
-	OpFill              // Path, Color
-	OpFillGrad          // Path, Grad
-	OpStroke            // Path, Style, Color
-	OpStrokeGrad        // Path, Style, Grad
-	OpShadowBox         // rounded rect A, B, C, D (x, y, w, h), E radius, Shadow, Color fill
-	OpText              // Text, Font, A, B baseline origin, Color
-	OpImage             // Image, A, B, C, D destination rect
-	OpClipRect          // A, B, C, D
-	OpClipRRect         // A, B, C, D, E radius
-	OpClipPath          // Path
-	OpBeginLayer        // A alpha: everything up to OpEndLayer is composited as one with this alpha
-	OpEndLayer          //
+	OpSave         OpKind = iota
+	OpRestore             //
+	OpTranslate           // A, B
+	OpScale               // A, B
+	OpRotate              // A
+	OpTransform           // M
+	OpFill                // Path, Color
+	OpFillGrad            // Path, Grad
+	OpStroke              // Path, Style, Color
+	OpStrokeGrad          // Path, Style, Grad
+	OpShadowBox           // rounded rect A, B, C, D (x, y, w, h), E radius, Shadow, Color fill
+	OpText                // Text, Font, A, B baseline origin, Color
+	OpImage               // Image, A, B, C, D destination rect
+	OpClipRect            // A, B, C, D
+	OpClipRRect           // A, B, C, D, E radius
+	OpClipPath            // Path
+	OpBeginLayer          // A alpha: everything up to OpEndLayer is composited as one with this alpha
+	OpEndLayer            //
+	OpFillShadow          // Path, Color fill, Shadow: the shadow of the filled shape, then the shape
+	OpStrokeShadow        // Path, Style, Color, Shadow: the shadow of the stroked outline, then the stroke
+	OpTextShadow          // as OpText, plus Shadow under the glyphs
 )
 
 // Cap is the shape of the ends of a stroked line.
@@ -466,19 +469,60 @@ func strokeReach(p *Path, st StrokeStyle) float64 {
 
 // FillShadowRRect fills a rounded rectangle with a blurred drop shadow under it.
 func (r *Recorder) FillShadowRRect(x, y, w, h, radius float64, fill Color, sh Shadow) {
-	reach := 1.5*sh.Blur + math.Max(math.Abs(sh.DX), math.Abs(sh.DY))
-	r.grow(R(x, y, w, h).Expand(reach))
+	r.grow(R(x, y, w, h).Expand(sh.reach()))
 	r.op(OpShadowBox)
 	r.f32(x, y, w, h, radius, sh.DX, sh.DY, sh.Blur)
 	r.color(fill)
 	r.color(sh.Color)
 }
 
+func (r *Recorder) shadow(sh Shadow) {
+	r.f32(sh.DX, sh.DY, sh.Blur)
+	r.color(sh.Color)
+}
+
+func (sh Shadow) reach() float64 {
+	return 1.5*sh.Blur + math.Max(math.Abs(sh.DX), math.Abs(sh.DY))
+}
+
+// FillShadowPath fills p with a blurred drop shadow of its shape under it. The offset of the shadow
+// is in the coordinates of p, so it turns and mirrors with the transform.
+func (r *Recorder) FillShadowPath(p *Path, c Color, sh Shadow) {
+	r.grow(p.Bounds().Expand(sh.reach()))
+	r.op(OpFillShadow)
+	r.path(p)
+	r.color(c)
+	r.shadow(sh)
+}
+
+// StrokeShadowPath strokes p with a blurred drop shadow of the stroke under it.
+func (r *Recorder) StrokeShadowPath(p *Path, st StrokeStyle, c Color, sh Shadow) {
+	r.grow(r.strokeBounds(p, st).Expand(sh.reach()))
+	r.op(OpStrokeShadow)
+	r.path(p)
+	r.style(st)
+	r.color(c)
+	r.shadow(sh)
+}
+
+// TextShadow is Text with a blurred drop shadow of the glyphs under it.
+func (r *Recorder) TextShadow(s string, x, y float64, f Font, c Color, sh Shadow) {
+	r.text(OpTextShadow, s, x, y, f, c, sh)
+}
+
 // Text draws s with its baseline origin at (x, y); the bounds come from the recorder's measurer.
 func (r *Recorder) Text(s string, x, y float64, f Font, c Color) {
+	r.text(OpText, s, x, y, f, c, Shadow{})
+}
+
+func (r *Recorder) text(k OpKind, s string, x, y float64, f Font, c Color, sh Shadow) {
 	m := r.m.MeasureText(s, f)
 	// a glyph can lean a little past its advance
-	r.grow(R(x-f.Size*0.1, y-m.Ascent, m.Width+f.Size*0.2, m.Ascent+m.Descent))
+	box := R(x-f.Size*0.1, y-m.Ascent, m.Width+f.Size*0.2, m.Ascent+m.Descent)
+	if k == OpTextShadow {
+		box = box.Expand(sh.reach())
+	}
+	r.grow(box)
 	r.res.strs = append(r.res.strs, s)
 	fi := -1
 	for i, ff := range r.res.fonts {
@@ -491,11 +535,14 @@ func (r *Recorder) Text(s string, x, y float64, f Font, c Color) {
 		r.res.fonts = append(r.res.fonts, f)
 		fi = len(r.res.fonts) - 1
 	}
-	r.op(OpText)
+	r.op(k)
 	r.f32(x, y)
 	r.uv(len(r.res.strs) - 1)
 	r.uv(fi)
 	r.color(c)
+	if k == OpTextShadow {
+		r.shadow(sh)
+	}
 }
 
 // DrawImage draws img stretched into the rectangle at (x, y) of size w by h.
@@ -608,6 +655,11 @@ func (it *Iter) readGrad() *Gradient {
 	return g
 }
 
+func (it *Iter) readShadow(o *Op) {
+	o.Shadow.DX, o.Shadow.DY, o.Shadow.Blur = it.f32(), it.f32(), it.f32()
+	o.Shadow.Color = it.color()
+}
+
 // Next decodes the next command; it reports false at the end of the picture.
 func (it *Iter) Next() bool {
 	if it.pos >= len(it.p.data) {
@@ -644,11 +696,23 @@ func (it *Iter) Next() bool {
 		o.Shadow.DX, o.Shadow.DY, o.Shadow.Blur = it.f32(), it.f32(), it.f32()
 		o.Color = it.color()
 		o.Shadow.Color = it.color()
-	case OpText:
+	case OpFillShadow:
+		o.Path = it.readPath()
+		o.Color = it.color()
+		it.readShadow(o)
+	case OpStrokeShadow:
+		o.Path = it.readPath()
+		o.Style = it.readStyle()
+		o.Color = it.color()
+		it.readShadow(o)
+	case OpText, OpTextShadow:
 		o.A, o.B = it.f32(), it.f32()
 		o.Text = it.p.res.strs[it.uv()]
 		o.Font = it.p.res.fonts[it.uv()]
 		o.Color = it.color()
+		if o.Kind == OpTextShadow {
+			it.readShadow(o)
+		}
 	case OpImage:
 		o.A, o.B, o.C, o.D = it.f32(), it.f32(), it.f32(), it.f32()
 		o.Image = it.p.res.images[it.uv()]

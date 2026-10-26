@@ -93,7 +93,7 @@ scene.Update(func(tx *gfx.Tx) { // any goroutine; applied whole by the next fram
 
 `gfx.NewRecorder()` records `Save`, `Restore`, `Translate`, `Scale`, `Rotate`, `Transform`,
 `ClipRect`, `ClipRRect`, `ClipPath`, `FillPath`, `StrokePath` (dash, caps, joins), `FillGradient` and
-`StrokeGradient` (linear, radial), `FillShadowRRect`, `Text`, `DrawImage`, `BeginLayer`/`EndLayer`
+`StrokeGradient` (linear, radial), `FillShadowRRect`, `FillShadowPath`, `StrokeShadowPath`, `TextShadow`, `Text`, `DrawImage`, `BeginLayer`/`EndLayer`
 (group alpha). The result is an immutable `*Picture` in a compact byte stream (about 0.3 KB for
 a box with shadow, border and two labels), with bounds that follow transforms, clips and strokes.
 Text bounds are measured by the backend that is linked in (`gfx.DefaultMeasurer`: CoreText, Pango or
@@ -107,7 +107,37 @@ r, err := offscreen.New(offscreen.Options{LOD: true}) // or cg.NewRenderer / cai
 raster, err := gfx.RenderSubtree(r, scene, node, gfx.Rect{}, 2, gfx.Color{R: 1, G: 1, B: 1, A: 1})
 png, _ := raster.PNG()
 gfx.WriteSubtreeSVG(w, scene, node, gfx.Rect{}, 1) // pure Go, no renderer
+gfx.WriteSubtreeSVGWith(w, scene, node, gfx.Rect{}, 1, gfx.SVGOptions{Background: white}) // a filled rect behind
 ```
+
+A text with neither `Name` nor `Family` gets `font-family="Helvetica Neue, Helvetica, Arial, sans-serif"` in the SVG,
+the names of the backends' default sans, so a viewer without the scene's font still picks a sans face.
+
+`Path.ArcTo(x1, y1, x2, y2, r)` is the HTML canvas `arcTo`: a straight segment to the first tangent point, then the arc
+tangent to both lines. A zero radius, a repeated point or three points on a line give a straight segment to `(x1, y1)`.
+It is stored as cubics, so every backend replays it.
+
+### Shadows
+
+`Shadow{DX, DY, Blur, Color}` is a Gaussian drop shadow of standard deviation `Blur/2`. Three recorder calls put one
+under any shape; each draws the shadow first and the shape over it:
+
+```go
+r.FillShadowPath(path, fill, sh)             // any path: ellipse, RoundRectPath4, a polygon
+r.StrokeShadowPath(path, stroke, color, sh)  // the shadow of the stroked outline (a box with no fill, a line)
+r.TextShadow("label", x, y, font, color, sh) // the shadow of the glyphs
+```
+
+`FillShadowRRect` stays and is the cheap path for a rounded box: cg and d2d draw it from a cached 9-slice sprite
+(`ShadowSprite`), the others blur it live. The other calls blur every time: cg lets CoreGraphics do it, cairo blurs an
+A8 mask in Go, d2d renders the shape into a bitmap and runs the Direct2D shadow effect on it. Gradient fills and
+strokes have no shadow variant. A shadow is faded out under half scale when `LOD` is set.
+
+The offset `(DX, DY)` is in the coordinates of the shape, so it follows the node's transform on every backend: a
+node flipped by `Scale(1, -1)` throws its shadow toward its own `+y`, which is up on the screen. Before this change cg
+took the offset as y-down device pixels (it negated `DY`), so a content with a negative-determinant transform got a
+mirrored shadow, and a rotated one a shadow that did not rotate; cg now reads the CTM and derives the device offset
+and the blur from it. The blur is isotropic: its radius scales with the square root of the absolute determinant.
 
 ## Text
 

@@ -325,8 +325,14 @@ func (t *Target) replayOps(p *gfx.Picture) {
 			t.dashed = false
 		case gfx.OpShadowBox:
 			t.shadowBox(op)
+		case gfx.OpFillShadow:
+			t.shadowPath(op, false)
+		case gfx.OpStrokeShadow:
+			t.shadowPath(op, true)
 		case gfx.OpText:
 			t.text(op.Text, op)
+		case gfx.OpTextShadow:
+			t.shadowText(op)
 		case gfx.OpImage:
 			t.image(op)
 		case gfx.OpClipRect:

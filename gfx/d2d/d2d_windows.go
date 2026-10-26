@@ -262,17 +262,18 @@ func newBitmap(dc uintptr, w, h int, data []byte, pitch int, opts uint32) (uintp
 
 // Target is an offscreen BGRA bitmap on the device.
 type Target struct {
-	r       *Renderer
-	dc      uintptr
-	bmp     uintptr
-	staging uintptr
-	brush   uintptr
-	w, h    int
-	scale   float64
-	base    gfx.Affine
-	pix     []byte
-	pixOK   bool
-	rp      replayer
+	r                 *Renderer
+	dc                uintptr
+	bmp               uintptr
+	staging           uintptr
+	brush             uintptr
+	maskDC, maskBrush uintptr // second device context for shadow masks, made on first use
+	w, h              int
+	scale             float64
+	base              gfx.Affine
+	pix               []byte
+	pixOK             bool
+	rp                replayer
 }
 
 // NewTarget makes an offscreen bitmap of wpx x hpx device pixels.
@@ -312,6 +313,9 @@ func (r *Renderer) newTarget(wpx, hpx int) (*Target, error) {
 
 // Close frees the target.
 func (t *Target) Close() {
+	release(t.maskBrush)
+	release(t.maskDC)
+	t.maskBrush, t.maskDC = 0, 0
 	release(t.staging)
 	release(t.brush)
 	release(t.bmp)

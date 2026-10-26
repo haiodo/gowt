@@ -207,7 +207,18 @@ func (w *svgWriter) picture(p *Picture) {
 			fmt.Fprintf(&w.body, `<path d="%s" fill="none" %s%s/>`, o.Path.SVG(), w.paint(Color{}, o.Grad, "stroke"), w.stroke(o.Style))
 		case OpShadowBox:
 			w.shadow(o)
-		case OpText:
+		case OpFillShadow:
+			w.shadowPath(o.Path, 0, o.Shadow, "fill", o.Path.fillRule("fill-rule"), "")
+			fmt.Fprintf(&w.body, `<path d="%s"%s %s/>`, o.Path.SVG(), o.Path.fillRule("fill-rule"), w.paint(o.Color, nil, "fill"))
+		case OpStrokeShadow:
+			w.shadowPath(o.Path, o.Style.Width/2*strokeReach(o.Path, *o.Style), o.Shadow, "stroke", ` fill="none"`, w.stroke(o.Style))
+			fmt.Fprintf(&w.body, `<path d="%s" fill="none" %s%s/>`, o.Path.SVG(), w.paint(o.Color, nil, "stroke"), w.stroke(o.Style))
+		case OpText, OpTextShadow:
+			if o.Kind == OpTextShadow && o.Shadow.Color.A > 0 {
+				id := w.blur(o.Shadow.Blur, "")
+				fmt.Fprintf(&w.body, `<text x="%s" y="%s" transform="translate(%s %s)"%s font-size="%s"%s %s filter="url(#%s)">%s</text>`,
+					num(o.A), num(o.B), num(o.Shadow.DX), num(o.Shadow.DY), svgFont(o.Font), num(o.Font.Size), svgSpacing(o.Font), w.paint(o.Shadow.Color, nil, "fill"), id, html.EscapeString(o.Text))
+			}
 			fmt.Fprintf(&w.body, `<text x="%s" y="%s"%s font-size="%s"%s %s>%s</text>`,
 				num(o.A), num(o.B), svgFont(o.Font), num(o.Font.Size), svgSpacing(o.Font), w.paint(o.Color, nil, "fill"), html.EscapeString(o.Text))
 		case OpImage:
@@ -226,12 +237,34 @@ func (w *svgWriter) picture(p *Picture) {
 	}
 }
 
+// blur defines a Gaussian blur filter and returns its id. CoreGraphics' blur is about twice the
+// standard deviation. region is the filter region in user space; empty means the element box grown
+// by half its size on each side, which a shape with a zero-height box (a horizontal line) cannot use.
+func (w *svgWriter) blur(blur float64, region string) string {
+	id := w.id("f")
+	if region == "" {
+		region = `x="-50%" y="-50%" width="200%" height="200%"`
+	}
+	fmt.Fprintf(&w.defs, `<filter id="%s" %s><feGaussianBlur stdDeviation="%s"/></filter>`, id, region, num(blur/2))
+	return id
+}
+
+// shadowPath writes the blurred, offset copy of p in the shadow color; grow is how far the shape
+// reaches past the bounds of p. kind is the paint attribute, extra the attributes after it.
+func (w *svgWriter) shadowPath(p *Path, grow float64, sh Shadow, kind, rule, stroke string) {
+	if sh.Color.A <= 0 {
+		return
+	}
+	b := p.Bounds().Expand(grow + 1.5*sh.Blur)
+	id := w.blur(sh.Blur, fmt.Sprintf(`filterUnits="userSpaceOnUse" x="%s" y="%s" width="%s" height="%s"`, num(b.Min.X), num(b.Min.Y), num(b.W()), num(b.H())))
+	fmt.Fprintf(&w.body, `<path d="%s" transform="translate(%s %s)"%s %s%s filter="url(#%s)"/>`,
+		p.SVG(), num(sh.DX), num(sh.DY), rule, w.paint(sh.Color, nil, kind), stroke, id)
+}
+
 func (w *svgWriter) shadow(o *Op) {
 	sh := o.Shadow
 	if sh.Color.A > 0 {
-		id := w.id("f")
-		// CoreGraphics' blur is about twice the standard deviation
-		fmt.Fprintf(&w.defs, `<filter id="%s" x="-50%%" y="-50%%" width="200%%" height="200%%"><feGaussianBlur stdDeviation="%s"/></filter>`, id, num(sh.Blur/2))
+		id := w.blur(sh.Blur, "")
 		fmt.Fprintf(&w.body, `<rect x="%s" y="%s" width="%s" height="%s" rx="%s" %s filter="url(#%s)"/>`,
 			num(o.A+sh.DX), num(o.B+sh.DY), num(o.C), num(o.D), num(o.E), w.paint(sh.Color, nil, "fill"), id)
 	}
@@ -258,6 +291,17 @@ func (p *Picture) WriteSVG(out io.Writer, scale float64) error {
 // root writes the whole scene. area is the scene rectangle to write, or the zero Rect for the
 // subtree bounds.
 func WriteSubtreeSVG(out io.Writer, s *Scene, root *Node, area Rect, scale float64) error {
+	return WriteSubtreeSVGWith(out, s, root, area, scale, SVGOptions{})
+}
+
+// SVGOptions are the extras of WriteSubtreeSVGWith. The zero value is WriteSubtreeSVG.
+type SVGOptions struct {
+	// Background, when its A is above zero, is filled over the whole area behind the content.
+	Background Color
+}
+
+// WriteSubtreeSVGWith is WriteSubtreeSVG with opt.
+func WriteSubtreeSVGWith(out io.Writer, s *Scene, root *Node, area Rect, scale float64, opt SVGOptions) error {
 	s.Commit()
 	if root == nil {
 		root = s.Root()
@@ -268,6 +312,10 @@ func WriteSubtreeSVG(out io.Writer, s *Scene, root *Node, area Rect, scale float
 	var b Items
 	s.CollectSubtree(root, area, &b)
 	var w svgWriter
+	if opt.Background.A > 0 {
+		fmt.Fprintf(&w.body, `<rect x="%s" y="%s" width="%s" height="%s" %s/>`,
+			num(area.Min.X), num(area.Min.Y), num(area.W()), num(area.H()), w.paint(opt.Background, nil, "fill"))
+	}
 	for _, it := range b.List {
 		var closing int
 		for _, c := range it.Clips {
@@ -288,6 +336,9 @@ func WriteSubtreeSVG(out io.Writer, s *Scene, root *Node, area Rect, scale float
 	return w.finish(out, area, scale)
 }
 
+// svgDefaultFamily stands for the default sans face of the backends.
+const svgDefaultFamily = "Helvetica Neue, Helvetica, Arial, sans-serif"
+
 // svgFont is the family, weight and style attributes of f; a Name is a face name and leaves the
 // weight and style to it, as the backends do.
 func svgFont(f Font) string {
@@ -297,6 +348,8 @@ func svgFont(f Font) string {
 	var b strings.Builder
 	if f.Family != "" {
 		fmt.Fprintf(&b, ` font-family="%s"`, html.EscapeString(f.Family))
+	} else {
+		b.WriteString(` font-family="` + svgDefaultFamily + `"`)
 	}
 	if f.Weight != 0 {
 		fmt.Fprintf(&b, ` font-weight="%d"`, f.Weight)

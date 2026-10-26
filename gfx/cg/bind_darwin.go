@@ -47,6 +47,7 @@ var (
 	cgMiterLimit  func(ctx uintptr, m float64)
 	cgLineDash    func(ctx uintptr, phase float64, lengths *float64, n uintptr)
 	cgSetShadow   func(ctx uintptr, off cgSize, blur float64, color uintptr)
+	cgGetCTM      func(ctx uintptr) cgAffine
 	cgColorCreate func(r, g, b, a float64) uintptr
 	cgColorRelase func(c uintptr)
 	cgClipRect    func(ctx uintptr, r cgRect)
@@ -139,6 +140,7 @@ func bind() {
 		reg(&cgMiterLimit, "CGContextSetMiterLimit")
 		reg(&cgLineDash, "CGContextSetLineDash")
 		reg(&cgSetShadow, "CGContextSetShadowWithColor")
+		reg(&cgGetCTM, "CGContextGetCTM")
 		reg(&cgColorCreate, "CGColorCreateGenericRGB")
 		reg(&cgColorRelase, "CGColorRelease")
 		reg(&cgClipRect, "CGContextClipToRect")

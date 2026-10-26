@@ -29,6 +29,7 @@ func TestCTabsRendererOverride(t *testing.T) {
 	var probe *probeRenderer
 	var errs []error
 	var height int32
+	var ring [3]bool
 	onMain(func() {
 		err := Run(func(app *App) {
 			app.OnError(func(e error) { errs = append(errs, e) })
@@ -40,6 +41,12 @@ func TestCTabsRendererOverride(t *testing.T) {
 				func() {
 					f := tabs.Unwrap()
 					height = f.GetTabHeight()
+					r := newTabRenderer(f)
+					ring[0] = r.keys
+					(&tabKeys{r}).HandleEvent(&swt.Event{Type: swt.KeyDown, Character: '\t'})
+					ring[1] = r.keys
+					(&tabKeys{r}).HandleEvent(&swt.Event{Type: swt.MouseDown})
+					ring[2] = r.keys
 					probe = &probeRenderer{}
 					probe.CTabFolderRenderer = swt.NewCTabFolderRenderer(f)
 					probe.SetImpl_(probe)
@@ -54,6 +61,9 @@ func TestCTabsRendererOverride(t *testing.T) {
 	})
 	for _, e := range errs {
 		t.Errorf("%v", e)
+	}
+	if ring != [3]bool{false, true, false} {
+		t.Errorf("focus ring at start, after Tab, after a click: %v, want [false true false]", ring)
 	}
 	if probe == nil || probe.selected == 0 {
 		t.Errorf("the subclass drew no selected tab")

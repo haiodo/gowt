@@ -201,8 +201,13 @@ func (r *tabRenderer) drawTab(i, state int32, b *swt.Rectangle, gc *swt.GC) {
 	}
 	if w := right - x; w > 0 {
 		gc.SetFont(item.GetFont())
-		text := r.ShortenText(gc, item.GetText(), w)
+		// The layout and the paint measure a title 1 px apart on Windows; cut it only past that.
+		text := item.GetText()
 		ext := gc.TextExtentStringFlags(text, swt.CTabFolderRendererFLAGS)
+		if ext.X > w+2 {
+			text = r.ShortenText(gc, text, w)
+			ext = gc.TextExtentStringFlags(text, swt.CTabFolderRendererFLAGS)
+		}
 		col := p.dim
 		if sel || hot {
 			col = p.fg

@@ -31,8 +31,16 @@ func (a *App) armSnap(path string, errp *error) func() {
 			a.display.Wake()
 		}
 	}()
+	placed := false
+	var clearedAt time.Time
 	return func() {
 		now := time.Now()
+		if !placed {
+			if shells := a.display.GetShells(); len(shells) > 0 {
+				placed = true
+				shot.PlaceOnRetina(shotHandle(shells[0]))
+			}
+		}
 		if a.quit.Load() || now.Before(due) {
 			return
 		}
@@ -52,6 +60,13 @@ func (a *App) armSnap(path string, errp *error) func() {
 			}
 		}
 		shells := a.display.GetShells()
+		if len(shells) > 0 && clearedAt.IsZero() {
+			shot.ClearFocus(shotHandle(shells[0]))
+			clearedAt = now
+		}
+		if now.Sub(clearedAt) < 500*time.Millisecond {
+			return
+		}
 		if len(shells) == 0 {
 			*errp = fmt.Errorf("gowt: GOWT_SNAP: no window")
 		} else if err := shot.WindowPNG(shotHandle(shells[0]), path); err != nil {

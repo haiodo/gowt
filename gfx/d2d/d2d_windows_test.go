@@ -528,7 +528,7 @@ func TestWICPNG(t *testing.T) {
 }
 
 // TestHashAcrossRuns keeps the hash of the gallery PNG in the temp directory: the first run writes it,
-// every later run on the machine must produce the same bytes.
+// every later run of the same binary on the machine must produce the same bytes.
 func TestHashAcrossRuns(t *testing.T) {
 	data, err := renderGallery(t).PNG()
 	if err != nil {
@@ -536,7 +536,17 @@ func TestHashAcrossRuns(t *testing.T) {
 	}
 	sum := sha256.Sum256(data)
 	got := hex.EncodeToString(sum[:])
-	file := filepath.Join(os.TempDir(), "gfx-d2d-gallery.sha256")
+	// Keyed by this binary: a hash left by an older build is not a regression.
+	self, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	exe, err := os.ReadFile(self)
+	if err != nil {
+		t.Fatal(err)
+	}
+	id := sha256.Sum256(exe)
+	file := filepath.Join(os.TempDir(), "gfx-d2d-gallery-"+hex.EncodeToString(id[:6])+".sha256")
 	prev, err := os.ReadFile(file)
 	if err != nil {
 		t.Logf("first run: recording %s", got)

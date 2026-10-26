@@ -78,10 +78,13 @@ func TestSchemeOf(t *testing.T) {
 }
 
 func TestUserDataDir(t *testing.T) {
-	if got := userDataDir(`C:\Users\a\AppData\Local`, `C:\Apps\Foo.exe`); got != `C:\Users\a\AppData\Local\Foo.WebView2` {
+	if got := userDataDir(`C:\Users\a\AppData\Local`, `C:\Apps\Foo.exe`, nil); got != `C:\Users\a\AppData\Local\Foo.WebView2` {
 		t.Fatal(got)
 	}
-	if userDataDir("", `C:\Foo.exe`) != "" {
+	if got := userDataDir(`C:\L`, `C:\Foo.exe`, []string{"b", "app"}); got != `C:\L\Foo.WebView2-app-b` {
+		t.Fatal(got)
+	}
+	if userDataDir("", `C:\Foo.exe`, nil) != "" {
 		t.Fatal("empty LOCALAPPDATA")
 	}
 }

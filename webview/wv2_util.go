@@ -207,13 +207,21 @@ func schemeOf(u string) string {
 }
 
 // userDataDir is where the runtime keeps profile data: the default (next to the exe) fails for installs in
-// Program Files, so it goes to %LOCALAPPDATA%.
-func userDataDir(localAppData, exe string) string {
+// Program Files, so it goes to %LOCALAPPDATA%. Environments with other custom schemes need a folder of their
+// own: in one process they would share the browser process, and the runtime refuses the controller of the
+// second one with HRESULT 0x8007139F. Ceiling: cookies are not shared between views with different scheme sets.
+func userDataDir(localAppData, exe string, schemes []string) string {
 	if localAppData == "" {
 		return ""
 	}
 	base := path.Base(strings.ReplaceAll(exe, `\`, "/"))
-	return localAppData + `\` + strings.TrimSuffix(base, ".exe") + ".WebView2"
+	dir := localAppData + `\` + strings.TrimSuffix(base, ".exe") + ".WebView2"
+	if len(schemes) > 0 {
+		s := append([]string(nil), schemes...)
+		sort.Strings(s)
+		dir += "-" + strings.Join(s, "-")
+	}
+	return dir
 }
 
 // vtable lays out slots as a COM vtable; the memory is kept by the returned slice.

@@ -35,6 +35,7 @@ type Popover struct {
 	active   bool // a deactivation before the first activation is left over from an earlier hide
 	filters  *popoverFilter
 	native   popoverNative
+	owner    *swt.Shell
 }
 
 // Popover creates a hidden popover for w; Show it with ShowAt or ShowAtPoint once its content is built.
@@ -46,7 +47,7 @@ func (w *Window) Popover(opts ...Option) *Popover {
 	c := swt.NewCompositeParentStyle(&s.Composite, popoverBodyStyle)
 	gap, pad := spacingOf(opts, Spacing.SM)
 	c.SetLayout(newBox(false, gap, pad))
-	p := &Popover{panel: newPanel(c), shell: s}
+	p := &Popover{panel: newPanel(c), shell: s, owner: w.shell}
 	p.native.init(p)
 	finish(p, 0, opts)
 	s.AddShellListener(swt.ShellListenerShellActivatedAdapter(func(*swt.ShellEvent) { p.active = p.shown }))
@@ -112,7 +113,7 @@ func (p *Popover) show(anchor *swt.Control, local popRect, edge PopoverEdge) {
 	p.filters = newPopoverFilter(p)
 	p.native.show(p, anchor, local, edge)
 	if c := p.initialFocus(); c != nil {
-		c.SetFocus()
+		p.native.focus(c)
 	}
 }
 

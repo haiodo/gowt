@@ -9,7 +9,14 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 )
 
-func init() { runtime.LockOSThread() }
+func init() {
+	runtime.LockOSThread()
+	uiRun = func(f func()) {
+		done := make(chan struct{})
+		vtMainq <- func() { defer close(done); f() }
+		<-done
+	}
+}
 
 var vtMainq = make(chan func())
 

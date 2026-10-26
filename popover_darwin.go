@@ -5,7 +5,8 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// The shell is never shown: its content view lives in the NSPopover.
+// The shell is never shown: its content view lives in the NSPopover while it is on screen and
+// returns to the shell's window when it closes.
 const (
 	popoverStyle     = swt.NO_TRIM | swt.ON_TOP
 	popoverBodyStyle = swt.NONE
@@ -14,7 +15,14 @@ const (
 // popoverNative is an NSPopover.
 type popoverNative struct{ pop uintptr }
 
-func (n *popoverNative) init(p *Popover) {}
+// A transient NSPopover does not close when the owner window is activated from code.
+func (n *popoverNative) init(p *Popover) {
+	p.owner.AddShellListener(swt.ShellListenerShellActivatedAdapter(func(*swt.ShellEvent) {
+		if p.shown {
+			p.Close()
+		}
+	}))
+}
 
 func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edge PopoverEdge) {
 	w, h := p.w, p.h
@@ -36,6 +44,29 @@ func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edg
 	cocoa.ShowPopover(n.pop, anchor.TopView(), r, int(edge), cocoa.NSSize{Width: float64(w), Height: float64(h)})
 }
 
+// focus gives c the first responder of the popover window; SWT's own SetFocus refuses because its
+// shell is not visible. It is repeated when the popover has appeared.
+func (n *popoverNative) focus(c *swt.Control) { cocoa.FocusPopover(n.pop, c.FocusView()) }
+
+// focused is first-responder based: the key window is the active application's, which a test
+// process may not be.
+func (n *popoverNative) focused(p *Popover, c *swt.Control) bool {
+	return cocoa.FirstResponderIn(c.FocusView())
+}
+
+// outsideClick closes the NSPopover without the Popover knowing, so that OnClose has to come from
+// popoverDidClose:. The click outside itself is AppKit's transient behaviour: an inactive test process
+// cannot drive it, and it is checked by hand.
+func (n *popoverNative) outsideClick(p *Popover) { cocoa.CloseBehindBack(n.pop) }
+
+func (n *popoverNative) onScreen(p *Popover) bool { return n.pop != 0 && cocoa.PopoverShown(n.pop) }
+
+// bounds is the popover content in screen points; the shell's own bounds belong to the hidden window.
+func (n *popoverNative) bounds(p *Popover) *swt.Rectangle {
+	x, y, w, h := cocoa.PopoverContentRect(n.pop, p.shell.GetDisplay().GetPrimaryFrame().Height)
+	return swt.NewRectangle(int32(x), int32(y), int32(w), int32(h))
+}
+
 func (n *popoverNative) hide(p *Popover) { cocoa.ClosePopover(n.pop) }
 
 func (n *popoverNative) dispose() {
@@ -44,3 +75,5 @@ func (n *popoverNative) dispose() {
 		n.pop = 0
 	}
 }
+
+const outsideClickName = "an AppKit close (popoverDidClose:)"

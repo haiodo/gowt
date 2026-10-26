@@ -40,7 +40,7 @@ func TestCTabsRendererOverride(t *testing.T) {
 			steps(app,
 				func() {
 					f := tabs.Unwrap()
-					height = f.GetTabHeight()
+					height = f.GetTabHeight() + 1 // the strip is the tab height plus the 1 px border line
 					r := newTabRenderer(f)
 					ring[0] = r.keys
 					(&tabKeys{r}).HandleEvent(&swt.Event{Type: swt.KeyDown, Character: '\t'})

@@ -38,3 +38,17 @@ func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edg
 func (n *popoverNative) hide(p *Popover) { p.shell.SetVisible(false) }
 
 func (n *popoverNative) dispose() {}
+
+func (n *popoverNative) focus(c *swt.Control) { c.SetFocus() }
+
+func (n *popoverNative) focused(p *Popover, c *swt.Control) bool {
+	return p.shell.GetDisplay().GetFocusControl() == c
+}
+
+func (n *popoverNative) outsideClick(p *Popover) { p.owner.ForceActive() }
+
+func (n *popoverNative) onScreen(p *Popover) bool { return p.shell.GetVisible() }
+
+func (n *popoverNative) bounds(p *Popover) *swt.Rectangle { return p.shell.GetBounds() }
+
+const outsideClickName = "activating the window"

@@ -1,6 +1,7 @@
 package gowt
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -82,11 +83,20 @@ func TestPopoverGUI(t *testing.T) {
 					p.ShowAt(btn, PopoverBelow)
 				case 4:
 					p.native.outsideClick(p)
-				case 5:
-					if p.Shown() || closed != 4 {
-						fail("activating the window did not close the popover")
+					// The close may be animated: wait on the event loop, at most 2 s.
+					var poll func(left int)
+					poll = func(left int) {
+						if p.Shown() && left > 0 {
+							wait(50*time.Millisecond, func() { poll(left - 1) })
+							return
+						}
+						if p.Shown() || closed != 4 {
+							fail(fmt.Sprintf("%s did not close the popover (shown %v, native on screen %v, closed %d)",
+								outsideClickName, p.Shown(), p.native.onScreen(p), closed))
+						}
+						w.Close()
 					}
-					w.Close()
+					poll(40)
 					return
 				}
 				wait(300*time.Millisecond, func() { step(n + 1) })

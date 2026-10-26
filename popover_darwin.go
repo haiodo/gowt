@@ -74,3 +74,5 @@ func (n *popoverNative) dispose() {
 		n.pop = 0
 	}
 }
+
+const outsideClickName = "performClose: on the popover"

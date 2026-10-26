@@ -116,6 +116,11 @@ func structArg(p unsafe.Pointer, size uintptr) uintptr {
 	return uintptr(p)
 }
 
+// derefPtr is the pointer-sized word at address p: os.c passes *(SCRIPT_STRING_ANALYSIS*)arg0 where the Java side holds the address of the handle.
+func derefPtr(p int64) uintptr {
+	return *(*uintptr)(unsafe.Add(unsafe.Pointer(nil), uintptr(p)))
+}
+
 // vtblFn is slot fn of the COM object at address obj (its first word points to the vtable).
 func vtblFn(obj int64, fn int32) uintptr {
 	vtbl := *(*uintptr)(unsafe.Add(unsafe.Pointer(nil), uintptr(obj)))

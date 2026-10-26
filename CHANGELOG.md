@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+Popover
+- New: `Window.Popover(opts...)` returns a `Popover`, a floating panel with ordinary widgets: `ShowAt(anchor, edge)`, `ShowAtPoint(anchor, x, y, edge)`, `Close`, `Shown`, `OnClose`, `OnEscape`, `SetSize`, `Add` and `Dispose`. It closes by a click outside, Esc and loss of the application focus, and keeps itself on the screen. macOS uses `NSPopover` (not run on a Mac yet); Windows and Linux a borderless window, rounded on Windows 11. The Goto-item popover is in `examples/dialogs`. See docs/dialogs-menus.md.
+
 CTabs look
 - Changed: `CTabs` draws a modern document tab bar on every OS: a flat strip with a hairline in the system separator colour, the selected tab in the folder's background (so it joins the content) with a 2 px accent line, secondary text on the other tabs with a hover fill, the Type.Body font, the tab height from Spacing.ControlHeight, a round close button shown on the selected and the hovered tab, and an accent ring on the selected tab while the folder has the focus. Set the folder's `Background` to the editor's colour so that the tab joins it. A `CTabs` now selects its first tab when created; SWT did so only when the folder got the focus.
 - Changed: j2go has `dispatch.properties`: a class listed there dispatches through `impl` and exports its protected constructors, so Go code can subclass it. `swt.CTabFolderRenderer` is the first: embed it, `NewCTabFolderRenderer(folder)`, `SetImpl_(x)`, define `Draw_`, `ComputeSize_`, `ComputeTrim_`, `Dispose_`, then `CTabFolder.SetRenderer(x)`.

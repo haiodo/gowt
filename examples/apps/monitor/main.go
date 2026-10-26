@@ -7,8 +7,10 @@ import (
 	"cmp"
 	"fmt"
 	"log"
+	"os"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -72,7 +74,16 @@ type monitor struct {
 	first    bool
 }
 
+// snapping is true under GOWT_SNAP, a screenshot run. The charts need about 25 s of samples to show curves,
+// so the capture waits for them unless the caller set a longer delay.
+var snapping = os.Getenv("GOWT_SNAP") != ""
+
 func main() {
+	if snapping {
+		if ms, _ := strconv.Atoi(os.Getenv("GOWT_SNAP_DELAY")); ms < 25000 {
+			os.Setenv("GOWT_SNAP_DELAY", "25000")
+		}
+	}
 	err := gowt.Run(func(app *gowt.App) {
 		app.SetDensity(gowt.DensityNative)
 		kit.Appearance(app)

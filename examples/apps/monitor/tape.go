@@ -80,6 +80,8 @@ type tapeParams struct {
 	tickStep float64   // seconds between the vertical ticks
 	base     time.Time // wall time of t = 0, for the tick labels
 	xLo, xHi float64   // seconds the background and grid cover
+	visLo    float64   // tape x of the plot's left and right edge once the step has settled; 0, 0 draws every label
+	visHi    float64
 }
 
 const (
@@ -120,7 +122,10 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 			if p.tickStep < 60 {
 				layout = "15:04:05"
 			}
-			r.Text(at.Format(layout), x+4, p.h-5, pal.small, pal.label)
+			s := at.Format(layout)
+			if p.visHi == 0 || (x+4 >= p.visLo && x+4+gfx.DefaultMeasurer.MeasureText(s, pal.small).Width <= p.visHi) { // a label the edge would cut is left out
+				r.Text(s, x+4, p.h-5, pal.small, pal.label)
+			}
 		}
 	}
 	for _, f := range p.fracs {

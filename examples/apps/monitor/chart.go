@@ -205,6 +205,7 @@ func (c *chart) params() *tapeParams {
 		pal: c.pal, colors: cols, stacked: c.spec.stacked, w: c.w, h: c.h, margin: c.margin, pps: pps, yMax: c.yMax,
 		fracs: c.spec.fracs, tickStep: step, base: c.t0,
 		xLo: min(c.trFrom, c.trTo) - (c.w-rightPad)/pps - 2, xHi: c.trTo + rightPad/pps + 2,
+		visLo: c.trTo*pps - (c.w - rightPad) + c.margin, visHi: c.trTo*pps + rightPad,
 	}
 }
 
@@ -369,6 +370,9 @@ func (c *chart) yOf(v float64) float64 {
 }
 
 func (c *chart) setHover(p *gfx.Point) {
+	if p != nil && snapping {
+		return // a screenshot shows no crosshair, whatever the pointer rests on
+	}
 	c.hover = p
 	if p == nil {
 		c.hoverShown = false

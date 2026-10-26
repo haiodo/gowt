@@ -137,6 +137,7 @@ func (p *Popover) dismissed() {
 		return
 	}
 	p.shown, p.active = false, false
+	p.native.dismissed(p)
 	if p.filters != nil {
 		p.filters.remove()
 		p.filters = nil
@@ -147,7 +148,7 @@ func (p *Popover) dismissed() {
 }
 
 func (p *Popover) deactivated() {
-	if p.shown && p.active {
+	if p.shown && p.active && p.native.closeOnDeactivate() {
 		p.Close()
 	}
 }

@@ -42,6 +42,9 @@ func TestPopoverGUI(t *testing.T) {
 					if p.native.onScreen(p) && !p.native.focused(p, &field.t.Control) {
 						fail("the search field has no focus")
 					}
+					if !p.shell.GetVisible() || !field.t.IsVisible() {
+						fail("the shell or its field is not visible while shown")
+					}
 					p.shell.Layout()
 					if ca := p.shell.GetClientArea(); ca.Width <= 0 || ca.Height <= 0 {
 						fail("the shell client area is empty while shown")

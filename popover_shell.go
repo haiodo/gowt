@@ -52,3 +52,7 @@ func (n *popoverNative) onScreen(p *Popover) bool { return p.shell.GetVisible() 
 func (n *popoverNative) bounds(p *Popover) *swt.Rectangle { return p.shell.GetBounds() }
 
 const outsideClickName = "activating the window"
+
+func (n *popoverNative) closeOnDeactivate() bool { return true }
+
+func (n *popoverNative) dismissed(p *Popover) {}

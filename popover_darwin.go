@@ -41,6 +41,7 @@ func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edg
 		n.pop = cocoa.NewPopover(p.c.TopView(), p.dismissed)
 	}
 	r := cocoa.NSRect{X: float64(local.X), Y: float64(local.Y), Width: float64(local.W), Height: float64(local.H)}
+	p.shell.SetHosted(true)
 	cocoa.ShowPopover(n.pop, anchor.TopView(), r, int(edge), cocoa.NSSize{Width: float64(w), Height: float64(h)})
 }
 
@@ -77,3 +78,9 @@ func (n *popoverNative) dispose() {
 }
 
 const outsideClickName = "an AppKit close (popoverDidClose:)"
+
+// The shell is not the active shell while its body is in the NSPopover, and the transient popover
+// closes itself, so a deactivation of the shell must not close it.
+func (n *popoverNative) closeOnDeactivate() bool { return false }
+
+func (n *popoverNative) dismissed(p *Popover) { p.shell.SetHosted(false) }

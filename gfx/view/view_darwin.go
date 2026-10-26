@@ -15,7 +15,7 @@ import (
 // platform is what the macOS View adds: the layer host and the display link.
 type platform struct {
 	host   *cg.Host
-	link   *cg.DisplayLink
+	link   *cg.FrameClock
 	nsview uintptr
 	posted atomic.Bool
 	// polling is set while pollRelease has a timer running; UI thread only
@@ -37,7 +37,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	v.wireInput()
 	cv.Unwrap().AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { v.resize.Store(true) }))
 	display := cv.Unwrap().GetDisplay()
-	link, err := cg.NewDisplayLink(func(fi gfx.FrameInfo) {
+	link := cg.NewFrameClock(func(fi gfx.FrameInfo) {
 		// runs on a Core Video thread: only decide, then hand over to the UI thread
 		if v.gone.Load() || !(v.comp.NeedsFrame() || v.resize.Load() || v.r.acc.wake.Load() || v.r.autoWake.Load()) || !v.posted.CompareAndSwap(false, true) {
 			return
@@ -50,9 +50,6 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 			}
 		}))
 	})
-	if err != nil {
-		return nil, err
-	}
 	v.link = link
 	cv.OnDispose(func() {
 		v.gone.Store(true)
@@ -63,7 +60,8 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 		v.comp.Close()
 		v.host.Close()
 	})
-	return v, link.Start()
+	link.Start()
+	return v, nil
 }
 
 // syncScale follows the window to a screen with another backing scale.

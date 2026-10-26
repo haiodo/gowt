@@ -165,6 +165,8 @@ More actions:
 | `ScrollEvent(qa.ScrollEvent{...})`, `Pinch(qa.PinchEvent{...})` | Scroll and pinch events for a gfx view (`gfx/view`), see Scroll and pinch. |
 | `ClickAt(x, y)`, `DoubleClickAt(x, y)`, `RightClickAt(x, y)`, `DragTo(x, y, toX, toY)`, `Pointer(qa.PointerEvent{...})` | Mouse events at a point of a gfx view or of any control, see Mouse. |
 
+| `DragDropTo(target)`, `DragDropToAt(target, x, y)` | A drag and drop to a control or row, see Drag and drop. |
+
 `Key`: a menu item with that accelerator runs and the control sees nothing, as with macOS key equivalents. Otherwise `Window.OnKey` filters and the control's key listeners get KeyDown, then KeyUp; Enter that was not vetoed also activates. A key does not type text; use `Type`. `Type` and `Key` on a control that already has the focus do not ask for it again, so an inline editor (`view.Edit`), which commits when its field loses the focus, stays open; to a control that has not the focus, they move it first, as a click would.
 
 `app.Eventually(timeout, func() (observed any, ok bool))` polls for what settle cannot see (a server push, a file); the error shows the last observed value.
@@ -204,6 +206,21 @@ v.DragTo(10, 10, 90, 50)
 - A control with a context menu (`gowt.PopupMenu`) has a `Menu` node in the dump, with `MenuItem` nodes below it (submenus nested). Find an item through its control: `qa.Text("Rename").In(qa.ID("canvas"))`. `Click` runs it as a right click and a choice would: the menu's `OnShow` runs first, so the app refreshes the items, then the item's own selection event. A disabled item is refused after `OnShow`. A menu with no items is shown to the app first (its `OnShow` runs, once per action), so items added there are in the dump and `Find` sees them; `RightClickAt` on a control with a context menu does the same for that menu, with no native menu and no tracking loop. The menu is always listed, as if open; a menu that is not open has no position, so its nodes have no `Bounds`.
 - An open popover (`Window.Popover`) is a root of the dump with class `Popover`, next to the window's own tree, with the popover's widgets below it. Its `Bounds` are in the popover's own coordinates. Give the popover `gowt.ID` to find it by name. `Close()` closes it as a click outside does; its `OnClose` runs. On macOS the popover is an `NSPopover` and its window is not a normal one; the dump still lists it.
 - `app.Shot` includes the open popovers of the window: each is captured on its own and drawn into the window's image at its place; the image grows when a popover reaches past the window. On Windows the shot then does not bring the window to the front, which would close the popover. `Window` index 0 of `shot` is the first window, popovers not counted.
+
+## Drag and drop
+
+`Element.DragDropTo(target)` drags this control or row onto `target` (a control or a row) when both have a `gowt.DragFrom` and a `gowt.DropOn`. The source row is selected first, as the mouse press before a drag selects it; on a Tree or Table without a row in the selector, the selected row is dragged. The point is the middle of the row or control; `DragDropToAt(target, x, y)` takes the drop point in the target control's coordinates, for a canvas.
+
+```go
+app.Find(qa.Text("apple").In(qa.ID("src"))).DragDropTo(app.Find(qa.Text("crate").In(qa.ID("dst"))))
+app.Find(qa.Text("pear").In(qa.ID("src"))).DragDropToAt(app.Find(qa.ID("canvas")), 100, 60)
+```
+
+What runs is SWT's own drag logic, without an OS drag session: the `DragDetect` event on the source control (its other listeners see it), `DragStart` (`Drag.OnStart` may cancel), `DragEnter`, `DragOver` (`Drop.Over`), `DragLeave`, `DropAccept`, `DragSetData`, `Drop` and `DragEnd` (`Drag.OnDone`). The types are those the source's `Transfer`s offer and the target's accept; the operation is chosen by the rules of the platform's `DropTarget` for a plain drag with no key held; the data goes through `javaToNative` of the source and `nativeToJava` of the target. The call returns when the drop is done. Nothing depends on the window being active or on the pointer.
+
+Differences from a real drag, the same on all three OSes: `DragOver` runs once, not for each mouse move; there is no drag image, cursor feedback or auto-scroll; on macOS a Tree and a Table take the generic path, not the `NSOutlineView` data source calls; a Windows `DragEnter` gets the data types from the source's `Transfer`s, not from `IDataObject.EnumFormatEtc`. The refusal cases are errors: no `DragFrom` on the source, no `DropOn` on the target, a point outside the control. A drag nobody accepts (`Over` returns false, `OnStart` returns false) is not an error; read it from the app's own state (`OnDone` gets `OpNone`).
+
+Real pointer drags are checked by `TestDndRealMouse` in the repository root (`xdotool` on Linux, `SendInput` on Windows, `CGEventPost` on macOS, which needs the Accessibility permission and skips without it).
 
 ## Dialogs
 

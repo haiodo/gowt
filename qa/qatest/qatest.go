@@ -367,6 +367,20 @@ func (e *Element) DragTo(x, y, toX, toY float64) {
 	e.Pointer(qa.PointerEvent{Kind: "drag", X: x, Y: y, ToX: toX, ToY: toY})
 }
 
+// DragDropTo drags this control or row onto target (a control or a row): the events of a real drag in
+// SWT's order, without an OS drag session. A row is selected first; a Tree or Table drags its
+// selected row. The point is the middle of the row or control.
+func (e *Element) DragDropTo(target *Element) {
+	e.c.t.Helper()
+	e.act("drag", map[string]any{"to": target.sel})
+}
+
+// DragDropToAt is DragDropTo with the drop point x, y in the target control's coordinates, for a canvas.
+func (e *Element) DragDropToAt(target *Element, x, y int) {
+	e.c.t.Helper()
+	e.act("drag", map[string]any{"to": target.sel, "x": x, "y": y})
+}
+
 // SelectText selects the item with exactly this text in a list, combo, table, tree or tab folder.
 func (e *Element) SelectText(text string) {
 	e.c.t.Helper()

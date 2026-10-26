@@ -225,7 +225,7 @@ type Drop struct {
 - Lifetime: swt `DragSource`/`DropTarget` are widgets registered on the control and disposed with it; the handle only exposes `Unwrap()`. At most one `DropTarget` and one `DragSource` per control: a second call panics with `DNDERROR_CANNOT_INIT_DROP` (an error), returned by `Run`.
 - Works on any `Widget` the facade has; whether the native widget accepts drops (Table rows, Tree items, text caret) is the platform's business. Item-level targets (`event.Item`) are not exposed.
 - Not covered -> `Unwrap()` and plain `swt`: custom `Transfer` types, RTF/HTML/URL transfers, effects (`DropTargetEffect`, `DragSourceEffect`), drag images (`DragSourceEvent.Image`), `Feedback` flags, `DragOperationChanged`/`DropAccept`, moving data between processes with custom formats.
-- Platform caveats (`tests/expected*.txt`): drag was never run with a real mouse by any test, so end-to-end drag between widgets and from other apps is unverified on all three OSes. Cross-process transfer tests are skipped ("no remote clipboard peer: the Swing/RMI process is not ported"), including `FileTransfer`, `HTMLTransfer`, `ImageTransfer`, `RTFTransfer`, `TextTransfer`. `URLTransfer` tests are disabled on macOS, so URLs are left out. `FileTransfer.nativeToJava` is disabled on Windows and macOS in the upstream suite.
+- Platform caveats (`tests/expected*.txt`): `TestDndRealMouse` drags Tree to Tree and Tree to a canvas with the OS pointer on Linux (Xvfb, xdotool) and Windows 11 arm64 (SendInput); macOS was not run because CGEventPost needs the Accessibility permission, and drags from or to other apps are unverified everywhere. Cross-process transfer tests are skipped ("no remote clipboard peer: the Swing/RMI process is not ported"), including `FileTransfer`, `HTMLTransfer`, `ImageTransfer`, `RTFTransfer`, `TextTransfer`. `URLTransfer` tests are disabled on macOS, so URLs are left out. `FileTransfer.nativeToJava` is disabled on Windows and macOS in the upstream suite.
 
 ### StyledText
 
@@ -270,7 +270,7 @@ type StyleSpan struct { Start, Length int; Style TextStyle }
 
 ### Open points
 
-- No test drags with a real mouse; `DragFrom` and `DropOn` have not run end to end on any OS, only compiled and vetted. Needs a stand with synthetic pointer input.
+- `TestDndRealMouse` has not run on macOS (needs the Accessibility permission for the test binary); no test drags from or to another application.
 - `Styles()` does not report `TextStyle.Font`; `SetStyle` fonts are cached per widget by `Font` value until the widget is disposed.
 
 ## Boundary (TSK-2026-10-03-product-40)

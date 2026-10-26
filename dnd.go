@@ -112,7 +112,7 @@ func DropOn(w Widget, d Drop) *DropHandle {
 	if d.Image != nil {
 		ts = append(ts, swt.ImageTransferGetInstance().AsTransfer())
 	}
-	t := swt.NewDropTarget(ctl, d.Ops.bits())
+	t := swt.NewDropTarget(ctl, d.Ops.bits()|swt.DNDDROP_DEFAULT)
 	t.SetTransfer(ts)
 	t.AddDropListener(&dropListener{DropTargetAdapter: swt.NewDropTargetAdapter(), d: d, ctl: ctl})
 	return &DropHandle{t}
@@ -122,6 +122,24 @@ type dropListener struct {
 	*swt.DropTargetAdapter
 	d   Drop
 	ctl *swt.Control
+}
+
+// A plain drag arrives as DROP_DEFAULT; SWT turns it into move or none unless the listener chooses,
+// so a target that only copies would refuse every drag without a modifier key.
+func (l *dropListener) DragEnter(e *swt.DropTargetEvent)            { chooseOp(e) }
+func (l *dropListener) DragOperationChanged(e *swt.DropTargetEvent) { chooseOp(e) }
+
+func chooseOp(e *swt.DropTargetEvent) {
+	if e.Detail != swt.DNDDROP_DEFAULT {
+		return
+	}
+	e.Detail = swt.DNDDROP_NONE
+	for _, op := range []int32{swt.DNDDROP_MOVE, swt.DNDDROP_COPY, swt.DNDDROP_LINK} {
+		if e.Operations&op != 0 {
+			e.Detail = op
+			return
+		}
+	}
 }
 
 func (l *dropListener) DragOver(e *swt.DropTargetEvent) {

@@ -22,6 +22,10 @@ final class WinNativeEmitter {
 	// os.c stubs that dereference a pointer argument before the call: Java name -> index of that argument.
 	private static final Map<String, Integer> DEREF = Map.of("ScriptStringOut", 0);
 
+	// Natives that run a modal loop calling back into Go: a callback can move the stack, so the pointer arguments
+	// must not live on it (syscallEscaping, internal/win32/dll_manual.go). DoDragDrop returned a stale effect.
+	private static final java.util.Set<String> ESCAPING = java.util.Set.of("DoDragDrop");
+
 	private final Emitter emitter;
 	// Statements around the call for struct arguments: toC into a C-layout buffer before, fromC after.
 	private final StringBuilder pre = new StringBuilder();
@@ -123,7 +127,7 @@ final class WinNativeEmitter {
 		out.append("func ").append(goName).append('(').append(String.join(", ", ps)).append(") ").append(ret).append(" {\n").append(pre);
 		// GOWT_TRACE_DISPATCH=1 keeps the last messages (internal/win32/trace_manual.go).
 		if (javaName.equals("DispatchMessage")) out.append("\ttraceDispatch(").append(paramName(md, 0)).append(")\n");
-		String call = "syscall.SyscallN(" + target + (args.isEmpty() ? "" : ", " + String.join(", ", args)) + ")";
+		String call = (ESCAPING.contains(javaName) ? "syscallEscaping(" : "syscall.SyscallN(") + target + (args.isEmpty() ? "" : ", " + String.join(", ", args)) + ")";
 		if (ret.isEmpty()) {
 			out.append('\t').append(call).append('\n').append(post);
 		} else if (ret.startsWith("float")) {

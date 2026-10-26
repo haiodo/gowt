@@ -13,8 +13,9 @@ import (
 // Act runs click, type {"text"}, check {"on"}, select {"index"} / {"text"}, activate, expand,
 // collapse, focus, close, scroll {"to": selector} / {"dx", "dy"}, scrollevent {"x", "y", "dx", "dy",
 // "precise", "phase", "momentum", "mods"}, pinch {"x", "y", "magnification", "phase", "mods"}, pointer
-// {"kind", "x", "y", "button", "count", "mods", "tox", "toy", "steps"} or key {"keys"} on the one control s picks; key with an empty s goes to the focus control. Hidden, disabled, in a closed window or
-// under a modal window: refused.
+// {"kind", "x", "y", "button", "count", "mods", "tox", "toy", "steps"}, drag {"to": selector, "x", "y"}
+// or key {"keys"} on the one control s picks; key with an empty s goes to the focus control. Hidden,
+// disabled, in a closed window or under a modal window: refused.
 func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -99,6 +100,8 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 		return gesture(e, action, args)
 	case "pointer":
 		return pointer(d, e, args)
+	case "drag":
+		return drag(d, e, args)
 	case "key":
 		var a struct{ Keys string }
 		if err := parse(args, &a); err != nil {

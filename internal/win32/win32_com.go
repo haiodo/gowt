@@ -817,7 +817,7 @@ func COMCoLockObjectExternal(pUnk int64, fLock bool, fLastUnlockReleases bool) i
 var proc_COMDoDragDrop = newProc("DoDragDrop")
 
 func COMDoDragDrop(pDataObject int64, pDropSource int64, dwOKEffect int32, pdwEffect []int32) int32 {
-	r, _, _ := syscall.SyscallN(proc_COMDoDragDrop.addr(), uintptr(pDataObject), uintptr(pDropSource), uintptr(dwOKEffect), uintptr(unsafe.Pointer(unsafe.SliceData(pdwEffect))))
+	r, _, _ := syscallEscaping(proc_COMDoDragDrop.addr(), uintptr(pDataObject), uintptr(pDropSource), uintptr(dwOKEffect), uintptr(unsafe.Pointer(unsafe.SliceData(pdwEffect))))
 	return int32(r)
 }
 

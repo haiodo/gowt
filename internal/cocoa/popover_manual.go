@@ -4,7 +4,10 @@
 package cocoa
 
 import (
+	"fmt"
+	"os"
 	"sync"
+	"time"
 
 	"github.com/ebitengine/purego"
 )
@@ -68,6 +71,7 @@ func (st *popoverState) hold() {
 
 // restore gives content back to the window as its contentView. It does nothing when it is there.
 func (st *popoverState) restore() {
+	PopLog("restore")
 	if st.window == 0 || msg(st.window, "contentView") == uintptr(st.content.Id) {
 		return
 	}
@@ -83,6 +87,7 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 		purego.RegisterFunc(&popoverSizeFn, objcMsgSend)
 		cls := newClass("GowtPopoverDelegate", []string{"NSPopoverDelegate"}, map[string]objcMethod{
 			"popoverDidShow:": {purego.NewCallback(func(self, _, note uintptr) {
+				PopLog("delegate didShow")
 				if st := popovers[msg(note, "object")]; st != nil {
 					st.applyFocus()
 				}
@@ -90,6 +95,7 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 			"popoverDidClose:": {purego.NewCallback(func(self, _, note uintptr) {
 				pop := msg(note, "object")
 				st := popovers[pop]
+				PopLog("delegate didClose isShown=%v known=%v", msg(pop, "isShown")&0xff != 0, st != nil)
 				// A late notification of an earlier close must not take the view from a shown popover.
 				if st == nil || msg(pop, "isShown")&0xff != 0 {
 					return
@@ -137,8 +143,10 @@ func ShowPopover(pop uintptr, anchor *NSView, r NSRect, edge int, size NSSize) {
 	}
 	popoverSizeFn(pop, sel("setContentSize:"), size)
 	st := popovers[pop]
+	PopLog("ShowPopover: hold, contentView is content: %v", msg(st.window, "contentView") == uintptr(st.content.Id))
 	st.hold()
 	popoverShowFn(pop, sel("showRelativeToRect:ofView:preferredEdge:"), r, v, side)
+	PopLog("ShowPopover: shown=%v", msg(pop, "isShown")&0xff != 0)
 	if w := st.content.Window(); w != nil {
 		msg(uintptr(w.Id), "makeKeyWindow")
 	}
@@ -164,6 +172,7 @@ func PopoverShown(pop uintptr) bool { return msg(pop, "isShown")&0xff != 0 }
 // ClosePopover closes pop at once and gives the view back to its window. The caller reports this
 // close itself; the delegate reports the ones the user made.
 func ClosePopover(pop uintptr) {
+	PopLog("ClosePopover")
 	msg(pop, "close")
 	if st := popovers[pop]; st != nil {
 		st.restore()
@@ -195,7 +204,9 @@ func FocusPopover(pop uintptr, v *NSView) {
 
 // CloseBehindBack closes pop as AppKit does for a click outside: nothing here restores the view or
 // reports the close, only the delegate does. performClose: does nothing in an inactive application.
-func CloseBehindBack(pop uintptr) { msg(pop, "close") }
+func CloseBehindBack(pop uintptr) {
+	PopLog("CloseBehindBack")
+ msg(pop, "close") }
 
 // FirstResponderIn reports whether the first responder of the window of v is v or inside v, as the
 // field editor of a text field is.
@@ -214,4 +225,22 @@ func FirstResponderIn(v *NSView) bool {
 		r = msg(r, "superview")
 	}
 	return false
+}
+
+var popoverT0 = time.Now()
+
+// PopLog writes a line with the time to stderr (GOWT_POPOVER_DEBUG=1) or appends it to the file
+// named by GOWT_POPOVER_DEBUG.
+func PopLog(f string, a ...any) {
+	v := os.Getenv("GOWT_POPOVER_DEBUG")
+	if v == "" {
+		return
+	}
+	line := fmt.Sprintf("%7dms popover: %s\n", time.Since(popoverT0).Milliseconds(), fmt.Sprintf(f, a...))
+	if v == "1" {
+		os.Stderr.WriteString(line)
+	} else if w, err := os.OpenFile(v, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644); err == nil {
+		w.WriteString(line)
+		w.Close()
+	}
 }

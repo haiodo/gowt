@@ -22,6 +22,7 @@ func (v *View) wireInput() {
 			c.SetFocus()
 		}
 	}
+	v.r.down = v.endEdit
 	v.r.size = func() (float64, float64) {
 		w, h := v.cv.Size()
 		return float64(w), float64(h)
@@ -104,6 +105,10 @@ func modsOfFlags(f uint64) g.Mods {
 
 func (v *View) native(e cg.InputEvent) bool {
 	pos, m := gfx.Point{X: e.X, Y: e.Y}, modsOfFlags(e.Flags)
+	// a control over the view gets the scroll and the pinch itself
+	if e.Kind != cg.InputMouseUp && v.covered(pos) {
+		return false
+	}
 	switch e.Kind {
 	case cg.InputScroll:
 		v.r.scroll(pos, e.DX, e.DY, e.Precise, phaseOf(e.Phase), phaseOf(e.Momentum), m, e.Time)

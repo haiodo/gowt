@@ -1,6 +1,7 @@
 package view
 
 import (
+	"fmt"
 	"math"
 	"testing"
 	"time"
@@ -265,5 +266,18 @@ func TestAbortCancelsDragOnce(t *testing.T) {
 	rg.r.pointer(PointerCancel, pt(20, 10), 0, 0, g.Mods{})
 	if rg.got[len(rg.got)-1].Aborted {
 		t.Fatal("a focus-loss cancel must not be Aborted")
+	}
+}
+
+func TestPressRunsDownHookFirst(t *testing.T) {
+	rg := newRig(t)
+	var order []string
+	rg.r.down = func() { order = append(order, "down") }
+	rg.r.pre = func(*Pointer) { order = append(order, "pre") }
+	rg.r.onPointer = func(p *Pointer) { order = append(order, "app") }
+	rg.r.pointer(PointerDown, gfx.Point{X: 5, Y: 5}, 1, 1, g.Mods{})
+	rg.r.pointer(PointerMove, gfx.Point{X: 6, Y: 5}, 0, 0, g.Mods{})
+	if got := fmt.Sprint(order); got != "[down pre app app]" {
+		t.Errorf("order %s, want the hook on the press only, before pre and the app", got)
 	}
 }

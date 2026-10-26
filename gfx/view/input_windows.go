@@ -108,6 +108,7 @@ func (v *View) wireInput() {
 			c.SetFocus()
 		}
 	}
+	v.r.down = v.endEdit
 	v.r.size = func() (float64, float64) {
 		w, h := v.cv.Size()
 		return float64(w), float64(h)
@@ -196,6 +197,10 @@ func (v *View) wheelMsg(horizontal bool, wp, lp uintptr) bool {
 	p := struct{ x, y int32 }{int32(int16(lp)), int32(int16(lp >> 16))}
 	procScreenToClient.Call(v.hwnd, uintptr(unsafe.Pointer(&p)))
 	pos := gfx.Point{X: float64(p.x) / v.dpr, Y: float64(p.y) / v.dpr}
+	// a control over the view forwards the wheel it did not use to its parent, this window
+	if v.covered(pos) {
+		return false
+	}
 	mods := g.Mods{Shift: keys&mkShift != 0, Ctrl: keys&mkControl != 0, Alt: keyDown(vkMenu)}
 	touchpad := v.isTouchpad()
 	precise := touchpad || math.Mod(delta, wheelDelta) != 0

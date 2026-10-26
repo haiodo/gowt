@@ -253,6 +253,46 @@ messages and has `Momentum` none. A pinch on the touchpad arrives as Ctrl+wheel 
 the view reads that as `Magnify`. Shift+wheel scrolls sideways, Ctrl+wheel zooms. There is no smart zoom.
 Cursors are the system ones; the open and closed hand are the hand and the four-way arrow.
 
+### Controls over the view
+
+A gowt control can sit over the view at a scene rectangle: an inline editor on a mind-map node, a
+button on a card. The view moves and sizes it on every frame, so it follows pan, zoom and a window
+that moves to another screen, and the font follows the zoom.
+
+```go
+// double click on a node: edit its label in place
+v.OnPointer(func(p *view.Pointer) {
+	if p.Kind == view.PointerDown && p.Count == 2 && p.Node != nil {
+		v.Edit(view.EditOptions{
+			Rect: p.Node.Bounds(), Text: label, Font: g.Font{Size: 14}, // size at zoom 1
+			OnCommit: func(s string) { /* change the model */ },
+			OnCancel: func() {},
+		})
+	}
+})
+o := v.Overlay(g.Button("Go"), gfx.R(10, 10, 80, 24), g.Font{Size: 12}) // any control
+o.SetRect(r); o.Widget(); o.Remove()
+```
+
+- `v.Overlay(opt g.Option, rect gfx.Rect, font g.Font) *view.Overlay` builds the control as a child of
+  the canvas (`CanvasView.AddChild`, `SetChildBounds`). The rectangle is rounded out to whole points.
+  The font is the one at zoom 1 (`Px`, or `Size` in points); the control gets it times the zoom in
+  steps of 0.25, at least 1. Without a size the control keeps its font.
+- `v.Edit(view.EditOptions)` is an Overlay with a `g.Text`, `Multiline` for several lines, more
+  `Opts` for the Text. It selects the text and takes the focus. Esc cancels. Enter commits; in a
+  multi-line field Cmd+Enter or Ctrl+Enter commits and Enter types a line break. A press on the view,
+  another `Edit` and the focus leaving the field (another control, the window losing the focus) commit.
+  `OnCommit(text)` or `OnCancel()` runs once, after the field is gone; the text is read before that.
+  Esc and Enter give the keyboard back to the canvas. `Editor.Commit()`, `Cancel()` end it from code.
+- **Input.** Scroll, pinch and smart zoom over a control go to the control, not to the view: macOS
+  passes the NSEvent on when its point is inside an overlay; Windows returns the forwarded
+  `WM_MOUSEWHEEL` unhandled; GTK ignores a `scroll-event` whose widget is a child of the canvas
+  and the zoom gesture inside an overlay. A multi-line Text scrolls itself.
+- Limits: the control is a native one on top of the canvas, so it is not part of the scene (not in
+  tiles, not scaled as a picture, not clipped by a scene clip). The font is resized in steps, so the
+  text wraps a little differently from the scene text at the same zoom. `Pointer` events do not
+  arrive for a press on the control. Tested under Xvfb; macOS and Windows have not been run.
+
 ## Auto-layout
 
 `gfx/layout` resolves the frames of a tree of boxes. It has no `.pen` concepts and imports only the

@@ -156,6 +156,7 @@ type router struct {
 	cam  camera
 	hit  func(gfx.Point) *gfx.Node
 	pre  func(*Pointer) // before the callbacks; the view takes focus here
+	down func()         // on every press, before pre: the view ends an inline edit here
 	minZ float64
 	maxZ float64
 
@@ -206,6 +207,9 @@ func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mo
 		}
 		r.held |= 1 << button
 		r.coastOff = true
+		if r.down != nil {
+			r.down()
+		}
 		if r.pre != nil {
 			r.pre(p)
 		}

@@ -4658,7 +4658,7 @@ func OSChooseColor(lpcc *CHOOSECOLOR) bool {
 		p_lpcc = unsafe.Pointer(&b_lpcc)
 		lpcc.toC(p_lpcc)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSChooseColor.addr(), uintptr(p_lpcc))
+	r, _, _ := syscallEscaping(proc_OSChooseColor.addr(), uintptr(p_lpcc))
 	if lpcc != nil {
 		lpcc.fromC(p_lpcc)
 	}
@@ -4674,7 +4674,7 @@ func OSChooseFont(chooseFont *CHOOSEFONT) bool {
 		p_chooseFont = unsafe.Pointer(&b_chooseFont)
 		chooseFont.toC(p_chooseFont)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSChooseFont.addr(), uintptr(p_chooseFont))
+	r, _, _ := syscallEscaping(proc_OSChooseFont.addr(), uintptr(p_chooseFont))
 	if chooseFont != nil {
 		chooseFont.fromC(p_chooseFont)
 	}
@@ -5120,7 +5120,7 @@ func OSDispatchMessage(lpmsg *MSG) int64 {
 var proc_OSDocumentPropertiesHWndHPrinterPDeviceNamePDevModeOutputPDevModeInputFMode = newProc("DocumentProperties")
 
 func OSDocumentPropertiesHWndHPrinterPDeviceNamePDevModeOutputPDevModeInputFMode(hWnd int64, hPrinter int64, pDeviceName []uint16, pDevModeOutput int64, pDevModeInput int64, fMode int32) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSDocumentPropertiesHWndHPrinterPDeviceNamePDevModeOutputPDevModeInputFMode.addr(), uintptr(hWnd), uintptr(hPrinter), uintptr(unsafe.Pointer(unsafe.SliceData(pDeviceName))), uintptr(pDevModeOutput), uintptr(pDevModeInput), uintptr(fMode))
+	r, _, _ := syscallEscaping(proc_OSDocumentPropertiesHWndHPrinterPDeviceNamePDevModeOutputPDevModeInputFMode.addr(), uintptr(hWnd), uintptr(hPrinter), uintptr(unsafe.Pointer(unsafe.SliceData(pDeviceName))), uintptr(pDevModeOutput), uintptr(pDevModeInput), uintptr(fMode))
 	return int32(r)
 }
 
@@ -5143,7 +5143,7 @@ func OSDragDetect(hwnd int64, pt *POINT) bool {
 		p_pt = unsafe.Pointer(&b_pt)
 		pt.toC(p_pt)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSDragDetect.addr(), uintptr(hwnd), structArg(p_pt, 8))
+	r, _, _ := syscallEscaping(proc_OSDragDetect.addr(), uintptr(hwnd), structArg(p_pt, 8))
 	return r&0xff != 0
 }
 
@@ -5350,7 +5350,7 @@ func OSEnumDisplayMonitors(hdc int64, lprcClip *RECT, lpfnEnum int64, dwData int
 		p_lprcClip = unsafe.Pointer(&b_lprcClip)
 		lprcClip.toC(p_lprcClip)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSEnumDisplayMonitors.addr(), uintptr(hdc), uintptr(p_lprcClip), uintptr(lpfnEnum), uintptr(dwData))
+	r, _, _ := syscallEscaping(proc_OSEnumDisplayMonitors.addr(), uintptr(hdc), uintptr(p_lprcClip), uintptr(lpfnEnum), uintptr(dwData))
 	return r&0xff != 0
 }
 
@@ -5363,7 +5363,7 @@ func OSEnumEnhMetaFile(hdc int64, hemf int64, lpEnhMetaFunc int64, lpData int64,
 		p_lpRect = unsafe.Pointer(&b_lpRect)
 		lpRect.toC(p_lpRect)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSEnumEnhMetaFile.addr(), uintptr(hdc), uintptr(hemf), uintptr(lpEnhMetaFunc), uintptr(lpData), uintptr(p_lpRect))
+	r, _, _ := syscallEscaping(proc_OSEnumEnhMetaFile.addr(), uintptr(hdc), uintptr(hemf), uintptr(lpEnhMetaFunc), uintptr(lpData), uintptr(p_lpRect))
 	if lpRect != nil {
 		lpRect.fromC(p_lpRect)
 	}
@@ -5373,7 +5373,7 @@ func OSEnumEnhMetaFile(hdc int64, hemf int64, lpEnhMetaFunc int64, lpData int64,
 var proc_OSEnumFontFamilies = newProc("EnumFontFamilies")
 
 func OSEnumFontFamilies(hdc int64, lpszFamily []uint16, lpEnumFontFamProc int64, lParam int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSEnumFontFamilies.addr(), uintptr(hdc), uintptr(unsafe.Pointer(unsafe.SliceData(lpszFamily))), uintptr(lpEnumFontFamProc), uintptr(lParam))
+	r, _, _ := syscallEscaping(proc_OSEnumFontFamilies.addr(), uintptr(hdc), uintptr(unsafe.Pointer(unsafe.SliceData(lpszFamily))), uintptr(lpEnumFontFamProc), uintptr(lParam))
 	return int32(r)
 }
 
@@ -6007,7 +6007,7 @@ func OSGetMessage(lpMsg *MSG, hWnd int64, wMsgFilterMin int32, wMsgFilterMax int
 	if lpMsg != nil {
 		p_lpMsg = unsafe.Pointer(&b_lpMsg)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSGetMessage.addr(), uintptr(p_lpMsg), uintptr(hWnd), uintptr(wMsgFilterMin), uintptr(wMsgFilterMax))
+	r, _, _ := syscallEscaping(proc_OSGetMessage.addr(), uintptr(p_lpMsg), uintptr(hWnd), uintptr(wMsgFilterMin), uintptr(wMsgFilterMax))
 	if lpMsg != nil {
 		lpMsg.fromC(p_lpMsg)
 	}
@@ -7147,7 +7147,7 @@ func OSMessageBeep(uType int32) bool {
 var proc_OSMessageBoxHWndLpTextLpCaptionUType = newProc("MessageBox")
 
 func OSMessageBoxHWndLpTextLpCaptionUType(hWnd int64, lpText []uint16, lpCaption []uint16, uType int32) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSMessageBoxHWndLpTextLpCaptionUType.addr(), uintptr(hWnd), uintptr(unsafe.Pointer(unsafe.SliceData(lpText))), uintptr(unsafe.Pointer(unsafe.SliceData(lpCaption))), uintptr(uType))
+	r, _, _ := syscallEscaping(proc_OSMessageBoxHWndLpTextLpCaptionUType.addr(), uintptr(hWnd), uintptr(unsafe.Pointer(unsafe.SliceData(lpText))), uintptr(unsafe.Pointer(unsafe.SliceData(lpCaption))), uintptr(uType))
 	return int32(r)
 }
 
@@ -8275,7 +8275,7 @@ func OSPeekMessage(lpMsg *MSG, hWnd int64, wMsgFilterMin int32, wMsgFilterMax in
 	if lpMsg != nil {
 		p_lpMsg = unsafe.Pointer(&b_lpMsg)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSPeekMessage.addr(), uintptr(p_lpMsg), uintptr(hWnd), uintptr(wMsgFilterMin), uintptr(wMsgFilterMax), uintptr(wRemoveMsg))
+	r, _, _ := syscallEscaping(proc_OSPeekMessage.addr(), uintptr(p_lpMsg), uintptr(hWnd), uintptr(wMsgFilterMin), uintptr(wMsgFilterMax), uintptr(wRemoveMsg))
 	if lpMsg != nil {
 		lpMsg.fromC(p_lpMsg)
 	}
@@ -8326,7 +8326,7 @@ func OSPrintDlg(lppd *PRINTDLG) bool {
 		p_lppd = unsafe.Pointer(&b_lppd)
 		lppd.toC(p_lppd)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSPrintDlg.addr(), uintptr(p_lppd))
+	r, _, _ := syscallEscaping(proc_OSPrintDlg.addr(), uintptr(p_lppd))
 	if lppd != nil {
 		lppd.fromC(p_lppd)
 	}
@@ -8900,21 +8900,21 @@ func OSSendInput(nInputs int32, pInputs *INPUT, cbSize int32) int32 {
 var proc_OSSendMessageOverload1 = newProc("SendMessage")
 
 func OSSendMessageOverload1(hWnd int64, Msg int32, wParam []int32, lParam []int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload1.addr(), uintptr(hWnd), uintptr(Msg), uintptr(unsafe.Pointer(unsafe.SliceData(wParam))), uintptr(unsafe.Pointer(unsafe.SliceData(lParam))))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload1.addr(), uintptr(hWnd), uintptr(Msg), uintptr(unsafe.Pointer(unsafe.SliceData(wParam))), uintptr(unsafe.Pointer(unsafe.SliceData(lParam))))
 	return int64(r)
 }
 
 var proc_OSSendMessageOverload2 = newProc("SendMessage")
 
 func OSSendMessageOverload2(hWnd int64, Msg int32, wParam int64, lParam []uint16) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload2.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(unsafe.Pointer(unsafe.SliceData(lParam))))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload2.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(unsafe.Pointer(unsafe.SliceData(lParam))))
 	return int64(r)
 }
 
 var proc_OSSendMessageOverload3 = newProc("SendMessage")
 
 func OSSendMessageOverload3(hWnd int64, Msg int32, wParam int64, lParam []int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload3.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(unsafe.Pointer(unsafe.SliceData(lParam))))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload3.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(unsafe.Pointer(unsafe.SliceData(lParam))))
 	return int64(r)
 }
 
@@ -8934,7 +8934,7 @@ func OSSendMessageOverload5(hWnd int64, Msg int32, wParam int64, lParam *LVCOLUM
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload5.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload5.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -8950,7 +8950,7 @@ func OSSendMessageOverload6(hWnd int64, Msg int32, wParam int64, lParam *LVHITTE
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload6.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload6.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -8966,7 +8966,7 @@ func OSSendMessageOverload7(hWnd int64, Msg int32, wParam int64, lParam *LITEM) 
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload7.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload7.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -8982,7 +8982,7 @@ func OSSendMessageOverload8(hWnd int64, Msg int32, wParam int64, lParam *LVITEM)
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload8.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload8.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -8998,7 +8998,7 @@ func OSSendMessageOverload9(hWnd int64, Msg int32, wParam int64, lParam *LVINSER
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload9.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload9.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9014,7 +9014,7 @@ func OSSendMessageOverload10(hWnd int64, Msg int32, wParam int64, lParam *MARGIN
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload10.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload10.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9030,7 +9030,7 @@ func OSSendMessageOverload11(hWnd int64, Msg int32, wParam int64, lParam *MCHITT
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload11.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload11.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9046,7 +9046,7 @@ func OSSendMessageOverload12(hWnd int64, Msg int32, wParam int64, lParam *REBARB
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload12.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload12.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9062,7 +9062,7 @@ func OSSendMessageOverload13(hWnd int64, Msg int32, wParam int64, lParam *RECT) 
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload13.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload13.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9078,7 +9078,7 @@ func OSSendMessageOverload14(hWnd int64, Msg int32, wParam int64, lParam *SYSTEM
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload14.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload14.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9094,7 +9094,7 @@ func OSSendMessageOverload15(hWnd int64, Msg int32, wParam int64, lParam *SHDRAG
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload15.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload15.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9110,7 +9110,7 @@ func OSSendMessageOverload16(hWnd int64, Msg int32, wParam int64, lParam *TBBUTT
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload16.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload16.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9126,7 +9126,7 @@ func OSSendMessageOverload17(hWnd int64, Msg int32, wParam int64, lParam *TBBUTT
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload17.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload17.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9142,7 +9142,7 @@ func OSSendMessageOverload18(hWnd int64, Msg int32, wParam int64, lParam *TCITEM
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload18.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload18.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9158,7 +9158,7 @@ func OSSendMessageOverload19(hWnd int64, Msg int32, wParam int64, lParam *TCHITT
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload19.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload19.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9174,7 +9174,7 @@ func OSSendMessageOverload20(hWnd int64, Msg int32, wParam int64, lParam *TOOLIN
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload20.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload20.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9190,7 +9190,7 @@ func OSSendMessageOverload21(hWnd int64, Msg int32, wParam int64, lParam *TVHITT
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload21.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload21.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9206,7 +9206,7 @@ func OSSendMessageOverload22(hWnd int64, Msg int32, wParam int64, lParam *TVINSE
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload22.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload22.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9222,7 +9222,7 @@ func OSSendMessageOverload23(hWnd int64, Msg int32, wParam int64, lParam *TVITEM
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload23.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload23.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9238,7 +9238,7 @@ func OSSendMessageOverload24(hWnd int64, Msg int32, wParam int64, lParam *TVSORT
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload24.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload24.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9254,7 +9254,7 @@ func OSSendMessageOverload25(hWnd int64, Msg int32, wParam int64, lParam *UDACCE
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload25.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload25.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9270,7 +9270,7 @@ func OSSendMessageOverload26(hWnd int64, Msg int32, wParam int64, lParam *HDHITT
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload26.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload26.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9286,7 +9286,7 @@ func OSSendMessageOverload27(hWnd int64, Msg int32, wParam int64, lParam *HDITEM
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload27.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload27.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9302,7 +9302,7 @@ func OSSendMessageOverload28(hWnd int64, Msg int32, wParam int64, lParam *HDLAYO
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload28.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload28.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9318,7 +9318,7 @@ func OSSendMessageOverload29(hWnd int64, Msg int32, wParam int64, lParam *BUTTON
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload29.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload29.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9334,7 +9334,7 @@ func OSSendMessageOverload30(hWnd int64, Msg int32, wParam int64, lParam *SIZE) 
 		p_lParam = unsafe.Pointer(&b_lParam)
 		lParam.toC(p_lParam)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSSendMessageOverload30.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
+	r, _, _ := syscallEscaping(proc_OSSendMessageOverload30.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(p_lParam))
 	if lParam != nil {
 		lParam.fromC(p_lParam)
 	}
@@ -9745,7 +9745,7 @@ func OSShellExecuteEx(lpExecInfo *SHELLEXECUTEINFO) bool {
 		p_lpExecInfo = unsafe.Pointer(&b_lpExecInfo)
 		lpExecInfo.toC(p_lpExecInfo)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSShellExecuteEx.addr(), uintptr(p_lpExecInfo))
+	r, _, _ := syscallEscaping(proc_OSShellExecuteEx.addr(), uintptr(p_lpExecInfo))
 	if lpExecInfo != nil {
 		lpExecInfo.fromC(p_lpExecInfo)
 	}
@@ -9934,7 +9934,7 @@ func OSTrackPopupMenu(hMenu int64, uFlags int32, x int32, y int32, nReserved int
 		p_prcRect = unsafe.Pointer(&b_prcRect)
 		prcRect.toC(p_prcRect)
 	}
-	r, _, _ := syscall.SyscallN(proc_OSTrackPopupMenu.addr(), uintptr(hMenu), uintptr(uFlags), uintptr(x), uintptr(y), uintptr(nReserved), uintptr(hWnd), uintptr(p_prcRect))
+	r, _, _ := syscallEscaping(proc_OSTrackPopupMenu.addr(), uintptr(hMenu), uintptr(uFlags), uintptr(x), uintptr(y), uintptr(nReserved), uintptr(hWnd), uintptr(p_prcRect))
 	if prcRect != nil {
 		prcRect.fromC(p_prcRect)
 	}

@@ -778,7 +778,7 @@ func COMCoCreateInstance(rclsid *GUID, pUnkOuter int64, dwClsContext int32, riid
 		p_riid = unsafe.Pointer(&b_riid)
 		riid.toC(p_riid)
 	}
-	r, _, _ := syscall.SyscallN(proc_COMCoCreateInstance.addr(), uintptr(p_rclsid), uintptr(pUnkOuter), uintptr(dwClsContext), uintptr(p_riid), uintptr(unsafe.Pointer(unsafe.SliceData(ppv))))
+	r, _, _ := syscallEscaping(proc_COMCoCreateInstance.addr(), uintptr(p_rclsid), uintptr(pUnkOuter), uintptr(dwClsContext), uintptr(p_riid), uintptr(unsafe.Pointer(unsafe.SliceData(ppv))))
 	return int32(r)
 }
 
@@ -803,7 +803,7 @@ func COMCoGetClassObject(rclsid *GUID, dwClsContext int32, pServerInfo int64, ri
 		p_riid = unsafe.Pointer(&b_riid)
 		riid.toC(p_riid)
 	}
-	r, _, _ := syscall.SyscallN(proc_COMCoGetClassObject.addr(), uintptr(p_rclsid), uintptr(dwClsContext), uintptr(pServerInfo), uintptr(p_riid), uintptr(unsafe.Pointer(unsafe.SliceData(ppv))))
+	r, _, _ := syscallEscaping(proc_COMCoGetClassObject.addr(), uintptr(p_rclsid), uintptr(dwClsContext), uintptr(pServerInfo), uintptr(p_riid), uintptr(unsafe.Pointer(unsafe.SliceData(ppv))))
 	return int32(r)
 }
 
@@ -1053,7 +1053,7 @@ func COMOleCreate(rclsid *GUID, riid *GUID, renderopt int32, pFormatEtc *FORMATE
 		p_pFormatEtc = unsafe.Pointer(&b_pFormatEtc)
 		pFormatEtc.toC(p_pFormatEtc)
 	}
-	r, _, _ := syscall.SyscallN(proc_COMOleCreate.addr(), uintptr(p_rclsid), uintptr(p_riid), uintptr(renderopt), uintptr(p_pFormatEtc), uintptr(pClientSite), uintptr(pStg), uintptr(unsafe.Pointer(unsafe.SliceData(ppvObject))))
+	r, _, _ := syscallEscaping(proc_COMOleCreate.addr(), uintptr(p_rclsid), uintptr(p_riid), uintptr(renderopt), uintptr(p_pFormatEtc), uintptr(pClientSite), uintptr(pStg), uintptr(unsafe.Pointer(unsafe.SliceData(ppvObject))))
 	return int32(r)
 }
 
@@ -1078,14 +1078,14 @@ func COMOleCreateFromFile(rclsid *GUID, lpszFileName []uint16, riid *GUID, rende
 		p_pFormatEtc = unsafe.Pointer(&b_pFormatEtc)
 		pFormatEtc.toC(p_pFormatEtc)
 	}
-	r, _, _ := syscall.SyscallN(proc_COMOleCreateFromFile.addr(), uintptr(p_rclsid), uintptr(unsafe.Pointer(unsafe.SliceData(lpszFileName))), uintptr(p_riid), uintptr(renderopt), uintptr(p_pFormatEtc), uintptr(pClientSite), uintptr(pStg), uintptr(unsafe.Pointer(unsafe.SliceData(ppvObj))))
+	r, _, _ := syscallEscaping(proc_COMOleCreateFromFile.addr(), uintptr(p_rclsid), uintptr(unsafe.Pointer(unsafe.SliceData(lpszFileName))), uintptr(p_riid), uintptr(renderopt), uintptr(p_pFormatEtc), uintptr(pClientSite), uintptr(pStg), uintptr(unsafe.Pointer(unsafe.SliceData(ppvObj))))
 	return int32(r)
 }
 
 var proc_COMOleCreatePropertyFrame = newProc("OleCreatePropertyFrame")
 
 func COMOleCreatePropertyFrame(hwndOwner int64, x int32, y int32, lpszCaption []uint16, cObjects int32, lplpUnk []int64, cPages int32, lpPageClsID int64, lcid int32, dwReserved int32, lpvReserved int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_COMOleCreatePropertyFrame.addr(), uintptr(hwndOwner), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(unsafe.SliceData(lpszCaption))), uintptr(cObjects), uintptr(unsafe.Pointer(unsafe.SliceData(lplpUnk))), uintptr(cPages), uintptr(lpPageClsID), uintptr(lcid), uintptr(dwReserved), uintptr(lpvReserved))
+	r, _, _ := syscallEscaping(proc_COMOleCreatePropertyFrame.addr(), uintptr(hwndOwner), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(unsafe.SliceData(lpszCaption))), uintptr(cObjects), uintptr(unsafe.Pointer(unsafe.SliceData(lplpUnk))), uintptr(cPages), uintptr(lpPageClsID), uintptr(lcid), uintptr(dwReserved), uintptr(lpvReserved))
 	return int32(r)
 }
 
@@ -1106,7 +1106,7 @@ func COMOleFlushClipboard() int32 {
 var proc_COMOleGetClipboard = newProc("OleGetClipboard")
 
 func COMOleGetClipboard(ppDataObject []int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_COMOleGetClipboard.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(ppDataObject))))
+	r, _, _ := syscallEscaping(proc_COMOleGetClipboard.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(ppDataObject))))
 	return int32(r)
 }
 
@@ -1332,52 +1332,52 @@ func COMCreateSwtWebView2Options() int64 {
 }
 
 func COMVtblCall(fnNumber int32, ppVtbl int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl))
 	return int32(r)
 }
 
 func COMVtblCallOverload1(fnNumber int32, ppVtbl int64, arg0 int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0))
 	return int32(r)
 }
 
 func COMVtblCallOverload2(fnNumber int32, ppVtbl int64, arg0 int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0))
 	return int32(r)
 }
 
 func COMVtblCallOverload3(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int64, arg2 int32, arg3 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))))
 	return int32(r)
 }
 
 func COMVtblCallOverload4(fnNumber int32, ppVtbl int64, arg0 int32, arg1 int64, arg2 int32, arg3 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))))
 	return int32(r)
 }
 
 func COMVtblCallOverload5(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int32, arg2 int32, arg3 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))))
 	return int32(r)
 }
 
 func COMVtblCallOverload6(fnNumber int32, ppVtbl int64, arg0 []uint16, arg1 int32, arg2 int32, arg3 []int32, arg4 []int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
 	return int32(r)
 }
 
 func COMVtblCallOverload7(fnNumber int32, ppVtbl int64, arg0 []int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))))
 	return int32(r)
 }
 
 func COMVtblCallOverload8(fnNumber int32, ppVtbl int64, arg0 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))))
 	return int32(r)
 }
 
 func COMVtblCallOverload9(fnNumber int32, ppVtbl int64, arg0 int32, arg1 []int64, arg2 []int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
 	return int32(r)
 }
 
@@ -1388,7 +1388,7 @@ func COMVtblCallOverload10(fnNumber int32, ppVtbl int64, arg0 *TF_DISPLAYATTRIBU
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1396,42 +1396,42 @@ func COMVtblCallOverload10(fnNumber int32, ppVtbl int64, arg0 *TF_DISPLAYATTRIBU
 }
 
 func COMVtblCallOverload11(fnNumber int32, ppVtbl int64, arg0 int32, arg1 int64, arg2 int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2))
 	return int32(r)
 }
 
 func COMVtblCallOverload12(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int64, arg2 int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2))
 	return int32(r)
 }
 
 func COMVtblCallOverload13(fnNumber int32, ppVtbl int64, arg0 int32, arg1 int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1))
 	return int32(r)
 }
 
 func COMVtblCallOverload14(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1))
 	return int32(r)
 }
 
 func COMVtblCallOverload15(fnNumber int32, ppVtbl int64, arg0 []uint16) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))))
 	return int32(r)
 }
 
 func COMVtblCallOverload16(fnNumber int32, ppVtbl int64, arg0 []uint16, arg1 int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1))
 	return int32(r)
 }
 
 func COMVtblCallOverload17(fnNumber int32, ppVtbl int64, arg0 []uint16, arg1 int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1))
 	return int32(r)
 }
 
 func COMVtblCallOverload18(fnNumber int32, ppVtbl int64, arg0 []uint16, arg1 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
 	return int32(r)
 }
 
@@ -1442,7 +1442,7 @@ func COMVtblCallOverload19(fnNumber int32, ppVtbl int64, arg0 *PROPERTYKEY, arg1
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1450,22 +1450,22 @@ func COMVtblCallOverload19(fnNumber int32, ppVtbl int64, arg0 *PROPERTYKEY, arg1
 }
 
 func COMVtblCallOverload20(fnNumber int32, ppVtbl int64, arg0 int32, arg1 []int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
 	return int32(r)
 }
 
 func COMVtblCallOverload21(fnNumber int32, ppVtbl int64, arg0 int64, arg1 []int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
 	return int32(r)
 }
 
 func COMVtblCallOverload22(fnNumber int32, ppVtbl int64, arg0 int32, arg1 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
 	return int32(r)
 }
 
 func COMVtblCallOverload23(fnNumber int32, ppVtbl int64, arg0 []uint16, arg1 []uint16) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
 	return int32(r)
 }
 
@@ -1476,7 +1476,7 @@ func COMVtblCallOverload24(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int64,
 		p_arg2 = unsafe.Pointer(&b_arg2)
 		arg2.toC(p_arg2)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(p_arg2), uintptr(arg3))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(p_arg2), uintptr(arg3))
 	if arg2 != nil {
 		arg2.fromC(p_arg2)
 	}
@@ -1490,7 +1490,7 @@ func COMVtblCallOverload25(fnNumber int32, ppVtbl int64, arg0 []int32, arg1 *GUI
 		p_arg1 = unsafe.Pointer(&b_arg1)
 		arg1.toC(p_arg1)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(p_arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(p_arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
 	if arg1 != nil {
 		arg1.fromC(p_arg1)
 	}
@@ -1504,7 +1504,7 @@ func COMVtblCallOverload26(fnNumber int32, ppVtbl int64, arg0 int64, arg1 *POINT
 		p_arg1 = unsafe.Pointer(&b_arg1)
 		arg1.toC(p_arg1)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(arg2))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(arg2))
 	if arg1 != nil {
 		arg1.fromC(p_arg1)
 	}
@@ -1518,7 +1518,7 @@ func COMVtblCallOverload27(fnNumber int32, ppVtbl int64, arg0 *POINT, arg1 int32
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1526,47 +1526,47 @@ func COMVtblCallOverload27(fnNumber int32, ppVtbl int64, arg0 *POINT, arg1 int32
 }
 
 func COMVtblCallOverload28(fnNumber int32, ppVtbl int64, arg0 []uint16, arg1 int32, arg2 int32, arg3 int32, arg4 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
 	return int32(r)
 }
 
 func COMVtblCallOverload29(fnNumber int32, ppVtbl int64, arg0 []uint16, arg1 int64, arg2 int32, arg3 int32, arg4 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
 	return int32(r)
 }
 
 func COMVtblCallOverload30(fnNumber int32, ppVtbl int64, arg0 []uint16, arg1 int64, arg2 int32, arg3 int32, arg4 int32, arg5 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(arg4), uintptr(unsafe.Pointer(unsafe.SliceData(arg5))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(arg4), uintptr(unsafe.Pointer(unsafe.SliceData(arg5))))
 	return int32(r)
 }
 
 func COMVtblCallOverload31(fnNumber int32, ppVtbl int64, uri []uint16, method []uint16, l int64, headers []uint16, request []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(uri))), uintptr(unsafe.Pointer(unsafe.SliceData(method))), uintptr(l), uintptr(unsafe.Pointer(unsafe.SliceData(headers))), uintptr(unsafe.Pointer(unsafe.SliceData(request))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(unsafe.Pointer(unsafe.SliceData(uri))), uintptr(unsafe.Pointer(unsafe.SliceData(method))), uintptr(l), uintptr(unsafe.Pointer(unsafe.SliceData(headers))), uintptr(unsafe.Pointer(unsafe.SliceData(request))))
 	return int32(r)
 }
 
 func COMVtblCallOverload32(fnNumber int32, ppVtbl int64, arg0 int64, arg1 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
 	return int32(r)
 }
 
 func COMVtblCallOverload33(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int32, arg2 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
 	return int32(r)
 }
 
 func COMVtblCallOverload34(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int64, arg2 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
 	return int32(r)
 }
 
 func COMVtblCallOverload35(fnNumber int32, ppVtbl int64, arg0 int32, arg1 int64, arg2 []int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
 	return int32(r)
 }
 
 func COMVtblCallOverload36(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int32, arg2 []int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
 	return int32(r)
 }
 
@@ -1577,7 +1577,7 @@ func COMVtblCallOverload37(fnNumber int32, ppVtbl int64, arg0 int32, arg1 int32,
 		p_arg3 = unsafe.Pointer(&b_arg3)
 		arg3.toC(p_arg3)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(p_arg3))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(p_arg3))
 	if arg3 != nil {
 		arg3.fromC(p_arg3)
 	}
@@ -1591,7 +1591,7 @@ func COMVtblCallOverload38(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int64,
 		p_arg2 = unsafe.Pointer(&b_arg2)
 		arg2.toC(p_arg2)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(p_arg2), uintptr(arg3), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(p_arg2), uintptr(arg3), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
 	if arg2 != nil {
 		arg2.fromC(p_arg2)
 	}
@@ -1605,7 +1605,7 @@ func COMVtblCallOverload39(fnNumber int32, ppVtbl int64, arg0 int32, arg1 *GUID)
 		p_arg1 = unsafe.Pointer(&b_arg1)
 		arg1.toC(p_arg1)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1))
 	if arg1 != nil {
 		arg1.fromC(p_arg1)
 	}
@@ -1619,7 +1619,7 @@ func COMVtblCallOverload40(fnNumber int32, ppVtbl int64, arg0 int32, arg1 *GUID,
 		p_arg1 = unsafe.Pointer(&b_arg1)
 		arg1.toC(p_arg1)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(arg2), uintptr(arg3))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(arg2), uintptr(arg3))
 	if arg1 != nil {
 		arg1.fromC(p_arg1)
 	}
@@ -1645,7 +1645,7 @@ func COMVtblCallOverload41(fnNumber int32, ppVtbl int64, arg0 int32, arg1 *GUID,
 		p_arg6 = unsafe.Pointer(&b_arg6)
 		arg6.toC(p_arg6)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(arg2), uintptr(arg3), uintptr(p_arg4), uintptr(arg5), uintptr(p_arg6), uintptr(unsafe.Pointer(unsafe.SliceData(arg7))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(arg2), uintptr(arg3), uintptr(p_arg4), uintptr(arg5), uintptr(p_arg6), uintptr(unsafe.Pointer(unsafe.SliceData(arg7))))
 	if arg1 != nil {
 		arg1.fromC(p_arg1)
 	}
@@ -1665,7 +1665,7 @@ func COMVtblCallOverload42(fnNumber int32, ppVtbl int64, arg0 *MSG) int32 {
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1685,7 +1685,7 @@ func COMVtblCallOverload43(fnNumber int32, ppVtbl int64, arg0 int32, arg1 *MSG, 
 		p_arg5 = unsafe.Pointer(&b_arg5)
 		arg5.toC(p_arg5)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(arg2), uintptr(arg3), uintptr(arg4), uintptr(p_arg5))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(arg2), uintptr(arg3), uintptr(arg4), uintptr(p_arg5))
 	if arg1 != nil {
 		arg1.fromC(p_arg1)
 	}
@@ -1702,7 +1702,7 @@ func COMVtblCallOverload44(fnNumber int32, ppVtbl int64, arg0 int32, arg1 *SIZE)
 		p_arg1 = unsafe.Pointer(&b_arg1)
 		arg1.toC(p_arg1)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1))
 	if arg1 != nil {
 		arg1.fromC(p_arg1)
 	}
@@ -1710,7 +1710,7 @@ func COMVtblCallOverload44(fnNumber int32, ppVtbl int64, arg0 int32, arg1 *SIZE)
 }
 
 func COMVtblCallOverload45(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1))
 	return int32(r)
 }
 
@@ -1721,7 +1721,7 @@ func COMVtblCallOverload46(fnNumber int32, ppVtbl int64, arg0 *CAUUID) int32 {
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1735,7 +1735,7 @@ func COMVtblCallOverload47(fnNumber int32, ppVtbl int64, arg0 *CONTROLINFO) int3
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1749,7 +1749,7 @@ func COMVtblCallOverload48(fnNumber int32, ppVtbl int64, arg0 *FORMATETC) int32 
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1769,7 +1769,7 @@ func COMVtblCallOverload49(fnNumber int32, ppVtbl int64, arg0 *FORMATETC, arg1 *
 		p_arg1 = unsafe.Pointer(&b_arg1)
 		arg1.toC(p_arg1)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(p_arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(p_arg1))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1786,7 +1786,7 @@ func COMVtblCallOverload50(fnNumber int32, ppVtbl int64, arg0 *GUID) int32 {
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1800,7 +1800,7 @@ func COMVtblCallOverload51(fnNumber int32, ppVtbl int64, arg0 *GUID, arg1 []int6
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1820,7 +1820,7 @@ func COMVtblCallOverload52(fnNumber int32, ppVtbl int64, arg0 *GUID, arg1 *GUID,
 		p_arg1 = unsafe.Pointer(&b_arg1)
 		arg1.toC(p_arg1)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(p_arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(p_arg1), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1837,7 +1837,7 @@ func COMVtblCallOverload53(fnNumber int32, ppVtbl int64, arg0 *GUID, arg1 int64,
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1851,7 +1851,7 @@ func COMVtblCallOverload54(fnNumber int32, ppVtbl int64, arg0 *GUID, arg1 int32,
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(arg4))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(arg4))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1871,7 +1871,7 @@ func COMVtblCallOverload55(fnNumber int32, ppVtbl int64, arg0 *GUID, arg1 int32,
 		p_arg2 = unsafe.Pointer(&b_arg2)
 		arg2.toC(p_arg2)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1), uintptr(p_arg2), uintptr(arg3))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1), uintptr(p_arg2), uintptr(arg3))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1900,7 +1900,7 @@ func COMVtblCallOverload56(fnNumber int32, ppVtbl int64, arg0 int32, arg1 *GUID,
 		p_arg3 = unsafe.Pointer(&b_arg3)
 		arg3.toC(p_arg3)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(p_arg2), uintptr(p_arg3))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(p_arg1), uintptr(p_arg2), uintptr(p_arg3))
 	if arg1 != nil {
 		arg1.fromC(p_arg1)
 	}
@@ -1920,7 +1920,7 @@ func COMVtblCallOverload57(fnNumber int32, ppVtbl int64, arg0 *LICINFO) int32 {
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1934,7 +1934,7 @@ func COMVtblCallOverload58(fnNumber int32, ppVtbl int64, arg0 *RECT, arg1 int64,
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1), uintptr(arg2))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(arg1), uintptr(arg2))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1942,7 +1942,7 @@ func COMVtblCallOverload58(fnNumber int32, ppVtbl int64, arg0 *RECT, arg1 int64,
 }
 
 func COMVtblCallOverload59(fnNumber int32, ppVtbl int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(arg4))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(arg3), uintptr(arg4))
 	return int32(r)
 }
 
@@ -1959,7 +1959,7 @@ func COMVtblCallOverload60(fnNumber int32, ppVtbl int64, arg0 *RECT, arg1 *RECT)
 		p_arg1 = unsafe.Pointer(&b_arg1)
 		arg1.toC(p_arg1)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(p_arg1))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0), uintptr(p_arg1))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1976,7 +1976,7 @@ func COMVtblCallOverload61(fnNumber int32, ppVtbl int64, arg0 *RECT) int32 {
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(p_arg0))
 	if arg0 != nil {
 		arg0.fromC(p_arg0)
 	}
@@ -1984,12 +1984,12 @@ func COMVtblCallOverload61(fnNumber int32, ppVtbl int64, arg0 *RECT) int32 {
 }
 
 func COMVtblCallOverload62(fnNumber int32, ppVtbl int64, arg0 int32, arg1 []int64, arg2 []int64, arg3 []int32, arg4 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
 	return int32(r)
 }
 
 func COMVtblCallOverload63(fnNumber int32, ppVtbl int64, arg0 int32, arg1 []int64, arg2 int32, arg3 []int32) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))), uintptr(arg2), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))))
 	return int32(r)
 }
 
@@ -2006,7 +2006,7 @@ func COMVtblCallOverload64(fnNumber int32, ppVtbl int64, arg0 int32, arg1 int32,
 		p_arg5 = unsafe.Pointer(&b_arg5)
 		arg5.toC(p_arg5)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(p_arg3), uintptr(arg4), uintptr(p_arg5), uintptr(arg6))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), uintptr(arg0), uintptr(arg1), uintptr(arg2), uintptr(p_arg3), uintptr(arg4), uintptr(p_arg5), uintptr(arg6))
 	if arg3 != nil {
 		arg3.fromC(p_arg3)
 	}
@@ -2017,12 +2017,12 @@ func COMVtblCallOverload64(fnNumber int32, ppVtbl int64, arg0 int32, arg1 int32,
 }
 
 func COMVtblCallOverload65(fnNumber int32, address int64, arg0 []uint16, arg1 []uint16, arg2 []uint16, arg3 []uint16, arg4 []int64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(address, fnNumber), uintptr(address), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
+	r, _, _ := syscallEscaping(vtblFn(address, fnNumber), uintptr(address), uintptr(unsafe.Pointer(unsafe.SliceData(arg0))), uintptr(unsafe.Pointer(unsafe.SliceData(arg1))), uintptr(unsafe.Pointer(unsafe.SliceData(arg2))), uintptr(unsafe.Pointer(unsafe.SliceData(arg3))), uintptr(unsafe.Pointer(unsafe.SliceData(arg4))))
 	return int32(r)
 }
 
 func COMVtblCallOverload66(fnNumber int32, address int64, arg0 float64) int32 {
-	r, _, _ := syscall.SyscallN(vtblFn(address, fnNumber), uintptr(address), uintptr(math.Float64bits(arg0)))
+	r, _, _ := syscallEscaping(vtblFn(address, fnNumber), uintptr(address), uintptr(math.Float64bits(arg0)))
 	return int32(r)
 }
 
@@ -2033,7 +2033,7 @@ func COMVtblCallOverload67(fnNumber int32, ppVtbl int64, arg0 *RECT, arg1 int64,
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), structArg(p_arg0, 16), uintptr(arg1), uintptr(arg2))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), structArg(p_arg0, 16), uintptr(arg1), uintptr(arg2))
 	return int32(r)
 }
 
@@ -2044,7 +2044,7 @@ func COMVtblCall_put_Bounds(fnNumber int32, ppVtbl int64, arg0 *RECT) int32 {
 		p_arg0 = unsafe.Pointer(&b_arg0)
 		arg0.toC(p_arg0)
 	}
-	r, _, _ := syscall.SyscallN(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), structArg(p_arg0, 16))
+	r, _, _ := syscallEscaping(vtblFn(ppVtbl, fnNumber), uintptr(ppVtbl), structArg(p_arg0, 16))
 	return int32(r)
 }
 

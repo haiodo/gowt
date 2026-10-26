@@ -22,9 +22,16 @@ final class WinNativeEmitter {
 	// os.c stubs that dereference a pointer argument before the call: Java name -> index of that argument.
 	private static final Map<String, Integer> DEREF = Map.of("ScriptStringOut", 0);
 
-	// Natives that run a modal loop calling back into Go: a callback can move the stack, so the pointer arguments
-	// must not live on it (syscallEscaping, internal/win32/dll_manual.go). DoDragDrop returned a stale effect.
-	private static final java.util.Set<String> ESCAPING = java.util.Set.of("DoDragDrop");
+	// Natives that pump messages or call back into Go while they hold a pointer argument (modal loops, common dialogs,
+	// message retrieval, OLE creation, enumerations): a callback can move the stack, so the pointer arguments must
+	// not live on it (syscallEscaping, internal/win32/dll_manual.go). DoDragDrop returned a stale effect.
+	// VtblCall, every COM method call, is escaping as a whole.
+	private static final java.util.Set<String> ESCAPING = java.util.Set.of("DoDragDrop", "TrackPopupMenu", "MessageBox", "ChooseColor", "ChooseFont",
+			"PrintDlg", "DocumentProperties", "DragDetect", "ShellExecuteEx", "EnumDisplayMonitors", "EnumFontFamilies", "EnumEnhMetaFile",
+			"GetMessage", "PeekMessage", "CoCreateInstance", "CoGetClassObject", "OleCreate", "OleCreateFromFile", "OleCreatePropertyFrame",
+			"OleGetClipboard");
+	// Escaping costs an allocation per call even without a pointer argument, so these escape only with one.
+	private static final java.util.Set<String> ESCAPING_WITH_POINTER = java.util.Set.of("SendMessage");
 
 	private final Emitter emitter;
 	// Statements around the call for struct arguments: toC into a C-layout buffer before, fromC after.
@@ -127,7 +134,7 @@ final class WinNativeEmitter {
 		out.append("func ").append(goName).append('(').append(String.join(", ", ps)).append(") ").append(ret).append(" {\n").append(pre);
 		// GOWT_TRACE_DISPATCH=1 keeps the last messages (internal/win32/trace_manual.go).
 		if (javaName.equals("DispatchMessage")) out.append("\ttraceDispatch(").append(paramName(md, 0)).append(")\n");
-		String call = (ESCAPING.contains(javaName) ? "syscallEscaping(" : "syscall.SyscallN(") + target + (args.isEmpty() ? "" : ", " + String.join(", ", args)) + ")";
+		String call = (ESCAPING.contains(javaName) || vtbl || ESCAPING_WITH_POINTER.contains(javaName) && hasPointer(types) ? "syscallEscaping(" : "syscall.SyscallN(") + target + (args.isEmpty() ? "" : ", " + String.join(", ", args)) + ")";
 		if (ret.isEmpty()) {
 			out.append('\t').append(call).append('\n').append(post);
 		} else if (ret.startsWith("float")) {
@@ -138,6 +145,11 @@ final class WinNativeEmitter {
 			out.append("\tr, _, _ := ").append(call).append('\n').append(post).append("\treturn ").append(conv).append('\n');
 		}
 		out.append("}\n\n");
+	}
+
+	private static boolean hasPointer(ITypeBinding[] types) {
+		for (ITypeBinding t : types) if (!t.isPrimitive()) return true;
+		return false;
 	}
 
 	private String retConv(String javaType) {

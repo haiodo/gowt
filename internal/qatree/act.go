@@ -3,8 +3,11 @@ package qatree
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"regexp"
 	"slices"
+	"strconv"
+	"strings"
 
 	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/swt"
@@ -240,6 +243,8 @@ func typeText(d *swt.Display, e *entry, text string) error {
 	var get func() string
 	var set func(string)
 	switch o := e.obj.(type) {
+	case *swt.Spinner:
+		return typeSpinner(e, o, text)
 	case *swt.Text:
 		if !o.GetEditable() {
 			return fmt.Errorf("qatree: type: %s is read-only", e.n.Path)
@@ -275,6 +280,45 @@ func typeText(d *swt.Display, e *entry, text string) error {
 		up := swt.NewEvent()
 		up.Character, up.KeyCode = uint16(r), int32(r)
 		c.NotifyListeners(swt.KeyUp, up)
+	}
+	return nil
+}
+
+var spinnerNumber = regexp.MustCompile(`^-?[0-9]+(\.[0-9]+)?$`)
+
+// typeSpinner types a number into a Spinner: as in typeText, each character goes through KeyDown and
+// KeyUp and the value follows what has been typed so far, so Modify runs per character. The value is
+// set with SetSelection, which clamps to the range and writes the text field on every OS; "-" and
+// "4." wait for their next character. text has at most GetDigits decimals ("1.5" is 15 at one digit).
+func typeSpinner(e *entry, o *swt.Spinner, text string) error {
+	if o.GetStyle()&swt.READ_ONLY != 0 {
+		return fmt.Errorf("qatree: type: %s is read-only", e.n.Path)
+	}
+	if !spinnerNumber.MatchString(text) {
+		return fmt.Errorf("qatree: type: %q is not a number for %s", text, e.n.Path)
+	}
+	if i := strings.IndexByte(text, '.'); i >= 0 && len(text)-i-1 > int(o.GetDigits()) {
+		return fmt.Errorf("qatree: type: %q has more decimals than the %d of %s", text, o.GetDigits(), e.n.Path)
+	}
+	if o.GetMinimum() >= 0 && strings.HasPrefix(text, "-") {
+		return fmt.Errorf("qatree: type: %s does not take negative numbers", e.n.Path)
+	}
+	scale := math.Pow10(int(o.GetDigits()))
+	swt.QAFocus(&o.Control)
+	cur := ""
+	for _, r := range text {
+		down := swt.NewEvent()
+		down.Character, down.KeyCode = uint16(r), int32(r)
+		o.NotifyListeners(swt.KeyDown, down)
+		if down.Doit {
+			cur += string(r)
+			if f, err := strconv.ParseFloat(cur, 64); err == nil {
+				o.SetSelection(int32(math.Round(f * scale)))
+			}
+		}
+		up := swt.NewEvent()
+		up.Character, up.KeyCode = uint16(r), int32(r)
+		o.NotifyListeners(swt.KeyUp, up)
 	}
 	return nil
 }

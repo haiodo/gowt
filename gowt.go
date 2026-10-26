@@ -202,17 +202,34 @@ func ignoreDisposed() {
 }
 
 // After runs f on the UI thread once, after d. A timer under one second counts in Pending until it
-// fires; a longer one does not.
-func (a *App) After(d time.Duration, f func()) {
-	if d < shortTimer {
+// fires or is cancelled; a longer one does not. The returned cancel stops f from running; it is safe from
+// any goroutine, safe to call after f ran, and calling it again does nothing.
+func (a *App) After(d time.Duration, f func()) (cancel func()) {
+	var done atomic.Bool
+	short := d < shortTimer
+	if short {
 		a.jobs.timers.Add(1)
-		inner := f
-		f = func() {
-			a.jobs.timers.Add(-1)
-			inner()
-		}
 	}
-	a.display.TimerExec(int32(d.Milliseconds()), jrt.NewRunnable(a.live(f)))
+	r := jrt.NewRunnable(nil)
+	r.Fn = a.live(func() {
+		if !done.CompareAndSwap(false, true) {
+			return
+		}
+		if short {
+			a.jobs.timers.Add(-1)
+		}
+		f()
+	})
+	a.display.TimerExec(int32(d.Milliseconds()), r)
+	return func() {
+		if !done.CompareAndSwap(false, true) {
+			return
+		}
+		if short {
+			a.jobs.timers.Add(-1)
+		}
+		a.Async(func() { a.display.TimerExec(-1, r) })
+	}
 }
 
 // Every runs f on the UI thread every d, the first time after d, until stop is called. stop is safe

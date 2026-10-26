@@ -21,6 +21,32 @@ func (w *Window) MenuBar() *Menu {
 	return &Menu{m}
 }
 
+// OnAbout runs f when the About item of the macOS application menu is chosen and reports true. Elsewhere
+// there is no such menu: it reports false and the app puts its own About item in a normal menu. UI thread only.
+//
+//	if !app.OnAbout(showAbout) {
+//		help.Item("About", showAbout)
+//	}
+func (a *App) OnAbout(f func()) bool { return a.onSystemItem(swt.ID_ABOUT, f) }
+
+// OnPreferences is OnAbout for the Preferences item (Cmd+,), which macOS keeps in the application menu;
+// elsewhere put the item in Edit or Tools.
+func (a *App) OnPreferences(f func()) bool { return a.onSystemItem(swt.ID_PREFERENCES, f) }
+
+func (a *App) onSystemItem(id int32, f func()) bool {
+	m := a.display.GetSystemMenu()
+	if m == nil {
+		return false
+	}
+	for _, it := range m.GetItems() {
+		if it.GetID() == id {
+			onSelect(it, func(*swt.SelectionEvent) { f() })
+			return true
+		}
+	}
+	return false
+}
+
 // PopupMenu creates the context menu of w. It is a function, not a method, because every
 // wrapper would need its own copy; Show opens it by hand, right click opens it by itself.
 func PopupMenu(w Widget) *Menu {

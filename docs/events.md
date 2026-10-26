@@ -80,7 +80,7 @@ All widgets belong to the UI thread: the goroutine inside `gowt.Run`'s setup fun
 
 After `Run` has returned the three do nothing, so a goroutine that outlives the window may still call them; `f` does not run.
 
-`app.After(d, f)` runs `f` on the UI thread once after `d`. `stop := app.Every(d, f)` runs `f` every `d` until `stop()`; a panic in `f` goes to `OnError` and the ticks go on. Both are UI-thread only; `stop` is safe from any goroutine.
+`cancel := app.After(d, f)` runs `f` on the UI thread once after `d`; `cancel()` stops it (safe from any goroutine, after `f` ran and twice). `stop := app.Every(d, f)` runs `f` every `d` until `stop()`; a panic in `f` goes to `OnError` and the ticks go on. Both are UI-thread only; `stop` and `cancel` are safe from any goroutine.
 
 ```go
 go func() {

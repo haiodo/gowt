@@ -72,10 +72,6 @@ func (this *NSString) UTF8String() int64 {
 	return OSObjc_msgSend(this.Id, OSSel_UTF8String)
 }
 
-func (this *NSString) CharacterAtIndex(index int64) uint16 {
-	return uint16(OSObjc_msgSendOverload44(this.Id, OSSel_characterAtIndex_, index))
-}
-
 func (this *NSString) Compare(string_ *NSString) int64 {
 	var cond673 int64
 	if string_ != (nil) {

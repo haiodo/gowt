@@ -3,10 +3,12 @@
 
 package swt
 
+// A Shell that was never shown has a hidden view, which draws nothing, children included.
 func (this *Shell) SetHosted(on bool) {
 	if on {
 		this.state &^= WidgetHIDDEN
 	} else {
 		this.state |= WidgetHIDDEN
 	}
+	this.View.SetHidden(!on)
 }

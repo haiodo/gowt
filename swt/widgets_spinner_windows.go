@@ -274,13 +274,13 @@ func (this *Spinner) GetDigits() int32 {
 func (this *Spinner) GetDecimalSeparator() string {
 	var data []uint16 = make([]uint16, 4)
 	var size int32 = win32.OSGetLocaleInfoLocaleLCTypeLpLCDataCchData(win32.OSLOCALE_USER_DEFAULT, win32.OSLOCALE_SDECIMAL, data, 4)
-	var cond631 string
+	var cond632 string
 	if size != 0 {
-		cond631 = jrt.FromChars(data[0 : 0+size-1])
+		cond632 = jrt.FromChars(data[0 : 0+size-1])
 	} else {
-		cond631 = "."
+		cond632 = "."
 	}
-	return cond631
+	return cond632
 }
 
 func (this *Spinner) GetIncrement() int32 {
@@ -319,8 +319,8 @@ func (this *Spinner) GetSelectionText(parseFail []bool) int32 {
 	var buffer []uint16 = make([]uint16, length+1)
 	win32.OSGetWindowTextHWndLpStringNMaxCount(this.hwndText, buffer, length+1)
 	var string_ string = jrt.FromChars(buffer[0 : 0+length])
-	var tret632 int32
-	tretd633 := false
+	var tret633 int32
+	tretd634 := false
 	func() {
 		defer func() {
 			r := recover()
@@ -388,13 +388,13 @@ func (this *Spinner) GetSelectionText(parseFail []bool) int32 {
 		var min []int32 = make([]int32, 1)
 		win32.OSSendMessageOverload1(this.hwndUpDown, win32.OSUDM_GETRANGE32, min, max)
 		if min[0] <= value && value <= max[0] {
-			tret632 = value
-			tretd633 = true
+			tret633 = value
+			tretd634 = true
 			return
 		}
 	}()
-	if tretd633 {
-		return tret632
+	if tretd634 {
+		return tret633
 	}
 	parseFail[0] = true
 	return -1
@@ -659,11 +659,11 @@ func (this *Spinner) SetSelectionValueSetPosSetTextNotify(value int32, setPos bo
 		if this.digits == 0 {
 			string_ = fmt.Sprint(value)
 		} else {
-			abs634 := value
-			if abs634 < 0 {
-				abs634 = -abs634
+			abs635 := value
+			if abs635 < 0 {
+				abs635 = -abs635
 			}
-			string_ = fmt.Sprint(abs634)
+			string_ = fmt.Sprint(abs635)
 			var decimalSeparator string = this.GetDecimalSeparator()
 			var index int32 = jrt.StringLength(string_) - this.digits
 			var buffer *jrt.StringBuilder = jrt.NewStringBuilder()
@@ -678,9 +678,9 @@ func (this *Spinner) SetSelectionValueSetPosSetTextNotify(value int32, setPos bo
 				buffer.Append("0")
 				buffer.Append(decimalSeparator)
 				for {
-					t635 := index
+					t636 := index
 					index++
-					if !(t635 < 0) {
+					if !(t636 < 0) {
 						break
 					}
 					buffer.Append("0")

@@ -71,34 +71,34 @@ func (this *Relation) GetAddress() int64 {
 }
 
 func (this *Relation) CreateIAccessibleRelation() {
-	anon1104 := &RelationAnon1{}
-	anon1104.impl = anon1104
-	anon1104.initCOMObject([]int32{2, 0, 0, 1, 1, 1, 2, 3})
-	anon1104.fnmethod0_ = func(args []int64) int64 {
+	anon1105 := &RelationAnon1{}
+	anon1105.impl = anon1105
+	anon1105.initCOMObject([]int32{2, 0, 0, 1, 1, 1, 2, 3})
+	anon1105.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon1104.fnmethod1_ = func(args []int64) int64 {
+	anon1105.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon1104.fnmethod2_ = func(args []int64) int64 {
+	anon1105.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon1104.fnmethod3_ = func(args []int64) int64 {
+	anon1105.fnmethod3_ = func(args []int64) int64 {
 		return int64(this.Get_relationType(args[0]))
 	}
-	anon1104.fnmethod4_ = func(args []int64) int64 {
+	anon1105.fnmethod4_ = func(args []int64) int64 {
 		return int64(this.Get_localizedRelationType(args[0]))
 	}
-	anon1104.fnmethod5_ = func(args []int64) int64 {
+	anon1105.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.Get_nTargets(args[0]))
 	}
-	anon1104.fnmethod6_ = func(args []int64) int64 {
+	anon1105.fnmethod6_ = func(args []int64) int64 {
 		return int64(this.Get_target(int32(args[0]), args[1]))
 	}
-	anon1104.fnmethod7_ = func(args []int64) int64 {
+	anon1105.fnmethod7_ = func(args []int64) int64 {
 		return int64(this.Get_targets(int32(args[0]), args[1], args[2]))
 	}
-	this.objIAccessibleRelation = &anon1104.COMObject
+	this.objIAccessibleRelation = &anon1105.COMObject
 }
 
 func (this *Relation) QueryInterface(iid int64, ppvObject int64) int32 {
@@ -206,9 +206,9 @@ func (this *Relation) RemoveTarget(searchedLike AccessibleLike) {
 	var j int32 = 0
 	for _, target := range this.targets {
 		if target != searched {
-			t1105 := j
+			t1106 := j
 			j++
-			newTargets[t1105] = target
+			newTargets[t1106] = target
 		}
 	}
 	this.targets = newTargets

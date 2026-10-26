@@ -1100,6 +1100,106 @@ func (this *TextLayout) GetNextOffset(offset int32, movement int32) int32 {
 	return this._getOffset(offset, movement, true)
 }
 
+func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) int32 {
+	this.CheckLayout()
+	this.ComputeRuns()
+	var length int32 = jrt.StringLength(this.text)
+	if !(0 <= offset && offset <= length) {
+		Error(ERROR_INVALID_RANGE)
+	}
+	if forward {
+		if offset == length {
+			return length
+		}
+	} else {
+		if offset == 0 {
+			return 0
+		}
+	}
+	var step int32
+	if forward {
+		step = 1
+	} else {
+		step = -1
+	}
+	if (movement & MOVEMENT_CHAR) != 0 {
+		return offset + step
+	}
+	var attrs []int64 = make([]int64, 1)
+	var nAttrs []int32 = make([]int32, 1)
+	gtk.OSPango_layout_get_log_attrs(this.layout, attrs, nAttrs)
+	if attrs[0] == 0 {
+		return offset + step
+	}
+	var ptr int64 = gtk.OSPango_layout_get_text(this.layout)
+	var utf8Offset int32 = int32(gtk.OSG_utf16_offset_to_utf8_offset(ptr, int64(this.TranslateOffset(offset))))
+	var utf8Length int32 = int32(gtk.OSG_utf8_strlen(ptr, int64(-1)))
+	utf8Offset += step
+	var logAttr gtk.PangoLogAttr = gtk.PangoLogAttr{}
+	for 0 <= utf8Offset && utf8Offset <= utf8Length {
+		gtk.OSMemmoveOverload20(&logAttr, attrs[0]+int64(utf8Offset*gtk.PangoLogAttrSizeof), int64(gtk.PangoLogAttrSizeof))
+		var found bool = false
+		var limit bool = false
+		if ((movement & MOVEMENT_CLUSTER) != 0) && logAttr.Is_cursor_position {
+			found = true
+		}
+		if (movement & MOVEMENT_WORD) != 0 {
+			if forward {
+				if logAttr.Is_word_end {
+					found = true
+				}
+			} else {
+				if logAttr.Is_word_start {
+					found = true
+				}
+			}
+		}
+		if (movement & MOVEMENT_WORD_START) != 0 {
+			if logAttr.Is_word_start {
+				found = true
+			}
+			if logAttr.Is_sentence_end {
+				found = true
+			}
+		}
+		if (movement & MOVEMENT_WORD_END) != 0 {
+			if logAttr.Is_word_end {
+				found = true
+			}
+			if logAttr.Is_sentence_start {
+				found = true
+			}
+		}
+		if forward {
+			if utf8Offset == utf8Length {
+				limit = true
+			}
+		} else {
+			if utf8Offset == 0 {
+				limit = true
+			}
+		}
+		if found || limit {
+			var testOffset int32 = int32(gtk.OSG_utf8_offset_to_utf16_offset(ptr, int64(utf8Offset)))
+			if found && this.invalidOffsets != (nil) {
+				for i := int32(0); i < int32(len(this.invalidOffsets)); i++ {
+					if testOffset == this.invalidOffsets[i] {
+						found = false
+						break
+					}
+				}
+			}
+			if found || limit {
+				offset = this.UntranslateOffset(testOffset)
+				break
+			}
+		}
+		utf8Offset += step
+	}
+	gtk.OSG_free(attrs[0])
+	return int32(math.Min(float64(int32(math.Max(float64(0), float64(offset)))), float64(length)))
+}
+
 func (this *TextLayout) GetOffset(pointLike PointLike, trailing []int32) int32 {
 	var point *Point
 	if pointLike != nil {

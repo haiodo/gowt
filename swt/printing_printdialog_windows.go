@@ -349,13 +349,13 @@ func (this *PrintDialog) Open() *PrinterData {
 				if int32(dmDuplex) == int32(win32.OSDMDUP_SIMPLEX) {
 					data.Duplex = PrinterDataDUPLEX_NONE
 				} else {
-					var cond674 int32
+					var cond675 int32
 					if int32(dmDuplex) == int32(win32.OSDMDUP_HORIZONTAL) {
-						cond674 = PrinterDataDUPLEX_SHORT_EDGE
+						cond675 = PrinterDataDUPLEX_SHORT_EDGE
 					} else {
-						cond674 = PrinterDataDUPLEX_LONG_EDGE
+						cond675 = PrinterDataDUPLEX_LONG_EDGE
 					}
-					data.Duplex = cond674
+					data.Duplex = cond675
 				}
 			}
 			win32.OSGlobalUnlock(hMem)
@@ -416,13 +416,13 @@ func PrintDialogCheckStyle(parentLike ShellLike, style int32) int32 {
 	if (style & SHEET) != 0 {
 		style &= ^SHEET
 		if (style & mask) == 0 {
-			var cond675 int32
+			var cond676 int32
 			if parent == (nil) {
-				cond675 = APPLICATION_MODAL
+				cond676 = APPLICATION_MODAL
 			} else {
-				cond675 = PRIMARY_MODAL
+				cond676 = PRIMARY_MODAL
 			}
-			style |= cond675
+			style |= cond676
 		}
 	}
 	if (style & mask) == 0 {

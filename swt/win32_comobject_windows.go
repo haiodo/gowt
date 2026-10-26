@@ -479,11 +479,11 @@ const COMObjectMAX_ARG_COUNT int32 = 12
 const COMObjectMAX_VTABLE_LENGTH int32 = 80
 
 var COMObjectCallbacks [][]*Callback = func() [][]*Callback {
-	a1187 := make([][]*Callback, COMObjectMAX_VTABLE_LENGTH)
-	for i := range a1187 {
-		a1187[i] = make([]*Callback, COMObjectMAX_ARG_COUNT)
+	a1188 := make([][]*Callback, COMObjectMAX_VTABLE_LENGTH)
+	for i := range a1188 {
+		a1188[i] = make([]*Callback, COMObjectMAX_ARG_COUNT)
 	}
-	return a1187
+	return a1188
 }()
 
 var COMObjectObjectMap *jrt.Map = jrt.NewMap()

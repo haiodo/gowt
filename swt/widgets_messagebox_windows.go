@@ -225,22 +225,22 @@ func (this *MessageBox) Open() int32 {
 			return OK
 		}
 		if type_ == win32.OSMB_OKCANCEL {
-			var cond571 int32
-			if code == win32.OSIDOK {
-				cond571 = OK
-			} else {
-				cond571 = CANCEL
-			}
-			return cond571
-		}
-		if type_ == win32.OSMB_YESNO {
 			var cond572 int32
-			if code == win32.OSIDYES {
-				cond572 = YES
+			if code == win32.OSIDOK {
+				cond572 = OK
 			} else {
-				cond572 = NO
+				cond572 = CANCEL
 			}
 			return cond572
+		}
+		if type_ == win32.OSMB_YESNO {
+			var cond573 int32
+			if code == win32.OSIDYES {
+				cond573 = YES
+			} else {
+				cond573 = NO
+			}
+			return cond573
 		}
 		if type_ == win32.OSMB_YESNOCANCEL {
 			if code == win32.OSIDYES {
@@ -252,13 +252,13 @@ func (this *MessageBox) Open() int32 {
 			return CANCEL
 		}
 		if type_ == win32.OSMB_RETRYCANCEL {
-			var cond573 int32
+			var cond574 int32
 			if code == win32.OSIDRETRY {
-				cond573 = RETRY
+				cond574 = RETRY
 			} else {
-				cond573 = CANCEL
+				cond574 = CANCEL
 			}
-			return cond573
+			return cond574
 		}
 		if type_ == win32.OSMB_ABORTRETRYIGNORE {
 			if code == win32.OSIDRETRY {

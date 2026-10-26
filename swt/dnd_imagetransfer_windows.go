@@ -135,8 +135,8 @@ func (this *ImageTransfer) nativeToJava_(transferData *TransferData) any {
 		if ptr == 0 {
 			return nil
 		}
-		var tret1154 any
-		tretd1155 := false
+		var tret1155 any
+		tretd1156 := false
 		func() {
 			defer func() {
 				win32.OSGlobalUnlock(hMem)
@@ -150,13 +150,13 @@ func (this *ImageTransfer) nativeToJava_(transferData *TransferData) any {
 			}
 			var bits int64 = ptr + int64(bmiHeader.BiSize)
 			if int32(bmiHeader.BiBitCount) <= 8 {
-				var cond1156 int32
+				var cond1157 int32
 				if bmiHeader.BiClrUsed == 0 {
-					cond1156 = (1 << int32(bmiHeader.BiBitCount))
+					cond1157 = (1 << int32(bmiHeader.BiBitCount))
 				} else {
-					cond1156 = bmiHeader.BiClrUsed
+					cond1157 = bmiHeader.BiClrUsed
 				}
-				bits += int64((cond1156) * 4)
+				bits += int64((cond1157) * 4)
 			} else {
 				if bmiHeader.BiCompression == win32.OSBI_BITFIELDS {
 					bits += int64(12)
@@ -181,12 +181,12 @@ func (this *ImageTransfer) nativeToJava_(transferData *TransferData) any {
 			var image *Image = ImageWin32_new(nil, BITMAP, memDib, DEFAULT_IMAGE_STORAGE_ZOOM)
 			var data *ImageData = image.GetImageData()
 			image.impl.dispose_()
-			tret1154 = data
-			tretd1155 = true
+			tret1155 = data
+			tretd1156 = true
 			return
 		}()
-		_ = tretd1155
-		return tret1154
+		_ = tretd1156
+		return tret1155
 	}
 }
 
@@ -199,7 +199,7 @@ func (this *ImageTransfer) getTypeNames_() []string {
 }
 
 func (this *ImageTransfer) CheckImage(object any) bool {
-	if jrt.IsNil(object) || func() bool { _, ok1158 := imageDataImplAsImageData(object); return !(ok1158) }() {
+	if jrt.IsNil(object) || func() bool { _, ok1159 := imageDataImplAsImageData(object); return !(ok1159) }() {
 		return false
 	}
 	return true

@@ -158,13 +158,13 @@ func (this *TableItem) GetBackgroundIndex(index int32) *Color {
 	} else {
 		pixel = -1
 	}
-	var cond676 *Color
+	var cond677 *Color
 	if pixel == -1 {
-		cond676 = this.GetBackground()
+		cond677 = this.GetBackground()
 	} else {
-		cond676 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
+		cond677 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
 	}
-	return cond676
+	return cond677
 }
 
 func (this *TableItem) GetBounds() *Rectangle {
@@ -372,13 +372,13 @@ func (this *TableItem) GetBoundsRowColumnGetTextGetImageFullTextFullImageHDC(row
 				if column == 0 {
 					string_ = this.text
 				} else {
-					var cond677 string
+					var cond678 string
 					if this.strings != (nil) {
-						cond677 = this.strings[column]
+						cond678 = this.strings[column]
 					} else {
-						cond677 = ""
+						cond678 = ""
 					}
-					string_ = cond677
+					string_ = cond678
 				}
 				if string_ != "" {
 					var textRect *win32.RECT = win32.NewRECT()
@@ -422,13 +422,13 @@ func (this *TableItem) GetFont() *Font {
 	if !this.parent.CheckDataLocal1(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond678 *Font
+	var cond679 *Font
 	if this.font != (nil) {
-		cond678 = this.font
+		cond679 = this.font
 	} else {
-		cond678 = this.parent.GetFont()
+		cond679 = this.parent.GetFont()
 	}
-	return cond678
+	return cond679
 }
 
 func (this *TableItem) GetFontIndex(index int32) *Font {
@@ -472,13 +472,13 @@ func (this *TableItem) GetForegroundIndex(index int32) *Color {
 	} else {
 		pixel = -1
 	}
-	var cond679 *Color
+	var cond680 *Color
 	if pixel == -1 {
-		cond679 = this.GetForeground()
+		cond680 = this.GetForeground()
 	} else {
-		cond679 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
+		cond680 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
 	}
-	return cond679
+	return cond680
 }
 
 func (this *TableItem) GetGrayed() bool {
@@ -576,13 +576,13 @@ func (this *TableItem) GetTextIndex(index int32) string {
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
 			var string_ string = this.strings[index]
-			var cond680 string
+			var cond681 string
 			if string_ != "" {
-				cond680 = string_
+				cond681 = string_
 			} else {
-				cond680 = ""
+				cond681 = ""
 			}
-			return cond680
+			return cond681
 		}
 	}
 	return ""
@@ -754,13 +754,13 @@ func (this *TableItem) SetFont(fontLike FontLike) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var oldFont *Font = this.font
-	var cond681 *Font
+	var cond682 *Font
 	if font == (nil) {
-		cond681 = font
+		cond682 = font
 	} else {
-		cond681 = FontWin32_newFontTargetZoom(font, this.NativeZoom)
+		cond682 = FontWin32_newFontTargetZoom(font, this.NativeZoom)
 	}
-	var newFont *Font = (cond681)
+	var newFont *Font = (cond682)
 	if oldFont == newFont {
 		return
 	}

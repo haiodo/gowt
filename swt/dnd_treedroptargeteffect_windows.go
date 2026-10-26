@@ -117,13 +117,13 @@ func (this *TreeDropTargetEffect) dragOver_(event *DropTargetEvent) {
 		if hItem != -1 && this.scrollIndex == hItem && this.scrollBeginTime != 0 {
 			if jrt.CurrentTimeMillis() >= this.scrollBeginTime {
 				var topItem int64 = win32.OSSendMessageOverload4(handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_FIRSTVISIBLE), int64(0))
-				var cond1177 int32
+				var cond1178 int32
 				if hItem == topItem {
-					cond1177 = win32.OSTVGN_PREVIOUSVISIBLE
+					cond1178 = win32.OSTVGN_PREVIOUSVISIBLE
 				} else {
-					cond1177 = win32.OSTVGN_NEXTVISIBLE
+					cond1178 = win32.OSTVGN_NEXTVISIBLE
 				}
-				var nextItem int64 = win32.OSSendMessageOverload4(handle, win32.OSTVM_GETNEXTITEM, int64(cond1177), hItem)
+				var nextItem int64 = win32.OSSendMessageOverload4(handle, win32.OSTVM_GETNEXTITEM, int64(cond1178), hItem)
 				var scroll bool = true
 				if hItem == topItem {
 					scroll = nextItem != 0

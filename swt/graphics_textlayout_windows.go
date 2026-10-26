@@ -2321,6 +2321,121 @@ func (this *TextLayout) GetNextOffset(offset int32, movement int32) int32 {
 	return this._getOffset(offset, movement, true)
 }
 
+func (this *TextLayout) _getOffset(offset int32, movement int32, forward bool) int32 {
+	this.ComputeRuns(nil)
+	var length int32 = jrt.StringLength(this.text)
+	if !(0 <= offset && offset <= length) {
+		ErrorCodeThrowableDetail(ERROR_INVALID_RANGE, nil, fmt.Sprintf(" [offset value: %d]", offset))
+	}
+	if forward && offset == length {
+		return length
+	}
+	if !forward && offset == 0 {
+		return 0
+	}
+	var step int32
+	if forward {
+		step = 1
+	} else {
+		step = -1
+	}
+	if (movement & MOVEMENT_CHAR) != 0 {
+		return offset + step
+	}
+	length = jrt.StringLength(this.segmentsText)
+	offset = this.TranslateOffset(offset)
+	var logAttr *win32.SCRIPT_LOGATTR = win32.NewSCRIPT_LOGATTR()
+	var properties *win32.SCRIPT_PROPERTIES = win32.NewSCRIPT_PROPERTIES()
+	var i int32
+	if forward {
+		i = 0
+	} else {
+		i = int32(len(this.allRuns)) - 1
+	}
+	offset = this.ValidadeOffset(offset, step)
+	for {
+		var run *TextLayout_StyleItem = this.allRuns[i]
+		if run.start <= offset && offset < run.start+run.length {
+			if run.lineBreak && !run.softBreak {
+				return this.UntranslateOffset(run.start)
+			}
+			if run.tab {
+				return this.UntranslateOffset(run.start)
+			}
+			win32.OSMoveMemoryOverload83(properties, this.device.scripts[run.analysis.EScript], win32.SCRIPT_PROPERTIESSizeof)
+			var isComplex bool = properties.FNeedsCaretInfo || properties.FNeedsWordBreaking
+			if isComplex {
+				this.BreakRun(run)
+			}
+			for run.start <= offset && offset < run.start+run.length {
+				if isComplex {
+					win32.OSMoveMemoryOverload82(logAttr, run.psla+int64(((offset-run.start)*win32.SCRIPT_LOGATTRSizeof)), win32.SCRIPT_LOGATTRSizeof)
+				}
+				switch movement {
+				case MOVEMENT_CLUSTER:
+					{
+						if !properties.FNeedsCaretInfo || (!logAttr.FInvalid && logAttr.FCharStop) {
+							var ch uint16 = jrt.CharAt(this.segmentsText, offset)
+							if 0xDC00 <= int32(ch) && int32(ch) <= 0xDFFF {
+								if offset > 0 {
+									ch = jrt.CharAt(this.segmentsText, offset-1)
+									if 0xD800 <= int32(ch) && int32(ch) <= 0xDBFF {
+										offset += step
+									}
+								}
+							}
+							return this.UntranslateOffset(offset)
+						}
+						break
+					}
+				case MOVEMENT_WORD_START, MOVEMENT_WORD:
+					{
+						if properties.FNeedsWordBreaking {
+							if !logAttr.FInvalid && logAttr.FWordStop {
+								return this.UntranslateOffset(offset)
+							}
+						} else {
+							if offset > 0 {
+								var letterOrDigit bool = (unicode.IsLetter(rune(jrt.CharAt(this.segmentsText, offset))) || unicode.IsDigit(rune(jrt.CharAt(this.segmentsText, offset))))
+								var previousLetterOrDigit bool = (unicode.IsLetter(rune(jrt.CharAt(this.segmentsText, offset-1))) || unicode.IsDigit(rune(jrt.CharAt(this.segmentsText, offset-1))))
+								if letterOrDigit != previousLetterOrDigit || !letterOrDigit {
+									if !unicode.IsSpace(rune(jrt.CharAt(this.segmentsText, offset))) {
+										return this.UntranslateOffset(offset)
+									}
+								}
+							}
+						}
+						break
+					}
+				case MOVEMENT_WORD_END:
+					{
+						if offset > 0 {
+							var isLetterOrDigit bool = (unicode.IsLetter(rune(jrt.CharAt(this.segmentsText, offset))) || unicode.IsDigit(rune(jrt.CharAt(this.segmentsText, offset))))
+							var previousLetterOrDigit bool = (unicode.IsLetter(rune(jrt.CharAt(this.segmentsText, offset-1))) || unicode.IsDigit(rune(jrt.CharAt(this.segmentsText, offset-1))))
+							if !isLetterOrDigit && previousLetterOrDigit {
+								return this.UntranslateOffset(offset)
+							}
+						}
+						break
+					}
+				}
+				offset = this.ValidadeOffset(offset, step)
+			}
+		}
+		i += step
+		if !(0 <= i && i < int32(len(this.allRuns))-1 && 0 <= offset && offset < length) {
+			break
+		}
+	}
+	var cond489 int32
+	if forward {
+		cond489 = jrt.StringLength(this.text)
+	} else {
+		cond489 = 0
+	}
+	return cond489
+}
+
 func (this *TextLayout) GetOffset(pointLike PointLike, trailing []int32) int32 {
 	var point *Point
 	if pointLike != nil {
@@ -2515,12 +2630,12 @@ func (this *TextLayout) GetRanges() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount-1; i++ {
 		if this.styles[i].style != (nil) {
-			t489 := count
-			count++
-			result[t489] = this.styles[i].start
 			t490 := count
 			count++
-			result[t490] = this.styles[i+1].start - 1
+			result[t490] = this.styles[i].start
+			t491 := count
+			count++
+			result[t491] = this.styles[i+1].start - 1
 		}
 	}
 	if count != int32(len(result)) {
@@ -2582,14 +2697,14 @@ func (this *TextLayout) GetSegmentsText() string {
 			} else {
 				separator = defaultSeparator
 			}
-			t491 := segmentCount
+			t492 := segmentCount
 			segmentCount++
-			newChars[charCount+t491] = separator
+			newChars[charCount+t492] = separator
 		} else {
-			idx493 := charCount + segmentCount
-			t492 := charCount
+			idx494 := charCount + segmentCount
+			t493 := charCount
 			charCount++
-			newChars[idx493] = oldChars[t492]
+			newChars[idx494] = oldChars[t493]
 		}
 	}
 	for segmentCount < nSegments {
@@ -2600,9 +2715,9 @@ func (this *TextLayout) GetSegmentsText() string {
 		} else {
 			separator = defaultSeparator
 		}
-		t494 := segmentCount
+		t495 := segmentCount
 		segmentCount++
-		newChars[charCount+t494] = separator
+		newChars[charCount+t495] = separator
 	}
 	return jrt.FromChars(newChars[0 : 0+int32(len(newChars))])
 }
@@ -2644,9 +2759,9 @@ func (this *TextLayout) GetStyles() []*TextStyle {
 	var count int32 = 0
 	for i := int32(0); i < this.stylesCount; i++ {
 		if this.styles[i].style != (nil) {
-			t495 := count
+			t496 := count
 			count++
-			result[t495] = this.styles[i].style
+			result[t496] = this.styles[i].style
 		}
 	}
 	if count != int32(len(result)) {
@@ -2724,11 +2839,11 @@ func (this *TextLayout) Itemize() []*TextLayout_StyleItem {
 						continue
 					}
 				}
-				abs496 := latestNeutralIndex - latestUnicodeIndex
-				if abs496 < 0 {
-					abs496 = -abs496
+				abs497 := latestNeutralIndex - latestUnicodeIndex
+				if abs497 < 0 {
+					abs497 = -abs497
 				}
-				if abs496 == 1 {
+				if abs497 == 1 {
 					chars[latestNeutralIndex] = 'A'
 				}
 			}
@@ -2880,13 +2995,13 @@ func (this *TextLayout) SplitLongRun(runLike TextLayout_StyleItemLike) int32 {
 }
 
 func (this *TextLayout) ResolveTextDirection() int32 {
-	var cond497 int32
+	var cond498 int32
 	if this.textDirection == AUTO_TEXT_DIRECTION {
-		cond497 = BidiUtilResolveTextDirection(this.text)
+		cond498 = BidiUtilResolveTextDirection(this.text)
 	} else {
-		cond497 = this.textDirection
+		cond498 = this.textDirection
 	}
-	return cond497
+	return cond498
 }
 
 func (this *TextLayout) Reorder(runs []*TextLayout_StyleItem, terminate bool) []*TextLayout_StyleItem {
@@ -3404,9 +3519,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		for i := int32(0); i < int32(len(chars)); i++ {
 			win32.OSMoveMemoryOverload82(logAttr, run.psla+int64((i*win32.SCRIPT_LOGATTRSizeof)), win32.SCRIPT_LOGATTRSizeof)
 			if !logAttr.FWhiteSpace {
-				t498 := count
+				t499 := count
 				count++
-				sampleChars[t498] = chars[i]
+				sampleChars[t499] = chars[i]
 				if count == int32(len(sampleChars)) {
 					break
 				}
@@ -3474,18 +3589,18 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 		}
 		if newFont != 0 {
 			win32.OSSelectObject(hdc, newFont)
-			cond499 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
-			shapeSucceed = cond499
-			if cond499 {
+			cond500 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
+			shapeSucceed = cond500
+			if cond500 {
 				run.fallbackFont = newFont
 			}
 		}
 		if !shapeSucceed {
 			if !sp.FComplex {
 				run.analysis.FNoGlyphIndex = true
-				cond500 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
-				shapeSucceed = cond500
-				if cond500 {
+				cond501 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
+				shapeSucceed = cond501
+				if cond501 {
 					run.fallbackFont = newFont
 				} else {
 					run.analysis.FNoGlyphIndex = false
@@ -3504,9 +3619,9 @@ func (this *TextLayout) ShapeGcHdcRun(gcLike GCLike, hdc int64, runLike TextLayo
 					this.mLangFontLink2.ReleaseFont(hNewFont[0])
 					var mLangFont int64 = win32.OSCreateFontIndirectLplf(logFont)
 					var oldFont int64 = win32.OSSelectObject(hdc, mLangFont)
-					cond501 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
-					shapeSucceed = cond501
-					if cond501 {
+					cond502 := this.Shape(hdc, run, chars, buffer, maxGlyphs, sp)
+					shapeSucceed = cond502
+					if cond502 {
 						run.fallbackFont = mLangFont
 					} else {
 						win32.OSSelectObject(hdc, oldFont)

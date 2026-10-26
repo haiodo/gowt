@@ -123,9 +123,9 @@ func (this *TreeDragSourceEffect) GetDragSourceImage(eventLike DragSourceEventLi
 			}
 			for y := int32(0); y < srcHeight; y++ {
 				for x := int32(0); x < srcWidth; x++ {
-					t1175 := ap
+					t1176 := ap
 					ap++
-					alphaData[t1175] = TreeDragSourceEffectComputeAlpha(srcData, sp, shdi.CrColorKey)
+					alphaData[t1176] = TreeDragSourceEffectComputeAlpha(srcData, sp, shdi.CrColorKey)
 					sp += 4
 				}
 				sp += spinc
@@ -156,11 +156,11 @@ func TreeDragSourceEffectComputeAlpha(src []int8, sp int32, crColorKey int32) in
 	var keyR int32 = crColorKey & 0xFF
 	var keyG int32 = (crColorKey >> 8) & 0xFF
 	var keyB int32 = (crColorKey >> 16) & 0xFF
-	var cond1176 int8
+	var cond1177 int8
 	if r == keyR && g == keyG && b == keyB {
-		cond1176 = int8(0)
+		cond1177 = int8(0)
 	} else {
-		cond1176 = int8(-1)
+		cond1177 = int8(-1)
 	}
-	return cond1176
+	return cond1177
 }

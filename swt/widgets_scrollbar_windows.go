@@ -309,13 +309,13 @@ func (this *ScrollBar) RemoveSelectionListener(listener SelectionListener) {
 }
 
 func (this *ScrollBar) ScrollBarType() int32 {
-	var cond504 int32
+	var cond505 int32
 	if (this.style & VERTICAL) != 0 {
-		cond504 = win32.OSSB_VERT
+		cond505 = win32.OSSB_VERT
 	} else {
-		cond504 = win32.OSSB_HORZ
+		cond505 = win32.OSSB_HORZ
 	}
-	return cond504
+	return cond505
 }
 
 func (this *ScrollBar) SetEnabled(enabled bool) {
@@ -406,22 +406,22 @@ func (this *ScrollBar) SetScrollInfo(hwnd int64, flags int32, info *win32.SCROLL
 	}
 	var result bool = win32.OSSetScrollInfo(hwnd, flags, info, fRedraw)
 	if !visible {
-		var cond505 int32
-		if !barVisible {
-			cond505 = win32.OSSB_BOTH
-		} else {
-			cond505 = flags
-		}
-		win32.OSShowScrollBar(hwnd, cond505, false)
-	}
-	if visible && bar != (nil) && !barVisible {
 		var cond506 int32
-		if flags == win32.OSSB_HORZ {
-			cond506 = win32.OSSB_VERT
+		if !barVisible {
+			cond506 = win32.OSSB_BOTH
 		} else {
-			cond506 = win32.OSSB_HORZ
+			cond506 = flags
 		}
 		win32.OSShowScrollBar(hwnd, cond506, false)
+	}
+	if visible && bar != (nil) && !barVisible {
+		var cond507 int32
+		if flags == win32.OSSB_HORZ {
+			cond507 = win32.OSSB_VERT
+		} else {
+			cond507 = win32.OSSB_HORZ
+		}
+		win32.OSShowScrollBar(hwnd, cond507, false)
 	}
 	if (this.state & WidgetDISABLED) != 0 {
 		win32.OSEnableScrollBar(hwnd, flags, win32.OSESB_DISABLE_BOTH)
@@ -515,13 +515,13 @@ func (this *ScrollBar) SetVisible(visible bool) {
 		}
 		win32.OSGetScrollBarInfo(hwnd, idObject, psbi)
 		if (psbi.Rgstate[0] & win32.OSSTATE_SYSTEM_INVISIBLE) != 0 {
-			var cond507 int32
+			var cond508 int32
 			if type_ == win32.OSSB_VERT {
-				cond507 = win32.OSSB_HORZ
+				cond508 = win32.OSSB_HORZ
 			} else {
-				cond507 = win32.OSSB_VERT
+				cond508 = win32.OSSB_VERT
 			}
-			win32.OSShowScrollBar(hwnd, cond507, true)
+			win32.OSShowScrollBar(hwnd, cond508, true)
 			type_ = win32.OSSB_BOTH
 		}
 	}
@@ -535,13 +535,13 @@ func (this *ScrollBar) SetVisible(visible bool) {
 				win32.OSEnableScrollBar(hwnd, type_, win32.OSESB_ENABLE_BOTH)
 			}
 		}
-		var cond508 int32
+		var cond509 int32
 		if visible {
-			cond508 = Show
+			cond509 = Show
 		} else {
-			cond508 = Hide
+			cond509 = Hide
 		}
-		this.SendEventEventType(cond508)
+		this.SendEventEventType(cond509)
 	}
 }
 

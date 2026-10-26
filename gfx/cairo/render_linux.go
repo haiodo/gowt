@@ -93,6 +93,17 @@ type Target struct {
 	it     gfx.Iter
 
 	layerAlpha []float64
+	screen     float64 // device pixels per screen point of a Shadow.Screen; 0 is 1
+}
+
+// SetScreenScale sets the device pixels one screen point of a gfx.Shadow with Screen is.
+func (t *Target) SetScreenScale(v float64) { t.screen = v }
+
+func (t *Target) screenScale() float64 {
+	if t.screen > 0 {
+		return t.screen
+	}
+	return 1
 }
 
 // NewTarget makes an offscreen bitmap of wpx x hpx device pixels for gfx.

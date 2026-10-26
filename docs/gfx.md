@@ -133,6 +133,15 @@ r.TextShadow("label", x, y, font, color, sh) // the shadow of the glyphs
 A8 mask in Go, d2d renders the shape into a bitmap and runs the Direct2D shadow effect on it. Gradient fills and
 strokes have no shadow variant. A shadow is faded out under half scale when `LOD` is set.
 
+`Shadow.Screen` puts `DX`, `DY` and `Blur` in screen points instead, as CoreGraphics `setShadow` does: they ignore the
+node and camera scale, so the shadow keeps its size while the view zooms. The axes are the screen's (a shadow does not
+turn with a rotated node), a screen point is the display's backing scale (`Compositor.SetViewport` dpr; one device
+pixel for a `Target` nobody told, see `gfx.ScreenScaler`), and the SVG writer reads the numbers as scene units. The
+bounds of a picture cannot know the zoom, so they allow four scene units per point (zoom down to 1/4). Tiles are
+rastered per zoom level: while a gesture shows the old tiles scaled, their screen shadows scale with them, and
+they snap back to the constant size when the tiles are redrawn after `Settle` (120 ms); the text sharpness does the
+same, so the pop is of one kind. Between levels, one level apart, the error is at most the level ratio.
+
 The offset `(DX, DY)` is in the coordinates of the shape, so it follows the node's transform on every backend: a
 node flipped by `Scale(1, -1)` throws its shadow toward its own `+y`, which is up on the screen. Before this change cg
 took the offset as y-down device pixels (it negated `DY`), so a content with a negative-determinant transform got a

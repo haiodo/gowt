@@ -68,9 +68,16 @@ type StrokeStyle struct {
 }
 
 // Shadow is a blurred drop shadow offset by (DX, DY).
+//
+// With Screen set, DX, DY and Blur are in screen points instead: the backend applies them at
+// rasterization, in the axes of the screen and ignoring the node and camera scale, so a shadow keeps
+// its size while the view zooms (CoreGraphics setShadow does the same). A screen point is the
+// backing scale of the display (Compositor.SetViewport dpr), or one device pixel for a target
+// that was not told (see ScreenScaler). The shadow does not turn with a rotated node.
 type Shadow struct {
 	DX, DY, Blur float64
 	Color        Color
+	Screen       bool
 }
 
 // Font is a face, a size in points and a tracking.
@@ -474,15 +481,31 @@ func (r *Recorder) FillShadowRRect(x, y, w, h, radius float64, fill Color, sh Sh
 	r.f32(x, y, w, h, radius, sh.DX, sh.DY, sh.Blur)
 	r.color(fill)
 	r.color(sh.Color)
+	r.pic.data = append(r.pic.data, b2b(sh.Screen))
 }
 
 func (r *Recorder) shadow(sh Shadow) {
 	r.f32(sh.DX, sh.DY, sh.Blur)
 	r.color(sh.Color)
+	r.pic.data = append(r.pic.data, b2b(sh.Screen))
 }
 
+func b2b(v bool) byte {
+	if v {
+		return 1
+	}
+	return 0
+}
+
+// reach is how far the shadow can go past its shape, in local units. A screen shadow depends on
+// the scale, which a recording does not know: it is taken as at most 4 local units per point,
+// which holds down to a quarter of the zoom the shadow was sized for.
 func (sh Shadow) reach() float64 {
-	return 1.5*sh.Blur + math.Max(math.Abs(sh.DX), math.Abs(sh.DY))
+	r := 1.5*sh.Blur + math.Max(math.Abs(sh.DX), math.Abs(sh.DY))
+	if sh.Screen {
+		r *= 4
+	}
+	return r
 }
 
 // FillShadowPath fills p with a blurred drop shadow of its shape under it. The offset of the shadow
@@ -658,6 +681,12 @@ func (it *Iter) readGrad() *Gradient {
 func (it *Iter) readShadow(o *Op) {
 	o.Shadow.DX, o.Shadow.DY, o.Shadow.Blur = it.f32(), it.f32(), it.f32()
 	o.Shadow.Color = it.color()
+	o.Shadow.Screen = it.flag()
+}
+
+func (it *Iter) flag() bool {
+	it.pos++
+	return it.p.data[it.pos-1] != 0
 }
 
 // Next decodes the next command; it reports false at the end of the picture.
@@ -696,6 +725,7 @@ func (it *Iter) Next() bool {
 		o.Shadow.DX, o.Shadow.DY, o.Shadow.Blur = it.f32(), it.f32(), it.f32()
 		o.Color = it.color()
 		o.Shadow.Color = it.color()
+		o.Shadow.Screen = it.flag()
 	case OpFillShadow:
 		o.Path = it.readPath()
 		o.Color = it.color()

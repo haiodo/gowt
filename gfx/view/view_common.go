@@ -78,6 +78,7 @@ func New(scene *gfx.Scene, init func(*View), opts ...g.Option) g.Option {
 		if err != nil {
 			panic(err)
 		}
+		v.r.hud = func(p gfx.Point) *gfx.Node { return v.comp.HUDHit(p, 1) }
 		v.registerQA()
 		if init != nil {
 			init(v)
@@ -130,6 +131,12 @@ func (v *View) Compositor() *gfx.Compositor { return v.comp }
 func (v *View) HitTest(x, y int) *gfx.Node {
 	p := v.comp.SceneAt(gfx.Point{X: float64(x), Y: float64(y)})
 	return v.scene.HitTest(p, 4/v.comp.Camera().Zoom)
+}
+
+// HUDHitTest returns the topmost node of the heads-up scene under the view point (x, y), or nil;
+// it is what to ask before HitTest.
+func (v *View) HUDHitTest(x, y int) *gfx.Node {
+	return v.comp.HUDHit(gfx.Point{X: float64(x), Y: float64(y)}, 1)
 }
 
 func modsOfMask(m int32) g.Mods {

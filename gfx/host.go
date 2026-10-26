@@ -2,15 +2,16 @@ package gfx
 
 import "time"
 
-// Group orders the layers a Host holds: tiles lie under the active layer, which lies under the overlay.
+// Group orders the layers a Host holds: tiles lie under the active layer, which lies under the overlay, which lies under the HUD.
 type Group uint8
 
 // The groups of layers a Host draws, from the bottom: static tiles, the active layer of dragged
-// nodes, the overlay of sprites.
+// nodes, the overlay of sprites, the HUD in view coordinates.
 const (
 	GroupTiles Group = iota
 	GroupActive
 	GroupOverlay
+	GroupHUD
 )
 
 // Layer is one retained picture a Host composites: a tile, a sprite. Within a group a layer made

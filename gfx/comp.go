@@ -50,6 +50,7 @@ type Stats struct {
 	Rastered     uint64        // tiles drawn since the start
 	RasterTime   time.Duration // total worker time spent drawing tiles
 	SpriteDraws  int           // sprites drawn by the last Frame on the calling goroutine
+	HUDDraws     int           // times the HUD image was drawn by the last Frame
 }
 
 type tileKey [2]int32
@@ -162,6 +163,8 @@ type Compositor struct {
 	// spriteDirty is set by every change to a Sprite, which Frame has not seen yet: it makes NeedsFrame true,
 	// so a sprite moved or animated while the scene is idle still gets its frame.
 	spriteDirty atomic.Bool
+	hud         atomic.Pointer[Scene]
+	hudState    hudState
 	ticking     atomic.Bool // OnFrame is set: frames run on every display tick
 
 	cur, prev  *tileSet
@@ -181,6 +184,7 @@ type Compositor struct {
 	jobs           []liftJob
 	liftReady      []liftJob // images drawn on workers, guarded by mu
 	onFrame        func(FrameInfo)
+	onViewport     func(w, h, dpr float64)
 	fi             FrameInfo
 	busy           bool
 
@@ -234,6 +238,10 @@ func (c *Compositor) Close() {
 		sp.drop()
 	}
 	c.sprites = nil
+	if c.hudState.layer != nil {
+		c.hudState.layer.Remove()
+		c.hudState.layer = nil
+	}
 	c.host.Commit()
 	c.mu.Lock()
 	for _, r := range c.ready {
@@ -317,7 +325,7 @@ func (c *Compositor) Stats() Stats {
 // NeedsFrame reports whether a Frame would change anything: safe from any goroutine, cheap enough
 // for a display-link callback to call on every tick.
 func (c *Compositor) NeedsFrame() bool {
-	return c.ticking.Load() || c.camDirty.Load() || c.spriteDirty.Load() || c.readyN.Load() || c.liftN.Load() || c.busy || c.scene.Pending()
+	return c.ticking.Load() || c.camDirty.Load() || c.spriteDirty.Load() || c.readyN.Load() || c.liftN.Load() || c.busy || c.scene.Pending() || c.hudPending()
 }
 
 func (c *Compositor) viewRect() Rect {
@@ -351,7 +359,7 @@ func (c *Compositor) dropSet(s *tileSet) {
 func (c *Compositor) Frame(fi FrameInfo) {
 	t0 := time.Now()
 	c.fi = fi
-	c.stats.TilesApplied, c.stats.SpriteDraws = 0, 0
+	c.stats.TilesApplied, c.stats.SpriteDraws, c.stats.HUDDraws = 0, 0, 0
 	if c.onFrame != nil {
 		c.onFrame(fi)
 	}
@@ -372,6 +380,7 @@ func (c *Compositor) Frame(fi FrameInfo) {
 	c.ensureTiles(camMoved || len(damage) > 0)
 	c.drain()
 	c.stepSprites(fi, camMoved)
+	c.stepHUD()
 	if c.layoutDrty {
 		c.layout()
 		c.layoutDrty = false

@@ -67,13 +67,13 @@ func initHost() {
 
 func send0(recv, sel uintptr) uintptr { return msgInt(recv, sel, 0) }
 
-// Host is a gfx.Host on a CALayer: the three layer groups are sublayers of root, in this order.
+// Host is a gfx.Host on a CALayer: the four layer groups are sublayers of root, in this order.
 // Use it from the main thread. The root layer's coordinates must be y down, as those of a layer
 // behind a flipped NSView are.
 type Host struct {
-	groups [3]uintptr
+	groups [4]uintptr
 	scale  float64
-	layers [3][]*layer // in the order the layers were added: the z order within a group
+	layers [4][]*layer // in the order the layers were added: the z order within a group
 }
 
 // NewHost adds the group layers to root. scale is the backing scale of the screen (contents scale).
@@ -119,7 +119,7 @@ func (h *Host) Close() {
 		send0(l, sels.removeFromSuperlayer)
 		send0(l, sels.release)
 	}
-	h.groups = [3]uintptr{}
+	h.groups = [4]uintptr{}
 }
 
 // Begin starts the layer changes of one frame.

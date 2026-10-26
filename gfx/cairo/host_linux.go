@@ -9,7 +9,7 @@ var _ gfx.Host = (*Host)(nil)
 // Host is a gfx.Host that composites its layers on the CPU into a cairo context. The owner calls
 // Paint from its draw handler when OnDirty says one is due; all calls are from one goroutine.
 type Host struct {
-	groups [3][]*layer
+	groups [4][]*layer
 	dirty  bool
 	// OnDirty runs at Commit when a layer changed since the last Commit.
 	OnDirty func()

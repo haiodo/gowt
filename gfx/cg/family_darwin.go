@@ -12,6 +12,7 @@ import (
 const (
 	kCFNumberFloat64Type = 6
 	kCFNumberSInt32Type  = 3
+	kCTFontUIFontSystem  = 2
 	kCTFontItalicTrait   = 1 << 0
 	// fallbackFamily stands in for a family nobody has; it is also the sans face of a Font that
 	// asks for a weight but names no family.

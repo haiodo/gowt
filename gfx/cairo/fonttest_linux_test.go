@@ -10,4 +10,6 @@ import (
 
 func TestTracking(t *testing.T) { fonttest.Tracking(t, newRenderer(t, Options{})) }
 
-func TestFaces(t *testing.T) { fonttest.Faces(t, newRenderer(t, Options{}), "DejaVu Sans") }
+func TestFaces(t *testing.T) {
+	fonttest.Faces(t, newRenderer(t, Options{}), "DejaVu Sans", "DejaVu Serif")
+}

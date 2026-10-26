@@ -89,6 +89,7 @@ var (
 	ctDescMatching func(d, mandatory uintptr) uintptr
 	ctDescCopyAttr func(d, attr uintptr) uintptr
 	ctFontFromDesc func(d uintptr, size float64, m uintptr) uintptr
+	ctUIFont       func(typ int32, size float64, lang uintptr) uintptr
 
 	kFontAttr, kFgFromCtx, kTrue, kKeyCB, kValCB uintptr
 	kFamilyAttr, kTraitsAttr, kWeightTrait       uintptr
@@ -177,6 +178,7 @@ func bind() {
 		reg(&ctDescMatching, "CTFontDescriptorCreateMatchingFontDescriptors")
 		reg(&ctDescCopyAttr, "CTFontDescriptorCopyAttribute")
 		reg(&ctFontFromDesc, "CTFontCreateWithFontDescriptor")
+		reg(&ctUIFont, "CTFontCreateUIFontForLanguage")
 		reg(&ctLineTypographicBounds, "CTLineGetTypographicBounds")
 
 		sym := func(name string) uintptr {

@@ -272,6 +272,9 @@ func (tx *Tx) ClipRRect(n *Node, r Rect, radius float64) {
 	tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipRRect, r: r, f: radius})
 }
 
+// ClipRRect4 is ClipRRect with a radius per corner (top left, top right, bottom right, bottom left).
+func (tx *Tx) ClipRRect4(n *Node, r Rect, radii [4]float64) { tx.ClipPath(n, RoundRectPath4(r, radii)) }
+
 // ClipPath keeps p by reference.
 func (tx *Tx) ClipPath(n *Node, p *Path) {
 	tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipPath, path: p})

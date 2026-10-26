@@ -12,7 +12,7 @@ import (
 func TestTracking(t *testing.T) { fonttest.Tracking(t, NewRenderer(Options{TextCache: true})) }
 
 func TestFaces(t *testing.T) {
-	fonttest.Faces(t, NewRenderer(Options{TextCache: true}), "Helvetica Neue")
+	fonttest.Faces(t, NewRenderer(Options{TextCache: true}), "Helvetica Neue", "Times")
 }
 
 func TestFamilyMatchesPostScriptName(t *testing.T) {

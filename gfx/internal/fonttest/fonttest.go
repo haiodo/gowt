@@ -86,8 +86,9 @@ func Tracking(t *testing.T, r gfx.Renderer) {
 
 // Faces checks that Family, Weight and Italic reach the face the backend has under that name. The
 // Plex checks need IBM Plex Sans in GFX_FONT_DIR and skip without it. sansFamily is a family the
-// platform always has with an italic face.
-func Faces(t *testing.T, r gfx.Renderer, sansFamily string) {
+// platform always has with an italic face and the family an unknown one must fall back to; serifFamily
+// is a serif family the fallback must not be.
+func Faces(t *testing.T, r gfx.Renderer, sansFamily, serifFamily string) {
 	t.Run("plex", func(t *testing.T) {
 		if os.Getenv("GFX_FONT_DIR") == "" {
 			t.Skip("GFX_FONT_DIR is not set")
@@ -133,6 +134,26 @@ func Faces(t *testing.T, r gfx.Renderer, sansFamily string) {
 		})
 		if string(regular) == string(bold) {
 			t.Error("bold fallback draws like regular")
+		}
+	})
+	t.Run("sans fallback", func(t *testing.T) {
+		for _, text := range []string{"Hamburgefonstiv", "Подготовить"} {
+			w := func(f gfx.Font) float64 {
+				f.Size = 30
+				return r.MeasureText(text, f).Width
+			}
+			for _, c := range []struct {
+				weight int
+				italic bool
+			}{{0, false}, {400, false}, {700, false}, {400, true}, {600, true}} {
+				unknown := w(gfx.Font{Family: "NoSuchFamily", Weight: c.weight, Italic: c.italic})
+				if sans := w(gfx.Font{Family: sansFamily, Weight: c.weight, Italic: c.italic}); unknown != sans {
+					t.Errorf("%q weight %d italic %v: unknown family measures %v, %s measures %v", text, c.weight, c.italic, unknown, sansFamily, sans)
+				}
+				if serif := w(gfx.Font{Family: serifFamily, Weight: c.weight, Italic: c.italic}); unknown == serif {
+					t.Errorf("%q weight %d italic %v: unknown family measures as %s", text, c.weight, c.italic, serifFamily)
+				}
+			}
 		}
 	})
 	t.Run("weight and italic", func(t *testing.T) {

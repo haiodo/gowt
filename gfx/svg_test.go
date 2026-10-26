@@ -56,6 +56,43 @@ func TestPictureSVG(t *testing.T) {
 	}
 }
 
+func TestSVGFont(t *testing.T) {
+	r := NewRecorder()
+	r.Text("a", 0, 10, Font{Family: "IBM Plex Sans", Weight: 600, Italic: true, Size: 12, Spacing: 0.5}, Color{A: 1})
+	r.Text("b", 0, 20, Font{Name: "IBMPlexSans-Bold", Family: "X", Weight: 300, Size: 12}, Color{A: 1})
+	var b bytes.Buffer
+	if err := r.Finish().WriteSVG(&b, 1); err != nil {
+		t.Fatal(err)
+	}
+	s := b.String()
+	for _, want := range []string{
+		`font-family="IBM Plex Sans" font-weight="600" font-style="italic" font-size="12" letter-spacing="0.5"`,
+		`font-family="IBMPlexSans-Bold" font-size="12"`,
+	} {
+		if !strings.Contains(s, want) {
+			t.Errorf("SVG lacks %q:\n%s", want, s)
+		}
+	}
+	if strings.Contains(s, `font-family="X"`) || strings.Contains(s, `font-weight="300"`) {
+		t.Errorf("a Name must win over Family and Weight:\n%s", s)
+	}
+}
+
+func TestClipRRect4(t *testing.T) {
+	s := testScene()
+	f := add(s, nil, 1, 0, 0, 50, 50)
+	s.Update(func(tx *Tx) { tx.ClipRRect4(f, R(0, 0, 30, 30), [4]float64{0, 5, 10, 15}) })
+	s.Commit()
+	add(s, f, 2, 10, 10, 40, 40)
+	var b bytes.Buffer
+	if err := WriteSubtreeSVG(&b, s, f, Rect{}, 1); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(b.String(), "<clipPath") {
+		t.Errorf("no clip in:\n%s", b.String())
+	}
+}
+
 func TestSubtreeSVG(t *testing.T) {
 	s := testScene()
 	f := add(s, nil, 1, 100, 100, 50, 50)

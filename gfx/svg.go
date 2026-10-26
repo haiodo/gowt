@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"strconv"
+	"strings"
 )
 
 // SVG returns p as the d attribute of an SVG path.
@@ -207,8 +208,8 @@ func (w *svgWriter) picture(p *Picture) {
 		case OpShadowBox:
 			w.shadow(o)
 		case OpText:
-			fmt.Fprintf(&w.body, `<text x="%s" y="%s" font-family="%s" font-size="%s" %s>%s</text>`,
-				num(o.A), num(o.B), html.EscapeString(o.Font.Name), num(o.Font.Size), w.paint(o.Color, nil, "fill"), html.EscapeString(o.Text))
+			fmt.Fprintf(&w.body, `<text x="%s" y="%s"%s font-size="%s"%s %s>%s</text>`,
+				num(o.A), num(o.B), svgFont(o.Font), num(o.Font.Size), svgSpacing(o.Font), w.paint(o.Color, nil, "fill"), html.EscapeString(o.Text))
 		case OpImage:
 			if r, ok := o.Image.(*Raster); ok {
 				if data, err := r.PNG(); err == nil {
@@ -285,4 +286,30 @@ func WriteSubtreeSVG(out io.Writer, s *Scene, root *Node, area Rect, scale float
 		}
 	}
 	return w.finish(out, area, scale)
+}
+
+// svgFont is the family, weight and style attributes of f; a Name is a face name and leaves the
+// weight and style to it, as the backends do.
+func svgFont(f Font) string {
+	if f.Name != "" {
+		return fmt.Sprintf(` font-family="%s"`, html.EscapeString(f.Name))
+	}
+	var b strings.Builder
+	if f.Family != "" {
+		fmt.Fprintf(&b, ` font-family="%s"`, html.EscapeString(f.Family))
+	}
+	if f.Weight != 0 {
+		fmt.Fprintf(&b, ` font-weight="%d"`, f.Weight)
+	}
+	if f.Italic {
+		b.WriteString(` font-style="italic"`)
+	}
+	return b.String()
+}
+
+func svgSpacing(f Font) string {
+	if f.Spacing == 0 {
+		return ""
+	}
+	return fmt.Sprintf(` letter-spacing="%s"`, num(f.Spacing))
 }

@@ -21,9 +21,10 @@ type nsRect struct {
 	X, Y, W, H float64
 }
 
-// Overlay replaces the canvas rectangle of img with the view captured without its layers plus the
-// tiles from the compositor's images: cacheDisplayInRect has the layers on some macOS versions and
-// not on others, and drawing tiles over a capture that has them doubles translucent pixels.
+// Overlay replaces the canvas rectangle of img with the canvas background, then the tiles from the
+// compositor's images, then the native child views (Overlay and Edit controls) captured one by one.
+// cacheDisplayInRect has the layers on some macOS versions and not on others: tiles drawn over a
+// capture that has them double translucent pixels and cover the children.
 func (h qaHook) Overlay(shell *swt.Shell, img *image.NRGBA) error {
 	v := h.v
 	c := v.cv.Unwrap()
@@ -43,7 +44,11 @@ func (h qaHook) Overlay(shell *swt.Shell, img *image.NRGBA) error {
 	if !objc.Send[bool](root, sel("isFlipped")) {
 		y = rb.H - r.Y - r.H
 	}
-	back, err := v.captureWithoutLayers(view)
+	kids := visibleChildren(view)
+	// The children stay shown: hiding a field resigns its first responder and ends the edit.
+	v.host.SetHidden(true)
+	back, err := capture(view)
+	v.host.SetHidden(false)
 	if err != nil {
 		return err
 	}
@@ -52,16 +57,41 @@ func (h qaHook) Overlay(shell *swt.Shell, img *image.NRGBA) error {
 		return fmt.Errorf("view capture is %v, tiles %v", back.Bounds().Size(), tiles.Bounds().Size())
 	}
 	draw.Draw(back, back.Bounds(), tiles, image.Point{}, draw.Over)
+	flipped := objc.Send[bool](view, sel("isFlipped"))
+	for _, k := range kids {
+		kimg, err := capture(k)
+		if err != nil {
+			return err
+		}
+		kr := objc.Send[nsRect](view, sel("convertRect:fromView:"), objc.Send[nsRect](k, sel("bounds")), k)
+		ky := kr.Y
+		if !flipped {
+			ky = r.H - kr.Y - kr.H
+		}
+		kat := image.Pt(int(kr.X*scale+0.5), int(ky*scale+0.5))
+		draw.Draw(back, kimg.Bounds().Add(kat), kimg, image.Point{}, draw.Over)
+	}
 	at := image.Pt(img.Bounds().Min.X+int(r.X*scale+0.5), img.Bounds().Min.Y+int(y*scale+0.5))
 	draw.Draw(img, back.Bounds().Add(at), back, image.Point{}, draw.Src)
 	return nil
 }
 
-// captureWithoutLayers draws the canvas view as cacheDisplayInRect does, with the tile layers hidden.
-func (v *View) captureWithoutLayers(view objc.ID) (*image.NRGBA, error) {
+// visibleChildren are the shown native subviews of the canvas.
+func visibleChildren(view objc.ID) []objc.ID {
 	sel := objc.RegisterName
-	v.host.SetHidden(true)
-	defer v.host.SetHidden(false)
+	subs := view.Send(sel("subviews"))
+	var out []objc.ID
+	for i, n := uint64(0), objc.Send[uint64](subs, sel("count")); i < n; i++ {
+		if k := subs.Send(sel("objectAtIndex:"), i); !objc.Send[bool](k, sel("isHidden")) {
+			out = append(out, k)
+		}
+	}
+	return out
+}
+
+// capture draws view as cacheDisplayInRect does and returns the bitmap.
+func capture(view objc.ID) (*image.NRGBA, error) {
+	sel := objc.RegisterName
 	bounds := objc.Send[nsRect](view, sel("bounds"))
 	rep := view.Send(sel("bitmapImageRepForCachingDisplayInRect:"), bounds)
 	view.Send(sel("cacheDisplayInRect:toBitmapImageRep:"), bounds, rep)

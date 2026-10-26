@@ -50,7 +50,9 @@ func (n *popoverNative) focus(c *swt.Control) { cocoa.FocusPopover(n.pop, c.Focu
 
 // focused is first-responder based: the key window is the active application's, which a test
 // process may not be.
-func (n *popoverNative) focused(p *Popover, c *swt.Control) bool { return cocoa.FirstResponderIn(c.FocusView()) }
+func (n *popoverNative) focused(p *Popover, c *swt.Control) bool {
+	return cocoa.FirstResponderIn(c.FocusView())
+}
 
 // outsideClick closes the popover the way a click outside does; an inactive test process cannot
 // observe the owner window being activated.

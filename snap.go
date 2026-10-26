@@ -38,14 +38,17 @@ func (a *App) armSnap(path string, errp *error) func() {
 			a.display.Wake()
 		}
 	}()
-	placed := false
+	moves := 0
 	var clearedAt time.Time
 	return func() {
 		now := time.Now()
-		if !placed {
-			if shells := a.display.GetShells(); len(shells) > 0 {
-				placed = true
-				shot.PlaceOnRetina(shotHandle(shells[0]))
+		// Placed again until it stays: the window can be put back after Show, and the capture
+		// must come a few turns after the last move.
+		if shells := a.display.GetShells(); len(shells) > 0 && moves < 5 && shot.PlaceOnRetina(shotHandle(shells[0])) {
+			moves++
+			clearedAt = time.Time{}
+			if limitDue := now.Add(time.Second); due.Before(limitDue) {
+				due = limitDue
 			}
 		}
 		if a.quit.Load() || now.Before(due) {

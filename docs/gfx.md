@@ -109,6 +109,22 @@ png, _ := raster.PNG()
 gfx.WriteSubtreeSVG(w, scene, node, gfx.Rect{}, 1) // pure Go, no renderer
 ```
 
+## Text
+
+`gfx.Font` is `Name`, `Family`, `Weight`, `Italic`, `Size` and `Spacing`. `Name` is an exact face name (a PostScript
+name such as `IBMPlexSans-SmBld`, or a family) and wins when set. Without it the backend takes the face of `Family`
+whose weight is closest to `Weight` (CSS scale, 0 is 400) and whose slant matches `Italic`, from installed fonts and
+those registered with `offscreen.RegisterFonts` or `GFX_FONT_DIR`; a family it does not have is its default sans
+(Helvetica Neue, the fontconfig default, Segoe UI) at that weight and slant. A registered family needs no PostScript
+name: `gfx.Font{Family: "IBM Plex Sans", Weight: 600, Size: 14}`.
+
+`Spacing` is the letter spacing in points. It is added after every character, the last included (as in CSS), in
+drawing and in `MeasureText` the same: the width of a line is its plain width plus `Spacing` per rune. Pango leaves
+the last character out and `cairo` adds it back.
+
+`gfx.RoundRectPath4(rect, [4]float64{tl, tr, br, bl})`, `Recorder.FillRRect4` and `StrokeRRect4` take a radius per
+corner; `gfx.ParseSVGPath(d)` reads SVG path data.
+
 ## Compositor
 
 ```go

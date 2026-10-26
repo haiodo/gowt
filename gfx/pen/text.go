@@ -23,7 +23,7 @@ type layouter struct {
 }
 
 func (l *layouter) font(n *rn) gfx.Font {
-	return gfx.Font{Name: l.d.o.FontName(n.family, n.weight), Size: n.fsize}
+	return gfx.Font{Family: n.family, Weight: n.weight, Italic: n.italic, Size: n.fsize, Spacing: n.ls}
 }
 
 func (l *layouter) measure(s string, f gfx.Font) gfx.TextMetrics {

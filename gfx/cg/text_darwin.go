@@ -18,14 +18,15 @@ func cfString(s string) uintptr {
 	return cfStringCreateWithBytes(0, unsafe.StringData(s), len(s), kCFStringEncodingUTF8, false)
 }
 
+// font returns the CTFont for f. Name is taken as an exact face name; without it Family, Weight and
+// Italic pick the closest face of the family, and the sans fallback stands in for a family
+// CoreText does not have.
 func (r *Renderer) font(f gfx.Font) uintptr {
-	k := fontKey{f.Name, f.Size}
+	k := fontKey{f.Name, f.Family, f.Weight, f.Italic, f.Size}
 	if v, ok := r.fonts.Load(k); ok {
 		return v.(uintptr)
 	}
-	name := cfString(f.Name)
-	ref := ctFontCreateWithName(name, f.Size, 0)
-	cfRelease(name)
+	ref := newFont(f)
 	v, loaded := r.fonts.LoadOrStore(k, ref)
 	if loaded {
 		cfRelease(ref)
@@ -33,17 +34,45 @@ func (r *Renderer) font(f gfx.Font) uintptr {
 	return v.(uintptr)
 }
 
+func newFont(f gfx.Font) uintptr {
+	if f.Name == "" && (f.Family != "" || f.Weight != 0 || f.Italic) {
+		w := f.Weight
+		if w == 0 {
+			w = 400
+		}
+		if ref, ok := fontByFamily(f.Family, w, f.Italic, f.Size); ok {
+			return ref
+		}
+		if ref, ok := fontByFamily(fallbackFamily, w, f.Italic, f.Size); ok {
+			return ref
+		}
+	}
+	name := cfString(f.Name)
+	ref := ctFontCreateWithName(name, f.Size, 0)
+	cfRelease(name)
+	return ref
+}
+
 // newLine lays out one line of text in font; the color comes from the context at draw time,
-// so a line is reusable for any fill color. The caller releases it.
-func (r *Renderer) newLine(s string, font uintptr) uintptr {
+// so a line is reusable for any fill color. spacing is added after every character. The caller
+// releases it.
+func (r *Renderer) newLine(s string, font uintptr, spacing float64) uintptr {
 	str := cfString(s)
-	keys := [2]uintptr{kFontAttr, kFgFromCtx}
-	vals := [2]uintptr{font, kTrue}
-	dict := cfDictionaryCreate(0, &keys[0], &vals[0], 2, kKeyCB, kValCB)
+	keys := [3]uintptr{kFontAttr, kFgFromCtx, kKernAttr}
+	vals := [3]uintptr{font, kTrue, 0}
+	n := 2
+	if spacing != 0 {
+		vals[2] = cfNumberCreate(0, kCFNumberFloat64Type, unsafe.Pointer(&spacing))
+		n = 3
+	}
+	dict := cfDictionaryCreate(0, &keys[0], &vals[0], n, kKeyCB, kValCB)
 	as := cfAttrStringCreate(0, str, dict)
 	line := ctLineCreateWithAttrStr(as)
 	cfRelease(as)
 	cfRelease(dict)
+	if n == 3 {
+		cfRelease(vals[2])
+	}
 	cfRelease(str)
 	return line
 }
@@ -52,7 +81,9 @@ func (r *Renderer) newLine(s string, font uintptr) uintptr {
 type Layout struct{ line uintptr }
 
 // Layout lays out one line of s in f.
-func (r *Renderer) Layout(s string, f gfx.Font) Layout { return Layout{r.newLine(s, r.font(f))} }
+func (r *Renderer) Layout(s string, f gfx.Font) Layout {
+	return Layout{r.newLine(s, r.font(f), f.Spacing)}
+}
 
 // Release frees the line.
 func (l Layout) Release() { cfRelease(l.line) }
@@ -97,11 +128,11 @@ func (s *Surface) text(str string, op *gfx.Op) {
 	font := r.font(op.Font)
 	var line uintptr
 	if r.opts.TextCache {
-		k := lineKey{font, str}
+		k := lineKey{font, str, op.Font.Spacing}
 		if v, ok := r.lines.Load(k); ok {
 			line = v.(uintptr)
 		} else {
-			l := r.newLine(str, font)
+			l := r.newLine(str, font, op.Font.Spacing)
 			v, loaded := r.lines.LoadOrStore(k, l)
 			if loaded {
 				cfRelease(l)
@@ -109,7 +140,7 @@ func (s *Surface) text(str string, op *gfx.Op) {
 			line = v.(uintptr)
 		}
 	} else {
-		line = r.newLine(str, font)
+		line = r.newLine(str, font, op.Font.Spacing)
 		defer cfRelease(line)
 	}
 	ctx := s.ctx

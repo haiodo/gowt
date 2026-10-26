@@ -33,7 +33,7 @@ func TestPictureSVG(t *testing.T) {
 	r.StrokePath(&p, StrokeStyle{Width: 2, Dash: []float64{3, 2}, Cap: CapRound}, Color{0, 0, 0, 0.5})
 	r.FillShadowRRect(0, 0, 40, 20, 4, Color{1, 1, 1, 1}, Shadow{DY: 2, Blur: 6, Color: Color{A: 0.4}})
 	r.EndLayer()
-	r.Text(`a<b & "c"`, 2, 12, Font{"Helvetica Neue", 10}, Color{A: 1})
+	r.Text(`a<b & "c"`, 2, 12, Font{Name: "Helvetica Neue", Size: 10}, Color{A: 1})
 	img := NewRaster(2, 2)
 	img.Pix[3] = 255
 	r.DrawImage(img, 0, 0, 8, 8)

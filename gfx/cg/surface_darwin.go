@@ -38,13 +38,16 @@ type Renderer struct {
 }
 
 type fontKey struct {
-	name string
-	size float64
+	name, family string
+	weight       int
+	italic       bool
+	size         float64
 }
 
 type lineKey struct {
-	font uintptr
-	s    string
+	font    uintptr
+	s       string
+	spacing float64
 }
 
 // The measurer of recordings made before any renderer exists (see gfx.DefaultMeasurer).

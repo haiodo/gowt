@@ -11,15 +11,15 @@
 // node replacement, slot children); color variables with light and dark themes and a per-instance
 // theme; solid fills and linear gradients; strokes with inner or centered alignment; outer shadows;
 // uniform and per-corner radius; clip (kept only where it changes the picture); opacity; text with
-// family, size, weight, line height, fixed-width wrapping and center or right alignment, measured by
+// family, size, weight, italic, letter spacing, line height, fixed-width wrapping and center or right alignment, measured by
 // the Measurer given in Options. Text sizes follow pen.dev: a hug width is the measured width rounded up,
 // a line box is lineHeight * fontSize rounded (the font's own ascent plus descent when none is given).
-// Fonts that are not installed fall back to the system font; cg.RegisterFonts adds IBM Plex Sans
-// to a process without installing it. Boxes lists the laid out rectangles under pen.dev's ids.
+// Fonts that are not installed fall back to the system font; offscreen.RegisterFonts adds IBM Plex
+// Sans to a process without installing it. Boxes lists the laid out rectangles under pen.dev's ids.
 //
 // Not supported: fill rules (paths are filled non-zero, evenodd icons render as solid blobs),
 // inner shadows, blur effects, radial and angular gradients (drawn linear), image fills, per-side
-// strokes, rotation, flip, text decoration and letter spacing, the guess for the gradient rotation
+// strokes, rotation, flip, text decoration, the guess for the gradient rotation
 // (CSS convention), min and max sizes and wrap in layouts, refs to missing components (skipped),
 // hug sizes of frames that hold fill children (the content size is used).
 package pen
@@ -39,9 +39,6 @@ import (
 type Options struct {
 	// Measurer measures text as the renderer draws it; gfx.DefaultMeasurer when nil.
 	Measurer gfx.TextMeasurer
-	// FontName maps a family and a weight (400, 500, 600, 700) to the name the renderer takes. The
-	// default uses IBM Plex Sans when it is installed and Helvetica Neue otherwise.
-	FontName func(family string, weight int) string
 	// Mode picks the variable values: "light" (default) or "dark".
 	Mode string
 	// FirstID is the id of the first node built; ids grow from there.
@@ -55,14 +52,8 @@ type Doc struct {
 	index map[string]map[string]map[string]any // alias -> id -> node; alias "" is the file itself
 	vars  map[string]map[string]any
 	next  int
-	font  map[fontKey]string
 	// Skipped counts what the loader ignored, by feature.
 	Skipped map[string]int
-}
-
-type fontKey struct {
-	family string
-	weight int
 }
 
 // Open reads the file and the libraries it imports.
@@ -72,12 +63,9 @@ func Open(path string, o Options) (*Doc, error) {
 		return nil, err
 	}
 	d := &Doc{o: o, index: map[string]map[string]map[string]any{}, vars: map[string]map[string]any{}, next: o.FirstID,
-		font: map[fontKey]string{}, Skipped: map[string]int{}}
+		Skipped: map[string]int{}}
 	if d.o.Measurer == nil {
 		d.o.Measurer = gfx.DefaultMeasurer
-	}
-	if d.o.FontName == nil {
-		d.o.FontName = systemFont(d.o.Measurer)
 	}
 	if d.o.Mode == "" {
 		d.o.Mode = "light"

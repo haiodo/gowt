@@ -31,6 +31,8 @@ const (
 
 	dwLayoutGetLineMetrics = 59
 	dwLayoutGetMetrics     = 60
+
+	dwLayout1SetCharacterSpacing = 69 // IDWriteTextLayout1
 )
 
 type dwTextMetrics struct {
@@ -53,20 +55,21 @@ type textEngine struct {
 	faces  map[string]FaceInfo // by lowercase PostScript name, from fontReg
 	gen    int                 // the fontReg generation the custom collection was built from
 
-	resolved sync.Map // string -> Resolved (per gen, cleared on change)
+	resolved sync.Map // fmtKey -> Resolved (per gen, cleared on change)
 	formats  sync.Map // fmtKey -> uintptr
 	layouts  sync.Map // layKey -> *textLayout
 }
 
 type fmtKey struct {
-	name string
-	size float64
+	name, family string
+	weight       int
+	italic       bool
+	size         float64
 }
 
 type layKey struct {
-	name string
-	size float64
-	s    string
+	f gfx.Font
+	s string
 }
 
 type textLayout struct {
@@ -224,30 +227,39 @@ func (te *textEngine) rebuild(files map[string]bool) error {
 	return nil
 }
 
-func (te *textEngine) resolve(name string) Resolved {
+// resolve turns f into the DirectWrite request: Name as an exact face name, else Family at Weight
+// and Italic.
+func (te *textEngine) resolve(f gfx.Font) Resolved {
 	te.sync()
-	if v, ok := te.resolved.Load(name); ok {
+	k := fmtKey{f.Name, f.Family, f.Weight, f.Italic, 0}
+	if v, ok := te.resolved.Load(k); ok {
 		return v.(Resolved)
 	}
 	te.mu.RLock()
-	res := resolveName(name, te.faces, func(fam string, custom bool) bool {
+	has := func(fam string, custom bool) bool {
 		if custom {
 			return te.custom != 0 && te.hasFamily(te.custom, fam)
 		}
 		return te.hasFamily(te.sys, fam)
-	})
+	}
+	var res Resolved
+	if f.Name != "" || (f.Family == "" && f.Weight == 0 && !f.Italic) {
+		res = resolveName(f.Name, te.faces, has)
+	} else {
+		res = resolveFamily(f.Family, f.Weight, f.Italic, has)
+	}
 	te.mu.RUnlock()
-	te.resolved.Store(name, res)
+	te.resolved.Store(k, res)
 	return res
 }
 
 func (te *textEngine) format(f gfx.Font) uintptr {
 	te.sync()
-	k := fmtKey{f.Name, f.Size}
+	k := fmtKey{f.Name, f.Family, f.Weight, f.Italic, f.Size}
 	if v, ok := te.formats.Load(k); ok {
 		return v.(uintptr)
 	}
-	res := te.resolve(f.Name)
+	res := te.resolve(f)
 	te.mu.RLock()
 	coll := uintptr(0)
 	if res.Custom {
@@ -288,6 +300,14 @@ func (te *textEngine) newLayout(s string, f gfx.Font) *textLayout {
 	if failed(hr) {
 		return nil
 	}
+	if f.Spacing != 0 {
+		// trailing spacing follows every character, the last one too, as the width of a CSS line has it
+		if l1, err := queryInterface(lay, iidDWriteTextLayout1); err == nil {
+			rng := uintptr(len(w)) << 32 // DWRITE_TEXT_RANGE{0, len}, passed in one register
+			vcall(l1, dwLayout1SetCharacterSpacing, fl(0), fl(f.Spacing), fl(0), ui(rng))
+			release(l1)
+		}
+	}
 	var m dwTextMetrics
 	vcall(lay, dwLayoutGetMetrics, ref(&m))
 	var lm [4]dwLineMetrics
@@ -307,7 +327,7 @@ func (te *textEngine) layout(s string, f gfx.Font, cache bool) *textLayout {
 	if !cache {
 		return te.newLayout(s, f)
 	}
-	k := layKey{f.Name, f.Size, s}
+	k := layKey{f, s}
 	if v, ok := te.layouts.Load(k); ok {
 		return v.(*textLayout)
 	}

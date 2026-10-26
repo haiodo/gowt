@@ -79,7 +79,20 @@ var (
 	ctLineDraw              func(line uintptr, ctx uintptr)
 	ctLineTypographicBounds func(line uintptr, asc, desc, lead *float64) float64
 
+	cfRetain       func(o uintptr) uintptr
+	cfArrayCount   func(a uintptr) int
+	cfArrayAt      func(a uintptr, i int) uintptr
+	cfDictGet      func(d, k uintptr) uintptr
+	cfNumberGet    func(n uintptr, typ int, p unsafe.Pointer) bool
+	cfNumberCreate func(alloc uintptr, typ int, p unsafe.Pointer) uintptr
+	ctDescCreate   func(attrs uintptr) uintptr
+	ctDescMatching func(d, mandatory uintptr) uintptr
+	ctDescCopyAttr func(d, attr uintptr) uintptr
+	ctFontFromDesc func(d uintptr, size float64, m uintptr) uintptr
+
 	kFontAttr, kFgFromCtx, kTrue, kKeyCB, kValCB uintptr
+	kFamilyAttr, kTraitsAttr, kWeightTrait       uintptr
+	kSymbolicTrait, kKernAttr, kWidthTrait       uintptr
 )
 
 var bindOnce sync.Once
@@ -154,6 +167,16 @@ func bind() {
 		reg(&ctFontCreateWithName, "CTFontCreateWithName")
 		reg(&ctLineCreateWithAttrStr, "CTLineCreateWithAttributedString")
 		reg(&ctLineDraw, "CTLineDraw")
+		reg(&cfRetain, "CFRetain")
+		reg(&cfArrayCount, "CFArrayGetCount")
+		reg(&cfArrayAt, "CFArrayGetValueAtIndex")
+		reg(&cfDictGet, "CFDictionaryGetValue")
+		reg(&cfNumberGet, "CFNumberGetValue")
+		reg(&cfNumberCreate, "CFNumberCreate")
+		reg(&ctDescCreate, "CTFontDescriptorCreateWithAttributes")
+		reg(&ctDescMatching, "CTFontDescriptorCreateMatchingFontDescriptors")
+		reg(&ctDescCopyAttr, "CTFontDescriptorCopyAttribute")
+		reg(&ctFontFromDesc, "CTFontCreateWithFontDescriptor")
 		reg(&ctLineTypographicBounds, "CTLineGetTypographicBounds")
 
 		sym := func(name string) uintptr {
@@ -168,6 +191,12 @@ func bind() {
 		kFontAttr = deref(sym("kCTFontAttributeName"))
 		kFgFromCtx = deref(sym("kCTForegroundColorFromContextAttributeName"))
 		kTrue = deref(sym("kCFBooleanTrue"))
+		kFamilyAttr = deref(sym("kCTFontFamilyNameAttribute"))
+		kTraitsAttr = deref(sym("kCTFontTraitsAttribute"))
+		kWeightTrait = deref(sym("kCTFontWeightTrait"))
+		kSymbolicTrait = deref(sym("kCTFontSymbolicTrait"))
+		kKernAttr = deref(sym("kCTKernAttributeName"))
+		kWidthTrait = deref(sym("kCTFontWidthTrait"))
 		kKeyCB = sym("kCFTypeDictionaryKeyCallBacks")
 		kValCB = sym("kCFTypeDictionaryValueCallBacks")
 	})

@@ -104,6 +104,11 @@ var (
 	fdSetWeight         func(d uintptr, w int32)
 	fdSetStyle          func(d uintptr, s int32)
 	fdSetAbsSize        func(d uintptr, s float64)
+	attrListNew         func() uintptr
+	attrListInsert      func(list, attr uintptr)
+	attrListUnref       func(list uintptr)
+	attrLetterSpacing   func(units int32) uintptr
+	layoutSetAttrs      func(l, list uintptr)
 	objectUnref         func(o uintptr)
 	fcPatternCreate     func() uintptr
 	fcPatternDestroy    func(p uintptr)
@@ -184,6 +189,9 @@ func bind() (err error) {
 				"pango_layout_get_extents": &layoutExtents, "pango_font_description_new": &fdNew,
 				"pango_font_description_set_family": &fdSetFamily, "pango_font_description_set_weight": &fdSetWeight,
 				"pango_font_description_set_style": &fdSetStyle, "pango_font_description_set_absolute_size": &fdSetAbsSize,
+				"pango_attr_list_new": &attrListNew, "pango_attr_list_insert": &attrListInsert,
+				"pango_attr_list_unref": &attrListUnref, "pango_attr_letter_spacing_new": &attrLetterSpacing,
+				"pango_layout_set_attributes": &layoutSetAttrs,
 			}},
 			{gobj, map[string]any{"g_object_unref": &objectUnref}},
 			{fc, map[string]any{

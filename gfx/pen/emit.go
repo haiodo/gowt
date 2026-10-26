@@ -140,7 +140,7 @@ func (b *builder) emit(n *rn, parent *gfx.Node, ox, oy float64, force bool) *gfx
 		case n.radius[0] == n.radius[1] && n.radius[1] == n.radius[2] && n.radius[2] == n.radius[3]:
 			b.tx.ClipRRect(node, gfx.R(0, 0, n.RW, n.RH), n.radius[0])
 		default:
-			b.tx.ClipPath(node, rrect4(0, 0, n.RW, n.RH, n.radius))
+			b.tx.ClipPath(node, gfx.RoundRectPath4(gfx.R(0, 0, n.RW, n.RH), n.radius))
 		}
 	}
 	if n.typ == "ellipse" {
@@ -188,30 +188,6 @@ func (b *builder) leaks(n *rn, maxX, maxY, minX, minY float64) bool {
 	return false
 }
 
-func rrect4(x, y, w, h float64, r [4]float64) *gfx.Path {
-	p := &gfx.Path{}
-	if r[0] == r[1] && r[1] == r[2] && r[2] == r[3] {
-		p.RoundRect(x, y, w, h, r[0])
-		return p
-	}
-	lim := math.Min(w, h) / 2
-	for i := range r {
-		r[i] = math.Min(r[i], lim)
-	}
-	const k = 0.4477152501692064 // 1 - kappa
-	p.MoveTo(x+r[0], y)
-	p.LineTo(x+w-r[1], y)
-	p.CubicTo(x+w-r[1]*k, y, x+w, y+r[1]*k, x+w, y+r[1])
-	p.LineTo(x+w, y+h-r[2])
-	p.CubicTo(x+w, y+h-r[2]*k, x+w-r[2]*k, y+h, x+w-r[2], y+h)
-	p.LineTo(x+r[3], y+h)
-	p.CubicTo(x+r[3]*k, y+h, x, y+h-r[3]*k, x, y+h-r[3])
-	p.LineTo(x, y+r[0])
-	p.CubicTo(x, y+r[0]*k, x+r[0]*k, y, x+r[0], y)
-	p.Close()
-	return p
-}
-
 func (b *builder) gradient(p *paint, w, h float64) *gfx.Gradient {
 	a := p.angle * math.Pi / 180
 	dx, dy := math.Sin(a), -math.Cos(a)
@@ -235,7 +211,7 @@ func (b *builder) picture(n *rn) *gfx.Picture {
 	}
 	r := gfx.NewRecorderWith(b.d.o.Measurer)
 	uniform := n.radius[0] == n.radius[1] && n.radius[1] == n.radius[2] && n.radius[2] == n.radius[3]
-	shape := rrect4(0, 0, w, h, n.radius)
+	shape := gfx.RoundRectPath4(gfx.R(0, 0, w, h), n.radius)
 	b.sc.Frames++
 	switch {
 	case n.shadow != nil && uniform:
@@ -264,7 +240,7 @@ func (b *builder) picture(n *rn) *gfx.Picture {
 			for i := range rr {
 				rr[i] = math.Max(rr[i]-in, 0)
 			}
-			sp = rrect4(in, in, w-n.sw, h-n.sw, rr)
+			sp = gfx.RoundRectPath4(gfx.R(in, in, w-n.sw, h-n.sw), rr)
 		}
 		st := gfx.StrokeStyle{Width: n.sw, MiterLimit: 10}
 		if n.stroke.grad != nil {
@@ -312,7 +288,7 @@ func (b *builder) pathPicture(n *rn) *gfx.Picture {
 	if n.geom == "" || (n.fill == nil && n.stroke == nil) {
 		return nil
 	}
-	p, err := ParseSVGPath(n.geom)
+	p, err := gfx.ParseSVGPath(n.geom)
 	if err != nil || p.Empty() {
 		b.d.Skipped["bad path"]++
 		return nil

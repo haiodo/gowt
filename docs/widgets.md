@@ -155,7 +155,7 @@ Every widget (`Window` and containers included) has these methods, which are als
 
 `app.Clipboard()` returns the system clipboard (created on first use, disposed when `Run` returns): `Text`/`HTML`/`Files`/`Image` return `ok` or nil, `SetText`/`SetHTML`/`SetFiles`/`SetImage` return an `error` because a busy clipboard is routine on Windows. Images are owned by the App. UI thread only. Example: [`examples/clipboard`](../examples/clipboard).
 
-`DragFrom(widget, Drag{Text: ..., Files: ..., Image: ...})` and `DropOn(widget, Drop{Text: ..., Files: ..., Image: ..., Over: ...})` make any widget a drag source or drop target; a control has at most one of each. Images dropped on a target are owned by the App. Custom transfers go through `Unwrap()` on the returned handle. Example: [`examples/dnd`](../examples/dnd). Not verified with a real mouse on any OS.
+`DragFrom(widget, Drag{Text: ..., Files: ..., Image: ...})` and `DropOn(widget, Drop{Text: ..., Files: ..., Image: ..., Over: ...})` make any widget a drag source or drop target; a control has at most one of each. Images dropped on a target are owned by the App. Custom transfers go through `Unwrap()` on the returned handle. Example: [`examples/dnd`](../examples/dnd). A plain drag (no key held) takes move if the source and the target both allow it, else copy, else link; a modifier key asks for another one. Checked with a real mouse, Tree to Tree and Tree to a canvas, on Linux (GTK 3, Xvfb) and Windows 11 arm64; not on macOS (see [facade.md](facade.md)). Tests drive a drag with `Element.DragTo`, see [qa.md](qa.md).
 
 Items are not widgets: rows, nodes, tool items and tab pages come from their owner and are used right away.
 

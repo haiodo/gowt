@@ -175,7 +175,7 @@ JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts a
 - CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb; Linux was also run on a real GNOME Wayland desktop. Hosted `windows-latest` and `macos-latest` runners build, vet and run the non-GUI tests; their GUI tests are a separate job that is allowed to fail, since a desktop session on those runners is unverified (the workflow has not been run yet). The swt and jface gates for macOS and Windows run locally and on the VM.
 - Linux: GTK 3 only.
 - `Browser` does not support the Authentication event; see [docs/webview-browser.md](docs/webview-browser.md) for the rest.
-- Clipboard, drag and drop and `StyledText` are in the facade (`App.Clipboard`, `DragFrom`/`DropOn`, `StyledText`). Not verified: drag and drop with a real mouse on any OS; cross-application clipboard transfer (the peer-process SWT tests are skipped); `StyledText` style rendering on macOS (upstream tests skipped). `Accessible` is a stub on all three OSes.
+- Clipboard, drag and drop and `StyledText` are in the facade (`App.Clipboard`, `DragFrom`/`DropOn`, `StyledText`). Not verified: drag and drop with a real mouse on macOS (checked on Linux and Windows); cross-application clipboard transfer (the peer-process SWT tests are skipped); `StyledText` style rendering on macOS (upstream tests skipped). `Accessible` is a stub on all three OSes.
 - macOS Table and Tree use the cell-based AppKit views.
 
 More: [docs/platforms.md](docs/platforms.md). How the repository and the translator work: [docs/internals.md](docs/internals.md).

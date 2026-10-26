@@ -28,6 +28,9 @@ func main() {
 		var popBtn *gowt.ButtonView
 		var pop *gowt.Popover
 		var resizes [][2]int
+		var dndLog []string
+		var srcTree, dstTree *gowt.TreeView
+		dnd := func(format string, a ...any) { dndLog = append(dndLog, fmt.Sprintf(format, a...)) }
 		scene := gfx.NewScene()
 		red := gfx.NewNode(1)
 		rec := gfx.NewRecorder()
@@ -120,6 +123,14 @@ func main() {
 					})
 					t.OnCollapse(func(n *gowt.Node) { note("collapse %s", n.Text()) })
 				})),
+			gowt.Tree(gowt.ID("dnd-src"), gowt.Ref(&srcTree), gowt.Size(200, 70), gowt.Init(func(t *gowt.TreeView) {
+				t.Node("apple")
+				t.Node("pear")
+			})),
+			gowt.Tree(gowt.ID("dnd-dst"), gowt.Ref(&dstTree), gowt.Size(200, 70), gowt.Init(func(t *gowt.TreeView) {
+				t.Node("basket")
+				t.Node("crate")
+			})),
 			gowt.Button("Delete", gowt.ID("delete"), gowt.OnClick(func() {
 				if w.Confirm("Delete", "Delete the file?") {
 					note("deleted")
@@ -157,6 +168,38 @@ func main() {
 		pop = w.Popover(gowt.ID("popover"))
 		pop.Add(gowt.Label("popover body"), gowt.Button("Pop OK", gowt.ID("pop-ok"), gowt.OnClick(func() { note("pop ok") })))
 		pop.OnClose(func() { note("pop closed") })
+		gowt.DragFrom(srcTree, gowt.Drag{
+			Ops: gowt.OpCopy | gowt.OpMove,
+			Text: func() string {
+				sel := srcTree.Selected()
+				if len(sel) == 0 {
+					return ""
+				}
+				return sel[0].Text()
+			},
+			OnStart: func() bool { dnd("start"); return true },
+			OnDone:  func(op gowt.Op) { dnd("done %d", op) },
+		})
+		over := func(name string, t *gowt.TreeView) func(x, y int) bool {
+			return func(x, y int) bool {
+				n, _ := t.CellAt(x, y)
+				if n == nil {
+					dnd("%s over nothing", name)
+					return false
+				}
+				dnd("%s over %s", name, n.Text())
+				return true
+			}
+		}
+		gowt.DropOn(dstTree, gowt.Drop{
+			Ops:  gowt.OpCopy | gowt.OpMove,
+			Over: over("tree", dstTree),
+			Text: func(s string, op gowt.Op) { dnd("tree drop %q op %d", s, op) },
+		})
+		gowt.DropOn(gv.Canvas(), gowt.Drop{
+			Over: func(x, y int) bool { dnd("canvas over %d,%d", x, y); return true },
+			Text: func(s string, op gowt.Op) { dnd("canvas drop %q op %d", s, op) },
+		})
 		w.OnKey("Cmd+K", func() { note("key mod+k") })
 		w.MenuBar().Submenu("File").Item("Run", func() { note("menu run") }, gowt.Shortcut("Cmd+R"))
 		w.Show()
@@ -174,7 +217,7 @@ func main() {
 			clicks.Set(0)
 			off.Set(0)
 			report.Set("")
-			events, vetoClose = nil, false
+			events, vetoClose, dndLog = nil, false, nil
 			pop.Close()
 			if ed != nil {
 				ed.Cancel()
@@ -195,6 +238,7 @@ func main() {
 			w, h := gv.Canvas().Size()
 			return map[string]any{"w": w, "h": h, "resizes": resizes}, nil
 		})
+		qa.HandleValue("dnd", func(qa.Args) (any, error) { return dndLog, nil })
 		qa.HandleValue("events", func(qa.Args) (any, error) { return events, nil })
 		qa.Handle("veto", func(a qa.Args) error { vetoClose = a.Bool("on"); return nil })
 		qa.Handle("add", func(a qa.Args) error { clicks.Set(clicks.Get() + a.Int("n")); return nil })

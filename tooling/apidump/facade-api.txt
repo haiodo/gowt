@@ -1285,6 +1285,8 @@ gowt/qa/qatest Element.ClickAt(x float64, y float64)
 gowt/qa/qatest Element.Close()
 gowt/qa/qatest Element.Collapse()
 gowt/qa/qatest Element.DoubleClickAt(x float64, y float64)
+gowt/qa/qatest Element.DragDropTo(target *Element)
+gowt/qa/qatest Element.DragDropToAt(target *Element, x int, y int)
 gowt/qa/qatest Element.DragTo(x float64, y float64, toX float64, toY float64)
 gowt/qa/qatest Element.Exists() bool
 gowt/qa/qatest Element.Expand()

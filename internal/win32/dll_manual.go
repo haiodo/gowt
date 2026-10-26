@@ -126,3 +126,11 @@ func vtblFn(obj int64, fn int32) uintptr {
 	vtbl := *(*uintptr)(unsafe.Add(unsafe.Pointer(nil), uintptr(obj)))
 	return *(*uintptr)(unsafe.Add(unsafe.Pointer(nil), vtbl+uintptr(fn)*unsafe.Sizeof(uintptr(0))))
 }
+
+// syscallEscaping is SyscallN for a call that runs Go callbacks (a modal OLE loop): a callback can
+// grow the stack and move a pointer argument's target while the OS still writes through the old address.
+//
+//go:uintptrescapes
+func syscallEscaping(trap uintptr, args ...uintptr) (r1, r2 uintptr, err syscall.Errno) {
+	return syscall.SyscallN(trap, args...)
+}

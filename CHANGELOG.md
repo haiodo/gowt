@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+Emoji in text (TSK-2026-10-24-gfx-tenniarb-11 D3, TSK-2026-10-03-product-36)
+- Fixed: editing text with surrogate pairs (emoji, ZWJ sequences, flags) no longer panics in `StyledText`. The cause was in `jrt` (UTF-16 indices over UTF-8 strings, no lone surrogates) and was fixed earlier by the WTF-8 work and the `toCharArray`/`charAt`/`new String(char[])` generation; the defect note in the docs was stale. New tests pin it: `swt/custom_defaultcontent_test.go` (no window, fails on the commits before that work) and `swt/custom_styledtext_surrogates_gui_test.go` (`GOWT_GUI_TEST=1`: typing, paste, cut, delete, caret moves, selection, wrap, `StyleRange` inside a pair, `Text`, `Combo`, `Label`). Run on Linux only; macOS and Windows not run.
+
 CTabs look
 - Changed: `CTabs` draws a modern document tab bar on every OS: a flat strip with a hairline in the system separator colour, the selected tab in the folder's background (so it joins the content) with a 2 px accent line, secondary text on the other tabs with a hover fill, the Type.Body font, the tab height from Spacing.ControlHeight, a round close button shown on the selected and the hovered tab, and an accent ring on the selected tab while the folder has the focus. Set the folder's `Background` to the editor's colour so that the tab joins it. A `CTabs` now selects its first tab when created; SWT did so only when the folder got the focus.
 - Changed: j2go has `dispatch.properties`: a class listed there dispatches through `impl` and exports its protected constructors, so Go code can subclass it. `swt.CTabFolderRenderer` is the first: embed it, `NewCTabFolderRenderer(folder)`, `SetImpl_(x)`, define `Draw_`, `ComputeSize_`, `ComputeTrim_`, `Dispose_`, then `CTabFolder.SetRenderer(x)`.

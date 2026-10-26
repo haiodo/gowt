@@ -84,6 +84,6 @@ func OSSetTheme(isDarkTheme bool) {}
 var proc_SHParseDisplayName = newProc("SHParseDisplayName")
 
 func custom_PathToPIDL(pszName []uint16, ppidl []int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_SHParseDisplayName.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(pszName))), 0, uintptr(unsafe.Pointer(unsafe.SliceData(ppidl))), 0, 0)
+	r, _, _ := syscallEscaping(proc_SHParseDisplayName.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(pszName))), 0, uintptr(unsafe.Pointer(unsafe.SliceData(ppidl))), 0, 0)
 	return int32(r)
 }

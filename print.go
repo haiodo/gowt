@@ -139,6 +139,13 @@ func (p *PrintPage) Native() NativeContext {
 	return NativeContext{Handle: gcHandle(p.gc), UnitsPerPoint: p.f, Width: p.Printable.W * p.f, Height: p.Printable.H * p.f, GC: p.gc}
 }
 
+// openPrinter turns the exception of a missing printer into an error; macOS has no printer for a
+// PDF job unless one is installed.
+func openPrinter(data *swt.PrinterData) (p *swt.Printer, err error) {
+	defer catch(&err)
+	return swt.NewPrinterData_(data), nil
+}
+
 // Print runs the job: it asks the printer for pages first..last of a document of pages pages (the
 // dialog's range, clamped to the document) and calls draw for each, in order. The job ends when
 // draw has returned for the last page, or is cancelled when draw panics. The printer is released
@@ -149,7 +156,10 @@ func (j *PrintJob) Print(pages int, draw func(*PrintPage)) (err error) {
 	}
 	data := j.data
 	j.data = nil
-	printer := swt.NewPrinterData_(data)
+	printer, err := openPrinter(data)
+	if err != nil {
+		return err
+	}
 	defer printer.Dispose()
 	title := j.opts.Title
 	if title == "" {

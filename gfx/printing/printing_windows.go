@@ -39,7 +39,7 @@ func (b bandPage) Draw(scale float64, origin gfx.Point, items []gfx.Item) {
 	f := b.n.UnitsPerPoint
 	w, h := int(b.n.Width), int(b.n.Height)
 	for y := 0; y < h; y += bandRows {
-		rows := min(bandRows, h-y)
+		rows := min(bandRows+1, h-y) // one row over the next band: the driver leaves a hairline between exact neighbours
 		t := b.r.NewTarget(w, rows)
 		t.Begin(f*scale, gfx.Point{X: origin.X, Y: origin.Y + float64(y)/(f*scale)}, gfx.Color{})
 		t.Draw(items)

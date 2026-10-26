@@ -2,8 +2,8 @@
 // clips, images, group opacity and text. It is the PDF backend of Windows, where Direct2D has
 // none, and it runs on every OS, so its output can be checked anywhere.
 //
-// Text is set in the TrueType font that a Fonts value finds for a gfx.Font and embeds that whole
-// file (no subsetting, no shaping, kerning from the kern table only). A face that cannot be
+// Text is set in the TrueType font that a Fonts value finds for a gfx.Font and embeds the glyphs
+// used (no shaping, kerning from the kern table only). A face that cannot be
 // embedded is drawn as outlines; a font nobody finds falls back to the PDF standard Helvetica,
 // Latin-1 only. Shadows are approximated by stacked translucent strokes, not a Gaussian blur, and
 // the alpha of a gradient stop is not used.

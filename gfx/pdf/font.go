@@ -168,7 +168,15 @@ func (fc *face) finish(d *Document) int {
 		}
 		fmt.Fprintf(&w, "%d [%s] ", g, num(math.Round(fc.milli(units(adv)))))
 	}
-	file := d.stream(fmt.Sprintf("/Length1 %d", len(fc.data)), fc.data, true)
+	ids := make([]uint16, len(gids))
+	for i, g := range gids {
+		ids[i] = uint16(g)
+	}
+	data := fc.data
+	if sub := subsetTTF(data, ids); sub != nil {
+		data = sub
+	}
+	file := d.stream(fmt.Sprintf("/Length1 %d", len(data)), data, true)
 	asc, desc, bbox := 800.0, -200.0, [4]float64{0, -200, 1000, 800}
 	if m, err := fc.font.Metrics(&fc.buf, fc.ppem(), font.HintingNone); err == nil {
 		asc, desc = fc.milli(units(m.Ascent)), -fc.milli(units(m.Descent))

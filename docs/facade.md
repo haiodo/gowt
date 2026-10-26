@@ -271,7 +271,6 @@ type StyleSpan struct { Start, Length int; Style TextStyle }
 ### Open points
 
 - No test drags with a real mouse; `DragFrom` and `DropOn` have not run end to end on any OS, only compiled and vetted. Needs a stand with synthetic pointer input.
-- Editing text that contains surrogate pairs (emoji) panics in `swt` (`DefaultContent.GetLine` -> `jrt.Substring` slice bounds, found on Linux after `ReplaceTextRange`); selection, caret and styles on such text work. A generator-level bug, not fixed here.
 - `Styles()` does not report `TextStyle.Font`; `SetStyle` fonts are cached per widget by `Font` value until the widget is disposed.
 
 ## Boundary (TSK-2026-10-03-product-40)

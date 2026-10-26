@@ -57,7 +57,7 @@ Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not 
 - `CoolItem`: 4 tests (`getBounds`, `getPreferredSize`, `setControl`, `setSize`) are skipped everywhere: upstream comments the class out of `AllWidgetTests` ("Failing test"), and the emulated CoolBar gives a lone item the whole bar width.
 - `Accessible` is a stub.
 - Drag and drop was never driven with a real mouse (no test does); `FileTransfer` and `URLTransfer` native-to-Java tests are disabled on macOS, `URLTransfer` is not wrapped. Cross-process clipboard tests are skipped (no peer process), so only same-process round trips are tested.
-- `StyledText`: style rendering tests are skipped on macOS (upstream bugs 553090, 536588); editing text with surrogate pairs (emoji) panics in `swt`.
+- `StyledText`: style rendering tests are skipped on macOS (upstream bugs 553090, 536588).
 
 **macOS**
 - 5 failures: `TextLayout.test_bug568740_multilineTextStyle` (pixel search finds nothing), `Text.test_backspaceAndDelete` and `StyledText.test_backspaceAndDelete` (`Display.post` returns false for the key event), and two `Browser` tests (`BrowserFunction_callback_stackedCalls`, `StatusTextListener_hoverMouseOverLink`). The first three are not diagnosed.

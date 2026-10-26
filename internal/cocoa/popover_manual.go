@@ -162,7 +162,16 @@ func NewPopover(content *NSView, onClose func()) uintptr {
 // anchor (origin at the top-left), with a content of size.
 func ShowPopover(pop uintptr, anchor *NSView, r NSRect, edge int, size NSSize) {
 	v := uintptr(anchor.Id)
+	// An empty rectangle makes AppKit take the whole view instead, which put a popover for a point on
+	// the edge of the view.
+	if r.Width < 1 {
+		r.X, r.Width = r.X-0.5, 1
+	}
+	if r.Height < 1 {
+		r.Y, r.Height = r.Y-0.5, 1
+	}
 	flipped := msg(v, "isFlipped")&0xff != 0
+	PopLog("ShowPopover anchor class %s flipped=%v bounds=%+v frame=%+v rect=%+v", className(v), flipped, anchor.Bounds(), anchor.Frame(), r)
 	if !flipped {
 		r.Y = anchor.Bounds().Height - r.Y - r.Height
 	}

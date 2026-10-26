@@ -1,9 +1,11 @@
 // Command gfxeditor is the core of a mind-map editor on gfx: auto-layout of a topic tree, hit-testing,
-// a selection outline and a remote cursor on the overlay, animations, and dragging a topic.
+// a selection outline and a remote cursor on the overlay, animations, dragging a topic and editing its
+// title in place (double-click).
 package main
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	g "github.com/haiodo/gowt"
@@ -46,6 +48,13 @@ func build(tx *gfx.Tx, t *topic, nextID *int) *layout.Node {
 	return &layout.Node{Gap: 40, Align: layout.Center, Pad: layout.All(8), Kids: []*layout.Node{label, col}}
 }
 
+func removeAll(tx *gfx.Tx, t *topic) {
+	tx.Remove(t.node)
+	for _, k := range t.kids {
+		removeAll(tx, k)
+	}
+}
+
 func find(t *topic, n *gfx.Node) *topic {
 	if t.node == n {
 		return t
@@ -66,11 +75,17 @@ func main() {
 	}}
 	scene := gfx.NewScene()
 	id := 0
-	scene.Update(func(tx *gfx.Tx) {
-		tree := build(tx, root, &id)
-		tree.Layout()
-		layout.Apply(tx, tree, nil)
-	})
+	rebuild := func(old bool) {
+		scene.Update(func(tx *gfx.Tx) {
+			if old {
+				removeAll(tx, root)
+			}
+			tree := build(tx, root, &id)
+			tree.Layout()
+			layout.Apply(tx, tree, nil)
+		})
+	}
+	rebuild(false)
 
 	err := g.Run(func(app *g.App) {
 		w := app.Window("Mind map", view.New(scene, func(v *view.View) {
@@ -91,6 +106,20 @@ func main() {
 					return
 				}
 				t := find(root, p.Node)
+				if t != nil && p.Count == 2 {
+					// the field sits over the topic and follows pan and zoom; the layout is redone on commit
+					v.Edit(view.EditOptions{Rect: t.node.Bounds(), Text: t.title, Font: g.Font{Size: int(font.Size)},
+						OnCommit: func(s string) {
+							if s = strings.TrimSpace(s); s != "" && s != t.title {
+								t.title = s
+								rebuild(true)
+								if outline != nil {
+									outline.SetOpacity(0)
+								}
+							}
+						}})
+					return
+				}
 				if t == nil {
 					if outline != nil {
 						outline.FadeTo(0, 120*time.Millisecond, gfx.EaseOut, nil)

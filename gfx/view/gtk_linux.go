@@ -30,6 +30,8 @@ var (
 	gestureZoomNew   func(w uintptr) uintptr
 	zoomDelta        func(g uintptr) float64
 	gestureCenter    func(g uintptr, x, y *float64) int32
+	eventWidget      func(ev uintptr) uintptr
+	isAncestor       func(w, ancestor uintptr) int32
 )
 
 func bindGTK() {
@@ -44,6 +46,7 @@ func bindGTK() {
 			&eventSourceDev: "gdk_event_get_source_device", &deviceSource: "gdk_device_get_source",
 			&gestureZoomNew: "gtk_gesture_zoom_new", &zoomDelta: "gtk_gesture_zoom_get_scale_delta",
 			&gestureCenter: "gtk_gesture_get_bounding_box_center",
+			&eventWidget:   "gtk_get_event_widget", &isAncestor: "gtk_widget_is_ancestor",
 		} {
 			purego.RegisterLibFunc(fn, purego.RTLD_DEFAULT, name)
 		}

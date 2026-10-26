@@ -29,6 +29,7 @@ func (v *View) wireInput() {
 			c.SetFocus()
 		}
 	}
+	v.r.down = v.endEdit
 	v.r.size = func() (float64, float64) {
 		w, h := v.cv.Size()
 		return float64(w), float64(h)
@@ -101,6 +102,9 @@ func (v *View) magnify(gesture uintptr, delta float64, ph Phase) {
 	if gestureCenter(gesture, &x, &y) != 0 {
 		pos = gfx.Point{X: x, Y: y}
 	}
+	if v.covered(pos) {
+		return
+	}
 	v.r.magnify(pos, delta, ph, v.r.lastMods)
 }
 
@@ -108,6 +112,10 @@ func (v *View) magnify(gesture uintptr, delta float64, ph Phase) {
 // which is in canvas coordinates.
 func (v *View) onScroll(widget, ev, data uintptr) uintptr {
 	if v.gone.Load() {
+		return 0
+	}
+	// a control over the view passes on the scroll it did not use; its window is a child of ours
+	if w := eventWidget(ev); w != v.handle && isAncestor(w, v.handle) != 0 {
 		return 0
 	}
 	var state uint32

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+Controls over the gfx view
+- New: `view.View.Overlay(opt, rect, font)` places a gowt control over the view at a scene rectangle; it follows pan, zoom and a backing-scale change, its font follows the zoom, `Remove` disposes it. `view.View.Edit(EditOptions)` is an inline `Text` on it: Esc cancels, Enter (Cmd or Ctrl+Enter when `Multiline`) commits, a press on the view or the focus leaving commits. `CanvasView.AddChild` and `SetChildBounds` are the facade calls under it.
+- Fixed: wheel, pinch and smart zoom over a control that lies over the view went to the view (macOS, Windows, GTK), so a `Text` or a scrolling control over the canvas could not be scrolled. They go to the control now. Checked under Xvfb; not run on macOS or Windows yet.
+- `examples/gfxeditor`: double-click a topic to edit its title in place.
+
 CTabs look
 - Changed: `CTabs` draws a modern document tab bar on every OS: a flat strip with a hairline in the system separator colour, the selected tab in the folder's background (so it joins the content) with a 2 px accent line, secondary text on the other tabs with a hover fill, the Type.Body font, the tab height from Spacing.ControlHeight, a round close button shown on the selected and the hovered tab, and an accent ring on the selected tab while the folder has the focus. Set the folder's `Background` to the editor's colour so that the tab joins it. A `CTabs` now selects its first tab when created; SWT did so only when the folder got the focus.
 - Changed: j2go has `dispatch.properties`: a class listed there dispatches through `impl` and exports its protected constructors, so Go code can subclass it. `swt.CTabFolderRenderer` is the first: embed it, `NewCTabFolderRenderer(folder)`, `SetImpl_(x)`, define `Draw_`, `ComputeSize_`, `ComputeTrim_`, `Dispose_`, then `CTabFolder.SetRenderer(x)`.

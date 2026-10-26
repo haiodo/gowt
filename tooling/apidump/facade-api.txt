@@ -71,6 +71,7 @@ gowt CTabsView.SetTooltip(s string)
 gowt CTabsView.SetVisible(v bool)
 gowt CTabsView.Unwrap() *github.com/haiodo/gowt/swt.CTabFolder
 gowt CTabsView.Visible() bool
+gowt CanvasView.AddChild(opt Option) Widget
 gowt CanvasView.Dispose()
 gowt CanvasView.Enabled() bool
 gowt CanvasView.Focus() bool
@@ -80,6 +81,7 @@ gowt CanvasView.OnMouseMove(f func(Mouse))
 gowt CanvasView.OnMouseUp(f func(Mouse))
 gowt CanvasView.Redraw()
 gowt CanvasView.SetBackground(c Paint)
+gowt CanvasView.SetChildBounds(child Widget, x int, y int, w int, h int)
 gowt CanvasView.SetEnabled(v bool)
 gowt CanvasView.SetFont(f Font)
 gowt CanvasView.SetForeground(c Paint)

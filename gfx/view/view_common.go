@@ -20,18 +20,20 @@ import (
 // View shows a gfx.Scene on a canvas. Its methods are for the UI goroutine, except
 // Scene().Update, which any goroutine may call.
 type View struct {
-	cv     *g.CanvasView
-	scene  *gfx.Scene
-	comp   *gfx.Compositor
-	gone   atomic.Bool
-	dpr    float64
-	resize atomic.Bool
-	r      *router
-	onKey  func(*Key)
-	stops  []func()
-	report func(FrameReport)
-	prevFi time.Duration
-	paint  time.Duration // the last widget paint, 0 where the OS composites
+	cv       *g.CanvasView
+	scene    *gfx.Scene
+	comp     *gfx.Compositor
+	gone     atomic.Bool
+	dpr      float64
+	resize   atomic.Bool
+	r        *router
+	onKey    func(*Key)
+	stops    []func()
+	report   func(FrameReport)
+	prevFi   time.Duration
+	paint    time.Duration // the last widget paint, 0 where the OS composites
+	overlays []*Overlay
+	editor   *Editor
 	platform
 }
 
@@ -88,6 +90,7 @@ func (v *View) frame(fi gfx.FrameInfo) {
 	}
 	dx, dy, events := v.r.tick(fi.Time)
 	v.comp.Frame(fi)
+	v.syncOverlays()
 	if v.report != nil {
 		st, cam := v.comp.Stats(), v.comp.Camera()
 		r := FrameReport{Time: fi.Time, CPU: st.FrameTime, Events: events, DX: dx, DY: dy, Origin: cam.Origin, Zoom: cam.Zoom, Tiles: st.TilesApplied, Paint: v.paint}

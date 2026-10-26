@@ -200,14 +200,14 @@ func (r *tabRenderer) drawTab(i, state int32, b *swt.Rectangle, gc *swt.GC) {
 		}
 	}
 	if w := right - x; w > 0 {
+		// Fit the title with a GC like the layout's: once the paint GC has drawn antialiased shapes
+		// (GDI+ on Windows) it measures text 1 px wider, and a title that fits would be cut.
+		m := swt.NewGCDrawable(r.f)
+		m.SetFont(item.GetFont())
+		text := r.ShortenText(m, item.GetText(), w)
+		ext := m.TextExtentStringFlags(text, swt.CTabFolderRendererFLAGS)
+		m.Dispose()
 		gc.SetFont(item.GetFont())
-		// The layout and the paint measure a title 1 px apart on Windows; cut it only past that.
-		text := item.GetText()
-		ext := gc.TextExtentStringFlags(text, swt.CTabFolderRendererFLAGS)
-		if ext.X > w+2 {
-			text = r.ShortenText(gc, text, w)
-			ext = gc.TextExtentStringFlags(text, swt.CTabFolderRendererFLAGS)
-		}
 		col := p.dim
 		if sel || hot {
 			col = p.fg

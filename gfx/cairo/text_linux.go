@@ -161,7 +161,12 @@ func faceOf(f gfx.Font) face {
 	if f.Name != "" || (f.Family == "" && f.Weight == 0 && !f.Italic) {
 		return resolve(f.Name)
 	}
-	fc := face{family: f.Family, weight: 400}
+	// a family list: fontconfig takes the first it has, and sans-serif stands in for a missing one
+	fam := "sans-serif"
+	if f.Family != "" {
+		fam = f.Family + ",sans-serif"
+	}
+	fc := face{family: fam, weight: 400}
 	if f.Weight != 0 {
 		fc.weight = int32(f.Weight)
 	}

@@ -43,14 +43,48 @@ func newFont(f gfx.Font) uintptr {
 		if ref, ok := fontByFamily(f.Family, w, f.Italic, f.Size); ok {
 			return ref
 		}
-		if ref, ok := fontByFamily(fallbackFamily, w, f.Italic, f.Size); ok {
-			return ref
-		}
+		return sansFont(w, f.Italic, f.Size)
 	}
 	name := cfString(f.Name)
 	ref := ctFontCreateWithName(name, f.Size, 0)
 	cfRelease(name)
 	return ref
+}
+
+// sansFont is the face of a family CoreText lacks: Helvetica Neue by family, else by PostScript name,
+// else the system UI font. CTFontCreateWithName on a name it does not know can answer with a serif face.
+func sansFont(weight int, italic bool, size float64) uintptr {
+	if ref, ok := fontByFamily(fallbackFamily, weight, italic, size); ok {
+		return ref
+	}
+	for _, n := range []string{sansName(weight, italic), "Helvetica"} {
+		name := cfString(n)
+		ref := ctFontCreateWithName(name, size, 0)
+		cfRelease(name)
+		if ref != 0 {
+			return ref
+		}
+	}
+	return ctUIFont(kCTFontUIFontSystem, size, 0)
+}
+
+func sansName(weight int, italic bool) string {
+	n := "HelveticaNeue"
+	switch {
+	case weight >= 700:
+		n += "-Bold"
+	case weight >= 500:
+		n += "-Medium"
+	case weight <= 300:
+		n += "-Light"
+	}
+	if italic {
+		if n == "HelveticaNeue" {
+			return n + "-Italic"
+		}
+		return n + "Italic"
+	}
+	return n
 }
 
 // newLine lays out one line of text in font; the color comes from the context at draw time,

@@ -19,4 +19,4 @@ func newTestRenderer(t *testing.T) *Renderer {
 
 func TestTracking(t *testing.T) { fonttest.Tracking(t, newTestRenderer(t)) }
 
-func TestFaces(t *testing.T) { fonttest.Faces(t, newTestRenderer(t), "Segoe UI") }
+func TestFaces(t *testing.T) { fonttest.Faces(t, newTestRenderer(t), "Segoe UI", "Times New Roman") }

@@ -57,6 +57,8 @@ Disk: a cold build of `examples/hello` filled a build cache of 113 to 228 MB on 
 - Go: see above. Then `go get github.com/haiodo/gowt@latest`, build, run. The binary links `libc.so.6`, `libdl.so.2`, `libpthread.so.0` only; GTK is opened at start.
 - No GTK 3: `gowt: GTK 3 is not installed (libgtk-3.so.0: cannot open shared object file: No such file or directory); install it: apt install libgtk-3-0 | dnf install gtk3 | pacman -S gtk3 (glibc distributions only)`. The exit code is 1 and it comes at once. Checked on Ubuntu 24.04.
 - No display: see the table above for the error. A container, an SSH session and CI have no display; `xvfb-run ./app` (package `xvfb`) gives one.
+- No display, checked on Ubuntu 24.04 with GTK installed: `gowt: No more handles [gtk_init_check() failed]`, exit code 1, at once.
+- With `webview` in a container or VM without GPU access, stderr shows `libEGL warning: DRI3 error: Could not get DRI3 device` and `Overriding existing handler for signal 10. Set JSC_SIGNAL_FOR_GC if you want WebKit to use a different signal` (Ubuntu 24.04 under Xvfb). The program kept running; whether the page rendered was not checked.
 - No WebKitGTK 4.1 for `webview`: `webview: WebKitGTK 4.1 is not available (...); install it: apt install libwebkit2gtk-4.1-0 | dnf install webkit2gtk4.1 | pacman -S webkit2gtk-4.1`.
 - Alpine and other musl systems: `not found` at start, see above.
 

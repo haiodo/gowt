@@ -49,17 +49,21 @@ type walker struct {
 func walk(d *swt.Display) []*entry {
 	w := &walker{focus: d.GetFocusControl()}
 	var out []*entry
-	for _, s := range d.GetShells() {
+	shells := d.GetShells()
+	for _, p := range qaview.PopoverShells() {
+		if !slices.Contains(shells, p) {
+			shells = append(shells, p)
+		}
+	}
+	for _, s := range shells {
 		w.pop = qaview.OnScreen(s)
 		if s.IsDisposed() || !s.GetVisible() && !w.pop {
 			continue
 		}
 		w.shell = s
-		o := s.ToDisplay(0, 0)
-		w.ox, w.oy = int(o.X), int(o.Y)
-		e := w.control(&s.Control, true, true)
-		if w.pop {
-			e.n.Class = "Popover"
+		e := w.shellEntry(s)
+		if e == nil {
+			continue
 		}
 		out = append(out, e)
 	}
@@ -67,6 +71,25 @@ func walk(d *swt.Display) []*entry {
 		setPaths(e, strconv.Itoa(i))
 	}
 	return out
+}
+
+// shellEntry walks one shell. A popover that is opening has no window under its view for a moment, which
+// panics in SWT; it is left out of that dump.
+func (w *walker) shellEntry(s *swt.Shell) (e *entry) {
+	if w.pop {
+		defer func() {
+			if recover() != nil {
+				e = nil
+			}
+		}()
+	}
+	o := s.ToDisplay(0, 0)
+	w.ox, w.oy = int(o.X), int(o.Y)
+	e = w.control(&s.Control, true, true)
+	if w.pop {
+		e.n.Class = "Popover"
+	}
+	return e
 }
 
 func setPaths(e *entry, path string) {

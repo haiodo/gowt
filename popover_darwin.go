@@ -73,6 +73,12 @@ func (n *popoverNative) outsideClick(p *Popover) { cocoa.CloseBehindBack(n.pop) 
 
 func (n *popoverNative) onScreen(p *Popover) bool { return n.pop != 0 && cocoa.PopoverShown(n.pop) }
 
+// ready is onScreen once AppKit has put the content in the popover window: an inactive application does
+// so up to half a second after the popover is shown, and until then the content has no window to measure.
+func (n *popoverNative) ready(p *Popover) bool {
+	return n.pop != 0 && cocoa.PopoverAppeared(n.pop) && p.shell.View.Window() != nil
+}
+
 // bounds is the popover content in screen points; the shell's own bounds belong to the hidden window.
 func (n *popoverNative) bounds(p *Popover) *swt.Rectangle {
 	x, y, w, h := cocoa.PopoverContentRect(n.pop, p.shell.GetDisplay().GetPrimaryFrame().Height)

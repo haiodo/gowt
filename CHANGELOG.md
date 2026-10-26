@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+QA windows and popovers (Tenniarb)
+- New: `Client.ShotOf(name, sel)`, `ShotTitle(name, title)` and `ShotWindow(name, index)`: a shot of the window that holds a control, has a title, or is at an index of the dump; the `shot` command takes `selector`, `title` or `window`. Before, only window 0 could be shot. On Windows the window order is the stacking order, so use the selector or the title there.
+- Fixed: QA `Key("Esc")`, with the focus in the popover or not, now reaches an open `Popover` (its `OnEscape`, then close); `Close` on a `Popover` root closes it. Esc posted to a control did not pass the display filter the popover listens with.
+- Changed: on macOS a `Shot` draws a popover from its window as the window server has it (CGWindowListCreateImage, like `GOWT_SNAP_SCREEN`) and places it by its screen rectangle; the view capture of the NSPopover window came out black with a block of colour. The popover shows the right shape and arrow in the shot; its content is blank on the second Mac, not understood yet.
+- Fixed: a macOS popover shell is not in `Display.GetShells` while its window holds the placeholder, so the QA dump lost it on later opens; the driver keeps its own list. A popover that is opening (macOS attaches its window up to half a second late when the app is inactive) makes `settle` wait ("a popover opening").
+- Tests: `TestShotOfOtherWindow`, `TestPopoverEscape`, `TestPopoverEscapeOnControl`, `TestPopoverCloseRoot` on Xvfb, the Windows VM and the second Mac.
+
 QA context menus filled in OnShow
 - Fixed: items that an `OnShow` handler adds to an empty `PopupMenu` (on a gfx canvas, a tree) were not reachable in QA. A dump or `Find` now sends Show to an empty context menu once per action, a QA right click (`RightClickAt`, `Pointer` button 3) sends it to the menu of the control, and `Click` on an item still runs `OnShow` first. No native menu opens. Test `TestPopupMenuFilledInOnShow` on Xvfb, the Windows 11 arm64 VM and the second Mac.
 - Fixed: the macOS QA dump panicked on an open `Popover` (the shell's client area is gone once its view is in the NSPopover); `TestPopover` now passes there. `TestFocus` and `TestKeys` fail on that Mac on main too.

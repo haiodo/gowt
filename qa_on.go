@@ -23,15 +23,31 @@ func init() {
 			Name: c.Name, Save: c.Save, Multi: c.Multi, Filters: c.Filters})
 	}
 	qaDialogFailed = qa.Failed
-	qaPopover = func(p *Popover) { p.shell.SetDataKeyValue(qaview.PopoverKey, popoverQA{p}) }
+	qaPopover = func(p *Popover) {
+		p.shell.SetDataKeyValue(qaview.PopoverKey, popoverQA{p})
+		remove := qaview.AddPopover(p.shell)
+		p.shell.AddDisposeListener(disposeFunc(remove))
+	}
 }
 
 // popoverQA is what the QA driver sees of a Popover.
 type popoverQA struct{ p *Popover }
 
-func (q popoverQA) OnScreen() bool    { return q.p.shown && q.p.native.onScreen(q.p) }
+func (q popoverQA) OnScreen() bool    { return q.p.shown && q.p.native.ready(q.p) }
 func (q popoverQA) Owner() *swt.Shell { return q.p.owner }
 func (q popoverQA) Close()            { q.p.Close() }
+func (q popoverQA) Opening() bool     { return q.p.shown && !q.p.native.ready(q.p) }
+
+func (q popoverQA) Escape() {
+	if q.p.onEscape == nil || !q.p.onEscape() {
+		q.p.Close()
+	}
+}
+
+func (q popoverQA) Bounds() (x, y, w, h int) {
+	b := q.p.native.bounds(q.p)
+	return int(b.X), int(b.Y), int(b.Width), int(b.Height)
+}
 
 // qaStart serves the QA driver (package qa) when GOWT_QA_SOCKET is set.
 func qaStart(a *App) {
@@ -46,6 +62,9 @@ func qaStart(a *App) {
 			}
 			if w := a.waitingOn(); w != "" {
 				parts = append(parts, w)
+			}
+			if qaview.PopoverOpening() {
+				parts = append(parts, "a popover opening")
 			}
 			return strings.Join(parts, ", ")
 		},

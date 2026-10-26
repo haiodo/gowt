@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -85,6 +86,23 @@ func paths(es []*entry) string {
 }
 
 // Find lists the nodes s picks, subtrees included. No match is an empty list, not an error.
+// ShellOf returns the window that holds the one control s picks; for a control in a popover, the
+// window the popover belongs to.
+func ShellOf(d *swt.Display, s Selector) (*swt.Shell, error) {
+	es, err := resolve(walk(d), s)
+	if err != nil {
+		return nil, err
+	}
+	if len(es) != 1 {
+		return nil, fmt.Errorf("qatree: %s: %d controls match%s", s, len(es), paths(es))
+	}
+	sh := es[0].shell
+	if p, ok := qaview.PopoverOf(sh); ok {
+		sh = p.Owner()
+	}
+	return sh, nil
+}
+
 func Find(d *swt.Display, s Selector) ([]Node, error) {
 	es, err := resolve(walk(d), s)
 	var out []Node

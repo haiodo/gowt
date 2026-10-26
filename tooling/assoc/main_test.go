@@ -2,6 +2,11 @@ package main
 
 import (
 	"encoding/xml"
+	"fmt"
+	"image"
+	"image/png"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -76,5 +81,60 @@ func TestMissingAndBadInput(t *testing.T) {
 		if _, err := generate(o); err == nil {
 			t.Errorf("%+v: no error", o)
 		}
+	}
+}
+
+func writePNG(t *testing.T, path string, w, h int) {
+	t.Helper()
+	f, err := os.Create(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	if err := png.Encode(f, image.NewNRGBA(image.Rect(0, 0, w, h))); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestHicolorIcons(t *testing.T) {
+	dir := t.TempDir()
+	src := filepath.Join(dir, "doc.png")
+	writePNG(t, src, 128, 128)
+	paths, err := writeIcons(options{src: src, out: dir, mime: "application/x-app", context: "mimetypes"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(paths) != 7 { // 16 22 24 32 48 64 128: nothing is scaled up
+		t.Fatalf("%d icons: %v", len(paths), paths)
+	}
+	for _, n := range []int{16, 48, 128} {
+		p := filepath.Join(dir, "hicolor", fmt.Sprintf("%dx%d", n, n), "mimetypes", "application-x-app.png")
+		f, err := os.Open(p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		cfg, err := png.DecodeConfig(f)
+		f.Close()
+		if err != nil || cfg.Width != n || cfg.Height != n {
+			t.Errorf("%s: %v %v", p, cfg, err)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(dir, "hicolor", "256x256")); err == nil {
+		t.Error("a 256 icon was made from a 128 source")
+	}
+	wide := filepath.Join(dir, "wide.png")
+	writePNG(t, wide, 20, 10)
+	if _, err := writeIcons(options{src: wide, out: dir, iconname: "x", context: "apps"}); err == nil {
+		t.Error("a non-square source is accepted")
+	}
+	if _, err := writeIcons(options{src: src, out: dir, context: "mimetypes"}); err == nil {
+		t.Error("no icon name is accepted")
+	}
+}
+
+func TestMimeXMLIcon(t *testing.T) {
+	got, err := mimeXML(options{mime: "application/x-app", name: "A", ext: "tnb", icon: "application-x-app"})
+	if err != nil || !strings.Contains(got, `<icon name="application-x-app"/>`) {
+		t.Errorf("%v\n%s", err, got)
 	}
 }

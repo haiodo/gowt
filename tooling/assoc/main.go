@@ -4,7 +4,9 @@
 //	assoc -kind reg     -exe C:\App\app.exe -ext .tnb,.tenniarb -progid Org.App.Doc -name "App document" -icon C:\App\doc.ico
 //	assoc -kind desktop -id org.example.App -name "App" -exe /opt/app/app -ext tnb -mime application/x-app [-dbus]
 //	assoc -kind service -id org.example.App -exe /opt/app/app
-//	assoc -kind mime    -ext tnb,tenniarb -mime application/x-app -name "App document"
+//	assoc -kind mime    -ext tnb,tenniarb -mime application/x-app -name "App document" [-icon application-x-app]
+//	assoc -kind icons   -src doc.png -mime application/x-app -out ~/.local/share/icons   (hicolor/NxN/mimetypes/application-x-app.png)
+//	assoc -kind icons   -src app.png -iconname app -context apps -out ~/.local/share/icons
 package main
 
 import (
@@ -14,13 +16,19 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"image"
+	"image/png"
 	"os"
+	"path/filepath"
 	"strings"
 	"unicode/utf16"
+
+	"golang.org/x/image/draw"
 )
 
 type options struct {
 	kind, exe, ext, progid, name, icon, id, mime, categories, wmclass string
+	src, out, iconname, context                                       string
 	dbus                                                              bool
 }
 
@@ -37,7 +45,20 @@ func main() {
 	flag.StringVar(&o.categories, "categories", "Utility;", "desktop: Categories")
 	flag.StringVar(&o.wmclass, "wmclass", "", "desktop: StartupWMClass, the name given to SetAppName")
 	flag.BoolVar(&o.dbus, "dbus", false, "desktop: DBusActivatable=true (needs the service file)")
+	flag.StringVar(&o.src, "src", "", "icons: the source PNG, square, 512 or larger for the largest size")
+	flag.StringVar(&o.out, "out", "", "icons: the icon theme directory to write hicolor/ into")
+	flag.StringVar(&o.iconname, "iconname", "", "icons: icon name; default is the MIME type with - for /")
+	flag.StringVar(&o.context, "context", "mimetypes", "icons: mimetypes or apps")
 	flag.Parse()
+	if o.kind == "icons" {
+		paths, err := writeIcons(o)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "assoc:", err)
+			os.Exit(2)
+		}
+		fmt.Println(strings.Join(paths, "\n"))
+		return
+	}
 	out, err := generate(o)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "assoc:", err)
@@ -172,9 +193,70 @@ func mimeXML(o options) (string, error) {
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
 	b.WriteString(`<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">` + "\n")
 	fmt.Fprintf(&b, "  <mime-type type=\"%s\">\n    <comment>%s</comment>\n", esc(o.mime), esc(o.name))
+	if o.icon != "" {
+		fmt.Fprintf(&b, "    <icon name=\"%s\"/>\n", esc(o.icon))
+	}
 	for _, e := range es {
 		fmt.Fprintf(&b, "    <glob pattern=\"*.%s\"/>\n", esc(e))
 	}
 	b.WriteString("  </mime-type>\n</mime-info>\n")
 	return b.String(), nil
+}
+
+// iconSizes are the hicolor sizes written for an icon.
+var iconSizes = []int{16, 22, 24, 32, 48, 64, 128, 256, 512}
+
+// writeIcons scales the source PNG into <out>/hicolor/NxN/<context>/<name>.png and returns the paths.
+// A size larger than the source is left out, so a small source gives fewer sizes, not blurred ones.
+func writeIcons(o options) ([]string, error) {
+	if o.src == "" || o.out == "" {
+		return nil, errors.New("-src and -out are required for -kind icons")
+	}
+	if o.context != "mimetypes" && o.context != "apps" {
+		return nil, errors.New("-context must be mimetypes or apps")
+	}
+	name := o.iconname
+	if name == "" {
+		if o.mime == "" {
+			return nil, errors.New("-mime or -iconname is required for -kind icons")
+		}
+		name = strings.ReplaceAll(o.mime, "/", "-")
+	}
+	f, err := os.Open(o.src)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	src, err := png.Decode(f)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", o.src, err)
+	}
+	if b := src.Bounds(); b.Dx() != b.Dy() {
+		return nil, fmt.Errorf("%s is %dx%d: the icon must be square", o.src, b.Dx(), b.Dy())
+	}
+	var paths []string
+	for _, n := range iconSizes {
+		if n > src.Bounds().Dx() {
+			continue
+		}
+		dst := image.NewNRGBA(image.Rect(0, 0, n, n))
+		draw.CatmullRom.Scale(dst, dst.Bounds(), src, src.Bounds(), draw.Over, nil)
+		dir := filepath.Join(o.out, "hicolor", fmt.Sprintf("%dx%d", n, n), o.context)
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return nil, err
+		}
+		p := filepath.Join(dir, name+".png")
+		var b bytes.Buffer
+		if err := png.Encode(&b, dst); err != nil {
+			return nil, err
+		}
+		if err := os.WriteFile(p, b.Bytes(), 0o644); err != nil {
+			return nil, err
+		}
+		paths = append(paths, p)
+	}
+	if len(paths) == 0 {
+		return nil, fmt.Errorf("%s is smaller than %d pixels", o.src, iconSizes[0])
+	}
+	return paths, nil
 }

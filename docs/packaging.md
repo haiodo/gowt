@@ -35,15 +35,15 @@ The `Info.plist` that `mkapp.sh` writes has these keys; copy the script and edit
 | Key | Value in `mkapp.sh` |
 |---|---|
 | `CFBundleExecutable` | the executable's file name |
-| `CFBundleIdentifier` | `com.github.haiodo.gowt.<executable>`: use your own reverse-DNS id |
-| `CFBundleName`, `CFBundleShortVersionString`, `CFBundleVersion` | display name, `0.1`, `1` |
+| `CFBundleIdentifier` | `BUNDLE_ID`, default `com.github.haiodo.gowt.<executable>` |
+| `CFBundleName`, `CFBundleShortVersionString`, `CFBundleVersion` | display name; `VERSION` (default `0.1`); `BUILD` (default `1`) |
 | `CFBundlePackageType` | `APPL` |
 | `LSMinimumSystemVersion` | `13.0`, the minimum Go 1.27 writes into the binary |
 | `NSHighResolutionCapable` | `true` |
 | `NSPrincipalClass` | `NSApplication` |
 | `UIDesignRequiresCompatibility` | only with `CLASSIC_LOOK=1`, see below |
 
-**Icon.** `mkapp.sh` does not add one. Put an `.icns` file in `Contents/Resources` and add `<key>CFBundleIconFile</key><string>AppIcon</string>` to the plist. Make the `.icns` from an iconset folder with Apple's `iconutil -c icns AppIcon.iconset`. This step was not run here.
+**Icon.** `ICON=app.icns` (or a square PNG of 1024 pixels, which `sips` and `iconutil` turn into an `.icns`) copies `Contents/Resources/AppIcon.icns` and writes `CFBundleIconFile`. Document types: `DOC_ICON` the same way, `DOC_UTI_CONFORMS="public.json public.text"` the types the exported UTI conforms to (default `public.data`). Example: `BUNDLE_ID=org.example.App VERSION=2.5.1 BUILD=307 ICON=app.png tooling/darwin/mkapp.sh ./app out "My App"`. The plist, the icon files and the conformance are tested (`go test ./tooling/darwin`, macOS only). How Finder draws the icon was not looked at here.
 
 **Signing.** `mkapp.sh` signs ad hoc (`codesign --force --sign -`): arm64 macOS refuses unsigned code, and an ad-hoc signature is enough to run on the machine that built it. A copy sent to another Mac is quarantined by the browser and Gatekeeper rejects it unless it is signed with a Developer ID Application certificate and notarized. The Apple tools for that are `codesign --options runtime --timestamp --sign "Developer ID Application: ..."` and `xcrun notarytool submit ... --wait`, then `xcrun stapler staple App.app`. Neither was run for gowt and whether the hardened runtime needs entitlements for the libraries gowt loads was not checked.
 
@@ -56,7 +56,14 @@ The `Info.plist` that `mkapp.sh` writes has these keys; copy the script and edit
 
 - **Manifest.** Package `winmanifest` links `manifest_windows_{amd64,arm64}.syso` with comctl32 v6 (visual styles, `Link`) and per-monitor DPI awareness v2. Programs written with the `gowt` facade get it automatically, because `gowt` imports it. A program on `swt` directly adds `import _ "github.com/haiodo/gowt/winmanifest"`. `make winmanifest` rebuilds the objects with `tooling/mksyso` (pure Go, `-arch`, `-manifest`, `-o`). A second `.syso` carrying its own manifest makes the linker fail with a duplicate resource: use one or the other.
 - **DPI.** The manifest requests per-monitor DPI v2, but the port keeps the scale it read from the system DPI at start; moving a window between monitors with different scales is not handled (`WM_DPICHANGED`). Under Wine the system reports 96 whatever its setting.
-- **Icon and version info.** `mksyso` writes only the manifest. A file icon and version resource need a separate `.syso` from a tool such as `rsrc` or `goversioninfo`, and then that `.syso` has to include the same manifest (see above), since two manifests collide. Not tried here. A window icon at run time: `w.Unwrap().SetImage(img.Unwrap())` with a `*gowt.Image`.
+- **Icon and version info.** `tooling/mksyso` writes one `.syso` with any of: the manifest (`-manifest`), an icon (`-icon` an `.ico` or square PNG files up to 256, stored as PNG, Windows reads that since Vista) and a VERSIONINFO resource (`-version 1.2.3.4 -product -company -description -copyright -original -internal`), for `-arch amd64` and `arm64`:
+
+  ```sh
+  go run github.com/haiodo/gowt/tooling/mksyso -arch amd64 -o app_windows_amd64.syso -icon 16.png,32.png,48.png,256.png \
+      -version 1.2.3.4 -product App -company Org -description "App editor"
+  ```
+
+  Put the `.syso` next to the `main` package. A program on the `gowt` facade already gets the manifest from `winmanifest`, so leave `-manifest` out and nothing collides. A program that wants its own manifest adds `-manifest app.manifest` and builds with `-tags gowt_nomanifest` (the facade then does not import `winmanifest`); a program on `swt` directly never imports it. The first icon group is the file's icon in Explorer; the version fields show in the file's Properties and in Task Manager. The object is tested by reading the resource tree back and by linking a program and reading its `.rsrc` (`go test ./tooling/mksyso`); that Explorer draws the icon and shows the version was not run here (the Windows VM was off): pending. A window icon at run time: `w.Unwrap().SetImage(img.Unwrap())` with a `*gowt.Image`.
 - **Runtime.** Windows 10 or later (not verified on real hardware); WebView2 Runtime only for the `webview` package, no `WebView2Loader.dll`.
 - `-ldflags=-H=windowsgui` makes the executable a GUI-subsystem program with no console window. Not run here.
 
@@ -128,5 +135,7 @@ install -D org.example.MyApp.desktop ~/.local/share/applications/ && update-desk
 ```
 
 A file manager runs `Exec` with `%U`, the files as URIs; the program takes `file:` URIs and plain paths in its arguments alike. For a type that already exists (`image/png`) leave the XML out. The document icon is a theme icon named after the MIME type with the slash as a dash, `application-x-myapp`, in `~/.local/share/icons/hicolor/<size>/mimetypes/`.
+
+Icons: `go run ./tooling/assoc -kind icons -src doc.png -mime application/x-myapp -out ~/.local/share/icons` writes `hicolor/<N>x<N>/mimetypes/application-x-myapp.png` for 16 to 512 (a size above the source is left out; use a 512 square source) and prints the paths; `-kind icons -src app.png -iconname myapp -context apps` does the same for the program icon under `apps`. Run `gtk-update-icon-cache -f -t ~/.local/share/icons/hicolor` after. `-kind mime ... -icon application-x-myapp` writes the icon name into the XML (without it the theme icon of that name is used anyway) and `-kind desktop ... -icon myapp` sets `Icon=`. The files are tested; a file manager showing them was not looked at.
 
 To get a second launch into the running window, call `gowt.SingleInstance("org.example.MyApp")` with the same id (a D-Bus well-known name: reverse-DNS, letters, digits, `_` and `-`). It owns that name on the session bus and serves the freedesktop `org.freedesktop.Application` interface (`Open`, `Activate`, `ActivateAction` is accepted and ignored), so `Exec=app %U` started twice forwards the second one's files. Adding `DBusActivatable=true` (`-dbus`) makes the desktop skip `Exec` for a running app and call `Open` on the name instead; it needs a D-Bus service file, `go run ./tooling/assoc -kind service -id org.example.MyApp -exe /opt/myapp/myapp`, installed as `~/.local/share/dbus-1/services/org.example.MyApp.service`. The `.desktop` file should be named after the id. Without `SingleInstance` a Linux app gets command-line files only. The bus client is gowt's own, written from the D-Bus specification (EXTERNAL authentication, little-endian messages); `gdbus call` of `Open` and `Activate` and `gdbus introspect` were run against it in Docker with a real `dbus-daemon`. Not checked on a real desktop: a file manager's Open With, the `DBusActivatable` start of a program that is not running, the icon lookup.

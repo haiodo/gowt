@@ -63,6 +63,11 @@ App shell (Tenniarb)
 - Changed: `App.After` returns `cancel func()`. Source compatible for callers that ignore the result; the facade API golden changed (`After` gained a result), and code that passes `app.After` as a `func(time.Duration, func())` value no longer compiles. A cancelled short timer leaves `Pending` at once. Test `TestAfterCancel`.
 - New: QA `Type` and `Key` work on a Spinner. `Type("42")` sets the focus and the value per character (clamped, decimals up to the spinner's digits, read-only fails); `Key("Up")`, Down, PageUp and PageDown step the value; Enter sends DefaultSelection. Test `TestQATreeSpinner` (`GOWT_GUI_TEST=1`) passes on Linux (Docker, Xvfb), the Windows 11 arm64 VM and the second Mac.
 
+Toolbar QA (Tenniarb)
+- Fixed: `look.SetSidebar` after `look.SetToolbar` crashed the QA dump (SIGSEGV) on macOS: the sidebar rebuilds the NSToolbar and the search handle kept the freed `NSSearchField`. The handles now look up the current toolbar on every call, so the order of the `look` calls does not matter; `TestToolbarQA` runs both orders.
+- Fixed: after `look.FocusSearch` on macOS the QA `Focused` stayed false. `FocusSearch` now lays the toolbar out and makes the field the first responder at once, without activating the app.
+- New: the toolbar items and group segments are `ToolItem` nodes in the QA dump (`ToolbarItem.ID`, `Title` as `Text`) and `Click` runs their `OnClick`, on macOS (NSToolbar) and in the bar of Windows and Linux. An icon-only `ToolItem` shows its tooltip as `Text`.
+
 Toolbar search (Tenniarb)
 - New: `look.FocusSearch(w) bool` focuses the toolbar search field made by `look.SetToolbar` (`ToolbarItem.OnSearch`): the NSSearchToolbarItem on macOS (a collapsed one expands), the search `Text` of the bar on Windows and Linux. `ToolbarItem.ID` names it. On Windows and Linux Enter in the field now runs `OnSearch` with the text.
 - New: the toolbar search field is in the QA dump (a `Text` with the item ID, placeholder as `Text`, content as `Value`) and takes `Type`, `Key("Enter")`, `Key("Esc")` and `Focus` on macOS too. Test `TestToolbarSearch` (`GOWT_GUI_TEST=1`) on Linux Docker, the Windows VM and the second Mac.

@@ -189,6 +189,10 @@ func click(e *entry) error {
 			ev.Text = m[1]
 		}
 		o.NotifyListeners(swt.Selection, ev)
+	case toolbarButton:
+		if !o.tb.Click(o.n) {
+			return fmt.Errorf("qatree: click on %s: the toolbar item has no handler or is disabled", e.n.Path)
+		}
 	case *swt.ToolItem:
 		if o.GetStyle()&(swt.CHECK|swt.RADIO) != 0 {
 			o.SetSelection(o.GetStyle()&swt.RADIO != 0 || !o.GetSelection())

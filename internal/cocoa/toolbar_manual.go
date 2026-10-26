@@ -534,42 +534,61 @@ func ReleaseToolbar(view *NSView) {
 	}
 }
 
-// ToolbarSearchField is the first search item of a window's toolbar, for FocusSearch and the QA driver.
-type ToolbarSearchField struct {
-	s *toolbarState
-	i int
-}
-
-// ToolbarSearch returns the first search item of the toolbar of the window of view; nil when it has none.
-func ToolbarSearch(view *NSView) *ToolbarSearchField {
+// toolbarOf is the current toolbar state of the window of view. InstallToolbar swaps the state and the
+// NSToolbar (the sidebar calls it again), freeing the old fields, so handles look it up on every call
+// and never keep a state or a field.
+func toolbarOf(view *NSView) (uintptr, *toolbarState) {
 	initAssociated()
 	w := msg(uintptr(view.Id), "window")
 	if w == 0 {
-		return nil
+		return 0, nil
 	}
-	s := toolbarDelegates[getAssociated(w, toolbarKey())]
+	return w, toolbarDelegates[getAssociated(w, toolbarKey())]
+}
+
+// ToolbarSearchField is the first search item of a window's toolbar, for FocusSearch and the QA driver.
+type ToolbarSearchField struct{ view *NSView }
+
+// ToolbarSearch returns the handle of the search item of the toolbar of the window of view; it stays valid
+// when the toolbar is rebuilt.
+func ToolbarSearch(view *NSView) *ToolbarSearchField { return &ToolbarSearchField{view} }
+
+// item is the index of the first search item and its field; the field is 0 until the toolbar has made it.
+func (f *ToolbarSearchField) item() (s *toolbarState, i int, field uintptr) {
+	_, s = toolbarOf(f.view)
 	if s == nil {
-		return nil
+		return nil, -1, 0
 	}
 	for i, it := range s.items {
 		if it.Search != nil {
-			return &ToolbarSearchField{s, i}
+			return s, i, s.searchFields[i]
 		}
 	}
-	return nil
+	return s, -1, 0
 }
 
-func (f *ToolbarSearchField) field() uintptr { return f.s.searchFields[f.i] }
+// Present reports whether the toolbar has a search field now.
+func (f *ToolbarSearchField) Present() bool { _, _, sf := f.item(); return sf != 0 }
 
 // ID is the item's ID, "" if it has none.
-func (f *ToolbarSearchField) ID() string { return f.s.items[f.i].ID }
+func (f *ToolbarSearchField) ID() string {
+	if s, i, _ := f.item(); i >= 0 {
+		return s.items[i].ID
+	}
+	return ""
+}
 
 // Placeholder is the item's title.
-func (f *ToolbarSearchField) Placeholder() string { return f.s.items[f.i].Label }
+func (f *ToolbarSearchField) Placeholder() string {
+	if s, i, _ := f.item(); i >= 0 {
+		return s.items[i].Label
+	}
+	return ""
+}
 
 // Text is what the field holds.
 func (f *ToolbarSearchField) Text() string {
-	if sf := f.field(); sf != 0 {
+	if _, _, sf := f.item(); sf != 0 {
 		return goString(msg(sf, "stringValue"))
 	}
 	return ""
@@ -577,30 +596,36 @@ func (f *ToolbarSearchField) Text() string {
 
 // SetText replaces the text without running the search action, expanding a collapsed field.
 func (f *ToolbarSearchField) SetText(t string) {
-	if sf := f.field(); sf != 0 {
-		f.s.showSearch(f.i, true)
+	if s, i, sf := f.item(); sf != 0 {
+		s.showSearch(i, true)
 		msg(sf, "setStringValue:", nsString(t))
 	}
 }
 
-// Focus expands a collapsed field and makes it the first responder; a field that has only just been
-// shown takes the focus on the toolbar's next layout.
+// Focus expands a collapsed field and makes it the first responder at once, without activating the app.
 func (f *ToolbarSearchField) Focus() bool {
-	sf := f.field()
+	s, i, sf := f.item()
 	if sf == 0 {
 		return false
 	}
-	if f.s.searchButtons[f.i] != 0 && f.s.searchItems[f.i] != 0 {
-		f.s.showSearch(f.i, true)
-		return true
+	w, _ := toolbarOf(f.view)
+	s.showSearch(i, true)
+	if w == 0 {
+		return false
 	}
-	w := msg(sf, "window")
-	return w != 0 && msg(w, "makeFirstResponder:", sf) != 0
+	// The shown field joins the window on the toolbar's next layout; lay it out now.
+	if tb := msg(w, "toolbar"); tb != 0 {
+		msg(tb, "validateVisibleItems")
+	}
+	if respondsTo(w, "layoutIfNeeded") {
+		msg(w, "layoutIfNeeded")
+	}
+	return msg(w, "makeFirstResponder:", sf) != 0
 }
 
 // Focused reports whether the field or its field editor is the first responder.
 func (f *ToolbarSearchField) Focused() bool {
-	sf := f.field()
+	_, _, sf := f.item()
 	if sf == 0 {
 		return false
 	}
@@ -614,10 +639,77 @@ func (f *ToolbarSearchField) Focused() bool {
 
 // Submit runs the search with the text in the field, as Return does.
 func (f *ToolbarSearchField) Submit() {
-	if fn := f.s.items[f.i].Search; fn != nil {
-		fn(f.Text())
+	if s, i, _ := f.item(); i >= 0 && s.items[i].Search != nil {
+		s.items[i].Search(f.Text())
 	}
 }
 
 // Collapse folds an empty field back into its magnifier button, as Esc does.
-func (f *ToolbarSearchField) Collapse() { f.s.showSearch(f.i, false) }
+func (f *ToolbarSearchField) Collapse() {
+	if s, i, _ := f.item(); i >= 0 {
+		s.showSearch(i, false)
+	}
+}
+
+// ToolbarButton is a push item or a group segment of the toolbar, as the QA driver lists it.
+type ToolbarButton struct {
+	ID, Title string
+	Enabled   bool
+}
+
+// ToolbarButtons are the buttons of a window's toolbar, looked up on every call.
+type ToolbarButtons struct{ view *NSView }
+
+// ToolbarButtonsOf returns the handle of the buttons of the toolbar of the window of view.
+func ToolbarButtonsOf(view *NSView) *ToolbarButtons { return &ToolbarButtons{view} }
+
+// each walks the buttons in order: the items that click, a group as its segments.
+func (b *ToolbarButtons) each(f func(it *ToolbarItem) bool) {
+	_, s := toolbarOf(b.view)
+	if s == nil {
+		return
+	}
+	for i := range s.items {
+		it := &s.items[i]
+		switch {
+		case it.Space || it.Search != nil:
+		case len(it.Group) > 0:
+			for j := range it.Group {
+				if !f(&it.Group[j]) {
+					return
+				}
+			}
+		case it.Click != nil:
+			if !f(it) {
+				return
+			}
+		}
+	}
+}
+
+// List returns the buttons in toolbar order.
+func (b *ToolbarButtons) List() []ToolbarButton {
+	var out []ToolbarButton
+	b.each(func(it *ToolbarItem) bool {
+		out = append(out, ToolbarButton{it.ID, it.Label, !it.Disabled})
+		return true
+	})
+	return out
+}
+
+// Click runs the handler of button n of List, as a click on it does.
+func (b *ToolbarButtons) Click(n int) bool {
+	ok := false
+	b.each(func(it *ToolbarItem) bool {
+		if n == 0 {
+			if it.Click != nil && !it.Disabled {
+				it.Click()
+				ok = true
+			}
+			return false
+		}
+		n--
+		return true
+	})
+	return ok
+}

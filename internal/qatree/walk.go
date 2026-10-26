@@ -38,6 +38,12 @@ type comboItem struct {
 	i int
 }
 
+// toolbarButton is button n of a native toolbar, which has no swt item.
+type toolbarButton struct {
+	tb qaview.Toolbar
+	n  int
+}
+
 type walker struct {
 	focus  *swt.Control
 	shell  *swt.Shell
@@ -142,7 +148,13 @@ func (w *walker) control(c *swt.Control, vis, en bool) *entry {
 		if bar := v.GetMenuBar(); bar != nil {
 			e.kids = w.menu(bar, e.n.Visible, e.n.Enabled)
 		}
-		if ts, ok := qaview.ToolbarSearchOf(v); ok {
+		if tb, ok := qaview.ToolbarOf(v); ok {
+			for n, b := range tb.Buttons() {
+				e.kids = append(e.kids, &entry{obj: toolbarButton{tb, n}, shell: v, n: Node{ID: b.ID, Class: "ToolItem", Text: b.Title,
+					Visible: e.n.Visible, Enabled: e.n.Enabled && b.Enabled}})
+			}
+		}
+		if ts, ok := qaview.ToolbarSearchOf(v); ok && ts.Present() {
 			// The native toolbar search field is no swt control; it is listed as the Text the other systems have.
 			e.kids = append(e.kids, &entry{obj: ts, shell: v, n: Node{ID: ts.ID(), Class: "Text", Text: ts.Placeholder(),
 				Value: ts.Text(), Visible: e.n.Visible, Enabled: e.n.Enabled, Focused: ts.Focused()}})
@@ -220,7 +232,11 @@ func (w *walker) control(c *swt.Control, vis, en bool) *entry {
 		}
 	case *swt.ToolBar:
 		for _, it := range v.GetItems() {
-			te := w.item(&it.Widget, "ToolItem", it.GetText(), e.n.Visible, e.n.Enabled && it.GetEnabled(), it)
+			text := it.GetText()
+			if text == "" {
+				text = it.GetToolTipText()
+			}
+			te := w.item(&it.Widget, "ToolItem", text, e.n.Visible, e.n.Enabled && it.GetEnabled(), it)
 			if it.GetStyle()&(swt.CHECK|swt.RADIO) != 0 {
 				te.n.Checked = ptr(it.GetSelection())
 			}

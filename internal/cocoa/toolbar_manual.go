@@ -26,6 +26,7 @@ type ToolbarItem struct {
 	Nav      bool // navigational: placed before the window title
 	Sidebar  bool // with SetSidebarEdge: placed over the sidebar, ending at its edge
 	Search   func(text string)
+	ID       string // names a search item for the QA driver
 	Disabled bool // a push item or group segment shown dimmed; SetToolbarItemEnabled changes it
 }
 
@@ -53,6 +54,7 @@ type toolbarState struct {
 	groups      map[int]uintptr // index in items to its NSToolbarItemGroup, owned by the toolbar
 	// index in items of a search item to its magnifier button and its NSSearchToolbarItem, owned by the toolbar
 	searchButtons, searchItems map[int]uintptr
+	searchFields               map[int]uintptr // index in items to the NSSearchField, owned by its item
 }
 
 var (
@@ -244,6 +246,11 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		msg(f, "setDelegate:", target)
 		msg(ti, "setSearchField:", f)
 		msg(f, "release")
+		if s.searchFields == nil {
+			s.searchFields = map[int]uintptr{}
+		}
+		fi, _ := strconv.Atoi(strings.TrimPrefix(id, itemIDPrefix))
+		s.searchFields[fi] = f
 		if respondsTo(ti, "setPreferredWidthForSearchField:") {
 			if msgF64 == nil {
 				purego.RegisterFunc(&msgF64, objcMsgSend)
@@ -526,3 +533,91 @@ func ReleaseToolbar(view *NSView) {
 		}
 	}
 }
+
+// ToolbarSearchField is the first search item of a window's toolbar, for FocusSearch and the QA driver.
+type ToolbarSearchField struct {
+	s *toolbarState
+	i int
+}
+
+// ToolbarSearch returns the first search item of the toolbar of the window of view; nil when it has none.
+func ToolbarSearch(view *NSView) *ToolbarSearchField {
+	initAssociated()
+	w := msg(uintptr(view.Id), "window")
+	if w == 0 {
+		return nil
+	}
+	s := toolbarDelegates[getAssociated(w, toolbarKey())]
+	if s == nil {
+		return nil
+	}
+	for i, it := range s.items {
+		if it.Search != nil {
+			return &ToolbarSearchField{s, i}
+		}
+	}
+	return nil
+}
+
+func (f *ToolbarSearchField) field() uintptr { return f.s.searchFields[f.i] }
+
+// ID is the item's ID, "" if it has none.
+func (f *ToolbarSearchField) ID() string { return f.s.items[f.i].ID }
+
+// Placeholder is the item's title.
+func (f *ToolbarSearchField) Placeholder() string { return f.s.items[f.i].Label }
+
+// Text is what the field holds.
+func (f *ToolbarSearchField) Text() string {
+	if sf := f.field(); sf != 0 {
+		return goString(msg(sf, "stringValue"))
+	}
+	return ""
+}
+
+// SetText replaces the text without running the search action, expanding a collapsed field.
+func (f *ToolbarSearchField) SetText(t string) {
+	if sf := f.field(); sf != 0 {
+		f.s.showSearch(f.i, true)
+		msg(sf, "setStringValue:", nsString(t))
+	}
+}
+
+// Focus expands a collapsed field and makes it the first responder; a field that has only just been
+// shown takes the focus on the toolbar's next layout.
+func (f *ToolbarSearchField) Focus() bool {
+	sf := f.field()
+	if sf == 0 {
+		return false
+	}
+	if f.s.searchButtons[f.i] != 0 && f.s.searchItems[f.i] != 0 {
+		f.s.showSearch(f.i, true)
+		return true
+	}
+	w := msg(sf, "window")
+	return w != 0 && msg(w, "makeFirstResponder:", sf) != 0
+}
+
+// Focused reports whether the field or its field editor is the first responder.
+func (f *ToolbarSearchField) Focused() bool {
+	sf := f.field()
+	if sf == 0 {
+		return false
+	}
+	w := msg(sf, "window")
+	if w == 0 {
+		return false
+	}
+	r := msg(w, "firstResponder")
+	return r == sf || r != 0 && respondsTo(r, "delegate") && msg(r, "delegate") == sf
+}
+
+// Submit runs the search with the text in the field, as Return does.
+func (f *ToolbarSearchField) Submit() {
+	if fn := f.s.items[f.i].Search; fn != nil {
+		fn(f.Text())
+	}
+}
+
+// Collapse folds an empty field back into its magnifier button, as Esc does.
+func (f *ToolbarSearchField) Collapse() { f.s.showSearch(f.i, false) }

@@ -142,6 +142,11 @@ func (w *walker) control(c *swt.Control, vis, en bool) *entry {
 		if bar := v.GetMenuBar(); bar != nil {
 			e.kids = w.menu(bar, e.n.Visible, e.n.Enabled)
 		}
+		if ts, ok := qaview.ToolbarSearchOf(v); ok {
+			// The native toolbar search field is no swt control; it is listed as the Text the other systems have.
+			e.kids = append(e.kids, &entry{obj: ts, shell: v, n: Node{ID: ts.ID(), Class: "Text", Text: ts.Placeholder(),
+				Value: ts.Text(), Visible: e.n.Visible, Enabled: e.n.Enabled, Focused: ts.Focused()}})
+		}
 	case *swt.Button:
 		st := v.GetStyle()
 		if st&swt.ARROW == 0 {

@@ -50,6 +50,10 @@ App shell (Tenniarb)
 - Changed: `App.After` returns `cancel func()`. Source compatible for callers that ignore the result; the facade API golden changed (`After` gained a result), and code that passes `app.After` as a `func(time.Duration, func())` value no longer compiles. A cancelled short timer leaves `Pending` at once. Test `TestAfterCancel`.
 - New: QA `Type` and `Key` work on a Spinner. `Type("42")` sets the focus and the value per character (clamped, decimals up to the spinner's digits, read-only fails); `Key("Up")`, Down, PageUp and PageDown step the value; Enter sends DefaultSelection. Test `TestQATreeSpinner` (`GOWT_GUI_TEST=1`) passes on Linux (Docker, Xvfb), the Windows 11 arm64 VM and the second Mac.
 
+Toolbar search (Tenniarb)
+- New: `look.FocusSearch(w) bool` focuses the toolbar search field made by `look.SetToolbar` (`ToolbarItem.OnSearch`): the NSSearchToolbarItem on macOS (a collapsed one expands), the search `Text` of the bar on Windows and Linux. `ToolbarItem.ID` names it. On Windows and Linux Enter in the field now runs `OnSearch` with the text.
+- New: the toolbar search field is in the QA dump (a `Text` with the item ID, placeholder as `Text`, content as `Value`) and takes `Type`, `Key("Enter")`, `Key("Esc")` and `Focus` on macOS too. Test `TestToolbarSearch` (`GOWT_GUI_TEST=1`) on Linux Docker, the Windows VM and the second Mac.
+
 Quit hook
 - New: `App.OnQuit(func() bool)`; false cancels the quit. It runs on Cmd+Q, the app menu and the Dock (macOS), logout and shutdown (macOS, Windows) and the close of the last window, after every open window's `Window.OnClose` agreed (asked in creation order, the first refusal stops). `app.Unwrap().Close()` takes the same path for an own Quit item; `app.Quit()` still ends without asking. A `MessageBox` from a handler works during the system's quit request. Linux has no session-end path (GTK 3 without `GtkApplication`). Several `Window.OnClose` calls on one window now stop at the first false. Tests `TestQuit*` (`GOWT_GUI_TEST=1`) run on Linux under Xvfb and on the Windows VM; macOS not run. `examples/quit`, docs/events.md.
 

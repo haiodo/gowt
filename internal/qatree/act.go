@@ -58,6 +58,9 @@ func Act(d *swt.Display, s Selector, action string, args json.RawMessage) (err e
 	if err := reachable(d, e); err != nil {
 		return fmt.Errorf("qatree: %s on %s: %w", action, e.n.Path, err)
 	}
+	if ts, ok := e.obj.(qaview.ToolbarSearch); ok {
+		return actSearch(d, e, ts, action, args)
+	}
 	switch action {
 	case "click":
 		return click(e)
@@ -408,6 +411,51 @@ func selectItem(e *entry, index *int, text *string) error {
 		o.SetSelectionIndexNotify(int32(i), true)
 	default:
 		return fmt.Errorf("qatree: select does not apply to %s %s", ctl.n.Class, ctl.n.Path)
+	}
+	return nil
+}
+
+// actSearch is type, key and focus on the native toolbar search field. Type runs the search once with
+// the whole text, as the field does after a typing pause; Enter runs it again with the text, Esc clears
+// it (running the search with "") and folds the field.
+func actSearch(d *swt.Display, e *entry, ts qaview.ToolbarSearch, action string, args json.RawMessage) error {
+	defer flush(d)
+	switch action {
+	case "type":
+		var a struct{ Text string }
+		if err := parse(args, &a); err != nil {
+			return err
+		}
+		ts.Focus()
+		ts.SetText(a.Text)
+		ts.Submit()
+	case "key":
+		var a struct{ Keys string }
+		if err := parse(args, &a); err != nil {
+			return err
+		}
+		state, code, _, err := keyEvent(a.Keys)
+		if err != nil {
+			return err
+		}
+		switch {
+		case state == 0 && code == int32(swt.CR):
+			ts.Submit()
+		case state == 0 && code == int32(swt.ESC):
+			if ts.Text() != "" {
+				ts.SetText("")
+				ts.Submit()
+			}
+			ts.Collapse()
+		default:
+			return fmt.Errorf("qatree: key %q does not apply to the toolbar search field %s: use Type, Enter or Esc", a.Keys, e.n.Path)
+		}
+	case "focus":
+		if !ts.Focus() {
+			return fmt.Errorf("qatree: focus: %s did not take the focus", e.n.Path)
+		}
+	default:
+		return fmt.Errorf("qatree: %s does not apply to the toolbar search field %s", action, e.n.Path)
 	}
 	return nil
 }

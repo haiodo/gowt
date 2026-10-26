@@ -5,6 +5,7 @@ package look
 import (
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
@@ -119,6 +120,8 @@ type ToolbarItem struct {
 	// OnSearch makes the item a search field (NSSearchToolbarItem) with Title as the placeholder. It
 	// gets the text after a typing pause, on Return and on clearing.
 	OnSearch func(text string)
+	// ID names a search item for the QA driver (qa.ID), as gowt.ID names a widget.
+	ID string
 	// Enabled, when set, enables and disables a push item or a Group segment as it changes, for as
 	// long as the toolbar stays; nil keeps the item enabled.
 	Enabled rx.Reader[bool]
@@ -144,6 +147,23 @@ func SetToolbar(w *gowt.Window, items ...ToolbarItem) bool {
 	}
 	refreshInset(w)
 	return ok
+}
+
+// FocusSearch focuses the search field of the toolbar SetToolbar made for w (the item with OnSearch),
+// for an app that binds Cmd+F; it selects the text there and reports whether there is such a field. On
+// macOS the field is the NSSearchToolbarItem: a collapsed one expands first and takes the focus on the
+// toolbar's next layout. Elsewhere it is the search Text of the bar SetToolbar builds. UI thread only.
+func FocusSearch(w *gowt.Window) bool {
+	s := w.Unwrap()
+	if b := bars[s]; b != nil && b.search != nil && !b.search.Unwrap().IsDisposed() {
+		b.search.Focus()
+		b.search.Unwrap().SelectAll()
+		return true
+	}
+	if f, ok := qaview.ToolbarSearchOf(s); ok {
+		return f.Focus()
+	}
+	return false
 }
 
 // SetGlassGroup makes the glass surfaces (SetGlass) of the direct children of c share one

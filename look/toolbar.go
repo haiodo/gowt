@@ -68,6 +68,7 @@ type toolbarBar struct {
 	images    []*swt.Image
 	bg        swt.RGB // content colour the bar was styled for
 	line      *swt.Color
+	search    *gowt.TextView // the search field of an OnSearch item
 }
 
 var bars = map[*swt.Shell]*toolbarBar{}
@@ -110,7 +111,7 @@ func (b *toolbarBar) HandleEvent(e *swt.Event) {
 func (b *toolbarBar) build() {
 	if b.panel != nil {
 		b.panel.Unwrap().Dispose()
-		b.panel, b.title, b.icons, b.lead = nil, nil, nil, nil
+		b.panel, b.title, b.icons, b.lead, b.search = nil, nil, nil, nil, nil
 		disposeImages(b.images)
 		b.images = nil
 	}
@@ -204,9 +205,17 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		return nil
 	case it.OnSearch != nil:
 		var t *gowt.TextView
-		p.Add(gowt.Text(gowt.Search(), gowt.Size(gowt.Scaled(240), 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)))
+		opts := []gowt.Option{gowt.Search(), gowt.Size(gowt.Scaled(240), 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)}
+		if it.ID != "" {
+			opts = append(opts, gowt.ID(it.ID))
+		}
+		p.Add(gowt.Text(opts...))
 		t.SetHint(it.Title)
 		t.OnChange(it.OnSearch)
+		t.Unwrap().AddSelectionListener(swt.SelectionListenerWidgetDefaultSelectedAdapter(func(*swt.SelectionEvent) { it.OnSearch(t.Text()) }))
+		if b.search == nil {
+			b.search = t
+		}
 		return t
 	default:
 		var tb *gowt.ToolBarView

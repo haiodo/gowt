@@ -1148,6 +1148,7 @@ gowt/icons type Option func(*iconConfig)
 gowt/look Container.AsComposite() *github.com/haiodo/gowt/swt.Composite
 gowt/look ToolbarItem.Enabled field github.com/haiodo/gowt/rx.Reader[bool]
 gowt/look ToolbarItem.Group field []ToolbarItem
+gowt/look ToolbarItem.ID field string
 gowt/look ToolbarItem.Nav field bool
 gowt/look ToolbarItem.OnClick field func()
 gowt/look ToolbarItem.OnSearch field func(text string)
@@ -1161,6 +1162,7 @@ gowt/look const BackdropTranslucent Backdrop = 1
 gowt/look const Capsule untyped int = -1
 gowt/look func Classic()
 gowt/look func DragsWindow(c Container)
+gowt/look func FocusSearch(w *github.com/haiodo/gowt.Window) bool
 gowt/look func GlassBorder() github.com/haiodo/gowt.Option
 gowt/look func GlassButton() github.com/haiodo/gowt.Option
 gowt/look func InspectorVisible(w *github.com/haiodo/gowt.Window) bool

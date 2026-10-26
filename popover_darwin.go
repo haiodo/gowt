@@ -54,9 +54,10 @@ func (n *popoverNative) focused(p *Popover, c *swt.Control) bool {
 	return cocoa.FirstResponderIn(c.FocusView())
 }
 
-// outsideClick closes the popover the way a click outside does; an inactive test process cannot
-// observe the owner window being activated.
-func (n *popoverNative) outsideClick(p *Popover) { cocoa.PerformClosePopover(n.pop) }
+// outsideClick closes the NSPopover without the Popover knowing, so that OnClose has to come from
+// popoverDidClose:. The click outside itself is AppKit's transient behaviour: an inactive test process
+// cannot drive it, and it is checked by hand.
+func (n *popoverNative) outsideClick(p *Popover) { cocoa.CloseBehindBack(n.pop) }
 
 func (n *popoverNative) onScreen(p *Popover) bool { return n.pop != 0 && cocoa.PopoverShown(n.pop) }
 
@@ -75,4 +76,4 @@ func (n *popoverNative) dispose() {
 	}
 }
 
-const outsideClickName = "performClose: on the popover"
+const outsideClickName = "an AppKit close (popoverDidClose:)"

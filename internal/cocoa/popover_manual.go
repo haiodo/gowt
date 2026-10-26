@@ -174,8 +174,9 @@ func FocusPopover(pop uintptr, v *NSView) {
 	}
 }
 
-// PerformClosePopover closes pop the way a click outside does: with the animation and the delegate.
-func PerformClosePopover(pop uintptr) { msg(pop, "performClose:", 0) }
+// CloseBehindBack closes pop as AppKit does for a click outside: nothing here restores the view or
+// reports the close, only the delegate does. performClose: does nothing in an inactive application.
+func CloseBehindBack(pop uintptr) { msg(pop, "close") }
 
 // FirstResponderIn reports whether the first responder of the window of v is v or inside v, as the
 // field editor of a text field is.

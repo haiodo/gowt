@@ -84,6 +84,7 @@ func (p *Popover) Close() {
 	if !p.shown || p.closing {
 		return
 	}
+	popLog("Popover.Close")
 	p.closing = true // hiding the window reports its deactivation
 	p.native.hide(p)
 	p.closing = false
@@ -108,13 +109,14 @@ func (p *Popover) Dispose() {
 	}
 }
 
-// Unwrap returns the underlying shell. On macOS it is never shown: its content view is moved into the NSPopover.
+// Unwrap returns the underlying shell. On macOS it is never shown and keeps its window; its body view is moved into the NSPopover while the popover is on screen.
 func (p *Popover) Unwrap() *swt.Shell { return p.shell }
 
 func (p *Popover) show(anchor *swt.Control, local popRect, edge PopoverEdge) {
 	if p.shown || p.shell.IsDisposed() {
 		return
 	}
+	popLog("Popover.show")
 	p.shown = true
 	p.filters = newPopoverFilter(p)
 	p.native.show(p, anchor, local, edge)
@@ -136,7 +138,9 @@ func (p *Popover) dismissed() {
 	if !p.shown {
 		return
 	}
+	popLog("Popover.dismissed")
 	p.shown, p.active = false, false
+	p.native.dismissed(p)
 	if p.filters != nil {
 		p.filters.remove()
 		p.filters = nil
@@ -147,7 +151,8 @@ func (p *Popover) dismissed() {
 }
 
 func (p *Popover) deactivated() {
-	if p.shown && p.active {
+	popLog("shell deactivated shown=%v active=%v", p.shown, p.active)
+	if p.shown && p.active && p.native.closeOnDeactivate() {
 		p.Close()
 	}
 }
@@ -228,3 +233,6 @@ func (f *popoverFilter) HandleEvent(e *swt.Event) {
 		f.p.Close()
 	}
 }
+
+// popLog is the env-gated debug log of the macOS popover.
+var popLog = func(string, ...any) {}

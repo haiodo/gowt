@@ -5,8 +5,8 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// The shell is never shown: its content view lives in the NSPopover while it is on screen and
-// returns to the shell's window when it closes.
+// The shell is never shown. Its view lives in the NSPopover while it is on screen, and a placeholder
+// stands in for it as the contentView of the shell's window.
 const (
 	popoverStyle     = swt.NO_TRIM | swt.ON_TOP
 	popoverBodyStyle = swt.NONE
@@ -15,13 +15,11 @@ const (
 // popoverNative is an NSPopover.
 type popoverNative struct{ pop uintptr }
 
-// A transient NSPopover does not close when the owner window is activated from code.
 func (n *popoverNative) init(p *Popover) {
-	p.owner.AddShellListener(swt.ShellListenerShellActivatedAdapter(func(*swt.ShellEvent) {
-		if p.shown {
-			p.Close()
-		}
-	}))
+	popLog = cocoa.PopLog
+	p.shell.AddShellListener(swt.ShellListenerShellActivatedAdapter(func(*swt.ShellEvent) { popLog("shell activated") }))
+	p.shell.AddListener(swt.Show, popLogListener("shell Show event"))
+	p.shell.AddListener(swt.Hide, popLogListener("shell Hide event"))
 }
 
 func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edge PopoverEdge) {
@@ -41,6 +39,7 @@ func (n *popoverNative) show(p *Popover, anchor *swt.Control, local popRect, edg
 		n.pop = cocoa.NewPopover(p.shell.View, p.dismissed)
 	}
 	r := cocoa.NSRect{X: float64(local.X), Y: float64(local.Y), Width: float64(local.W), Height: float64(local.H)}
+	p.shell.SetHosted(true)
 	cocoa.ShowPopover(n.pop, anchor.TopView(), r, int(edge), cocoa.NSSize{Width: float64(w), Height: float64(h)})
 }
 
@@ -77,3 +76,13 @@ func (n *popoverNative) dispose() {
 }
 
 const outsideClickName = "an AppKit close (popoverDidClose:)"
+
+// The shell is not the active shell while its body is in the NSPopover, and the transient popover
+// closes itself, so a deactivation of the shell must not close it.
+func (n *popoverNative) closeOnDeactivate() bool { return false }
+
+func (n *popoverNative) dismissed(p *Popover) { p.shell.SetHosted(false) }
+
+type popLogListener string
+
+func (l popLogListener) HandleEvent(*swt.Event) { popLog(string(l)) }

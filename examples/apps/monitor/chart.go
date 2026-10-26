@@ -73,7 +73,7 @@ type chart struct {
 	live, dots                       []*gfx.Sprite
 	hover                            *gfx.Point
 	hoverKey, bubbleW                float64
-	hoverShown                       bool
+	hoverShown, liveShown            bool
 }
 
 func newChart(spec chartSpec, pal *palette, window time.Duration) *chart {
@@ -119,7 +119,7 @@ func (c *chart) attach(v *view.View) {
 		c.live = append(c.live, comp.NewSprite(nil, gfx.SpaceScreen, gfx.Point{}))
 	}
 	c.ringSp = comp.NewSprite(nil, gfx.SpaceScreen, gfx.Point{})
-	for _, s := range append([]*gfx.Sprite{c.lineSp, c.bubbleSp, c.ringSp}, c.dots...) {
+	for _, s := range append([]*gfx.Sprite{c.lineSp, c.bubbleSp, c.ringSp}, append(c.dots, c.live...)...) {
 		s.SetOpacity(0)
 	}
 	c.resize()
@@ -357,8 +357,12 @@ func (c *chart) place() {
 	for i, s := range c.live {
 		if i < len(c.curves) && len(c.ts) > 1 {
 			s.SetPos(gfx.Point{X: right, Y: c.yOf(c.curves[i].at(c.tr))})
+			if !c.liveShown { // before the first samples the dots would sit in the plot's corner
+				s.SetOpacity(1)
+			}
 		}
 	}
+	c.liveShown = c.liveShown || len(c.ts) > 1
 	if c.ringSp != nil && len(c.curves) > 0 && len(c.ts) > 1 {
 		c.ringSp.SetPos(c.live[len(c.live)-1].Pos())
 	}

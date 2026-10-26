@@ -20,12 +20,7 @@ type nsRect struct {
 func WindowPNG(view int64, path string) error {
 	win := objc.ID(view).Send(objc.RegisterName("window"))
 	v := win.Send(objc.RegisterName("contentView")).Send(objc.RegisterName("superview"))
-	if os.Getenv("GOWT_SNAP_NOFOCUS") == "1" {
-		// The window takes the first responder, and no view or cell may draw a ring in the capture itself:
-		// the ring of the old responder was still in the shots with makeFirstResponder:nil alone.
-		win.Send(objc.RegisterName("makeFirstResponder:"), objc.ID(0))
-		noFocusRings(v)
-	}
+	ClearFocus(view)
 	if os.Getenv("GOWT_SNAP_SCREEN") == "1" {
 		return screenPNG(v, path)
 	}
@@ -59,4 +54,19 @@ func noFocusRings(v objc.ID) {
 	for i, n := uint64(0), objc.Send[uint64](subs, sel("count")); i < n; i++ {
 		noFocusRings(subs.Send(sel("objectAtIndex:"), i))
 	}
+}
+
+// ClearFocus is the GOWT_SNAP_NOFOCUS=1 pass. The window takes the first responder, and no view or cell may
+// draw a ring in the capture itself: the ring of the old responder was still in the shots with
+// makeFirstResponder:nil alone. A GOWT_SNAP_SCREEN capture reads what the window server holds, which
+// changes only after a display cycle, so gowt.Run calls this a few hundred ms before WindowPNG too.
+func ClearFocus(view int64) {
+	if os.Getenv("GOWT_SNAP_NOFOCUS") != "1" {
+		return
+	}
+	win := objc.ID(view).Send(objc.RegisterName("window"))
+	v := win.Send(objc.RegisterName("contentView")).Send(objc.RegisterName("superview"))
+	win.Send(objc.RegisterName("makeFirstResponder:"), objc.ID(0))
+	noFocusRings(v)
+	v.Send(objc.RegisterName("setNeedsDisplay:"), true)
 }

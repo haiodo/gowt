@@ -38,8 +38,16 @@ func (a *App) armSnap(path string, errp *error) func() {
 			a.display.Wake()
 		}
 	}()
+	placed := false
+	var clearedAt time.Time
 	return func() {
 		now := time.Now()
+		if !placed {
+			if shells := a.display.GetShells(); len(shells) > 0 {
+				placed = true
+				shot.PlaceOnRetina(shotHandle(shells[0]))
+			}
+		}
 		if a.quit.Load() || now.Before(due) {
 			return
 		}
@@ -62,7 +70,14 @@ func (a *App) armSnap(path string, errp *error) func() {
 		if frames == nil && len(shells) > 0 {
 			frames, framesBy = qaview.Request(shells[0]), now.Add(snapFrameWait)
 		}
+		if len(shells) > 0 && clearedAt.IsZero() {
+			shot.ClearFocus(shotHandle(shells[0]))
+			clearedAt = now
+		}
 		if frames != nil && !frames() && now.Before(framesBy) {
+			return
+		}
+		if now.Sub(clearedAt) < 500*time.Millisecond {
 			return
 		}
 		if len(shells) == 0 {

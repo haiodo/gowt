@@ -37,3 +37,12 @@ func (this *NSComboBox) ItemObjectValueAtIndex(index int64) *id {
 	}
 	return nil
 }
+
+// -[NSString characterAtIndex:] throws NSRangeException past the end; os.c turns that into 0. Menu.createItem
+// reads the key equivalent of a system menu item, which is "" for About and Preferences.
+func (this *NSString) CharacterAtIndex(index int64) uint16 {
+	if index < 0 || index >= this.Length() {
+		return 0
+	}
+	return uint16(OSObjc_msgSendOverload44(this.Id, OSSel_characterAtIndex_, index))
+}

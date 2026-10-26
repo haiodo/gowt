@@ -261,6 +261,8 @@ public class Manual {
 			// An out-of-range index (-1: nothing selected) throws NSRangeException, which os.c swallows.
 			Map.entry(COCOA_PKG + "NSComboBox#selectItemAtIndex(J)", "SelectItemAtIndex"),
 			Map.entry(COCOA_PKG + "NSComboBox#itemObjectValueAtIndex(J)", "ItemObjectValueAtIndex"),
+			// characterAtIndex(0) of an empty key equivalent (system menu items) throws the same way.
+			Map.entry(COCOA_PKG + "NSString#characterAtIndex(J)", "CharacterAtIndex"),
 			Map.entry("org.eclipse.swt.internal.gtk.GdkRectangle#toRectangle()", GDK_RECTANGLE_TO_RECTANGLE),
 			Map.entry("org.eclipse.swt.widgets.Display#dumpWidgetTableInfo()", "DumpWidgetTableInfoManual"),
 			Map.entry("java.lang.Thread#sleep(J)", "jrt.Sleep"),

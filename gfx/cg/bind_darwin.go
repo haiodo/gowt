@@ -92,6 +92,18 @@ var (
 	ctFontFromDesc func(d uintptr, size float64, m uintptr) uintptr
 	ctUIFont       func(typ int32, size float64, lang uintptr) uintptr
 
+	cfDataCreateMutable   func(alloc uintptr, capacity int) uintptr
+	cfDataCreate          func(alloc uintptr, b unsafe.Pointer, n int) uintptr
+	cfDataLength          func(d uintptr) int
+	cfDataBytes           func(d uintptr) uintptr
+	cgConsumerFromData    func(d uintptr) uintptr
+	cgConsumerRelease     func(c uintptr)
+	cgPDFContextCreate    func(consumer uintptr, mediaBox *cgRect, aux uintptr) uintptr
+	cgPDFContextClose     func(ctx uintptr)
+	cgPDFContextBeginPage func(ctx uintptr, info uintptr)
+	cgPDFContextEndPage   func(ctx uintptr)
+
+	kPDFMediaBox, kPDFCreator                    uintptr
 	kFontAttr, kFgFromCtx, kTrue, kKeyCB, kValCB uintptr
 	kFamilyAttr, kTraitsAttr, kWeightTrait       uintptr
 	kSymbolicTrait, kKernAttr, kWidthTrait       uintptr
@@ -163,6 +175,16 @@ func bind() {
 		reg(&cgGradRelease, "CGGradientRelease")
 		reg(&cgDrawLinear, "CGContextDrawLinearGradient")
 		reg(&cgDrawRadial, "CGContextDrawRadialGradient")
+		reg(&cfDataCreateMutable, "CFDataCreateMutable")
+		reg(&cfDataCreate, "CFDataCreate")
+		reg(&cfDataLength, "CFDataGetLength")
+		reg(&cfDataBytes, "CFDataGetBytePtr")
+		reg(&cgConsumerFromData, "CGDataConsumerCreateWithCFData")
+		reg(&cgConsumerRelease, "CGDataConsumerRelease")
+		reg(&cgPDFContextCreate, "CGPDFContextCreate")
+		reg(&cgPDFContextClose, "CGPDFContextClose")
+		reg(&cgPDFContextBeginPage, "CGPDFContextBeginPage")
+		reg(&cgPDFContextEndPage, "CGPDFContextEndPage")
 		reg(&cfRelease, "CFRelease")
 		reg(&cfStringCreateWithBytes, "CFStringCreateWithBytes")
 		reg(&cfDictionaryCreate, "CFDictionaryCreate")
@@ -192,6 +214,8 @@ func bind() {
 		}
 		// the constants are pointers stored in the symbol; the callback tables are the symbol itself
 		deref := func(a uintptr) uintptr { return *(*uintptr)(*(*unsafe.Pointer)(unsafe.Pointer(&a))) }
+		kPDFMediaBox = deref(sym("kCGPDFContextMediaBox"))
+		kPDFCreator = deref(sym("kCGPDFContextCreator"))
 		kFontAttr = deref(sym("kCTFontAttributeName"))
 		kFgFromCtx = deref(sym("kCTForegroundColorFromContextAttributeName"))
 		kTrue = deref(sym("kCFBooleanTrue"))

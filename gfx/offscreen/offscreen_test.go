@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/haiodo/gowt/gfx"
+	"github.com/haiodo/gowt/gfx/internal/pdfcheck"
 )
 
 func TestNewRendersPNG(t *testing.T) {
@@ -66,5 +67,32 @@ func TestPNGOfNilRootIsTheWholeScene(t *testing.T) {
 	img, err := png.Decode(bytes.NewReader(data))
 	if err != nil || img.Bounds().Dx() != 30 || img.Bounds().Dy() != 20 {
 		t.Fatalf("%v %v", img, err)
+	}
+}
+
+func TestPDFScene(t *testing.T) {
+	r, err := New(Options{})
+	if err != nil {
+		t.Skip(err)
+	}
+	s := gfx.NewScene()
+	n := gfx.NewNode(1)
+	rc := gfx.NewRecorderWith(r)
+	rc.FillRect(gfx.R(0, 0, 120, 80), gfx.RGB(10, 120, 200))
+	rc.Text("scene", 10, 40, gfx.Font{Size: 14}, gfx.White)
+	s.Update(func(tx *gfx.Tx) {
+		tx.Add(nil, n)
+		tx.SetPicture(n, rc.Finish())
+	})
+	var buf bytes.Buffer
+	if err := PDF(&buf, s, nil, gfx.PDFOptions{PageW: 595, PageH: 842, Margin: 36}); err != nil {
+		t.Fatal(err)
+	}
+	info, err := pdfcheck.Inspect(buf.Bytes())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(info.Pages) != 1 || info.Pages[0] != (pdfcheck.Size{W: 595, H: 842}) || len(info.Fonts) == 0 {
+		t.Errorf("pages %v fonts %v, want one A4 page with a font", info.Pages, info.Fonts)
 	}
 }

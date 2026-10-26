@@ -54,24 +54,24 @@ func (this *NSSavePanel) initNSSavePanelOverload2(id *id) {
 
 func (this *NSSavePanel) Filename() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_filename)
-	var cond638 *NSString
+	var cond609 *NSString
 	if result != 0 {
-		cond638 = NewNSStringOverload1(result)
+		cond609 = NewNSStringOverload1(result)
 	} else {
-		cond638 = nil
+		cond609 = nil
 	}
-	return cond638
+	return cond609
 }
 
 func (this *NSSavePanel) NameFieldStringValue() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_nameFieldStringValue)
-	var cond639 *NSString
+	var cond610 *NSString
 	if result != 0 {
-		cond639 = NewNSStringOverload1(result)
+		cond610 = NewNSStringOverload1(result)
 	} else {
-		cond639 = nil
+		cond610 = nil
 	}
-	return cond639
+	return cond610
 }
 
 func (this *NSSavePanel) RunModal() int64 {
@@ -79,39 +79,39 @@ func (this *NSSavePanel) RunModal() int64 {
 }
 
 func (this *NSSavePanel) RunModalForDirectory(path *NSString, name *NSString) int64 {
-	var cond640 int64
+	var cond611 int64
 	if path != (nil) {
-		cond640 = path.Id
+		cond611 = path.Id
 	} else {
-		cond640 = int64(0)
+		cond611 = int64(0)
 	}
-	var cond641 int64
+	var cond612 int64
 	if name != (nil) {
-		cond641 = name.Id
+		cond612 = name.Id
 	} else {
-		cond641 = int64(0)
+		cond612 = int64(0)
 	}
-	return OSObjc_msgSendOverload54(this.Id, OSSel_runModalForDirectory_file_, cond640, cond641)
+	return OSObjc_msgSendOverload54(this.Id, OSSel_runModalForDirectory_file_, cond611, cond612)
 }
 
 func (this *NSSavePanel) SetAccessoryView(accessoryView *NSView) {
-	var cond642 int64
+	var cond613 int64
 	if accessoryView != (nil) {
-		cond642 = accessoryView.Id
+		cond613 = accessoryView.Id
 	} else {
-		cond642 = int64(0)
+		cond613 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setAccessoryView_, cond642)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setAccessoryView_, cond613)
 }
 
 func (this *NSSavePanel) SetAllowedFileTypes(allowedFileTypes *NSArray) {
-	var cond643 int64
+	var cond614 int64
 	if allowedFileTypes != (nil) {
-		cond643 = allowedFileTypes.Id
+		cond614 = allowedFileTypes.Id
 	} else {
-		cond643 = int64(0)
+		cond614 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setAllowedFileTypes_, cond643)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setAllowedFileTypes_, cond614)
 }
 
 func (this *NSSavePanel) SetAllowsOtherFileTypes(allowsOtherFileTypes bool) {
@@ -123,53 +123,43 @@ func (this *NSSavePanel) SetCanCreateDirectories(canCreateDirectories bool) {
 }
 
 func (this *NSSavePanel) SetDirectory(path *NSString) {
-	var cond644 int64
+	var cond615 int64
 	if path != (nil) {
-		cond644 = path.Id
+		cond615 = path.Id
 	} else {
-		cond644 = int64(0)
+		cond615 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDirectory_, cond644)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDirectory_, cond615)
 }
 
 func (this *NSSavePanel) SetDirectoryURL(directoryURL *NSURL) {
-	var cond645 int64
+	var cond616 int64
 	if directoryURL != (nil) {
-		cond645 = directoryURL.Id
+		cond616 = directoryURL.Id
 	} else {
-		cond645 = int64(0)
+		cond616 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDirectoryURL_, cond645)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDirectoryURL_, cond616)
 }
 
 func (this *NSSavePanel) SetMessage(message *NSString) {
-	var cond646 int64
+	var cond617 int64
 	if message != (nil) {
-		cond646 = message.Id
+		cond617 = message.Id
 	} else {
-		cond646 = int64(0)
+		cond617 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setMessage_, cond646)
-}
-
-func (this *NSSavePanel) SetNameFieldStringValue(nameFieldStringValue *NSString) {
-	var cond647 int64
-	if nameFieldStringValue != (nil) {
-		cond647 = nameFieldStringValue.Id
-	} else {
-		cond647 = int64(0)
-	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setNameFieldStringValue_, cond647)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setMessage_, cond617)
 }
 
 func (this *NSSavePanel) SetTitle(title *NSString) {
-	var cond648 int64
+	var cond618 int64
 	if title != (nil) {
-		cond648 = title.Id
+		cond618 = title.Id
 	} else {
-		cond648 = int64(0)
+		cond618 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond648)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setTitle_, cond618)
 }
 
 func (this *NSSavePanel) SetTreatsFilePackagesAsDirectories(treatsFilePackagesAsDirectories bool) {
@@ -182,23 +172,23 @@ func (this *NSSavePanel) ValidateVisibleColumns() {
 
 func NSSavePanelSavePanel() *NSSavePanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSSavePanel, OSSel_savePanel)
-	var cond649 *NSSavePanel
+	var cond619 *NSSavePanel
 	if result != 0 {
-		cond649 = NewNSSavePanelOverload1(result)
+		cond619 = NewNSSavePanelOverload1(result)
 	} else {
-		cond649 = nil
+		cond619 = nil
 	}
-	return cond649
+	return cond619
 }
 
 func NSSavePanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond650 int64
+	var cond620 int64
 	if aTitle != (nil) {
-		cond650 = aTitle.Id
+		cond620 = aTitle.Id
 	} else {
-		cond650 = int64(0)
+		cond620 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSSavePanel, OSSel_minFrameWidthWithTitle_styleMask_, cond650, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSSavePanel, OSSel_minFrameWidthWithTitle_styleMask_, cond620, aStyle)
 }
 
 func NSSavePanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

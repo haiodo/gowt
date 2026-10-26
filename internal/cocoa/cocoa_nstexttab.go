@@ -54,17 +54,17 @@ func (this *NSTextTab) initNSTextTabOverload2(id *id) {
 
 func (this *NSTextTab) InitWithType(type_ int64, loc float64) *NSTextTab {
 	var result int64 = OSObjc_msgSendOverload53(this.Id, OSSel_initWithType_location_, type_, loc)
-	var cond773 *NSTextTab
+	var cond731 *NSTextTab
 	if result == this.Id {
-		cond773 = this
+		cond731 = this
 	} else {
-		var cond774 *NSTextTab
+		var cond732 *NSTextTab
 		if result != 0 {
-			cond774 = NewNSTextTabOverload1(result)
+			cond732 = NewNSTextTabOverload1(result)
 		} else {
-			cond774 = nil
+			cond732 = nil
 		}
-		cond773 = (cond774)
+		cond731 = (cond732)
 	}
-	return cond773
+	return cond731
 }

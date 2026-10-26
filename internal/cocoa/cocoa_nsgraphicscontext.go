@@ -102,58 +102,58 @@ func (this *NSGraphicsContext) ShouldAntialias() bool {
 
 func NSGraphicsContextCurrentContext() *NSGraphicsContext {
 	var result int64 = OSObjc_msgSend(OSClass_NSGraphicsContext, OSSel_currentContext)
-	var cond293 *NSGraphicsContext
+	var cond281 *NSGraphicsContext
 	if result != 0 {
-		cond293 = NewNSGraphicsContextOverload1(result)
+		cond281 = NewNSGraphicsContextOverload1(result)
 	} else {
-		cond293 = nil
+		cond281 = nil
 	}
-	return cond293
+	return cond281
 }
 
 func NSGraphicsContextGraphicsContextWithBitmapImageRep(bitmapRep *NSBitmapImageRep) *NSGraphicsContext {
-	var cond294 int64
+	var cond282 int64
 	if bitmapRep != (nil) {
-		cond294 = bitmapRep.Id
+		cond282 = bitmapRep.Id
 	} else {
-		cond294 = int64(0)
+		cond282 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSGraphicsContext, OSSel_graphicsContextWithBitmapImageRep_, cond294)
-	var cond295 *NSGraphicsContext
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSGraphicsContext, OSSel_graphicsContextWithBitmapImageRep_, cond282)
+	var cond283 *NSGraphicsContext
 	if result != 0 {
-		cond295 = NewNSGraphicsContextOverload1(result)
+		cond283 = NewNSGraphicsContextOverload1(result)
 	} else {
-		cond295 = nil
+		cond283 = nil
 	}
-	return cond295
+	return cond283
 }
 
 func NSGraphicsContextGraphicsContextWithGraphicsPort(graphicsPort int64, initialFlippedState bool) *NSGraphicsContext {
 	var result int64 = OSObjc_msgSendOverload52(OSClass_NSGraphicsContext, OSSel_graphicsContextWithGraphicsPort_flipped_, graphicsPort, initialFlippedState)
-	var cond296 *NSGraphicsContext
+	var cond284 *NSGraphicsContext
 	if result != 0 {
-		cond296 = NewNSGraphicsContextOverload1(result)
+		cond284 = NewNSGraphicsContextOverload1(result)
 	} else {
-		cond296 = nil
+		cond284 = nil
 	}
-	return cond296
+	return cond284
 }
 
 func NSGraphicsContextGraphicsContextWithWindow(window *NSWindow) *NSGraphicsContext {
-	var cond297 int64
+	var cond285 int64
 	if window != (nil) {
-		cond297 = window.Id
+		cond285 = window.Id
 	} else {
-		cond297 = int64(0)
+		cond285 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSGraphicsContext, OSSel_graphicsContextWithWindow_, cond297)
-	var cond298 *NSGraphicsContext
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSGraphicsContext, OSSel_graphicsContextWithWindow_, cond285)
+	var cond286 *NSGraphicsContext
 	if result != 0 {
-		cond298 = NewNSGraphicsContextOverload1(result)
+		cond286 = NewNSGraphicsContextOverload1(result)
 	} else {
-		cond298 = nil
+		cond286 = nil
 	}
-	return cond298
+	return cond286
 }
 
 func NSGraphicsContextStatic_restoreGraphicsState() {
@@ -165,11 +165,11 @@ func NSGraphicsContextStatic_saveGraphicsState() {
 }
 
 func NSGraphicsContextSetCurrentContext(context *NSGraphicsContext) {
-	var cond299 int64
+	var cond287 int64
 	if context != (nil) {
-		cond299 = context.Id
+		cond287 = context.Id
 	} else {
-		cond299 = int64(0)
+		cond287 = int64(0)
 	}
-	OSObjc_msgSendOverload44(OSClass_NSGraphicsContext, OSSel_setCurrentContext_, cond299)
+	OSObjc_msgSendOverload44(OSClass_NSGraphicsContext, OSSel_setCurrentContext_, cond287)
 }

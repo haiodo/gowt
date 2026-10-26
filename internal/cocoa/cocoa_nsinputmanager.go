@@ -53,13 +53,13 @@ func (this *NSInputManager) initNSInputManagerOverload2(id *id) {
 }
 
 func (this *NSInputManager) HandleMouseEvent(theMouseEvent *NSEvent) bool {
-	var cond340 int64
+	var cond328 int64
 	if theMouseEvent != (nil) {
-		cond340 = theMouseEvent.Id
+		cond328 = theMouseEvent.Id
 	} else {
-		cond340 = int64(0)
+		cond328 = int64(0)
 	}
-	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_handleMouseEvent_, cond340)
+	return OSObjc_msgSend_boolOverload5(this.Id, OSSel_handleMouseEvent_, cond328)
 }
 
 func (this *NSInputManager) WantsToHandleMouseEvents() bool {
@@ -68,11 +68,11 @@ func (this *NSInputManager) WantsToHandleMouseEvents() bool {
 
 func NSInputManagerCurrentInputManager() *NSInputManager {
 	var result int64 = OSObjc_msgSend(OSClass_NSInputManager, OSSel_currentInputManager)
-	var cond341 *NSInputManager
+	var cond329 *NSInputManager
 	if result != 0 {
-		cond341 = NewNSInputManagerOverload1(result)
+		cond329 = NewNSInputManagerOverload1(result)
 	} else {
-		cond341 = nil
+		cond329 = nil
 	}
-	return cond341
+	return cond329
 }

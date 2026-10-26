@@ -66,34 +66,34 @@ func (this *NSIndexSet) GetIndexes(indexBuffer []int64, bufferSize int64, range_
 
 func (this *NSIndexSet) InitWithIndex(value int64) *NSIndexSet {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIndex_, value)
-	var cond336 *NSIndexSet
+	var cond324 *NSIndexSet
 	if result == this.Id {
-		cond336 = this
+		cond324 = this
 	} else {
-		var cond337 *NSIndexSet
+		var cond325 *NSIndexSet
 		if result != 0 {
-			cond337 = NewNSIndexSetOverload1(result)
+			cond325 = NewNSIndexSetOverload1(result)
 		} else {
-			cond337 = nil
+			cond325 = nil
 		}
-		cond336 = (cond337)
+		cond324 = (cond325)
 	}
-	return cond336
+	return cond324
 }
 
 func (this *NSIndexSet) InitWithIndexesInRange(range_ NSRange) *NSIndexSet {
 	var result int64 = OSObjc_msgSendOverload8(this.Id, OSSel_initWithIndexesInRange_, range_)
-	var cond338 *NSIndexSet
+	var cond326 *NSIndexSet
 	if result == this.Id {
-		cond338 = this
+		cond326 = this
 	} else {
-		var cond339 *NSIndexSet
+		var cond327 *NSIndexSet
 		if result != 0 {
-			cond339 = NewNSIndexSetOverload1(result)
+			cond327 = NewNSIndexSetOverload1(result)
 		} else {
-			cond339 = nil
+			cond327 = nil
 		}
-		cond338 = (cond339)
+		cond326 = (cond327)
 	}
-	return cond338
+	return cond326
 }

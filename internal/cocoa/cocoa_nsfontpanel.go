@@ -53,51 +53,51 @@ func (this *NSFontPanel) initNSFontPanelOverload2(id *id) {
 }
 
 func (this *NSFontPanel) PanelConvertFont(fontObj *NSFont) *NSFont {
-	var cond278 int64
+	var cond266 int64
 	if fontObj != (nil) {
-		cond278 = fontObj.Id
+		cond266 = fontObj.Id
 	} else {
-		cond278 = int64(0)
+		cond266 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_panelConvertFont_, cond278)
-	var cond279 *NSFont
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_panelConvertFont_, cond266)
+	var cond267 *NSFont
 	if result != 0 {
-		cond279 = NewNSFontOverload1(result)
+		cond267 = NewNSFontOverload1(result)
 	} else {
-		cond279 = nil
+		cond267 = nil
 	}
-	return cond279
+	return cond267
 }
 
 func (this *NSFontPanel) SetPanelFont(fontObj *NSFont, flag bool) {
-	var cond280 int64
+	var cond268 int64
 	if fontObj != (nil) {
-		cond280 = fontObj.Id
+		cond268 = fontObj.Id
 	} else {
-		cond280 = int64(0)
+		cond268 = int64(0)
 	}
-	OSObjc_msgSendOverload52(this.Id, OSSel_setPanelFont_isMultiple_, cond280, flag)
+	OSObjc_msgSendOverload52(this.Id, OSSel_setPanelFont_isMultiple_, cond268, flag)
 }
 
 func NSFontPanelSharedFontPanel() *NSFontPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSFontPanel, OSSel_sharedFontPanel)
-	var cond281 *NSFontPanel
+	var cond269 *NSFontPanel
 	if result != 0 {
-		cond281 = NewNSFontPanelOverload1(result)
+		cond269 = NewNSFontPanelOverload1(result)
 	} else {
-		cond281 = nil
+		cond269 = nil
 	}
-	return cond281
+	return cond269
 }
 
 func NSFontPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond282 int64
+	var cond270 int64
 	if aTitle != (nil) {
-		cond282 = aTitle.Id
+		cond270 = aTitle.Id
 	} else {
-		cond282 = int64(0)
+		cond270 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSFontPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond282, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSFontPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond270, aStyle)
 }
 
 func NSFontPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

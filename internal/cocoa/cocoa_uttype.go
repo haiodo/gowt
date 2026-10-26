@@ -48,20 +48,3 @@ func NewUTTypeOverload2(id *id) *UTType {
 func (this *UTType) initUTTypeOverload2(id *id) {
 	this.NSObject.initNSObjectOverload2(id)
 }
-
-func UTTypeTypeWithFilenameExtension(filenameExtension *NSString) *UTType {
-	var cond952 int64
-	if filenameExtension != (nil) {
-		cond952 = filenameExtension.Id
-	} else {
-		cond952 = int64(0)
-	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_UTType, OSSel_typeWithFilenameExtension_, cond952)
-	var cond953 *UTType
-	if result != 0 {
-		cond953 = NewUTTypeOverload1(result)
-	} else {
-		cond953 = nil
-	}
-	return cond953
-}

@@ -53,22 +53,22 @@ func (this *NSTextStorage) initNSTextStorageOverload2(id *id) {
 }
 
 func (this *NSTextStorage) AddLayoutManager(aLayoutManager *NSLayoutManager) {
-	var cond771 int64
+	var cond729 int64
 	if aLayoutManager != (nil) {
-		cond771 = aLayoutManager.Id
+		cond729 = aLayoutManager.Id
 	} else {
-		cond771 = int64(0)
+		cond729 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_addLayoutManager_, cond771)
+	OSObjc_msgSendOverload44(this.Id, OSSel_addLayoutManager_, cond729)
 }
 
 func (this *NSTextStorage) Paragraphs() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_paragraphs)
-	var cond772 *NSArray
+	var cond730 *NSArray
 	if result != 0 {
-		cond772 = NewNSArrayOverload1(result)
+		cond730 = NewNSArrayOverload1(result)
 	} else {
-		cond772 = nil
+		cond730 = nil
 	}
-	return cond772
+	return cond730
 }

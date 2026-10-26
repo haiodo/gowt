@@ -9,6 +9,10 @@ QA windows and popovers (Tenniarb)
 - Fixed: a macOS popover shell is not in `Display.GetShells` while its window holds the placeholder, so the QA dump lost it on later opens; the driver keeps its own list. A popover that is opening (macOS attaches its window up to half a second late when the app is inactive) makes `settle` wait ("a popover opening").
 - Tests: `TestShotOfOtherWindow`, `TestPopoverEscape`, `TestPopoverEscapeOnControl`, `TestPopoverCloseRoot` on Xvfb, the Windows VM and the second Mac.
 
+macOS: a nil NSString no longer kills the app
+- Fixed: `Window.DirDialog` without a start path crashed on macOS 26 with `NSInvalidArgumentException ... nil string parameter`: SWT's `DirectoryDialog` passes a null path to `NSURL.fileURLWithPath`, which os.c's `@try` used to hide. 28 selectors that throw on a nil NSString (menu and window titles, `setStringValue:`, `appendString:`, `stringByAppendingString:`, `fileURLWithPath:` and others) now go through hand-written wrappers in `internal/cocoa/nonnilstring_manual.go`: a nil text is sent as an empty string, a nil path gives nil.
+- `examples/quit` is 360x150 instead of 96 points wide.
+
 QA context menus filled in OnShow
 - Fixed: items that an `OnShow` handler adds to an empty `PopupMenu` (on a gfx canvas, a tree) were not reachable in QA. A dump or `Find` now sends Show to an empty context menu once per action, a QA right click (`RightClickAt`, `Pointer` button 3) sends it to the menu of the control, and `Click` on an item still runs `OnShow` first. No native menu opens. Test `TestPopupMenuFilledInOnShow` on Xvfb, the Windows 11 arm64 VM and the second Mac.
 - Fixed: the macOS QA dump panicked on an open `Popover` (the shell's client area is gone once its view is in the NSPopover); `TestPopover` now passes there. `TestFocus` and `TestKeys` fail on that Mac on main too.

@@ -61,26 +61,26 @@ func (this *NSColor) BlueComponent() float64 {
 }
 
 func (this *NSColor) ColorUsingColorSpaceName(colorSpace *NSString) *NSColor {
-	var cond152 int64
+	var cond141 int64
 	if colorSpace != (nil) {
-		cond152 = colorSpace.Id
+		cond141 = colorSpace.Id
 	} else {
-		cond152 = int64(0)
+		cond141 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_colorUsingColorSpaceName_, cond152)
-	var cond153 *NSColor
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_colorUsingColorSpaceName_, cond141)
+	var cond142 *NSColor
 	if result == this.Id {
-		cond153 = this
+		cond142 = this
 	} else {
-		var cond154 *NSColor
+		var cond143 *NSColor
 		if result != 0 {
-			cond154 = NewNSColorOverload1(result)
+			cond143 = NewNSColorOverload1(result)
 		} else {
-			cond154 = nil
+			cond143 = nil
 		}
-		cond153 = (cond154)
+		cond142 = (cond143)
 	}
-	return cond153
+	return cond142
 }
 
 func (this *NSColor) GetComponents(components []float64) {
@@ -113,6 +113,122 @@ func (this *NSColor) SetStroke() {
 
 func NSColorAlternateSelectedControlColor() *NSColor {
 	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_alternateSelectedControlColor)
+	var cond144 *NSColor
+	if result != 0 {
+		cond144 = NewNSColorOverload1(result)
+	} else {
+		cond144 = nil
+	}
+	return cond144
+}
+
+func NSColorAlternateSelectedControlTextColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_alternateSelectedControlTextColor)
+	var cond145 *NSColor
+	if result != 0 {
+		cond145 = NewNSColorOverload1(result)
+	} else {
+		cond145 = nil
+	}
+	return cond145
+}
+
+func NSColorBlackColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_blackColor)
+	var cond146 *NSColor
+	if result != 0 {
+		cond146 = NewNSColorOverload1(result)
+	} else {
+		cond146 = nil
+	}
+	return cond146
+}
+
+func NSColorClearColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_clearColor)
+	var cond147 *NSColor
+	if result != 0 {
+		cond147 = NewNSColorOverload1(result)
+	} else {
+		cond147 = nil
+	}
+	return cond147
+}
+
+func NSColorColorWithDeviceRed(red float64, green float64, blue float64, alpha float64) *NSColor {
+	var result int64 = OSObjc_msgSendOverload37(OSClass_NSColor, OSSel_colorWithDeviceRed_green_blue_alpha_, red, green, blue, alpha)
+	var cond148 *NSColor
+	if result != 0 {
+		cond148 = NewNSColorOverload1(result)
+	} else {
+		cond148 = nil
+	}
+	return cond148
+}
+
+func NSColorColorWithPatternImage(image *NSImage) *NSColor {
+	var cond149 int64
+	if image != (nil) {
+		cond149 = image.Id
+	} else {
+		cond149 = int64(0)
+	}
+	var result int64 = OSObjc_msgSendOverload44(OSClass_NSColor, OSSel_colorWithPatternImage_, cond149)
+	var cond150 *NSColor
+	if result != 0 {
+		cond150 = NewNSColorOverload1(result)
+	} else {
+		cond150 = nil
+	}
+	return cond150
+}
+
+func NSColorControlBackgroundColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlBackgroundColor)
+	var cond151 *NSColor
+	if result != 0 {
+		cond151 = NewNSColorOverload1(result)
+	} else {
+		cond151 = nil
+	}
+	return cond151
+}
+
+func NSColorControlDarkShadowColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlDarkShadowColor)
+	var cond152 *NSColor
+	if result != 0 {
+		cond152 = NewNSColorOverload1(result)
+	} else {
+		cond152 = nil
+	}
+	return cond152
+}
+
+func NSColorControlHighlightColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlHighlightColor)
+	var cond153 *NSColor
+	if result != 0 {
+		cond153 = NewNSColorOverload1(result)
+	} else {
+		cond153 = nil
+	}
+	return cond153
+}
+
+func NSColorControlLightHighlightColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlLightHighlightColor)
+	var cond154 *NSColor
+	if result != 0 {
+		cond154 = NewNSColorOverload1(result)
+	} else {
+		cond154 = nil
+	}
+	return cond154
+}
+
+func NSColorControlShadowColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlShadowColor)
 	var cond155 *NSColor
 	if result != 0 {
 		cond155 = NewNSColorOverload1(result)
@@ -122,8 +238,8 @@ func NSColorAlternateSelectedControlColor() *NSColor {
 	return cond155
 }
 
-func NSColorAlternateSelectedControlTextColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_alternateSelectedControlTextColor)
+func NSColorControlTextColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlTextColor)
 	var cond156 *NSColor
 	if result != 0 {
 		cond156 = NewNSColorOverload1(result)
@@ -133,8 +249,8 @@ func NSColorAlternateSelectedControlTextColor() *NSColor {
 	return cond156
 }
 
-func NSColorBlackColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_blackColor)
+func NSColorDisabledControlTextColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_disabledControlTextColor)
 	var cond157 *NSColor
 	if result != 0 {
 		cond157 = NewNSColorOverload1(result)
@@ -144,8 +260,8 @@ func NSColorBlackColor() *NSColor {
 	return cond157
 }
 
-func NSColorClearColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_clearColor)
+func NSColorSecondarySelectedControlColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_secondarySelectedControlColor)
 	var cond158 *NSColor
 	if result != 0 {
 		cond158 = NewNSColorOverload1(result)
@@ -155,8 +271,8 @@ func NSColorClearColor() *NSColor {
 	return cond158
 }
 
-func NSColorColorWithDeviceRed(red float64, green float64, blue float64, alpha float64) *NSColor {
-	var result int64 = OSObjc_msgSendOverload37(OSClass_NSColor, OSSel_colorWithDeviceRed_green_blue_alpha_, red, green, blue, alpha)
+func NSColorSelectedControlColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_selectedControlColor)
 	var cond159 *NSColor
 	if result != 0 {
 		cond159 = NewNSColorOverload1(result)
@@ -166,14 +282,19 @@ func NSColorColorWithDeviceRed(red float64, green float64, blue float64, alpha f
 	return cond159
 }
 
-func NSColorColorWithPatternImage(image *NSImage) *NSColor {
-	var cond160 int64
-	if image != (nil) {
-		cond160 = image.Id
+func NSColorSelectedControlTextColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_selectedControlTextColor)
+	var cond160 *NSColor
+	if result != 0 {
+		cond160 = NewNSColorOverload1(result)
 	} else {
-		cond160 = int64(0)
+		cond160 = nil
 	}
-	var result int64 = OSObjc_msgSendOverload44(OSClass_NSColor, OSSel_colorWithPatternImage_, cond160)
+	return cond160
+}
+
+func NSColorSelectedTextBackgroundColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_selectedTextBackgroundColor)
 	var cond161 *NSColor
 	if result != 0 {
 		cond161 = NewNSColorOverload1(result)
@@ -183,8 +304,8 @@ func NSColorColorWithPatternImage(image *NSImage) *NSColor {
 	return cond161
 }
 
-func NSColorControlBackgroundColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlBackgroundColor)
+func NSColorSelectedTextColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_selectedTextColor)
 	var cond162 *NSColor
 	if result != 0 {
 		cond162 = NewNSColorOverload1(result)
@@ -194,8 +315,8 @@ func NSColorControlBackgroundColor() *NSColor {
 	return cond162
 }
 
-func NSColorControlDarkShadowColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlDarkShadowColor)
+func NSColorTextBackgroundColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_textBackgroundColor)
 	var cond163 *NSColor
 	if result != 0 {
 		cond163 = NewNSColorOverload1(result)
@@ -205,8 +326,8 @@ func NSColorControlDarkShadowColor() *NSColor {
 	return cond163
 }
 
-func NSColorControlHighlightColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlHighlightColor)
+func NSColorTextColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_textColor)
 	var cond164 *NSColor
 	if result != 0 {
 		cond164 = NewNSColorOverload1(result)
@@ -216,8 +337,8 @@ func NSColorControlHighlightColor() *NSColor {
 	return cond164
 }
 
-func NSColorControlLightHighlightColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlLightHighlightColor)
+func NSColorWindowBackgroundColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_windowBackgroundColor)
 	var cond165 *NSColor
 	if result != 0 {
 		cond165 = NewNSColorOverload1(result)
@@ -227,8 +348,8 @@ func NSColorControlLightHighlightColor() *NSColor {
 	return cond165
 }
 
-func NSColorControlShadowColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlShadowColor)
+func NSColorWindowFrameTextColor() *NSColor {
+	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_windowFrameTextColor)
 	var cond166 *NSColor
 	if result != 0 {
 		cond166 = NewNSColorOverload1(result)
@@ -236,125 +357,4 @@ func NSColorControlShadowColor() *NSColor {
 		cond166 = nil
 	}
 	return cond166
-}
-
-func NSColorControlTextColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_controlTextColor)
-	var cond167 *NSColor
-	if result != 0 {
-		cond167 = NewNSColorOverload1(result)
-	} else {
-		cond167 = nil
-	}
-	return cond167
-}
-
-func NSColorDisabledControlTextColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_disabledControlTextColor)
-	var cond168 *NSColor
-	if result != 0 {
-		cond168 = NewNSColorOverload1(result)
-	} else {
-		cond168 = nil
-	}
-	return cond168
-}
-
-func NSColorSecondarySelectedControlColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_secondarySelectedControlColor)
-	var cond169 *NSColor
-	if result != 0 {
-		cond169 = NewNSColorOverload1(result)
-	} else {
-		cond169 = nil
-	}
-	return cond169
-}
-
-func NSColorSelectedControlColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_selectedControlColor)
-	var cond170 *NSColor
-	if result != 0 {
-		cond170 = NewNSColorOverload1(result)
-	} else {
-		cond170 = nil
-	}
-	return cond170
-}
-
-func NSColorSelectedControlTextColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_selectedControlTextColor)
-	var cond171 *NSColor
-	if result != 0 {
-		cond171 = NewNSColorOverload1(result)
-	} else {
-		cond171 = nil
-	}
-	return cond171
-}
-
-func NSColorSelectedTextBackgroundColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_selectedTextBackgroundColor)
-	var cond172 *NSColor
-	if result != 0 {
-		cond172 = NewNSColorOverload1(result)
-	} else {
-		cond172 = nil
-	}
-	return cond172
-}
-
-func NSColorSelectedTextColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_selectedTextColor)
-	var cond173 *NSColor
-	if result != 0 {
-		cond173 = NewNSColorOverload1(result)
-	} else {
-		cond173 = nil
-	}
-	return cond173
-}
-
-func NSColorTextBackgroundColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_textBackgroundColor)
-	var cond174 *NSColor
-	if result != 0 {
-		cond174 = NewNSColorOverload1(result)
-	} else {
-		cond174 = nil
-	}
-	return cond174
-}
-
-func NSColorTextColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_textColor)
-	var cond175 *NSColor
-	if result != 0 {
-		cond175 = NewNSColorOverload1(result)
-	} else {
-		cond175 = nil
-	}
-	return cond175
-}
-
-func NSColorWindowBackgroundColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_windowBackgroundColor)
-	var cond176 *NSColor
-	if result != 0 {
-		cond176 = NewNSColorOverload1(result)
-	} else {
-		cond176 = nil
-	}
-	return cond176
-}
-
-func NSColorWindowFrameTextColor() *NSColor {
-	var result int64 = OSObjc_msgSend(OSClass_NSColor, OSSel_windowFrameTextColor)
-	var cond177 *NSColor
-	if result != 0 {
-		cond177 = NewNSColorOverload1(result)
-	} else {
-		cond177 = nil
-	}
-	return cond177
 }

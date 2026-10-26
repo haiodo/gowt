@@ -107,7 +107,7 @@ func (this *FontDialog) Open() *FontData {
 	} else {
 		cond558 = ""
 	}
-	panel.Impl().SetTitle(cocoa.NSStringStringWith(cond558))
+	panel.SetTitle(cocoa.NSStringStringWith(cond558))
 	var create bool = this.fontData != (nil)
 	var font *Font
 	if create {

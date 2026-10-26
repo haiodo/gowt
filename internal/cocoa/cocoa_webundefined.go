@@ -54,11 +54,11 @@ func (this *WebUndefined) initWebUndefinedOverload2(id *id) {
 
 func WebUndefinedUndefined() *WebUndefined {
 	var result int64 = OSObjc_msgSend(OSClass_WebUndefined, OSSel_undefined)
-	var cond969 *WebUndefined
+	var cond920 *WebUndefined
 	if result != 0 {
-		cond969 = NewWebUndefinedOverload1(result)
+		cond920 = NewWebUndefinedOverload1(result)
 	} else {
-		cond969 = nil
+		cond920 = nil
 	}
-	return cond969
+	return cond920
 }

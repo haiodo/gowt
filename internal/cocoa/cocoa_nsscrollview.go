@@ -60,24 +60,24 @@ func (this *NSScrollView) ContentSize() NSSize {
 
 func (this *NSScrollView) ContentView() *NSClipView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_contentView)
-	var cond654 *NSClipView
+	var cond624 *NSClipView
 	if result != 0 {
-		cond654 = NewNSClipViewOverload1(result)
+		cond624 = NewNSClipViewOverload1(result)
 	} else {
-		cond654 = nil
+		cond624 = nil
 	}
-	return cond654
+	return cond624
 }
 
 func (this *NSScrollView) DocumentView() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_documentView)
-	var cond655 *NSView
+	var cond625 *NSView
 	if result != 0 {
-		cond655 = NewNSViewOverload1(result)
+		cond625 = NewNSViewOverload1(result)
 	} else {
-		cond655 = nil
+		cond625 = nil
 	}
-	return cond655
+	return cond625
 }
 
 func (this *NSScrollView) DocumentVisibleRect() NSRect {
@@ -91,13 +91,13 @@ func (this *NSScrollView) FlashScrollers() {
 }
 
 func (this *NSScrollView) ReflectScrolledClipView(cView *NSClipView) {
-	var cond656 int64
+	var cond626 int64
 	if cView != (nil) {
-		cond656 = cView.Id
+		cond626 = cView.Id
 	} else {
-		cond656 = int64(0)
+		cond626 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_reflectScrolledClipView_, cond656)
+	OSObjc_msgSendOverload44(this.Id, OSSel_reflectScrolledClipView_, cond626)
 }
 
 func (this *NSScrollView) ScrollerStyle() int64 {
@@ -113,13 +113,13 @@ func (this *NSScrollView) SetBorderType(borderType int64) {
 }
 
 func (this *NSScrollView) SetDocumentView(documentView *id) {
-	var cond657 int64
+	var cond627 int64
 	if documentView != (nil) {
-		cond657 = documentView.Id
+		cond627 = documentView.Id
 	} else {
-		cond657 = int64(0)
+		cond627 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDocumentView_, cond657)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDocumentView_, cond627)
 }
 
 func (this *NSScrollView) SetDrawsBackground(drawsBackground bool) {
@@ -135,13 +135,13 @@ func (this *NSScrollView) SetHasVerticalScroller(hasVerticalScroller bool) {
 }
 
 func (this *NSScrollView) SetHorizontalScroller(horizontalScroller *NSScroller) {
-	var cond658 int64
+	var cond628 int64
 	if horizontalScroller != (nil) {
-		cond658 = horizontalScroller.Id
+		cond628 = horizontalScroller.Id
 	} else {
-		cond658 = int64(0)
+		cond628 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setHorizontalScroller_, cond658)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setHorizontalScroller_, cond628)
 }
 
 func (this *NSScrollView) SetVerticalScrollElasticity(verticalScrollElasticity int64) {
@@ -149,13 +149,13 @@ func (this *NSScrollView) SetVerticalScrollElasticity(verticalScrollElasticity i
 }
 
 func (this *NSScrollView) SetVerticalScroller(verticalScroller *NSScroller) {
-	var cond659 int64
+	var cond629 int64
 	if verticalScroller != (nil) {
-		cond659 = verticalScroller.Id
+		cond629 = verticalScroller.Id
 	} else {
-		cond659 = int64(0)
+		cond629 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setVerticalScroller_, cond659)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setVerticalScroller_, cond629)
 }
 
 func (this *NSScrollView) Tile() {

@@ -57,13 +57,13 @@ func (this *NSBezierPath) AddClip() {
 }
 
 func (this *NSBezierPath) AppendBezierPath(path *NSBezierPath) {
-	var cond73 int64
+	var cond65 int64
 	if path != (nil) {
-		cond73 = path.Id
+		cond65 = path.Id
 	} else {
-		cond73 = int64(0)
+		cond65 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_appendBezierPath_, cond73)
+	OSObjc_msgSendOverload44(this.Id, OSSel_appendBezierPath_, cond65)
 }
 
 func (this *NSBezierPath) AppendBezierPathWithArcWithCenter(center NSPoint, radius float64, startAngle float64, endAngle float64, clockwise bool) {
@@ -71,13 +71,13 @@ func (this *NSBezierPath) AppendBezierPathWithArcWithCenter(center NSPoint, radi
 }
 
 func (this *NSBezierPath) AppendBezierPathWithGlyphs(glyphs int64, count int64, font *NSFont) {
-	var cond74 int64
+	var cond66 int64
 	if font != (nil) {
-		cond74 = font.Id
+		cond66 = font.Id
 	} else {
-		cond74 = int64(0)
+		cond66 = int64(0)
 	}
-	OSObjc_msgSendOverload58(this.Id, OSSel_appendBezierPathWithGlyphs_count_inFont_, glyphs, count, cond74)
+	OSObjc_msgSendOverload58(this.Id, OSSel_appendBezierPathWithGlyphs_count_inFont_, glyphs, count, cond66)
 }
 
 func (this *NSBezierPath) AppendBezierPathWithOvalInRect(rect NSRect) {
@@ -94,19 +94,19 @@ func (this *NSBezierPath) AppendBezierPathWithRoundedRect(rect NSRect, xRadius f
 
 func (this *NSBezierPath) BezierPathByFlatteningPath() *NSBezierPath {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_bezierPathByFlatteningPath)
-	var cond75 *NSBezierPath
+	var cond67 *NSBezierPath
 	if result == this.Id {
-		cond75 = this
+		cond67 = this
 	} else {
-		var cond76 *NSBezierPath
+		var cond68 *NSBezierPath
 		if result != 0 {
-			cond76 = NewNSBezierPathOverload1(result)
+			cond68 = NewNSBezierPathOverload1(result)
 		} else {
-			cond76 = nil
+			cond68 = nil
 		}
-		cond75 = (cond76)
+		cond67 = (cond68)
 	}
-	return cond75
+	return cond67
 }
 
 func (this *NSBezierPath) Bounds() NSRect {
@@ -200,46 +200,46 @@ func (this *NSBezierPath) Stroke() {
 }
 
 func (this *NSBezierPath) TransformUsingAffineTransform(transform *NSAffineTransform) {
-	var cond77 int64
+	var cond69 int64
 	if transform != (nil) {
-		cond77 = transform.Id
+		cond69 = transform.Id
 	} else {
-		cond77 = int64(0)
+		cond69 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_transformUsingAffineTransform_, cond77)
+	OSObjc_msgSendOverload44(this.Id, OSSel_transformUsingAffineTransform_, cond69)
 }
 
 func NSBezierPathBezierPath() *NSBezierPath {
 	var result int64 = OSObjc_msgSend(OSClass_NSBezierPath, OSSel_bezierPath)
-	var cond78 *NSBezierPath
+	var cond70 *NSBezierPath
 	if result != 0 {
-		cond78 = NewNSBezierPathOverload1(result)
+		cond70 = NewNSBezierPathOverload1(result)
 	} else {
-		cond78 = nil
+		cond70 = nil
 	}
-	return cond78
+	return cond70
 }
 
 func NSBezierPathBezierPathWithRect(rect NSRect) *NSBezierPath {
 	var result int64 = OSObjc_msgSendOverload13(OSClass_NSBezierPath, OSSel_bezierPathWithRect_, rect)
-	var cond79 *NSBezierPath
+	var cond71 *NSBezierPath
 	if result != 0 {
-		cond79 = NewNSBezierPathOverload1(result)
+		cond71 = NewNSBezierPathOverload1(result)
 	} else {
-		cond79 = nil
+		cond71 = nil
 	}
-	return cond79
+	return cond71
 }
 
 func NSBezierPathBezierPathWithRoundedRect(rect NSRect, xRadius float64, yRadius float64) *NSBezierPath {
 	var result int64 = OSObjc_msgSendOverload20(OSClass_NSBezierPath, OSSel_bezierPathWithRoundedRect_xRadius_yRadius_, rect, xRadius, yRadius)
-	var cond80 *NSBezierPath
+	var cond72 *NSBezierPath
 	if result != 0 {
-		cond80 = NewNSBezierPathOverload1(result)
+		cond72 = NewNSBezierPathOverload1(result)
 	} else {
-		cond80 = nil
+		cond72 = nil
 	}
-	return cond80
+	return cond72
 }
 
 func NSBezierPathDefaultFlatness() float64 {

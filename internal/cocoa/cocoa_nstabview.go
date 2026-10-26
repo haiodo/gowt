@@ -59,13 +59,13 @@ func (this *NSTabView) ContentRect() NSRect {
 }
 
 func (this *NSTabView) InsertTabViewItem(tabViewItem *NSTabViewItem, index int64) {
-	var cond707 int64
+	var cond667 int64
 	if tabViewItem != (nil) {
-		cond707 = tabViewItem.Id
+		cond667 = tabViewItem.Id
 	} else {
-		cond707 = int64(0)
+		cond667 = int64(0)
 	}
-	OSObjc_msgSendOverload54(this.Id, OSSel_insertTabViewItem_atIndex_, cond707, index)
+	OSObjc_msgSendOverload54(this.Id, OSSel_insertTabViewItem_atIndex_, cond667, index)
 }
 
 func (this *NSTabView) MinimumSize() NSSize {
@@ -75,13 +75,13 @@ func (this *NSTabView) MinimumSize() NSSize {
 }
 
 func (this *NSTabView) RemoveTabViewItem(tabViewItem *NSTabViewItem) {
-	var cond708 int64
+	var cond668 int64
 	if tabViewItem != (nil) {
-		cond708 = tabViewItem.Id
+		cond668 = tabViewItem.Id
 	} else {
-		cond708 = int64(0)
+		cond668 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_removeTabViewItem_, cond708)
+	OSObjc_msgSendOverload44(this.Id, OSSel_removeTabViewItem_, cond668)
 }
 
 func (this *NSTabView) SelectTabViewItemAtIndex(index int64) {
@@ -90,13 +90,13 @@ func (this *NSTabView) SelectTabViewItemAtIndex(index int64) {
 
 func (this *NSTabView) SelectedTabViewItem() *NSTabViewItem {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_selectedTabViewItem)
-	var cond709 *NSTabViewItem
+	var cond669 *NSTabViewItem
 	if result != 0 {
-		cond709 = NewNSTabViewItemOverload1(result)
+		cond669 = NewNSTabViewItemOverload1(result)
 	} else {
-		cond709 = nil
+		cond669 = nil
 	}
-	return cond709
+	return cond669
 }
 
 func (this *NSTabView) SetControlSize(controlSize int64) {
@@ -104,23 +104,23 @@ func (this *NSTabView) SetControlSize(controlSize int64) {
 }
 
 func (this *NSTabView) SetDelegate(delegate *id) {
-	var cond710 int64
+	var cond670 int64
 	if delegate != (nil) {
-		cond710 = delegate.Id
+		cond670 = delegate.Id
 	} else {
-		cond710 = int64(0)
+		cond670 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond710)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDelegate_, cond670)
 }
 
 func (this *NSTabView) SetFont(font *NSFont) {
-	var cond711 int64
+	var cond671 int64
 	if font != (nil) {
-		cond711 = font.Id
+		cond671 = font.Id
 	} else {
-		cond711 = int64(0)
+		cond671 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setFont_, cond711)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setFont_, cond671)
 }
 
 func (this *NSTabView) SetTabViewType(tabViewType int64) {
@@ -129,11 +129,11 @@ func (this *NSTabView) SetTabViewType(tabViewType int64) {
 
 func (this *NSTabView) TabViewItemAtPoint(point NSPoint) *NSTabViewItem {
 	var result int64 = OSObjc_msgSendOverload2(this.Id, OSSel_tabViewItemAtPoint_, point)
-	var cond712 *NSTabViewItem
+	var cond672 *NSTabViewItem
 	if result != 0 {
-		cond712 = NewNSTabViewItemOverload1(result)
+		cond672 = NewNSTabViewItemOverload1(result)
 	} else {
-		cond712 = nil
+		cond672 = nil
 	}
-	return cond712
+	return cond672
 }

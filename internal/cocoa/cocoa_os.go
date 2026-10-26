@@ -4068,23 +4068,23 @@ func OSBeginSheetModalForWindow(id int64, sel int64, window int64, handler int64
 }
 
 func OSBeginSheetModalForWindowIdWindowHandler(id *NSObject, window *NSWindow, handler int64) {
-	var cond943 int64
+	var cond896 int64
 	if window != (nil) {
-		cond943 = window.Id
+		cond896 = window.Id
 	} else {
-		cond943 = int64(0)
+		cond896 = int64(0)
 	}
-	OSBeginSheetModalForWindow(id.Id, OSSel_beginSheetModalForWindow_completionHandler_, cond943, handler)
+	OSBeginSheetModalForWindow(id.Id, OSSel_beginSheetModalForWindow_completionHandler_, cond896, handler)
 }
 
 func OSSetTheme(isDarkTheme bool) {
-	var cond944 int32
+	var cond897 int32
 	if isDarkTheme {
-		cond944 = 1
+		cond897 = 1
 	} else {
-		cond944 = 0
+		cond897 = 0
 	}
-	OSObjc_msgSendOverload41(NSApplicationSharedApplication().Id, OSSel_appAppearanceChanged, cond944)
+	OSObjc_msgSendOverload41(NSApplicationSharedApplication().Id, OSSel_appAppearanceChanged, cond897)
 }
 
 func OSIsAppDarkAppearance() bool {
@@ -10464,13 +10464,13 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSTextAlignmentCenter:", r)
 			}
 		}()
-		var cond941 int32
+		var cond894 int32
 		if OSIS_X86_64 {
-			cond941 = 2
+			cond894 = 2
 		} else {
-			cond941 = 1
+			cond894 = 1
 		}
-		OSNSTextAlignmentCenter = cond941
+		OSNSTextAlignmentCenter = cond894
 	}()
 	func() {
 		defer func() {
@@ -10478,13 +10478,13 @@ func init() {
 				fmt.Fprintln(os.Stderr, "gowt: deferred init OSNSTextAlignmentRight:", r)
 			}
 		}()
-		var cond942 int32
+		var cond895 int32
 		if OSIS_X86_64 {
-			cond942 = 1
+			cond895 = 1
 		} else {
-			cond942 = 2
+			cond895 = 2
 		}
-		OSNSTextAlignmentRight = cond942
+		OSNSTextAlignmentRight = cond895
 	}()
 	func() {
 		defer func() {

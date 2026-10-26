@@ -54,47 +54,47 @@ func (this *NSTableColumn) initNSTableColumnOverload2(id *id) {
 
 func (this *NSTableColumn) DataCell() *NSCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_dataCell)
-	var cond718 *NSCell
+	var cond678 *NSCell
 	if result != 0 {
-		cond718 = NewNSCellOverload1(result)
+		cond678 = NewNSCellOverload1(result)
 	} else {
-		cond718 = nil
+		cond678 = nil
 	}
-	return cond718
+	return cond678
 }
 
 func (this *NSTableColumn) HeaderCell() *NSTableHeaderCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_headerCell)
-	var cond719 *NSTableHeaderCell
+	var cond679 *NSTableHeaderCell
 	if result != 0 {
-		cond719 = NewNSTableHeaderCellOverload1(result)
+		cond679 = NewNSTableHeaderCellOverload1(result)
 	} else {
-		cond719 = nil
+		cond679 = nil
 	}
-	return cond719
+	return cond679
 }
 
 func (this *NSTableColumn) InitWithIdentifier(identifier *NSString) *NSTableColumn {
-	var cond720 int64
+	var cond680 int64
 	if identifier != (nil) {
-		cond720 = identifier.Id
+		cond680 = identifier.Id
 	} else {
-		cond720 = int64(0)
+		cond680 = int64(0)
 	}
-	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIdentifier_, cond720)
-	var cond721 *NSTableColumn
+	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_initWithIdentifier_, cond680)
+	var cond681 *NSTableColumn
 	if result == this.Id {
-		cond721 = this
+		cond681 = this
 	} else {
-		var cond722 *NSTableColumn
+		var cond682 *NSTableColumn
 		if result != 0 {
-			cond722 = NewNSTableColumnOverload1(result)
+			cond682 = NewNSTableColumnOverload1(result)
 		} else {
-			cond722 = nil
+			cond682 = nil
 		}
-		cond721 = (cond722)
+		cond681 = (cond682)
 	}
-	return cond721
+	return cond681
 }
 
 func (this *NSTableColumn) ResizingMask() int64 {
@@ -102,13 +102,13 @@ func (this *NSTableColumn) ResizingMask() int64 {
 }
 
 func (this *NSTableColumn) SetDataCell(dataCell *id) {
-	var cond723 int64
+	var cond683 int64
 	if dataCell != (nil) {
-		cond723 = dataCell.Id
+		cond683 = dataCell.Id
 	} else {
-		cond723 = int64(0)
+		cond683 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setDataCell_, cond723)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setDataCell_, cond683)
 }
 
 func (this *NSTableColumn) SetEditable(editable bool) {
@@ -116,23 +116,23 @@ func (this *NSTableColumn) SetEditable(editable bool) {
 }
 
 func (this *NSTableColumn) SetHeaderCell(headerCell *NSTableHeaderCell) {
-	var cond724 int64
+	var cond684 int64
 	if headerCell != (nil) {
-		cond724 = headerCell.Id
+		cond684 = headerCell.Id
 	} else {
-		cond724 = int64(0)
+		cond684 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setHeaderCell_, cond724)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setHeaderCell_, cond684)
 }
 
 func (this *NSTableColumn) SetIdentifier(identifier *NSString) {
-	var cond725 int64
+	var cond685 int64
 	if identifier != (nil) {
-		cond725 = identifier.Id
+		cond685 = identifier.Id
 	} else {
-		cond725 = int64(0)
+		cond685 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setIdentifier_, cond725)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setIdentifier_, cond685)
 }
 
 func (this *NSTableColumn) SetMinWidth(minWidth float64) {

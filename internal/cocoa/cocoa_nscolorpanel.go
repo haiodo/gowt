@@ -53,55 +53,55 @@ func (this *NSColorPanel) initNSColorPanelOverload2(id *id) {
 }
 
 func (this *NSColorPanel) AttachColorList(colorList *NSColorList) {
-	var cond189 int64
+	var cond178 int64
 	if colorList != (nil) {
-		cond189 = colorList.Id
+		cond178 = colorList.Id
 	} else {
-		cond189 = int64(0)
+		cond178 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_attachColorList_, cond189)
+	OSObjc_msgSendOverload44(this.Id, OSSel_attachColorList_, cond178)
 }
 
 func (this *NSColorPanel) Color() *NSColor {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_color)
-	var cond190 *NSColor
+	var cond179 *NSColor
 	if result != 0 {
-		cond190 = NewNSColorOverload1(result)
+		cond179 = NewNSColorOverload1(result)
 	} else {
-		cond190 = nil
+		cond179 = nil
 	}
-	return cond190
+	return cond179
 }
 
 func (this *NSColorPanel) SetColor(color *NSColor) {
-	var cond191 int64
+	var cond180 int64
 	if color != (nil) {
-		cond191 = color.Id
+		cond180 = color.Id
 	} else {
-		cond191 = int64(0)
+		cond180 = int64(0)
 	}
-	OSObjc_msgSendOverload44(this.Id, OSSel_setColor_, cond191)
+	OSObjc_msgSendOverload44(this.Id, OSSel_setColor_, cond180)
 }
 
 func NSColorPanelSharedColorPanel() *NSColorPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSColorPanel, OSSel_sharedColorPanel)
-	var cond192 *NSColorPanel
+	var cond181 *NSColorPanel
 	if result != 0 {
-		cond192 = NewNSColorPanelOverload1(result)
+		cond181 = NewNSColorPanelOverload1(result)
 	} else {
-		cond192 = nil
+		cond181 = nil
 	}
-	return cond192
+	return cond181
 }
 
 func NSColorPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {
-	var cond193 int64
+	var cond182 int64
 	if aTitle != (nil) {
-		cond193 = aTitle.Id
+		cond182 = aTitle.Id
 	} else {
-		cond193 = int64(0)
+		cond182 = int64(0)
 	}
-	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSColorPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond193, aStyle)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1(OSClass_NSColorPanel, OSSel_minFrameWidthWithTitle_styleMask_, cond182, aStyle)
 }
 
 func NSColorPanelWindowNumberAtPoint(point NSPoint, windowNumber int64) int64 {

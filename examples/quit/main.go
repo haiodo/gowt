@@ -51,6 +51,7 @@ func main() {
 			log.Println("quitting")
 			return true
 		})
+		w.SetSize(360, 150) // packed to its content the window is 96 points wide and cuts the hint
 		w.Show()
 	})
 	if err != nil {

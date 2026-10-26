@@ -159,6 +159,9 @@ type Compositor struct {
 	vw, vh, dpr float64
 	cam         Camera
 	camDirty    atomic.Bool
+	// spriteDirty is set by every change to a Sprite, which Frame has not seen yet: it makes NeedsFrame true,
+	// so a sprite moved or animated while the scene is idle still gets its frame.
+	spriteDirty atomic.Bool
 	ticking     atomic.Bool // OnFrame is set: frames run on every display tick
 
 	cur, prev  *tileSet
@@ -314,7 +317,7 @@ func (c *Compositor) Stats() Stats {
 // NeedsFrame reports whether a Frame would change anything: safe from any goroutine, cheap enough
 // for a display-link callback to call on every tick.
 func (c *Compositor) NeedsFrame() bool {
-	return c.ticking.Load() || c.camDirty.Load() || c.readyN.Load() || c.liftN.Load() || c.busy || c.scene.Pending()
+	return c.ticking.Load() || c.camDirty.Load() || c.spriteDirty.Load() || c.readyN.Load() || c.liftN.Load() || c.busy || c.scene.Pending()
 }
 
 func (c *Compositor) viewRect() Rect {
@@ -354,6 +357,7 @@ func (c *Compositor) Frame(fi FrameInfo) {
 	}
 	damage := c.scene.Commit()
 	camMoved := c.camDirty.Swap(false)
+	c.spriteDirty.Store(false)
 	c.host.Begin()
 	if camMoved {
 		v := c.viewRect().Center()

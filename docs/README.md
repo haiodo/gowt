@@ -63,7 +63,7 @@ Four ideas carry the whole API:
 | Icons | [icons.md](icons.md) | [`examples/icons`](../examples/icons) |
 | Web view | [webview-browser.md](webview-browser.md) | [`examples/webview`](../examples/webview) |
 | Components (all widgets, one line and a picture on each OS) | [components.md](components.md) | [`examples/catalog`](../examples/catalog) |
-| Demo apps (seven windows, three OS side by side) | [apps.md](apps.md) | [`examples/apps`](../examples/apps) |
+| Demo apps (eight windows, three OS side by side) | [apps.md](apps.md) | [`examples/apps`](../examples/apps) |
 | Packaging and distribution | [packaging.md](packaging.md) | - |
 | Look check: realistic apps on all three OSes | [look-check.md](look-check.md) | [`examples/apps`](../examples/apps) |
 | Platform notes and known gaps | [platforms.md](platforms.md) | - |

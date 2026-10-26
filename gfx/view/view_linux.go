@@ -45,7 +45,9 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	if err != nil {
 		return nil, err
 	}
-	host, err := cairo.NewHost(func() { cv.Redraw() })
+	// Control.Redraw invalidates the whole GdkWindow the canvas shares with its siblings, children
+	// excluded, which blanks the siblings (labels in the same card); queue_draw invalidates the canvas only.
+	host, err := cairo.NewHost(func() { queueDraw(v.handle) })
 	if err != nil {
 		return nil, err
 	}

@@ -56,6 +56,7 @@ func (c *Compositor) NewSprite(pic *Picture, space Space, pos Point) *Sprite {
 	c.smu.Lock()
 	c.pendingSprites = append(c.pendingSprites, s)
 	c.smu.Unlock()
+	c.spriteDirty.Store(true)
 	return s
 }
 
@@ -64,6 +65,7 @@ func (s *Sprite) SetPicture(p *Picture) {
 	s.mu.Lock()
 	s.pic, s.picDirty = p, true
 	s.mu.Unlock()
+	s.c.spriteDirty.Store(true)
 }
 
 // SetPos puts the sprite at p at once and stops any move or flight under way.
@@ -72,6 +74,7 @@ func (s *Sprite) SetPos(p Point) {
 	s.st.pos = p
 	s.cancel(propPos, propAlong)
 	s.mu.Unlock()
+	s.c.spriteDirty.Store(true)
 }
 
 // SetOpacity sets the opacity at once and stops a fade under way.
@@ -80,6 +83,7 @@ func (s *Sprite) SetOpacity(a float64) {
 	s.st.opacity = a
 	s.cancel(propOpacity)
 	s.mu.Unlock()
+	s.c.spriteDirty.Store(true)
 }
 
 // SetRotation sets the angle in radians at once and stops a rotation under way.
@@ -88,6 +92,7 @@ func (s *Sprite) SetRotation(rad float64) {
 	s.st.rotation = rad
 	s.cancel(propRotation)
 	s.mu.Unlock()
+	s.c.spriteDirty.Store(true)
 }
 
 // SetScale sets the scale at once and stops a scaling under way.
@@ -96,6 +101,7 @@ func (s *Sprite) SetScale(f float64) {
 	s.st.scale = f
 	s.cancel(propScale)
 	s.mu.Unlock()
+	s.c.spriteDirty.Store(true)
 }
 
 // Pos is the position as of the last Frame.
@@ -110,6 +116,7 @@ func (s *Sprite) Remove() {
 	s.mu.Lock()
 	s.removed = true
 	s.mu.Unlock()
+	s.c.spriteDirty.Store(true)
 }
 
 func (s *Sprite) cancel(props ...animProp) {
@@ -131,6 +138,7 @@ func (s *Sprite) start(a *anim, props ...animProp) {
 	s.cancel(props...)
 	s.anims = append(s.anims, a)
 	s.mu.Unlock()
+	s.c.spriteDirty.Store(true)
 }
 
 // MoveTo glides to p over d along ease; done, if set, runs on the Frame goroutine when it arrives.

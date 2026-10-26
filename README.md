@@ -12,7 +12,7 @@ A `gowt.Table` sample ([components](docs/components.md)). Windows is a Windows 1
 
 ## Demo apps
 
-Seven apps in [`examples/apps`](examples/apps), macOS shown first; the same window on [Windows](docs/apps.md) and Linux is one click away, all three side by side on [docs/apps.md](docs/apps.md).
+Eight apps in [`examples/apps`](examples/apps), macOS shown first; the same window on [Windows](docs/apps.md) and Linux is one click away, all three side by side on [docs/apps.md](docs/apps.md).
 
 <table>
 <tr>
@@ -29,6 +29,7 @@ Seven apps in [`examples/apps`](examples/apps), macOS shown first; the same wind
 </tr>
 <tr>
 <td align="center"><a href="docs/apps.md#tracker"><img src="docs/img/app-tracker-macos.png" width="400" alt="tracker, macOS"></a><br><a href="examples/apps/tracker"><code>tracker</code></a> &middot; <a href="docs/img/app-tracker-windows.png">Windows</a> &middot; <a href="docs/img/app-tracker-linux.png">Linux</a></td>
+<td align="center"><a href="docs/apps.md#monitor"><img src="docs/img/app-monitor-macos.png" width="400" alt="monitor, macOS"></a><br><a href="examples/apps/monitor"><code>monitor</code></a> &middot; <a href="docs/img/app-monitor-windows.png">Windows</a> &middot; <a href="docs/img/app-monitor-linux.png">Linux</a></td>
 </tr>
 </table>
 

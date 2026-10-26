@@ -341,6 +341,9 @@ func key(d *swt.Display, c *swt.Control, keys string) error {
 		if down.Doit && state == 0 && code == int32(swt.CR) {
 			defaultSelection(c)
 		}
+		if sp, ok := c.Impl().(*swt.Spinner); ok && down.Doit && state == 0 {
+			stepSpinner(sp, code)
+		}
 		c.NotifyListeners(swt.KeyUp, mk())
 	}
 	flush(d)
@@ -375,7 +378,7 @@ func defaultSelection(c *swt.Control) {
 		if o.GetStyle()&swt.SINGLE == 0 {
 			return
 		}
-	case *swt.List:
+	case *swt.List, *swt.Spinner:
 	case *swt.Table:
 		if sel := o.GetSelection(); len(sel) > 0 {
 			ev.Item = &sel[0].Widget
@@ -388,4 +391,33 @@ func defaultSelection(c *swt.Control) {
 		return
 	}
 	c.NotifyListeners(swt.DefaultSelection, ev)
+}
+
+// stepSpinner is what the arrow and page keys do in a Spinner: the increment or page increment up or
+// down, clamped, or wrapped around with the WRAP style; Modify and Selection run when the value changes.
+func stepSpinner(o *swt.Spinner, code int32) {
+	var delta int32
+	switch code {
+	case swt.ARROW_UP:
+		delta = o.GetIncrement()
+	case swt.ARROW_DOWN:
+		delta = -o.GetIncrement()
+	case swt.PAGE_UP:
+		delta = o.GetPageIncrement()
+	case swt.PAGE_DOWN:
+		delta = -o.GetPageIncrement()
+	default:
+		return
+	}
+	min, max := o.GetMinimum(), o.GetMaximum()
+	v := o.GetSelection() + delta
+	if o.GetStyle()&swt.WRAP != 0 && v > max {
+		v = min
+	} else if o.GetStyle()&swt.WRAP != 0 && v < min {
+		v = max
+	}
+	if v != o.GetSelection() {
+		o.SetSelection(v)
+		o.NotifyListeners(swt.Selection, swt.NewEvent())
+	}
 }

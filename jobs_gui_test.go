@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -217,6 +218,34 @@ func TestOnJobsCoalesces(t *testing.T) {
 		}
 		if len(last) != 0 {
 			t.Errorf("last call: %+v, want no jobs", last)
+		}
+	})
+}
+
+func TestAfterCancel(t *testing.T) {
+	jobsRun(t, func(app *App) {
+		var cancelled, kept, twice atomic.Int32
+		var cancel, cancelKept func()
+		app.Sync(func() {
+			cancel = app.After(200*time.Millisecond, func() { cancelled.Add(1) })
+			cancelKept = app.After(100*time.Millisecond, func() { kept.Add(1) })
+			app.After(150*time.Millisecond, func() { twice.Add(1) })()
+		})
+		if n := pendingNow(app); n != 2 {
+			t.Errorf("Pending with two live short timers: %d", n)
+		}
+		cancel()
+		cancel()
+		if n := pendingNow(app); n != 1 {
+			t.Errorf("Pending after cancel: %d, want 1", n)
+		}
+		time.Sleep(500 * time.Millisecond)
+		if cancelled.Load() != 0 || twice.Load() != 0 || kept.Load() != 1 {
+			t.Errorf("ran: cancelled %d, cancelled at once %d, kept %d, want 0, 0, 1", cancelled.Load(), twice.Load(), kept.Load())
+		}
+		cancelKept() // after it ran: no effect
+		if n := pendingNow(app); n != 0 {
+			t.Errorf("Pending at rest: %d", n)
 		}
 	})
 }

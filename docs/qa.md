@@ -132,7 +132,7 @@ Items have their own classes:
 ## Actions
 
 ```go
-app.Find(qa.ID("composer")).Type("hi")   // replaces the text of a Text, StyledText or editable Combo
+app.Find(qa.ID("composer")).Type("hi")   // replaces the text of a Text, StyledText or editable Combo; sets the number of a Spinner
 app.Find(qa.ID("send")).Click()          // button, check, radio, link, tool item, menu item, row, tab
 app.Find(qa.ID("remember")).Check(true)  // check box, radio, toggle, check item of a table or tree row
 app.Find(qa.ID("rooms")).Select(2)       // item by index in a list, combo, table, tree or tab folder
@@ -141,7 +141,7 @@ app.Find(qa.ID("rooms")).Select(2)       // item by index in a list, combo, tabl
 | Action | Notes |
 |---|---|
 | `Click` | A button gets its selection event. Check and radio buttons toggle (a radio button is selected). A link reports its `href`. A `TableItem`, `TreeItem`, `TabItem`, `CTabItem`, `ListItem` or `ComboItem` is selected. Click on a menu item that opens a submenu fails. |
-| `Type(text)` | Sets the focus, clears the field, then for each character sends `KeyDown` (a listener may veto it), sets the text with the character added, sends `KeyUp`. So `OnChange` runs once per character. A read-only field fails. |
+| `Type(text)` | Sets the focus, clears the field, then for each character sends `KeyDown` (a listener may veto it), sets the text with the character added, sends `KeyUp`. So `OnChange` runs once per character. A read-only field fails. In a Spinner the text is a number (`"42"`, `"1.5"` for a spinner with one digit, `"-3"` when the minimum is below 0); the value follows each character, is clamped to the range, and any other text fails. |
 | `Check(on)` | Does nothing when the state already is `on`. A radio button cannot be cleared; select another one. A control without a checked state fails. |
 | `Select(index)` | The index counts the items in the dump's order; for a tree, in pre-order. |
 
@@ -164,7 +164,7 @@ More actions:
 | `ScrollTo(sel)`, `ScrollBy(dx, dy)`, `ScrollIntoView()` | Scroll a ScrollView to a control, by pixels, or the ScrollView holding this control. `OnScroll` runs. |
 | `ScrollEvent(qa.ScrollEvent{...})`, `Pinch(qa.PinchEvent{...})` | Scroll and pinch events for a gfx view (`gfx/view`), see Scroll and pinch. |
 
-`Key`: a menu item with that accelerator runs and the control sees nothing, as with macOS key equivalents. Otherwise `Window.OnKey` filters and the control's key listeners get KeyDown, then KeyUp; Enter that was not vetoed also activates. A key does not type text; use `Type`.
+`Key`: a menu item with that accelerator runs and the control sees nothing, as with macOS key equivalents. Otherwise `Window.OnKey` filters and the control's key listeners get KeyDown, then KeyUp; Enter that was not vetoed also activates. A key does not type text; use `Type`. In a Spinner, Up and Down step by the increment, PageUp and PageDown by the page increment (clamped, or wrapped with `WRAP`), and Modify and Selection run.
 
 `app.Eventually(timeout, func() (observed any, ok bool))` polls for what settle cannot see (a server push, a file); the error shows the last observed value.
 

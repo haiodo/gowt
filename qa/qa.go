@@ -113,6 +113,26 @@ type PinchEvent struct {
 	Mods          string
 }
 
+// PointerEvent is a mouse event for Element.Pointer, ClickAt, DoubleClickAt, RightClickAt and DragTo. X
+// and Y are the point in the control's coordinates. A gfx view gets it through its input router, as
+// the native events arrive; any other control gets the MouseDown, MouseUp, MouseMove (and
+// MouseDoubleClick) events of its listeners, with no operating system event involved.
+//
+// Kind is "down", "move" or "up" for one event, or "click" (down, up), "doubleclick" (down, up, down
+// with Count 2, up) and "drag" (down, Steps moves on the way to ToX, ToY, up) for a sequence. Button is
+// SWT's numbering, 1 left (the default), 2 middle, 3 right. Count is the click count of a down, 1 by
+// default. Mods is "Shift", "Mod+Alt" and so on, as for Key without the key. A move needs no Button:
+// the view reports the button held.
+type PointerEvent struct {
+	Kind     string
+	X, Y     float64
+	Button   int
+	Count    int
+	Mods     string
+	ToX, ToY float64 // drag: where the button is released
+	Steps    int     // drag: moves before the release, 4 by default
+}
+
 // Job is one running Job or Track of the app, as the "jobs" command reports it; it mirrors gowt.JobInfo.
 type Job struct {
 	Name       string `json:"name"`

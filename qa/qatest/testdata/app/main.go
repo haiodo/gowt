@@ -24,6 +24,8 @@ func main() {
 		var events []string
 		var w *gowt.Window
 		var gv *view.View
+		var popBtn *gowt.ButtonView
+		var pop *gowt.Popover
 		var resizes [][2]int
 		scene := gfx.NewScene()
 		red := gfx.NewNode(1)
@@ -48,8 +50,28 @@ func main() {
 			gowt.Button("Off", gowt.ID("off"), gowt.Disabled(), gowt.OnClick(func() { off.Set(off.Get() + 1) })),
 			view.New(scene, func(v *view.View) {
 				gv = v
+				v.OnPointer(func(p *view.Pointer) {
+					note("gfx kind=%d button=%d count=%d at %.0f,%.0f drag=%v node=%v mods=%v", p.Kind, p.Button, p.Count, p.Pos.X, p.Pos.Y, p.Drag, p.Node != nil, p.Mods.Shift)
+					if p.Kind == view.PointerDown && p.Count == 2 {
+						v.Edit(view.EditOptions{Rect: gfx.R(10, 10, 120, 24), Text: "title", OnCommit: func(s string) { note("commit %s", s) },
+							OnCancel: func() { note("cancel edit") }, Opts: []gowt.Option{gowt.ID("gfx-edit")}})
+					}
+				})
 				v.OnResize(func(w, h int) { resizes = append(resizes, [2]int{w, h}) })
 			}, gowt.ID("gfx"), gowt.Size(300, 200)),
+			gowt.Canvas(nil, gowt.ID("plain"), gowt.Size(120, 40), gowt.Init(func(c *gowt.CanvasView) {
+				c.OnMouseDown(func(m gowt.Mouse) { note("plain down %d,%d b%d c%d shift=%v", m.X, m.Y, m.Button, m.Count, m.Shift) })
+				c.OnMouseUp(func(m gowt.Mouse) { note("plain up %d,%d b%d", m.X, m.Y, m.Button) })
+				c.OnMouseMove(func(m gowt.Mouse) { note("plain move %d,%d", m.X, m.Y) })
+			})),
+			gowt.Button("Menu host", gowt.ID("menuhost"), gowt.Init(func(b *gowt.ButtonView) {
+				m := gowt.PopupMenu(b)
+				m.OnShow(func() { note("menu show") })
+				m.Item("Rename", func() { note("menu rename") })
+				m.Item("Wrap", func() { note("menu wrap") }, gowt.Check())
+				m.Submenu("More").Item("Deep", func() { note("menu deep") })
+			})),
+			gowt.Button("Pop", gowt.ID("pop"), gowt.Ref(&popBtn), gowt.OnClick(func() { pop.ShowAt(popBtn, gowt.PopoverBelow) })),
 			gowt.Text(gowt.ID("name"), gowt.OnChange(func(s string) { name.Set(s) }),
 				gowt.OnActivate(func() { note("activate name") }),
 				gowt.OnFocus(func(on bool) { note("focus name %v", on) }),
@@ -112,6 +134,9 @@ func main() {
 			})),
 			gowt.Label("", gowt.BindText(report), gowt.ID("report")),
 			gowt.Button("Twin"), gowt.Button("Twin"))
+		pop = w.Popover(gowt.ID("popover"))
+		pop.Add(gowt.Label("popover body"), gowt.Button("Pop OK", gowt.ID("pop-ok"), gowt.OnClick(func() { note("pop ok") })))
+		pop.OnClose(func() { note("pop closed") })
 		w.OnKey("Cmd+K", func() { note("key mod+k") })
 		w.MenuBar().Submenu("File").Item("Run", func() { note("menu run") }, gowt.Shortcut("Cmd+R"))
 		w.Show()
@@ -125,6 +150,7 @@ func main() {
 			off.Set(0)
 			report.Set("")
 			events, vetoClose = nil, false
+			pop.Close()
 			gv.Compositor().SetCamera(gfx.Camera{Zoom: 1})
 			return nil
 		})

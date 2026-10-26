@@ -141,7 +141,7 @@ app.Find(qa.ID("rooms")).Select(2)       // item by index in a list, combo, tabl
 | Action | Notes |
 |---|---|
 | `Click` | A button gets its selection event. Check and radio buttons toggle (a radio button is selected). A link reports its `href`. A `TableItem`, `TreeItem`, `TabItem`, `CTabItem`, `ListItem` or `ComboItem` is selected. Click on a menu item that opens a submenu fails. |
-| `Type(text)` | Sets the focus, clears the field, then for each character sends `KeyDown` (a listener may veto it), sets the text with the character added, sends `KeyUp`. So `OnChange` runs once per character. A read-only field fails. |
+| `Type(text)` | Gives the field the focus unless it has it already, clears the field, then for each character sends `KeyDown` (a listener may veto it), sets the text with the character added, sends `KeyUp`. So `OnChange` runs once per character. A read-only field fails. |
 | `Check(on)` | Does nothing when the state already is `on`. A radio button cannot be cleared; select another one. A control without a checked state fails. |
 | `Select(index)` | The index counts the items in the dump's order; for a tree, in pre-order. |
 
@@ -158,13 +158,14 @@ More actions:
 | `SelectText("b")` | Selects the item with this text in a list, combo, table, tree or tab folder. |
 | `Activate()` | Double click or Enter: a List, Table or Tree row (selected first), the selected row of the control, a single-line Text, a push Button, a window (its default button). `OnActivate` runs once. |
 | `Expand()`, `Collapse()` | A Tree row. The Expand event runs first, so a lazy tree builds its children; a lazy node needs a placeholder child. |
-| `Focus()` | Gives the control focus (`OnFocus`). On macOS the app stays inactive and no window is brought to the front. |
+| `Focus()` | Gives the control focus (`OnFocus`); nothing happens when it has it. On macOS the app stays inactive and no window is brought to the front. |
 | `Close()` | Closes a window like its close button; `OnClose` may veto. |
 | `Key("Mod+K")`, `app.Key(...)` | A key or combo: `Enter`, `Esc`, `Shift+Tab`, `F5`, `Mod+K`. `Mod` is Cmd on macOS, Ctrl elsewhere. `app.Key` goes to the focus control. |
 | `ScrollTo(sel)`, `ScrollBy(dx, dy)`, `ScrollIntoView()` | Scroll a ScrollView to a control, by pixels, or the ScrollView holding this control. `OnScroll` runs. |
 | `ScrollEvent(qa.ScrollEvent{...})`, `Pinch(qa.PinchEvent{...})` | Scroll and pinch events for a gfx view (`gfx/view`), see Scroll and pinch. |
+| `ClickAt(x, y)`, `DoubleClickAt(x, y)`, `RightClickAt(x, y)`, `DragTo(x, y, toX, toY)`, `Pointer(qa.PointerEvent{...})` | Mouse events at a point of a gfx view or of any control, see Mouse. |
 
-`Key`: a menu item with that accelerator runs and the control sees nothing, as with macOS key equivalents. Otherwise `Window.OnKey` filters and the control's key listeners get KeyDown, then KeyUp; Enter that was not vetoed also activates. A key does not type text; use `Type`.
+`Key`: a menu item with that accelerator runs and the control sees nothing, as with macOS key equivalents. Otherwise `Window.OnKey` filters and the control's key listeners get KeyDown, then KeyUp; Enter that was not vetoed also activates. A key does not type text; use `Type`. `Type` and `Key` on a control that already has the focus do not ask for it again, so an inline editor (`view.Edit`), which commits when its field loses the focus, stays open; to a control that has not the focus, they move it first, as a click would.
 
 `app.Eventually(timeout, func() (observed any, ok bool))` polls for what settle cannot see (a server push, a file); the error shows the last observed value.
 
@@ -181,6 +182,28 @@ v.Pinch(qa.PinchEvent{X: 100, Y: 100, Magnification: 0.5, Phase: "changed"})  //
 ```
 
 `X`, `Y` are in the control's coordinates (the default 0, 0 is its top left corner). `Phase` and `Momentum` are `""` (a wheel), `"mayBegin"`, `"began"`, `"changed"`, `"ended"` or `"cancelled"`. `Mods` is `Shift`, `Alt`, `Ctrl`, `Cmd` (macOS) or `Mod`, joined by `+`. Without `Precise` the deltas are wheel lines (16 points each), with it points. Read the result from the camera, for example through a `qa.HandleValue` that returns `v.Compositor().Camera()`.
+
+## Mouse
+
+`Element.ClickAt`, `DoubleClickAt`, `RightClickAt` and `DragTo` send a press, moves and a release at a point, `Pointer` one `qa.PointerEvent` (`Kind` `"down"`, `"move"`, `"up"`, `"click"`, `"doubleclick"` or `"drag"`; `Button` 1 left, 2 middle, 3 right; `Count`; `Mods`). The point is in the control's coordinates.
+
+- A `gfx/view` view gets them through its router, as native events arrive: `OnPointer` sees `Pointer` with the node under the point, `View.Drag` and an inline editor behave as with the mouse. A press over a control placed on the view (`View.Overlay`, `View.Edit`) fails, since that control would take it.
+- Any other control gets the listener events `MouseDown`, `MouseMove`, `MouseUp` (and `MouseDoubleClick` for the second press), so `CanvasView.OnMouseDown` and the like run. Controls that react to a click by themselves (a button) do not: use `Click` for them.
+- A press focuses the control without activating the window. The view's own focus on press (`SetFocus`) needs an active window, which a QA run does not have, so the driver gives the focus the way `Focus` does. To send keys to a view, press it first, then `app.Key`; or call `Focus()`.
+
+```go
+v := app.Find(qa.ID("canvas"))
+v.DoubleClickAt(150, 150)                      // opens the inline editor of the node there
+app.Find(qa.ID("title-edit")).Type("Renamed")  // keeps the focus, so the edit is not committed
+app.Key("Enter")                               // commits
+v.DragTo(10, 10, 90, 50)
+```
+
+## Context menus and popovers
+
+- A control with a context menu (`gowt.PopupMenu`) has a `Menu` node in the dump, with `MenuItem` nodes below it (submenus nested). Find an item through its control: `qa.Text("Rename").In(qa.ID("canvas"))`. `Click` runs it as a right click and a choice would: the menu's `OnShow` runs first, so the app refreshes the items, then the item's own selection event. A disabled item is refused after `OnShow`. The menu is always listed, as if open; a menu that is not open has no position, so its nodes have no `Bounds`.
+- An open popover (`Window.Popover`) is a root of the dump with class `Popover`, next to the window's own tree, with the popover's widgets below it. Its `Bounds` are in the popover's own coordinates. Give the popover `gowt.ID` to find it by name. `Close()` closes it as a click outside does; its `OnClose` runs. On macOS the popover is an `NSPopover` and its window is not a normal one; the dump still lists it.
+- `app.Shot` includes the open popovers of the window: each is captured on its own and drawn into the window's image at its place; the image grows when a popover reaches past the window. On Windows the shot then does not bring the window to the front, which would close the popover. `Window` index 0 of `shot` is the first window, popovers not counted.
 
 ## Dialogs
 
@@ -253,7 +276,7 @@ The click that starts this job returns after the job and its `Then` have finishe
 
 ## Screenshots and artifacts
 
-- `app.Shot("name")` saves `name.png` of the first window and returns the path. For another window call `app.Call("shot", map[string]any{"window": 1})`. Before the capture the shot asks every `gfx/view` view in that window for a frame and waits, for at most 3 s, until one came and no tile is queued or being drawn, so a camera change made just before shows. A view that animates all the time is captured as it is after 3 s. On macOS the view capture leaves out CALayer content, so the shot draws the view's tile layers over it from the compositor's own images (no window server, no screen recording permission).
+- `app.Shot("name")` saves `name.png` of the first window, open popovers included, and returns the path. For another window call `app.Call("shot", map[string]any{"window": 1})`. Before the capture the shot asks every `gfx/view` view in that window for a frame and waits, for at most 3 s, until one came and no tile is queued or being drawn, so a camera change made just before shows. A view that animates all the time is captured as it is after 3 s. On macOS the view capture leaves out CALayer content, so the shot draws the view's tile layers over it from the compositor's own images (no window server, no screen recording permission).
 - A failed test saves the following into `$GOWT_QA_ARTIFACTS/<test name>` (a new temp directory when the variable is unset; the path is logged):
 
 | File | Content |
@@ -267,10 +290,10 @@ If the connection to the app is already lost, the screenshot and the dump are sk
 
 ## Limits
 
-- Not in the dump: the items of a native toolbar set with `look.SetToolbar` (NSToolbar), column headers of a table, context menus of controls (only the window's menu bar is walked, from the window's own menu bar object, not from the macOS application menu), the tray, and the content of a `Browser` or web view. Native dialogs (message boxes, file choosers) are not in the dump either; see Dialogs.
+- Not in the dump: the items of a native toolbar set with `look.SetToolbar` (NSToolbar), column headers of a table, the tray, the macOS application menu (the window's own menu bar object is walked), and the content of a `Browser` or web view. Native dialogs (message boxes, file choosers) are not in the dump either; see Dialogs.
 - A modal dialog the facade does not route (one opened through `Unwrap()` or a custom modal `Shell` loop) blocks the UI thread. Commands that need it fail after 10 seconds with `the UI thread did not answer in 10s (a modal dialog?)`.
 - There is no true headless mode on macOS and Windows: the app opens real windows on the desktop, without taking the focus. On Linux run the test under Xvfb (`xvfb-run go test ...`). The gowt stand for Linux is Docker with Xvfb.
-- The QA driver was never run on Windows. The Windows port itself runs on a real Windows 11 arm64 virtual machine and under CrossOver/Wine; see [platforms.md](platforms.md).
-- Input is semantic. A click is delivered to the control even when another control covers it on screen, and a text is typed into a field the user could not focus. A test can pass where a real user would be blocked. Check overlaps with `Bounds` and by eye with a screenshot.
+- The QA driver ran on the Windows 11 arm64 virtual machine (the `qa/qatest` suite, pointer, context menu and popover tests included), not on a machine with the QA build in daily use; under CrossOver/Wine it was not run. See [platforms.md](platforms.md).
+- Input is semantic. A click, also `ClickAt`, is delivered to the control even when another control covers it on screen, and a text is typed into a field the user could not focus. A test can pass where a real user would be blocked. Check overlaps with `Bounds` and by eye with a screenshot.
 - `Type` sends characters without key modifiers, input methods or shortcuts.
 - Pixel output is not compared; `Shot` is for you to look at.

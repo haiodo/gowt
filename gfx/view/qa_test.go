@@ -47,3 +47,25 @@ func TestQAInputScrollAndPinch(t *testing.T) {
 		t.Fatalf("bad phase: %v", err)
 	}
 }
+
+// The QA pointer goes through the router: the press sets the drag target, the release ends it.
+func TestQAInputPointer(t *testing.T) {
+	rg := newRig(t)
+	h := qaHook{&View{r: rg.r}}
+	for _, ev := range []struct {
+		kind string
+		x, y float64
+	}{{"down", 20, 10}, {"move", 40, 20}, {"up", 40, 20}} {
+		if err := h.Pointer(ev.kind, ev.x, ev.y, 1, 1, qaview.Mods{Alt: true}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if len(rg.got) != 3 || rg.got[0].Kind != PointerDown || rg.got[0].Node != rg.node || !rg.got[0].Mods.Alt ||
+		rg.got[1].Kind != PointerMove || !rg.got[1].Drag || rg.got[1].Button != 1 ||
+		rg.got[2].Kind != PointerUp || rg.got[2].Scene != pt(120, 60) {
+		t.Fatalf("events %+v", rg.got)
+	}
+	if err := h.Pointer("tap", 0, 0, 1, 1, qaview.Mods{}); err == nil || !strings.Contains(err.Error(), "tap") {
+		t.Fatalf("bad kind: %v", err)
+	}
+}

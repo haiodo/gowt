@@ -9,6 +9,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/haiodo/gowt/internal/qaview"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -23,6 +24,18 @@ func controlOf(e *entry) (*swt.Control, error) {
 	return nil, fmt.Errorf("%s %s is not a control", e.n.Class, e.n.Path)
 }
 
+// popupRoot is the context menu that holds the item it, nil for an item of a menu bar.
+func popupRoot(it *swt.MenuItem) *swt.Menu {
+	m := it.GetParent()
+	for m != nil && m.GetParentMenu() != nil {
+		m = m.GetParentMenu()
+	}
+	if m != nil && m.GetStyle()&swt.POP_UP != 0 {
+		return m
+	}
+	return nil
+}
+
 // owner is the List, Table or Tree that holds the row e.
 func owner(e *entry) *entry {
 	ctl := e.parent
@@ -33,7 +46,7 @@ func owner(e *entry) *entry {
 }
 
 // activate sends DefaultSelection; a row is selected first, as the click before a double click does.
-func activate(e *entry) error {
+func activate(d *swt.Display, e *entry) error {
 	ctl, row := e, (*entry)(nil)
 	if isRow(e) {
 		ctl, row = owner(e), e
@@ -63,7 +76,7 @@ func activate(e *entry) error {
 		if o.GetStyle()&swt.SINGLE == 0 {
 			return fmt.Errorf("qatree: activate: Enter in the multi-line %s adds a line, use key or type", e.n.Path)
 		}
-		swt.QAFocus(&o.Control)
+		ensureFocus(d, &o.Control)
 		o.NotifyListeners(swt.DefaultSelection, ev)
 		return nil
 	case *swt.List:
@@ -129,6 +142,14 @@ func setExpanded(e *entry, on bool) error {
 	return nil
 }
 
+// ensureFocus gives c the focus unless it has it: asking again would end the edit of a field that is
+// being edited (the field editor on macOS), and an inline editor commits when its field loses the focus.
+func ensureFocus(d *swt.Display, c *swt.Control) {
+	if d.GetFocusControl() != c {
+		swt.QAFocus(c)
+	}
+}
+
 func focus(d *swt.Display, e *entry) error {
 	c, err := controlOf(e)
 	if err != nil {
@@ -137,7 +158,7 @@ func focus(d *swt.Display, e *entry) error {
 	if _, ok := e.obj.(*swt.Shell); ok {
 		return fmt.Errorf("qatree: focus applies to a control, not the window %s", e.n.Path)
 	}
-	swt.QAFocus(c)
+	ensureFocus(d, c)
 	flush(d)
 	if d.GetFocusControl() != c {
 		return fmt.Errorf("qatree: focus: %s did not take the focus", e.n.Path)
@@ -149,6 +170,10 @@ func closeShell(e *entry) error {
 	s, ok := e.obj.(*swt.Shell)
 	if !ok {
 		return fmt.Errorf("qatree: close applies to a window, not %s %s", e.n.Class, e.n.Path)
+	}
+	if p, ok := qaview.PopoverOf(s); ok {
+		p.Close()
+		return nil
 	}
 	s.Close()
 	return nil

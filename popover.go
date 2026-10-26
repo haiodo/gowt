@@ -38,6 +38,9 @@ type Popover struct {
 	owner    *swt.Shell
 }
 
+// qaPopover tells the QA driver about a popover; set in a gowtqa build.
+var qaPopover func(*Popover)
+
 // Popover creates a hidden popover for w; Show it with ShowAt or ShowAtPoint once its content is built.
 // Children of a callback that needs the popover go in p.Add after this call.
 // Options: Gap, Padding, children; the placement options do not apply. Padding defaults to Spacing.SM.
@@ -53,6 +56,9 @@ func (w *Window) Popover(opts ...Option) *Popover {
 	s.AddShellListener(swt.ShellListenerShellActivatedAdapter(func(*swt.ShellEvent) { p.active = p.shown }))
 	s.AddShellListener(swt.ShellListenerShellDeactivatedAdapter(func(*swt.ShellEvent) { p.deactivated() }))
 	s.AddDisposeListener(disposeFunc(func() { p.native.dispose(); p.dismissed() }))
+	if qaPopover != nil {
+		qaPopover(p)
+	}
 	return p
 }
 

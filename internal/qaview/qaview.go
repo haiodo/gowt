@@ -1,6 +1,6 @@
 // Package qaview is how a control that paints on its own clock (a gfx view) meets the QA driver and
 // the capture commands without either importing the other: the driver waits for its frames and hands
-// it scroll and pinch gestures. Everything here runs on the UI thread.
+// it scroll, pinch and pointer events. Everything here runs on the UI thread.
 package qaview
 
 import (
@@ -26,6 +26,9 @@ type Input interface {
 	Scroll(x, y, dx, dy float64, precise bool, phase, momentum string, m Mods) error
 	// Magnify delivers one pinch step: magnification is the zoom change, 0.1 for 10 percent more.
 	Magnify(x, y, magnification float64, phase string, m Mods) error
+	// Pointer delivers one mouse event: kind is "down", "move" or "up". On a move, button is the
+	// button held, 0 for a hover.
+	Pointer(kind string, x, y float64, button, count int, m Mods) error
 }
 
 // Source is a control that presents frames on its own clock.
@@ -119,4 +122,41 @@ func OverlayPNG(shell *swt.Shell, path string) error {
 	}
 	defer out.Close()
 	return png.Encode(out, img)
+}
+
+// PopoverKey is the data key of the shell of a Popover.
+const PopoverKey = "gowt.qa.popover"
+
+// Popover is what a popover's shell tells the QA driver. On macOS the shell is never shown (its content
+// lives in an NSPopover), so the driver cannot go by the shell's own visibility.
+type Popover interface {
+	// OnScreen reports whether the popover is shown.
+	OnScreen() bool
+	// Owner is the window the popover belongs to.
+	Owner() *swt.Shell
+	// Close hides the popover as a click outside would.
+	Close()
+}
+
+// PopoverOf returns the popover whose shell s is, shown or not.
+func PopoverOf(s *swt.Shell) (Popover, bool) {
+	p, ok := s.GetDataKey(PopoverKey).(Popover)
+	return p, ok
+}
+
+// OnScreen reports whether s is a popover that is shown.
+func OnScreen(s *swt.Shell) bool {
+	p, ok := PopoverOf(s)
+	return ok && p.OnScreen()
+}
+
+// Popovers returns the shells of the popovers on screen that belong to the window owner.
+func Popovers(d *swt.Display, owner *swt.Shell) []*swt.Shell {
+	var out []*swt.Shell
+	for _, s := range d.GetShells() {
+		if p, ok := PopoverOf(s); ok && !s.IsDisposed() && p.OnScreen() && p.Owner() == owner {
+			out = append(out, s)
+		}
+	}
+	return out
 }

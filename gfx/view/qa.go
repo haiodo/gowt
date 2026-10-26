@@ -12,7 +12,7 @@ import (
 )
 
 // qaHook is what the QA driver sees of a View: its frames, which a capture waits for, and an entry
-// for scroll and pinch gestures that goes through the router like the native events.
+// for scroll, pinch and pointer events that goes through the router like the native events.
 type qaHook struct{ v *View }
 
 func (v *View) registerQA() {
@@ -58,6 +58,28 @@ func (h qaHook) Magnify(x, y, magnification float64, phase string, m qaview.Mods
 		return err
 	}
 	h.v.r.magnify(gfx.Point{X: x, Y: y}, magnification, ph, modsOfQA(m))
+	return nil
+}
+
+// Pointer feeds the router the press, move or release a native event would. A press over an overlay
+// control is refused: the control, not the view, would get it.
+func (h qaHook) Pointer(kind string, x, y float64, button, count int, m qaview.Mods) error {
+	var k PointerKind
+	switch kind {
+	case "down":
+		k = PointerDown
+	case "move":
+		k = PointerMove
+	case "up":
+		k = PointerUp
+	default:
+		return fmt.Errorf("pointer kind %q: want down, move or up", kind)
+	}
+	p := gfx.Point{X: x, Y: y}
+	if k == PointerDown && h.v.covered(p) {
+		return fmt.Errorf("the point (%g, %g) is over a control placed on the view, which takes the press", x, y)
+	}
+	h.v.r.pointer(k, p, button, count, modsOfQA(m))
 	return nil
 }
 

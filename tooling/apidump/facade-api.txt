@@ -1223,6 +1223,13 @@ gowt/qa Args.Decode(key string, v any) error
 gowt/qa Args.Has(key string) bool
 gowt/qa Args.Int(key string) int
 gowt/qa Args.String(key string) string
+gowt/qa Clipboard.Custom field map[string][]byte
+gowt/qa Clipboard.Files field []string
+gowt/qa Clipboard.HTML field string
+gowt/qa Clipboard.Image field []byte
+gowt/qa Clipboard.RTF field string
+gowt/qa Clipboard.Text field string
+gowt/qa Clipboard.URL field string
 gowt/qa Dialog.Buttons field []string
 gowt/qa Dialog.Cancel field bool
 gowt/qa Dialog.Dir field string
@@ -1281,6 +1288,7 @@ gowt/qa Selector.ID field string
 gowt/qa Selector.In(parent Selector) Selector
 gowt/qa Selector.Text field string
 gowt/qa Selector.Within field *Selector
+gowt/qa const ClipboardFile untyped string = "clipboard.json"
 gowt/qa const EnvArtifacts untyped string = "GOWT_QA_ARTIFACTS"
 gowt/qa const EnvData untyped string = "GOWT_QA_DATA"
 gowt/qa const EnvKeep untyped string = "GOWT_QA_KEEP"
@@ -1292,6 +1300,7 @@ gowt/qa func ID(id string) Selector
 gowt/qa func NewArgs(raw encoding/json.RawMessage) (Args, error)
 gowt/qa func Text(text string) Selector
 gowt/qa type Args struct
+gowt/qa type Clipboard struct
 gowt/qa type Dialog struct
 gowt/qa type Job struct
 gowt/qa type Node struct
@@ -1301,12 +1310,14 @@ gowt/qa type ScrollEvent struct
 gowt/qa type Selector struct
 gowt/qa/qatest Client.Answer(d github.com/haiodo/gowt/qa.Dialog)
 gowt/qa/qatest Client.Call(cmd string, arg any) (encoding/json.RawMessage, error)
+gowt/qa/qatest Client.Clipboard() github.com/haiodo/gowt/qa.Clipboard
 gowt/qa/qatest Client.Dialogs() []github.com/haiodo/gowt/qa.Dialog
 gowt/qa/qatest Client.Dump() []github.com/haiodo/gowt/qa.Node
 gowt/qa/qatest Client.Eventually(timeout time.Duration, cond func() (observed any, ok bool))
 gowt/qa/qatest Client.Find(sel github.com/haiodo/gowt/qa.Selector) *Element
 gowt/qa/qatest Client.Jobs() []github.com/haiodo/gowt/qa.Job
 gowt/qa/qatest Client.Key(keys string)
+gowt/qa/qatest Client.SetClipboard(cb github.com/haiodo/gowt/qa.Clipboard)
 gowt/qa/qatest Client.Settle()
 gowt/qa/qatest Client.Shot(name string) string
 gowt/qa/qatest Client.ShotOf(name string, sel github.com/haiodo/gowt/qa.Selector) string

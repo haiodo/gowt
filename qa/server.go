@@ -83,6 +83,9 @@ func listen(path string) (net.Listener, string, error) {
 		return nil, "", err
 	}
 	os.Remove(path)
+	if runtime.GOOS != "windows" && len(path) >= 104 {
+		return nil, "", fmt.Errorf("the socket path %q is %d bytes; unix sockets take under 104 (macOS) or 108 (Linux): set %s to a shorter path", path, len(path), EnvSocket)
+	}
 	l, err := net.Listen("unix", path)
 	if err == nil {
 		os.Chmod(path, 0o600)

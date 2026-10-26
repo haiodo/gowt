@@ -106,6 +106,12 @@ func main() {
 				})),
 			gowt.Tree(gowt.ID("lazy"), gowt.OnActivate(func(n *gowt.Node) { note("activate tree %s", n.Text()) }),
 				gowt.Init(func(t *gowt.TreeView) {
+					t.Unwrap().AddListener(swt.Traverse, keyFunc(func(e *swt.Event) {
+						note("traverse lazy detail=%d", e.Detail)
+						if e.Detail == swt.TRAVERSE_TAB_NEXT {
+							e.Doit = false // the tree takes Tab itself
+						}
+					}))
 					tm := gowt.PopupMenu(t)
 					tm.OnShow(func() {
 						if tm.Unwrap().GetItemCount() == 0 {
@@ -245,6 +251,27 @@ func main() {
 		qa.HandleValue("get", func(qa.Args) (any, error) { return clicks.Get(), nil })
 		qa.HandleValue("form", func(qa.Args) (any, error) {
 			return map[string]any{"off": off.Get(), "name": name.Get(), "agree": agree.Get(), "pick": pick.Get()}, nil
+		})
+		qa.Handle("clip-html", func(a qa.Args) error {
+			return app.Clipboard().SetHTML(a.String("html"), a.String("plain"))
+		})
+		qa.Handle("clip-files", func(a qa.Args) error {
+			var p []string
+			a.Decode("paths", &p)
+			return app.Clipboard().SetFiles(p)
+		})
+		qa.HandleValue("clip-read", func(qa.Args) (any, error) {
+			c := app.Clipboard()
+			text, _ := c.Text()
+			html, _ := c.HTML()
+			rtf, _ := c.Unwrap().GetContents(swt.RTFTransferGetInstance()).(string)
+			out := map[string]any{"text": text, "html": html, "rtf": rtf, "files": c.Files(),
+				"types": c.Unwrap().GetAvailableTypeNames()}
+			if img, ok := c.Image(); ok {
+				w, h := img.Size()
+				out["image"] = []int{w, h}
+			}
+			return out, nil
 		})
 		qa.Handle("fail", func(qa.Args) error { return fmt.Errorf("asked to fail") })
 		qa.Handle("panic", func(qa.Args) error { panic("asked to panic") })

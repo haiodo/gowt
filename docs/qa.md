@@ -167,6 +167,8 @@ More actions:
 
 | `DragDropTo(target)`, `DragDropToAt(target, x, y)` | A drag and drop to a control or row, see Drag and drop. |
 
+`Key("Tab")` and `Key("Shift+Tab")` send the `Traverse` event (`TRAVERSE_TAB_NEXT`, `TRAVERSE_TAB_PREVIOUS`) to the control first, and do the default traversal unless a listener clears `Doit`; then the key is used up. A tree that takes Tab itself sees the event and keeps the focus. `Esc` and `Enter` send `Traverse` (`TRAVERSE_ESCAPE`, `TRAVERSE_RETURN`) to the listeners, then go on as before.
+
 `Key`: a menu item with that accelerator runs and the control sees nothing, as with macOS key equivalents. Otherwise `Window.OnKey` filters and the control's key listeners get KeyDown, then KeyUp; Enter that was not vetoed also activates. A key does not type text; use `Type`. `Type` and `Key` on a control that already has the focus do not ask for it again, so an inline editor (`view.Edit`), which commits when its field loses the focus, stays open; to a control that has not the focus, they move it first, as a click would. In a Spinner, Up and Down step by the increment, PageUp and PageDown by the page increment (clamped, or wrapped with `WRAP`), and Modify and Selection run.
 
 `app.Eventually(timeout, func() (observed any, ok bool))` polls for what settle cannot see (a server push, a file); the error shows the last observed value.
@@ -221,6 +223,18 @@ What runs is SWT's own drag logic, without an OS drag session: the `DragDetect` 
 Differences from a real drag, the same on all three OSes: `DragOver` runs once, not for each mouse move; there is no drag image, cursor feedback or auto-scroll; on macOS a Tree and a Table take the generic path, not the `NSOutlineView` data source calls; a Windows `DragEnter` gets the data types from the source's `Transfer`s, not from `IDataObject.EnumFormatEtc`. The refusal cases are errors: no `DragFrom` on the source, no `DropOn` on the target, a point outside the control. A drag nobody accepts (`Over` returns false, `OnStart` returns false) is not an error; read it from the app's own state (`OnDone` gets `OpNone`).
 
 Real pointer drags are checked by `TestDndRealMouse` in the repository root (`xdotool` on Linux, `SendInput` on Windows, `CGEventPost` on macOS, which needs the Accessibility permission and skips without it).
+
+## Clipboard
+
+A QA app never touches the system clipboard. Its `gowt.Clipboard` and every `swt.Clipboard` read and write the file `clipboard.json` in `GOWT_QA_DATA`, which holds text, RTF, HTML, a URL, an image (PNG), file paths and custom types (bytes, by the type name of the `Transfer`). `App(t)` empties it. The test reads and sets it directly:
+
+```go
+app.SetClipboard(qa.Clipboard{Text: "t", HTML: "<i>h</i>", Files: []string{"/a"}, Image: pngBytes})
+app.Find(qa.ID("paste")).Click()      // the app pastes from its Clipboard
+c := app.Clipboard()                  // what the app copied: c.Text, c.HTML, c.Files, c.Image, c.Custom
+```
+
+As on a system clipboard, one `SetContents` replaces all formats. The X11 selection is not kept. The native copy and paste of a text control (`Text.Copy`, the field's own menu) still use the system clipboard: a test goes through `Clipboard`, or through `Key`, which sends no OS event.
 
 ## Dialogs
 
@@ -285,6 +299,7 @@ The click that starts this job returns after the job and its `Then` have finishe
 
 ## State and isolation
 
+- The socket is in a private directory under `$XDG_RUNTIME_DIR`, `/tmp` or `TMPDIR`, whichever has a path short enough for a unix socket (under 100 bytes), so a long `TMPDIR` does not give `bind: invalid argument`; the data directory and the log stay in `TMPDIR`. If none fits, `App(t)` fails and names the limit. An app started by hand with a `GOWT_QA_SOCKET` of 104 bytes or more fails the same way. On Windows the app falls back to a loopback port when the unix socket does not bind, so the length does not matter there.
 - One app process serves a whole test package. The process starts at the first `qatest.App(t)` and stops after the last test. Tests of one package must not run in parallel.
 - `qatest.App(t)` calls the `"reset"` handler before each test. Without one the state carries over from the previous test. Your `reset` should close extra windows, clear models and set inputs back; it does not restart anything.
 - `qatest.RestartPerTest = true`, set in `TestMain` before `Main`, starts a fresh process for every `App(t)` instead. It is slow and gives a clean slate, including the data directory.

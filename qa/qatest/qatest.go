@@ -72,6 +72,7 @@ func App(t testing.TB) *Client {
 		cur = s
 	}
 	c := &Client{t: t, s: cur}
+	os.Remove(filepath.Join(c.s.data, qa.ClipboardFile))
 	if _, err := c.s.call("dialogs", map[string]bool{"clear": true}, 15*time.Second); err != nil {
 		t.Fatalf("qatest: clear dialogs: %v", err)
 	}
@@ -148,6 +149,39 @@ func (c *Client) Dialogs() []qa.Dialog {
 		c.t.Fatalf("qatest: dialogs: %v", err)
 	}
 	return ds
+}
+
+// Clipboard returns what the app's clipboard holds. A QA app never touches the system clipboard: its
+// Clipboard (gowt and swt) reads and writes a file in the data directory, which App(t) empties.
+func (c *Client) Clipboard() qa.Clipboard {
+	c.t.Helper()
+	var cb qa.Clipboard
+	b, err := os.ReadFile(filepath.Join(c.s.data, qa.ClipboardFile))
+	if err != nil && !os.IsNotExist(err) {
+		c.t.Fatalf("qatest: clipboard: %v", err)
+	}
+	if err == nil {
+		if err := json.Unmarshal(b, &cb); err != nil {
+			c.t.Fatalf("qatest: clipboard: %v", err)
+		}
+	}
+	return cb
+}
+
+// SetClipboard replaces what the app's clipboard holds, all formats at once. The zero Clipboard empties it.
+func (c *Client) SetClipboard(cb qa.Clipboard) {
+	c.t.Helper()
+	b, err := json.Marshal(cb)
+	path := filepath.Join(c.s.data, qa.ClipboardFile)
+	if err == nil {
+		err = os.WriteFile(path+".tmp", b, 0o600)
+	}
+	if err == nil {
+		err = os.Rename(path+".tmp", path)
+	}
+	if err != nil {
+		c.t.Fatalf("qatest: set clipboard: %v", err)
+	}
 }
 
 // Jobs returns the Jobs and Tracks the app is running now, background ones included.

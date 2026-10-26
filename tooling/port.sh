@@ -501,6 +501,25 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'keyWindowQA()' "$DS_GO")" = 1 ] || { echo "port.sh: Display keyWindowQA rewrite did not apply" >&2; exit 1; }
 fi
 
+# A QA run (swt/qa_clipboard_manual.go) keeps its clipboard in a file under GOWT_QA_DATA, so the Clipboard methods
+# that reach the system clipboard call it first. The system clipboard stays untouched.
+case "$PLATFORM" in
+cocoa) CB_GO=swt/dnd_clipboard_darwin.go ;;
+gtk) CB_GO=swt/dnd_clipboard_linux.go ;;
+win32) CB_GO=swt/dnd_clipboard_windows.go ;;
+*) CB_GO= ;;
+esac
+if [ -n "$CB_GO" ]; then
+	perl -0pi -e '
+		s/(func \(this \*Clipboard\) GetContentsTransferClipboards\(transferLike TransferLike, clipboards int32\) any \{\n)/$1\tif qaClipboardPath() != "" {\n\t\treturn this.qaGet(transferLike, clipboards)\n\t}\n/;
+		s/(func \(this \*Clipboard\) SetContentsDataDataTypesClipboards\(data \[\]any, dataTypes \[\]\*Transfer, clipboards int32\)\s*\{\n)/$1\tif qaClipboardPath() != "" {\n\t\tthis.qaSet(data, dataTypes, clipboards)\n\t\treturn\n\t}\n/;
+		s/(func \(this \*Clipboard\) ClearContentsClipboards\(clipboards int32\)\s*\{\n)/$1\tif qaClipboardPath() != "" {\n\t\tthis.qaClear(clipboards)\n\t\treturn\n\t}\n/;
+		s/(func \(this \*Clipboard\) GetAvailableTypesClipboards\(clipboards int32\) \[\]\*TransferData \{\n)/$1\tif qaClipboardPath() != "" {\n\t\treturn this.qaTypes(clipboards)\n\t}\n/;
+		s/(func \(this \*Clipboard\) GetAvailableTypeNames\(\) \[\]string \{\n)/$1\tif qaClipboardPath() != "" {\n\t\treturn this.qaTypeNames()\n\t}\n/;
+	' "$CB_GO"
+	[ "$(grep -c 'qaClipboardPath()' "$CB_GO")" = 5 ] || { echo "port.sh: Clipboard qa rewrite did not apply to $CB_GO" >&2; exit 1; }
+fi
+
 # gtk TabFolder sizes the selected page's control from the notebook page's allocation. A page that GTK has not allocated
 # yet (added after show, or selected before the first allocation) reports 1x1, and the control stayed 1x1: an empty page.
 # swt/widgets_tabfolder_manual_linux.go sizes the control again when GTK allocates its page.

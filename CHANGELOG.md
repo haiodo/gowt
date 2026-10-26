@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+QA environment (Tenniarb)
+- New: a QA run has its own clipboard. `gowt.Clipboard` and `swt.Clipboard` read and write `clipboard.json` under `GOWT_QA_DATA` (text, RTF, HTML, URL, PNG image, files, custom types), so the system clipboard keeps what the user copied. `Client.Clipboard()` and `Client.SetClipboard(qa.Clipboard)` read and set it; `App(t)` empties it. The hook is in `swt/qa_clipboard_manual.go` and `tooling/port.sh` (the five `Clipboard` methods of each platform), only in a `-tags gowtqa` build with `GOWT_QA_SOCKET` set. The native copy and paste of a text control still use the system clipboard.
+- Fixed: QA `Key("Tab")` and `Key("Shift+Tab")` send the `Traverse` event and do the default traversal unless vetoed; `Esc` and `Enter` send `Traverse` to the listeners too. A `Tree` that takes Tab can be tested.
+- Fixed: the QA socket was under `TMPDIR`, whose macOS path is near the unix limit; with a longer one the app failed with `bind: invalid argument`. The socket now lives in a short directory (`$XDG_RUNTIME_DIR`, `/tmp`), and a path that is too long fails with a message naming the limit.
+- Tests: `TestVirtualClipboard` (checks `pbpaste` on macOS), `TestKeyTraverse`, `TestShortDir`: Docker Xvfb and the second Mac. Not run on Windows (the VMs were shut down).
+
 QA windows and popovers (Tenniarb)
 - New: `Client.ShotOf(name, sel)`, `ShotTitle(name, title)` and `ShotWindow(name, index)`: a shot of the window that holds a control, has a title, or is at an index of the dump; the `shot` command takes `selector`, `title` or `window`. Before, only window 0 could be shot. On Windows the window order is the stacking order, so use the selector or the title there.
 - Fixed: QA `Key("Esc")`, with the focus in the popover or not, now reaches an open `Popover` (its `OnEscape`, then close); `Close` on a `Popover` root closes it. Esc posted to a control did not pass the display filter the popover listens with.

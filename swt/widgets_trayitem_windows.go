@@ -75,26 +75,26 @@ func (this *TrayItem) checkSubclass_() {
 func (this *TrayItem) CreateUpdateWidget(newIcon bool) {
 	var iconData *win32.NOTIFYICONDATA = win32.NewNOTIFYICONDATA()
 	iconData.CbSize = win32.NOTIFYICONDATASizeof
-	var cond664 int32
+	var cond663 int32
 	if newIcon {
-		t665 := this.display.nextTrayId
+		t664 := this.display.nextTrayId
 		this.display.nextTrayId++
-		cond664 = t665
+		cond663 = t664
 	} else {
-		cond664 = this.id
+		cond663 = this.id
 	}
-	this.id = (cond664)
+	this.id = (cond663)
 	iconData.UID = this.id
 	iconData.HWnd = this.display.hwndMessage
 	iconData.UFlags = win32.OSNIF_MESSAGE
 	iconData.UCallbackMessage = DisplaySWT_TRAYICONMSG
-	var cond666 int32
+	var cond665 int32
 	if newIcon {
-		cond666 = win32.OSNIM_ADD
+		cond665 = win32.OSNIM_ADD
 	} else {
-		cond666 = win32.OSNIM_MODIFY
+		cond665 = win32.OSNIM_MODIFY
 	}
-	win32.OSShell_NotifyIcon((cond666), iconData)
+	win32.OSShell_NotifyIcon((cond665), iconData)
 }
 
 func (this *TrayItem) destroyWidget_() {

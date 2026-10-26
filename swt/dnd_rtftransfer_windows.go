@@ -106,8 +106,8 @@ func (this *RTFTransfer) nativeToJava_(transferData *TransferData) any {
 		if lpMultiByteStr == 0 {
 			return nil
 		}
-		var tret1161 any
-		tretd1162 := false
+		var tret1160 any
+		tretd1161 := false
 		func() {
 			defer func() {
 				win32.OSGlobalUnlock(hMem)
@@ -115,18 +115,18 @@ func (this *RTFTransfer) nativeToJava_(transferData *TransferData) any {
 			var codePage int32 = win32.OSGetACP()
 			var cchWideChar int32 = win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, nil, 0)
 			if cchWideChar == 0 {
-				tret1161 = nil
-				tretd1162 = true
+				tret1160 = nil
+				tretd1161 = true
 				return
 			}
 			var lpWideCharStr []uint16 = make([]uint16, cchWideChar-1)
 			win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, int32(len(lpWideCharStr)))
-			tret1161 = jrt.FromChars(lpWideCharStr)
-			tretd1162 = true
+			tret1160 = jrt.FromChars(lpWideCharStr)
+			tretd1161 = true
 			return
 		}()
-		_ = tretd1162
-		return tret1161
+		_ = tretd1161
+		return tret1160
 	}
 }
 
@@ -139,8 +139,8 @@ func (this *RTFTransfer) getTypeNames_() []string {
 }
 
 func (this *RTFTransfer) CheckRTF(object any) bool {
-	_, ok1164 := object.(string)
-	return (ok1164 && jrt.StringLength((jrt.Cast[string](object))) > 0)
+	_, ok1163 := object.(string)
+	return (ok1163 && jrt.StringLength((jrt.Cast[string](object))) > 0)
 }
 
 func (this *RTFTransfer) validate_(object any) bool {

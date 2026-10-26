@@ -203,13 +203,13 @@ func (this *Tree) _getItemHItemId(hItem int64, id int32) *TreeItem {
 	if (this.style & VIRTUAL) == 0 {
 		return this.items[id]
 	}
-	var cond510 *TreeItem
+	var cond509 *TreeItem
 	if id != -1 {
-		cond510 = this.items[id]
+		cond509 = this.items[id]
 	} else {
-		cond510 = newTreeItemParentStyleHParentHInsertAfterHItem(this, NONE, int64(-1), int64(-1), hItem)
+		cond509 = newTreeItemParentStyleHParentHInsertAfterHItem(this, NONE, int64(-1), int64(-1), hItem)
 	}
-	return cond510
+	return cond509
 }
 
 func (this *Tree) _removeListener_(eventType int32, listener Listener) {
@@ -260,13 +260,13 @@ func (this *Tree) AddTreeListener(listener TreeListener) {
 }
 
 func (this *Tree) borderHandle_() int64 {
-	var cond511 int64
+	var cond510 int64
 	if this.hwndParent != 0 {
-		cond511 = this.hwndParent
+		cond510 = this.hwndParent
 	} else {
-		cond511 = this.Handle
+		cond510 = this.Handle
 	}
-	return cond511
+	return cond510
 }
 
 func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lParam int64) *win32.LRESULT {
@@ -538,13 +538,13 @@ func (this *Tree) CDDS_ITEMPOSTPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, l
 			if drawItem {
 				if i != 0 {
 					if this.Hooks(MeasureItem) {
-						var cond512 int32
+						var cond511 int32
 						if selected {
-							cond512 = SELECTED
+							cond511 = SELECTED
 						} else {
-							cond512 = 0
+							cond511 = 0
 						}
-						this.SendMeasureItemEvent(item, index, hDC, cond512)
+						this.SendMeasureItemEvent(item, index, hDC, cond511)
 						if this.IsDisposed() || item.IsDisposed() {
 							break
 						}
@@ -999,13 +999,13 @@ func (this *Tree) CDDS_ITEMPREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lP
 		win32.OSSelectObject(hDC, hFont)
 	}
 	if this.ignoreCustomDraw || nmcd.Left == nmcd.Right {
-		var cond513 int32
+		var cond512 int32
 		if hFont == -1 {
-			cond513 = win32.OSCDRF_DODEFAULT
+			cond512 = win32.OSCDRF_DODEFAULT
 		} else {
-			cond513 = win32.OSCDRF_NEWFONT
+			cond512 = win32.OSCDRF_NEWFONT
 		}
-		return win32.NewLRESULT(int64(cond513))
+		return win32.NewLRESULT(int64(cond512))
 	}
 	var clipRect *win32.RECT = nil
 	if this.columnCount != 0 {
@@ -1061,13 +1061,13 @@ func (this *Tree) CDDS_ITEMPREPAINT(nmcd *win32.NMTVCUSTOMDRAW, wParam int64, lP
 		var measureEvent *Event = nil
 		var boundsInPixels *Rectangle = nil
 		if this.Hooks(MeasureItem) {
-			var cond514 int32
+			var cond513 int32
 			if selected {
-				cond514 = SELECTED
+				cond513 = SELECTED
 			} else {
-				cond514 = 0
+				cond513 = 0
 			}
-			measureEvent = this.SendMeasureItemEvent(item, index, hDC, cond514)
+			measureEvent = this.SendMeasureItemEvent(item, index, hDC, cond513)
 			boundsInPixels = Win32DPIUtilsPointToPixelOverload6(measureEvent.GetBounds(), this.impl.getAutoscalingZoom_())
 			if this.IsDisposed() || item.IsDisposed() {
 				return nil
@@ -1623,13 +1623,13 @@ func (this *Tree) CheckData(itemLike TreeItemLike, redraw bool) bool {
 	}
 	if !item.cached {
 		var parentItem *TreeItem = item.GetParentItem()
-		var cond515 int32
+		var cond514 int32
 		if parentItem == (nil) {
-			cond515 = this.IndexOfItem(item)
+			cond514 = this.IndexOfItem(item)
 		} else {
-			cond515 = parentItem.IndexOf(item)
+			cond514 = parentItem.IndexOf(item)
 		}
-		return this.CheckDataItemIndexRedraw(item, cond515, redraw)
+		return this.CheckDataItemIndexRedraw(item, cond514, redraw)
 	}
 	return true
 }
@@ -1762,13 +1762,13 @@ func (this *Tree) CompareFunc(lParam1 int64, lParam2 int64, lParamSort int64) in
 	var item2 *TreeItem = this.items[int32(lParam2)]
 	var text1 string = item1.GetTextIndex(int32(lParamSort))
 	var text2 string = item2.GetTextIndex(int32(lParamSort))
-	var cond516 int32
+	var cond515 int32
 	if this.sortDirection == UP {
-		cond516 = jrt.StringCompareTo(text1, text2)
+		cond515 = jrt.StringCompareTo(text1, text2)
 	} else {
-		cond516 = jrt.StringCompareTo(text2, text1)
+		cond515 = jrt.StringCompareTo(text2, text1)
 	}
-	return int64(cond516)
+	return int64(cond515)
 }
 
 func (this *Tree) computeSizeInPixels_(hintInPoints *Point, zoom int32, changed bool) *Point {
@@ -1936,9 +1936,9 @@ func (this *Tree) CreateItem(columnLike TreeColumnLike, index int32) {
 			}
 		}
 	}
-	t517 := this.columnCount
+	t516 := this.columnCount
 	this.columnCount++
-	copy(this.columns[index+1:], this.columns[index:index+t517-index])
+	copy(this.columns[index+1:], this.columns[index:index+t516-index])
 	this.columns[index] = column
 	this.cachedItemOrder = nil
 	var hHeap int64 = win32.OSGetProcessHeap()
@@ -1988,9 +1988,9 @@ func (this *Tree) CreateItem(columnLike TreeColumnLike, index int32) {
 			lpti.CbSize = win32.TOOLINFOSizeof
 			lpti.UFlags = win32.OSTTF_SUBCLASS
 			lpti.Hwnd = this.hwndHeader
-			t518 := this.display.nextToolTipId
+			t517 := this.display.nextToolTipId
 			this.display.nextToolTipId++
-			column.id = t518
+			column.id = t517
 			lpti.UId = int64(column.id)
 			lpti.Left = rect.Left
 			lpti.Top = rect.Top
@@ -2558,13 +2558,13 @@ func (this *Tree) enableWidget_(enabled bool) {
 		control = upcastTreeToControl(this)
 	}
 	if control.backgroundImage == (nil) {
-		var cond519 int32
+		var cond518 int32
 		if this.HasCustomBackground() {
-			cond519 = control.GetBackgroundPixel()
+			cond518 = control.GetBackgroundPixel()
 		} else {
-			cond519 = -1
+			cond518 = -1
 		}
-		this._setBackgroundPixel(cond519)
+		this._setBackgroundPixel(cond518)
 	}
 	if this.hwndParent != 0 {
 		win32.OSEnableWindow(this.hwndParent, enabled)
@@ -2663,9 +2663,9 @@ func (this *Tree) FindIndex(hFirstItem int64, hItem int64) int32 {
 	if hFirstItem == this.cachedFirstItem {
 		if this.cachedFirstItem == hItem {
 			this.cachedIndexItem = this.cachedFirstItem
-			var cond520 int32 = 0
-			this.cachedIndex = cond520
-			return cond520
+			var cond519 int32 = 0
+			this.cachedIndex = cond519
+			return cond519
 		}
 		if this.cachedIndexItem == hItem {
 			return this.cachedIndex
@@ -2689,9 +2689,9 @@ func (this *Tree) FindIndex(hFirstItem int64, hItem int64) int32 {
 		}
 		if hPrevItem == hItem {
 			this.cachedIndexItem = hPrevItem
-			cond521 := previousIndex
-			this.cachedIndex = cond521
-			return cond521
+			cond520 := previousIndex
+			this.cachedIndex = cond520
+			return cond520
 		}
 		var nextIndex int32 = this.cachedIndex + 1
 		for hNextItem != 0 && hNextItem != hItem {
@@ -2700,9 +2700,9 @@ func (this *Tree) FindIndex(hFirstItem int64, hItem int64) int32 {
 		}
 		if hNextItem == hItem {
 			this.cachedIndexItem = hNextItem
-			cond522 := nextIndex
-			this.cachedIndex = cond522
-			return cond522
+			cond521 := nextIndex
+			this.cachedIndex = cond521
+			return cond521
 		}
 		return -1
 	}
@@ -2716,9 +2716,9 @@ func (this *Tree) FindIndex(hFirstItem int64, hItem int64) int32 {
 		this.cachedItemCount = -1
 		this.cachedFirstItem = hFirstItem
 		this.cachedIndexItem = hNextItem
-		cond523 := index
-		this.cachedIndex = cond523
-		return cond523
+		cond522 := index
+		this.cachedIndex = cond522
+		return cond522
 	}
 	return -1
 }
@@ -2734,24 +2734,24 @@ func (this *Tree) FindItemHFirstItemIndex(hFirstItem int64, index int32) int64 {
 	if hFirstItem == this.cachedFirstItem {
 		if index == 0 {
 			this.cachedIndex = 0
-			cond524 := this.cachedFirstItem
-			this.cachedIndexItem = cond524
-			return cond524
+			cond523 := this.cachedFirstItem
+			this.cachedIndexItem = cond523
+			return cond523
 		}
 		if this.cachedIndex == index {
 			return this.cachedIndexItem
 		}
 		if this.cachedIndex-1 == index {
 			this.cachedIndex--
-			cond525 := win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_PREVIOUS), this.cachedIndexItem)
-			this.cachedIndexItem = cond525
-			return cond525
+			cond524 := win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_PREVIOUS), this.cachedIndexItem)
+			this.cachedIndexItem = cond524
+			return cond524
 		}
 		if this.cachedIndex+1 == index {
 			this.cachedIndex++
-			cond526 := win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXT), this.cachedIndexItem)
-			this.cachedIndexItem = cond526
-			return cond526
+			cond525 := win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXT), this.cachedIndexItem)
+			this.cachedIndexItem = cond525
+			return cond525
 		}
 		if index < this.cachedIndex {
 			var previousIndex int32 = this.cachedIndex - 1
@@ -2762,9 +2762,9 @@ func (this *Tree) FindItemHFirstItemIndex(hFirstItem int64, index int32) int64 {
 			}
 			if index == previousIndex {
 				this.cachedIndex = previousIndex
-				cond527 := hPrevItem
-				this.cachedIndexItem = cond527
-				return cond527
+				cond526 := hPrevItem
+				this.cachedIndexItem = cond526
+				return cond526
 			}
 		} else {
 			var nextIndex int32 = this.cachedIndex + 1
@@ -2775,9 +2775,9 @@ func (this *Tree) FindItemHFirstItemIndex(hFirstItem int64, index int32) int64 {
 			}
 			if index == nextIndex {
 				this.cachedIndex = nextIndex
-				cond528 := hNextItem
-				this.cachedIndexItem = cond528
-				return cond528
+				cond527 := hNextItem
+				this.cachedIndexItem = cond527
+				return cond527
 			}
 		}
 		return int64(0)
@@ -2792,22 +2792,22 @@ func (this *Tree) FindItemHFirstItemIndex(hFirstItem int64, index int32) int64 {
 		this.cachedItemCount = -1
 		this.cachedIndex = nextIndex
 		this.cachedFirstItem = hFirstItem
-		cond529 := hNextItem
-		this.cachedIndexItem = cond529
-		return cond529
+		cond528 := hNextItem
+		this.cachedIndexItem = cond528
+		return cond528
 	}
 	return int64(0)
 }
 
 func (this *Tree) GetFocusItem() *TreeItem {
 	var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CARET), int64(0))
-	var cond530 *TreeItem
+	var cond529 *TreeItem
 	if hItem != 0 {
-		cond530 = this._getItem(hItem)
+		cond529 = this._getItem(hItem)
 	} else {
-		cond530 = nil
+		cond529 = nil
 	}
-	return cond530
+	return cond529
 }
 
 func (this *Tree) GetGridLineWidth() int32 {
@@ -2825,13 +2825,13 @@ func (this *Tree) GetHeaderBackground() *Color {
 }
 
 func (this *Tree) GetHeaderBackgroundPixel() int32 {
-	var cond531 int32
+	var cond530 int32
 	if this.headerBackground != -1 {
-		cond531 = this.headerBackground
+		cond530 = this.headerBackground
 	} else {
-		cond531 = this.impl.defaultBackground_()
+		cond530 = this.impl.defaultBackground_()
 	}
-	return cond531
+	return cond530
 }
 
 func (this *Tree) GetHeaderForeground() *Color {
@@ -2840,13 +2840,13 @@ func (this *Tree) GetHeaderForeground() *Color {
 }
 
 func (this *Tree) GetHeaderForegroundPixel() int32 {
-	var cond532 int32
+	var cond531 int32
 	if this.headerForeground != -1 {
-		cond532 = this.headerForeground
+		cond531 = this.headerForeground
 	} else {
-		cond532 = this.impl.defaultForeground_()
+		cond531 = this.impl.defaultForeground_()
 	}
-	return cond532
+	return cond531
 }
 
 func (this *Tree) GetHeaderHeight() int32 {
@@ -3071,9 +3071,9 @@ func (this *Tree) GetItemsHTreeItem(hTreeItem int64) []*TreeItem {
 		win32.OSSendMessageOverload23(this.Handle, win32.OSTVM_GETITEM, int64(0), tvItem)
 		var item *TreeItem = this._getItemHItemId(tvItem.HItem, int32(tvItem.LParam))
 		if item != (nil) {
-			t533 := index
+			t532 := index
 			index++
-			result[t533] = item
+			result[t532] = item
 		}
 		tvItem.HItem = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXT), tvItem.HItem)
 	}
@@ -3152,9 +3152,9 @@ func (this *Tree) GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hIte
 		if all {
 			if expanded {
 				var hFirstItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CHILD), hItem)
-				cond534 := this.GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hFirstItem, tvItem, selection, index, count, bigSelection, all)
-				index = cond534
-				if (cond534) == count {
+				cond533 := this.GetSelectionHItemTvItemSelectionIndexCountBigSelectionAll(hFirstItem, tvItem, selection, index, count, bigSelection, all)
+				index = cond533
+				if (cond533) == count {
 					break
 				}
 			}
@@ -3187,13 +3187,13 @@ func (this *Tree) GetSelection() []*TreeItem {
 		return []*TreeItem{item}
 	}
 	var count int32 = 0
-	var cond535 int32
+	var cond534 int32
 	if (this.style & VIRTUAL) != 0 {
-		cond535 = 8
+		cond534 = 8
 	} else {
-		cond535 = 1
+		cond534 = 1
 	}
-	var guess []*TreeItem = make([]*TreeItem, cond535)
+	var guess []*TreeItem = make([]*TreeItem, cond534)
 	var oldProc int64 = win32.OSGetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC)
 	win32.OSSetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC, TreeTreeProc)
 	if (this.style & VIRTUAL) != 0 {
@@ -3253,13 +3253,13 @@ func (this *Tree) GetSelectionCount() int32 {
 			return 0
 		}
 		var state int32 = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETITEMSTATE, hItem, int64(win32.OSTVIS_SELECTED)))
-		var cond536 int32
+		var cond535 int32
 		if (state & win32.OSTVIS_SELECTED) == 0 {
-			cond536 = 0
+			cond535 = 0
 		} else {
-			cond536 = 1
+			cond535 = 1
 		}
-		return cond536
+		return cond535
 	}
 	var count int32 = 0
 	var oldProc int64 = win32.OSGetWindowLongPtr(this.Handle, win32.OSGWLP_WNDPROC)
@@ -3305,13 +3305,13 @@ func (this *Tree) GetSortDirection() int32 {
 func (this *Tree) GetTopItem() *TreeItem {
 	this.CheckWidget()
 	var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_FIRSTVISIBLE), int64(0))
-	var cond537 *TreeItem
+	var cond536 *TreeItem
 	if hItem != 0 {
-		cond537 = this._getItem(hItem)
+		cond536 = this._getItem(hItem)
 	} else {
-		cond537 = nil
+		cond536 = nil
 	}
-	return cond537
+	return cond536
 }
 
 func (this *Tree) HitTestSelection(hItem int64, x int32, y int32) bool {
@@ -3449,13 +3449,13 @@ func (this *Tree) IndexOfItem(itemLike TreeItemLike) int32 {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var hItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_ROOT), int64(0))
-	var cond538 int32
+	var cond537 int32
 	if hItem == 0 {
-		cond538 = -1
+		cond537 = -1
 	} else {
-		cond538 = this.FindIndex(hItem, item.Handle)
+		cond537 = this.FindIndex(hItem, item.Handle)
 	}
-	return cond538
+	return cond537
 }
 
 func (this *Tree) IsCustomToolTip() bool {
@@ -3746,13 +3746,13 @@ func (this *Tree) SetInsertMark(itemLike TreeItemLike, before bool) {
 	}
 	this.hInsert = hItem
 	this.insertAfter = !before
-	var cond539 int32
+	var cond538 int32
 	if this.insertAfter {
-		cond539 = 1
+		cond538 = 1
 	} else {
-		cond539 = 0
+		cond538 = 0
 	}
-	win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_SETINSERTMARK, int64(cond539), this.hInsert)
+	win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_SETINSERTMARK, int64(cond538), this.hInsert)
 }
 
 func (this *Tree) SetItemCount(count int32) {
@@ -3891,13 +3891,13 @@ func (this *Tree) scrolledHandle_() int64 {
 	if this.hwndHeader == 0 {
 		return this.Handle
 	}
-	var cond540 int64
+	var cond539 int64
 	if this.columnCount == 0 && this.scrollWidth == 0 {
-		cond540 = this.Handle
+		cond539 = this.Handle
 	} else {
-		cond540 = this.hwndParent
+		cond539 = this.hwndParent
 	}
-	return cond540
+	return cond539
 }
 
 func (this *Tree) SelectHItemTvItem(hItem int64, tvItem *win32.TVITEM) {
@@ -4052,9 +4052,9 @@ func (this *Tree) SendMeasureItemEvent(itemLike TreeItemLike, index int32, hDC i
 	if this.hwndHeader != 0 {
 		if this.columnCount == 0 {
 			if rect.X+rect.Width > this.scrollWidth {
-				cond541 := rect.X + rect.Width
-				this.scrollWidth = cond541
-				this.SetScrollWidthWidth(cond541)
+				cond540 := rect.X + rect.Width
+				this.scrollWidth = cond540
+				this.SetScrollWidthWidth(cond540)
 			}
 		}
 	}
@@ -4431,13 +4431,13 @@ func (this *Tree) SetScrollWidthWidth(width int32) {
 		win32.OSHeapFree(hHeap, 0, playout.Pwpos)
 	}
 	win32.OSSetWindowPos(this.hwndHeader, int64(win32.OSHWND_TOP), pos.X-left, pos.Y, pos.Cx+left, pos.Cy, win32.OSSWP_NOACTIVATE)
-	var cond542 int32
+	var cond541 int32
 	if this.columnCount == 0 && width == 0 {
-		cond542 = 0
+		cond541 = 0
 	} else {
-		cond542 = this.impl.getSystemMetrics_(win32.OSSM_CXVSCROLL)
+		cond541 = this.impl.getSystemMetrics_(win32.OSSM_CXVSCROLL)
 	}
-	var w int32 = pos.Cx + (cond542)
+	var w int32 = pos.Cx + (cond541)
 	var h int32 = rect.Bottom - rect.Top - pos.Cy
 	var oldIgnore bool = this.ignoreResize
 	this.ignoreResize = true
@@ -4504,9 +4504,9 @@ func (this *Tree) SetSelectionItems(items []*TreeItem) {
 			this.Error(ERROR_INVALID_ARGUMENT)
 		}
 		var hOldItem int64 = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CARET), int64(0))
-		cond543 := item.Handle
-		this.hAnchor = cond543
-		var hNewItem int64 = cond543
+		cond542 := item.Handle
+		this.hAnchor = cond542
+		var hNewItem int64 = cond542
 		var fixScroll bool = this.CheckScroll(hNewItem)
 		if fixScroll {
 			win32.OSSendMessageOverload4(this.Handle, win32.OSWM_SETREDRAW, int64(1), int64(0))
@@ -4862,13 +4862,13 @@ func (this *Tree) SortHParentAll(hParent int64, all bool) {
 	this.cachedFirstItem = this.cachedIndexItem
 	itemCount = -1
 	if this.sortDirection == UP || this.sortDirection == NONE {
-		var cond544 int32
+		var cond543 int32
 		if all {
-			cond544 = 1
+			cond543 = 1
 		} else {
-			cond544 = 0
+			cond543 = 0
 		}
-		win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_SORTCHILDREN, int64(cond544), hParent)
+		win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_SORTCHILDREN, int64(cond543), hParent)
 	} else {
 		var compareCallback *Callback = NewCallbackFn(func(args []int64) int64 { return this.CompareFunc(args[0], args[1], args[2]) }, 3)
 		var lpfnCompare int64 = compareCallback.GetAddress()
@@ -4880,13 +4880,13 @@ func (this *Tree) SortHParentAll(hParent int64, all bool) {
 		} else {
 			psort.LParam = int64(this.IndexOfColumn(this.sortColumn))
 		}
-		var cond545 int32
+		var cond544 int32
 		if all {
-			cond545 = 1
+			cond544 = 1
 		} else {
-			cond545 = 0
+			cond544 = 0
 		}
-		win32.OSSendMessageOverload24(this.Handle, win32.OSTVM_SORTCHILDRENCB, int64(cond545), psort)
+		win32.OSSendMessageOverload24(this.Handle, win32.OSTVM_SORTCHILDRENCB, int64(cond544), psort)
 		compareCallback.Dispose()
 	}
 }
@@ -4965,13 +4965,13 @@ func (this *Tree) toolTipText_(hdr *win32.NMTTDISPINFO) string {
 }
 
 func (this *Tree) topHandle_() int64 {
-	var cond546 int64
+	var cond545 int64
 	if this.hwndParent != 0 {
-		cond546 = this.hwndParent
+		cond545 = this.hwndParent
 	} else {
-		cond546 = this.Handle
+		cond545 = this.Handle
 	}
-	return cond546
+	return cond545
 }
 
 func (this *Tree) UpdateFullSelection() {
@@ -5011,9 +5011,9 @@ func (this *Tree) UpdateHeaderToolTips() {
 	for i := int32(0); i < this.columnCount; i++ {
 		var column *TreeColumn = this.columns[i]
 		if win32.OSSendMessageOverload13(this.hwndHeader, win32.OSHDM_GETITEMRECT, int64(i), rect) != 0 {
-			t547 := this.display.nextToolTipId
+			t546 := this.display.nextToolTipId
 			this.display.nextToolTipId++
-			column.id = t547
+			column.id = t546
 			lpti.UId = int64(column.id)
 			lpti.Left = rect.Left
 			lpti.Top = rect.Top
@@ -5579,13 +5579,13 @@ func (this *Tree) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	case win32.OSVK_LEFT, win32.OSVK_RIGHT:
 		var isRTL bool = (this.style & RIGHT_TO_LEFT) != 0
 		if isRTL != this.createdAsRTL {
-			var cond548 int32
+			var cond547 int32
 			if wParam == int64(win32.OSVK_RIGHT) {
-				cond548 = win32.OSVK_LEFT
+				cond547 = win32.OSVK_LEFT
 			} else {
-				cond548 = win32.OSVK_RIGHT
+				cond547 = win32.OSVK_RIGHT
 			}
-			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond548), lParam)
+			var code int64 = this.impl.callWindowProc_(this.Handle, win32.OSWM_KEYDOWN, int64(cond547), lParam)
 			return win32.NewLRESULT(code)
 		}
 		break
@@ -5716,9 +5716,9 @@ func (this *Tree) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 							if rect.Bottom > clientRect.Bottom {
 								break
 							}
-							cond549 := hVisible
-							hNewItem = cond549
-							if (cond549) == hItem {
+							cond548 := hVisible
+							hNewItem = cond548
+							if (cond548) == hItem {
 								win32.OSSendMessageOverload4(this.Handle, win32.OSWM_VSCROLL, int64(win32.OSSB_PAGEDOWN), int64(0))
 							}
 							if !(hNewItem != 0) {
@@ -5904,9 +5904,9 @@ func (this *Tree) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 						}
 						tvItem.State = 0
 						win32.OSSendMessageOverload23(this.Handle, win32.OSTVM_SETITEM, int64(0), tvItem)
-						cond550 := win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXTVISIBLE), hNext)
-						hNext = cond550
-						var hItem int64 = cond550
+						cond549 := win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXTVISIBLE), hNext)
+						hNext = cond549
+						var hItem int64 = cond549
 						for hItem != 0 && hItem != lpht.HItem {
 							hItem = win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_PARENT), hItem)
 						}
@@ -6189,9 +6189,9 @@ func (this *Tree) wM_LBUTTONDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 								flags = win32.OSTVGN_PREVIOUSVISIBLE
 							}
 							tvItem.State = win32.OSTVIS_SELECTED
-							cond551 := this.hAnchor
-							tvItem.HItem = cond551
-							var hItem int64 = cond551
+							cond550 := this.hAnchor
+							tvItem.HItem = cond550
+							var hItem int64 = cond550
 							win32.OSSendMessageOverload23(this.Handle, win32.OSTVM_SETITEM, int64(0), tvItem)
 							for hItem != hNewItem {
 								tvItem.HItem = hItem
@@ -6473,13 +6473,13 @@ func (this *Tree) wM_SETREDRAW_(wParam int64, lParam int64) *win32.LRESULT {
 		win32.OSShowWindow(this.itemToolTipHandle, win32.OSSW_HIDE)
 	}
 	var code int64 = win32.OSDefWindowProc(this.Handle, win32.OSWM_SETREDRAW, wParam, lParam)
-	var cond552 *win32.LRESULT
+	var cond551 *win32.LRESULT
 	if code == 0 {
-		cond552 = win32.LRESULTZERO
+		cond551 = win32.LRESULTZERO
 	} else {
-		cond552 = win32.NewLRESULT(code)
+		cond551 = win32.NewLRESULT(code)
 	}
-	return cond552
+	return cond551
 }
 
 func (this *Tree) wM_SIZE_(wParam int64, lParam int64) *win32.LRESULT {
@@ -6907,13 +6907,13 @@ func (this *Tree) wmNotifyChild_(hdr *win32.NMHDR, wParam int64, lParam int64) *
 				win32.OSInvalidateRect(this.Handle, nil, true)
 			}
 			if this.hInsert != 0 {
-				var cond553 int32
+				var cond552 int32
 				if this.insertAfter {
-					cond553 = 1
+					cond552 = 1
 				} else {
-					cond553 = 0
+					cond552 = 0
 				}
-				win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_SETINSERTMARK, int64(cond553), this.hInsert)
+				win32.OSSendMessageOverload4(this.Handle, win32.OSTVM_SETINSERTMARK, int64(cond552), this.hInsert)
 			}
 			if this.imageList != (nil) {
 				var treeView *win32.NMTREEVIEW = win32.NewNMTREEVIEW()
@@ -6983,13 +6983,13 @@ func (this *Tree) WmNotifyHeader(hdr *win32.NMHDR, wParam int64, lParam int64) *
 			switch nmcd.DwDrawStage {
 			case win32.OSCDDS_PREPAINT:
 				{
-					var cond554 int32
+					var cond553 int32
 					if this.CustomHeaderDrawing() {
-						cond554 = win32.OSCDRF_NOTIFYITEMDRAW | win32.OSCDRF_NOTIFYPOSTPAINT
+						cond553 = win32.OSCDRF_NOTIFYITEMDRAW | win32.OSCDRF_NOTIFYPOSTPAINT
 					} else {
-						cond554 = win32.OSCDRF_DODEFAULT
+						cond553 = win32.OSCDRF_DODEFAULT
 					}
-					return win32.NewLRESULT(int64(cond554))
+					return win32.NewLRESULT(int64(cond553))
 				}
 			case win32.OSCDDS_ITEMPREPAINT:
 				{
@@ -7207,11 +7207,11 @@ func (this *Tree) WmNotifyHeader(hdr *win32.NMHDR, wParam int64, lParam int64) *
 					}
 					rect.Left = headerRect.Right - gridWidth
 					var newX int32 = rect.Left + deltaX
-					abs555 := deltaX
-					if abs555 < 0 {
-						abs555 = -abs555
+					abs554 := deltaX
+					if abs554 < 0 {
+						abs554 = -abs554
 					}
-					rect.Right = int32(math.Max(float64(rect.Right), float64(rect.Left+abs555)))
+					rect.Right = int32(math.Max(float64(rect.Right), float64(rect.Left+abs554)))
 					if this.explorerTheme || (this.FindImageControl() != (nil) || this.Hooks(MeasureItem) || this.Hooks(EraseItem) || this.Hooks(PaintItem)) {
 						rect.Left -= this.impl.getSystemMetrics_(win32.OSSM_CXFOCUSBORDER)
 						win32.OSInvalidateRect(this.Handle, rect, true)
@@ -7428,13 +7428,13 @@ func (this *Tree) WmNotifyToolTipNmcdLParam(nmcd *win32.NMTTCUSTOMDRAW, lParam i
 								if image != (nil) {
 									var zoom int32 = this.impl.getAutoscalingZoom_()
 									gc.DrawImageImageDestXDestYDestWidthDestHeight(image, DPIUtilPixelToPoint(x, zoom), DPIUtilPixelToPoint(imageRect.Top, zoom), DPIUtilPixelToPoint(size.X, zoom), DPIUtilPixelToPoint(size.Y, zoom))
-									var cond556 int32
+									var cond555 int32
 									if index[0] == 0 {
-										cond556 = 1
+										cond555 = 1
 									} else {
-										cond556 = 0
+										cond555 = 0
 									}
-									x += TreeINSET + (cond556)
+									x += TreeINSET + (cond555)
 								}
 								x += size.X
 							} else {

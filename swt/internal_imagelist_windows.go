@@ -163,13 +163,13 @@ func (this *ImageList) CopyBitmap(hImage int64, width int32, height int32) int64
 
 func (this *ImageList) CopyIcon(hImage int64, width int32, height int32) int64 {
 	var hIcon int64 = win32.OSCopyImage(hImage, win32.OSIMAGE_ICON, width, height, 0)
-	var cond940 int64
+	var cond939 int64
 	if hIcon != 0 {
-		cond940 = hIcon
+		cond939 = hIcon
 	} else {
-		cond940 = hImage
+		cond939 = hImage
 	}
-	return cond940
+	return cond939
 }
 
 func (this *ImageList) CopyWithAlpha(hBitmap int64, background int32, alphaData []int8, destWidth int32, destHeight int32) int64 {
@@ -208,9 +208,9 @@ func (this *ImageList) CopyWithAlpha(hBitmap int64, background int32, alphaData 
 		var sp int32 = 0
 		for y := int32(0); y < srcHeight; y++ {
 			for x := int32(0); x < srcWidth; x++ {
-				t941 := ap
+				t940 := ap
 				ap++
-				var a int32 = int32(alphaData[t941]) & 0xFF
+				var a int32 = int32(alphaData[t940]) & 0xFF
 				if a != 0 {
 					srcData[sp] = int8(((((int32(srcData[sp]) & 0xFF) * 0xFF) + a/2) / a))
 					srcData[sp+1] = int8(((((int32(srcData[sp+1]) & 0xFF) * 0xFF) + a/2) / a))
@@ -284,15 +284,15 @@ func (this *ImageList) CreateMaskFromAlpha(dataLike ImageDataLike, destWidth int
 	var ap int32 = 0
 	for y := int32(0); y < mask.Height; y++ {
 		for x := int32(0); x < mask.Width; x++ {
-			var cond942 int32
-			t943 := ap
+			var cond941 int32
+			t942 := ap
 			ap++
-			if (int32(data.AlphaData[t943]) & 0xff) <= 127 {
-				cond942 = 1
+			if (int32(data.AlphaData[t942]) & 0xff) <= 127 {
+				cond941 = 1
 			} else {
-				cond942 = 0
+				cond941 = 0
 			}
-			mask.SetPixel(x, y, cond942)
+			mask.SetPixel(x, y, cond941)
 		}
 	}
 	var hMask int64 = win32.OSCreateBitmap(srcWidth, srcHeight, 1, 1, mask.Data)
@@ -540,13 +540,13 @@ func (this *ImageList) Set(index int32, imageLike ImageLike, count int32, listHa
 	case ICON:
 		{
 			var hIcon int64 = this.CopyIcon(hImage, cx[0], cy[0])
-			var cond944 int32
+			var cond943 int32
 			if index == count {
-				cond944 = -1
+				cond943 = -1
 			} else {
-				cond944 = index
+				cond943 = index
 			}
-			win32.OSImageList_ReplaceIcon(listHandle, cond944, hIcon)
+			win32.OSImageList_ReplaceIcon(listHandle, cond943, hIcon)
 			win32.OSDestroyIcon(hIcon)
 			break
 		}

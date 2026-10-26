@@ -41,7 +41,9 @@ func (n *popoverNative) dispose() {}
 
 func (n *popoverNative) focus(c *swt.Control) { c.SetFocus() }
 
-func (n *popoverNative) focused(p *Popover, c *swt.Control) bool { return p.shell.GetDisplay().GetFocusControl() == c }
+func (n *popoverNative) focused(p *Popover, c *swt.Control) bool {
+	return p.shell.GetDisplay().GetFocusControl() == c
+}
 
 func (n *popoverNative) onScreen(p *Popover) bool { return p.shell.GetVisible() }
 

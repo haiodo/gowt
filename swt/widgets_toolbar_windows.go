@@ -364,9 +364,9 @@ func (this *ToolBar) CreateItem(itemLike ToolItemLike, index int32) {
 	if win32.OSSendMessageOverload16(this.Handle, win32.OSTB_INSERTBUTTON, int64(index), lpButton) == 0 {
 		this.Error(ERROR_ITEM_NOT_ADDED)
 	}
-	cond638 := id
-	item.id = cond638
-	this.items[cond638] = item
+	cond637 := id
+	item.id = cond637
+	this.items[cond637] = item
 	if (this.style & VERTICAL) != 0 {
 		this.SetRowCount(count + 1)
 	}
@@ -522,9 +522,9 @@ func (this *ToolBar) _getTabItemList() []*ToolItem {
 	var index int32 = 0
 	for _, item := range this.tabItemList {
 		if !item.IsDisposed() {
-			t639 := index
+			t638 := index
 			index++
-			newList[t639] = item
+			newList[t638] = item
 		}
 	}
 	this.tabItemList = newList
@@ -953,9 +953,9 @@ func (this *ToolBar) updateTextDirection_(textDirection int32) bool {
 		var items []*ToolItem = this._getItems()
 		var i int32 = int32(len(items))
 		for {
-			t640 := i
+			t639 := i
 			i--
-			if !(t640 > 0) {
+			if !(t639 > 0) {
 				break
 			}
 			items[i].impl.updateTextDirection_(this.style & FLIP_TEXT_DIRECTION)

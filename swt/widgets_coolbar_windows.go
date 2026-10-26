@@ -212,9 +212,9 @@ func (this *CoolBar) CreateItem(itemLike CoolItemLike, index int32) {
 		this.ResizeToPreferredWidth(lastIndex)
 	}
 	win32.OSHeapFree(hHeap, 0, lpText)
-	cond651 := id
-	item.id = cond651
-	this.items[cond651] = item
+	cond650 := id
+	item.id = cond650
+	this.items[cond650] = item
 	var length int32 = int32(len(this.originalItems))
 	var newOriginals []*CoolItem = make([]*CoolItem, length+1)
 	copy(newOriginals[0:], this.originalItems[0:0+index])
@@ -299,13 +299,13 @@ func (this *CoolBar) findThemeControl_() *Control {
 	if (this.style & FLAT) != 0 {
 		return upcastCoolBarToControl(this)
 	}
-	var cond652 *Control
+	var cond651 *Control
 	if this.background == -1 && this.backgroundImage == (nil) {
-		cond652 = upcastCoolBarToControl(this)
+		cond651 = upcastCoolBarToControl(this)
 	} else {
-		cond652 = this.Composite.findThemeControl_()
+		cond651 = this.Composite.findThemeControl_()
 	}
-	return cond652
+	return cond651
 }
 
 func (this *CoolBar) GetMargin(index int32) int32 {
@@ -477,9 +477,9 @@ func (this *CoolBar) GetWrapIndices() []int32 {
 	var count int32 = 0
 	for i := int32(0); i < int32(len(items)); i++ {
 		if items[i].GetWrap() {
-			t653 := count
+			t652 := count
 			count++
-			indices[t653] = i
+			indices[t652] = i
 		}
 	}
 	var result []int32 = make([]int32, count)

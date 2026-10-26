@@ -50,7 +50,9 @@ func (n *popoverNative) focus(c *swt.Control) { c.ForceFocusFocusView(c.FocusVie
 
 // focused is first-responder based: the key window is the active application's, which a test
 // process may not be.
-func (n *popoverNative) focused(p *Popover, c *swt.Control) bool { return cocoa.IsFirstResponder(c.FocusView()) }
+func (n *popoverNative) focused(p *Popover, c *swt.Control) bool {
+	return cocoa.IsFirstResponder(c.FocusView())
+}
 
 func (n *popoverNative) onScreen(p *Popover) bool { return n.pop != 0 && cocoa.PopoverShown(n.pop) }
 

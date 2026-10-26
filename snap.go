@@ -39,6 +39,7 @@ func (a *App) armSnap(path string, errp *error) func() {
 		}
 	}()
 	var clearedAt time.Time
+	moves, placed := 0, false
 	debug := os.Getenv("GOWT_SNAP_DEBUG") == "1"
 	why := ""
 	wait := func(reason string) { // GOWT_SNAP_DEBUG=1 prints each change of what the capture waits for
@@ -52,6 +53,16 @@ func (a *App) armSnap(path string, errp *error) func() {
 	return func() {
 		now := time.Now()
 		forced := now.After(hard)
+		// The window can leave the Retina screen when it opens: look again once the capture is due.
+		if shells := a.display.GetShells(); len(shells) > 0 && !placed && !now.Before(due) {
+			if moves < 3 && shot.PlaceOnRetina(shotHandle(shells[0])) {
+				moves++
+				clearedAt = time.Time{}
+				due = now.Add(time.Second)
+			} else {
+				placed = true
+			}
+		}
 		if a.quit.Load() || now.Before(due) {
 			wait("delay")
 			return

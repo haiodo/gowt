@@ -20,12 +20,21 @@ func PlaceOnRetina(view int64) bool {
 		return false
 	}
 	sel := objc.RegisterName
+	debug := os.Getenv("GOWT_SNAP_DEBUG") == "1"
 	win := objc.ID(view).Send(sel("window"))
 	if win == 0 {
+		if debug {
+			fmt.Fprintln(os.Stderr, "gowt: snap place: the view has no window yet")
+		}
 		return false
 	}
 	scale := func(screen objc.ID) float64 { return objc.Send[float64](screen, sel("backingScaleFactor")) }
-	if cur := win.Send(sel("screen")); cur != 0 && scale(cur) >= 2 {
+	cur := win.Send(sel("screen"))
+	if debug {
+		f := objc.Send[nsRect](win, sel("frame"))
+		fmt.Fprintf(os.Stderr, "gowt: snap place: window frame %v, screen %v\n", f, cur != 0 && scale(cur) >= 2)
+	}
+	if cur != 0 && scale(cur) >= 2 {
 		return false
 	}
 	screens := objc.ID(objc.GetClass("NSScreen")).Send(sel("screens"))

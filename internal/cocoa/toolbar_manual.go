@@ -27,7 +27,7 @@ type ToolbarItem struct {
 	Sidebar  bool // with SetSidebarEdge: placed over the sidebar, ending at its edge
 	Search   func(text string)
 	ID       string // names a search item for the QA driver
-	Disabled bool // a push item or group segment shown dimmed; SetToolbarItemEnabled changes it
+	Disabled bool   // a push item or group segment shown dimmed; SetToolbarItemEnabled changes it
 }
 
 const (

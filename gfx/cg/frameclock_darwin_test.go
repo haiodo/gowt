@@ -4,6 +4,7 @@ package cg
 
 import (
 	"errors"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -15,6 +16,8 @@ type fakeLink struct {
 	fn     func(gfx.FrameInfo)
 	closed atomic.Bool
 	stop   chan struct{}
+	wg     sync.WaitGroup
+	ticks  atomic.Int64
 }
 
 func newFakeLink(fn func(gfx.FrameInfo)) *fakeLink {
@@ -22,12 +25,15 @@ func newFakeLink(fn func(gfx.FrameInfo)) *fakeLink {
 }
 
 func (l *fakeLink) Start() error {
+	l.wg.Add(1)
 	go func() {
+		defer l.wg.Done()
 		for {
 			select {
 			case <-l.stop:
 				return
 			case <-time.After(2 * time.Millisecond):
+				l.ticks.Add(1)
 				l.fn(gfx.FrameInfo{})
 			}
 		}
@@ -39,6 +45,7 @@ func (l *fakeLink) Close() {
 	if l.closed.CompareAndSwap(false, true) {
 		close(l.stop)
 	}
+	l.wg.Wait() // like CVDisplayLinkStop: no callback runs after it returns
 }
 
 func waitFor(t *testing.T, what string, ok func() bool) {
@@ -70,14 +77,14 @@ func TestFrameClockFallbackAndSwitch(t *testing.T) {
 	c.Start()
 	waitFor(t, "timer ticks without a link", func() bool { return ticks.Load() >= 5 })
 	waitFor(t, "link made", func() bool { return made.Load() != nil })
-	l := made.Load()
-	waitFor(t, "link only, no more attempts", func() bool {
-		a := ticks.Load()
-		time.Sleep(10 * time.Millisecond)
-		return ticks.Load() > a && attempts.Load() == 3
+	// the clock settles on a link that has ticked and is still open
+	var l *fakeLink
+	waitFor(t, "link took over", func() bool {
+		l = made.Load()
+		return l.ticks.Load() > 0 && !l.closed.Load()
 	})
 	c.Close()
-	if !l.closed.Load() {
+	if !made.Load().closed.Load() {
 		t.Error("link not closed")
 	}
 	a := ticks.Load()
@@ -107,4 +114,43 @@ func TestFrameClockSilentLink(t *testing.T) {
 	first.Load().Close()
 	n := ticks.Load()
 	waitFor(t, "timer after silence", func() bool { return ticks.Load() > n+10 })
+}
+
+// Close waits for a tick that is inside fn, so fn never runs after Close returns.
+func TestFrameClockCloseWaitsForTick(t *testing.T) {
+	for _, viaLink := range []bool{false, true} {
+		var calls atomic.Int64
+		entered, release := make(chan struct{}, 1), make(chan struct{})
+		c := NewFrameClock(func(gfx.FrameInfo) {
+			calls.Add(1)
+			select {
+			case entered <- struct{}{}:
+				<-release
+			default:
+			}
+		})
+		c.period, c.retry = 2*time.Millisecond, 20*time.Millisecond
+		c.newLink = func(fn func(gfx.FrameInfo)) (tickLink, error) {
+			if !viaLink {
+				return nil, errors.New("asleep")
+			}
+			return newFakeLink(fn), nil
+		}
+		c.Start()
+		<-entered
+		closed := make(chan struct{})
+		go func() { c.Close(); close(closed) }()
+		select {
+		case <-closed:
+			t.Fatalf("viaLink=%v: Close returned while fn was running", viaLink)
+		case <-time.After(20 * time.Millisecond):
+		}
+		close(release)
+		<-closed
+		n := calls.Load()
+		time.Sleep(20 * time.Millisecond)
+		if calls.Load() != n {
+			t.Errorf("viaLink=%v: fn ran after Close", viaLink)
+		}
+	}
 }

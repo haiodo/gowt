@@ -89,15 +89,7 @@ func OverlayPNG(shell *swt.Shell, path string) error {
 	if os.Getenv("GOWT_SNAP_SCREEN") == "1" {
 		return nil
 	}
-	mu.Lock()
-	var ps []Painter
-	for s := range sources {
-		if p, ok := s.(Painter); ok {
-			ps = append(ps, p)
-		}
-	}
-	mu.Unlock()
-	if len(ps) == 0 {
+	if len(painters()) == 0 {
 		return nil
 	}
 	f, err := os.Open(path)
@@ -111,10 +103,8 @@ func OverlayPNG(shell *swt.Shell, path string) error {
 	}
 	img := image.NewNRGBA(src.Bounds())
 	draw.Draw(img, img.Bounds(), src, src.Bounds().Min, draw.Src)
-	for _, p := range ps {
-		if err := p.Overlay(shell, img); err != nil {
-			return err
-		}
+	if err := OverlayImage(shell, img); err != nil {
+		return err
 	}
 	out, err := os.Create(path)
 	if err != nil {
@@ -122,6 +112,28 @@ func OverlayPNG(shell *swt.Shell, path string) error {
 	}
 	defer out.Close()
 	return png.Encode(out, img)
+}
+
+func painters() []Painter {
+	mu.Lock()
+	defer mu.Unlock()
+	var ps []Painter
+	for s := range sources {
+		if p, ok := s.(Painter); ok {
+			ps = append(ps, p)
+		}
+	}
+	return ps
+}
+
+// OverlayImage lets the painters of shell draw into img, the capture of its frame view, in place.
+func OverlayImage(shell *swt.Shell, img *image.NRGBA) error {
+	for _, p := range painters() {
+		if err := p.Overlay(shell, img); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // PopoverKey is the data key of the shell of a Popover.

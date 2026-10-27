@@ -3,6 +3,7 @@
 package demovideo
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -53,13 +54,23 @@ func TestRecord(t *testing.T) {
 
 	var names []string
 	var at []time.Duration
+	steps := map[string]float64{} // milliseconds per step of the shot command, summed
+	var total time.Duration
 	start := time.Now()
 	for time.Since(start) < length {
 		name := fmt.Sprintf("f-%05d.png", len(names))
 		t0 := time.Since(start)
-		if _, err := app.Call("shot", map[string]string{"path": filepath.Join(out, name)}); err != nil {
+		raw, err := app.Call("shot", map[string]any{"path": filepath.Join(out, name), "fast": true, "timing": true})
+		if err != nil {
 			t.Fatalf("shot %d: %v", len(names), err)
 		}
+		var res struct{ MS map[string]float64 }
+		if json.Unmarshal(raw, &res) == nil {
+			for k, v := range res.MS {
+				steps[k] += v
+			}
+		}
+		total += time.Since(start) - t0
 		names = append(names, name)
 		at = append(at, (t0+time.Since(start))/2)
 	}
@@ -74,6 +85,13 @@ func TestRecord(t *testing.T) {
 	fmt.Fprintf(&b, "file '%s'\n", names[len(names)-1])
 	if err := os.WriteFile(filepath.Join(out, "frames.txt"), []byte(b.String()), 0o644); err != nil {
 		t.Fatal(err)
+	}
+	n := float64(len(names))
+	t.Logf("per frame: round trip %.0f ms", total.Seconds()*1000/n)
+	for _, k := range []string{"wait", "capture", "overlay", "encode", "popovers"} {
+		if v, ok := steps[k]; ok {
+			t.Logf("per frame: %-8s %6.1f ms", k, v/n)
+		}
 	}
 	t.Logf("%d frames in %.1f s: %.1f fps", len(names), time.Since(start).Seconds(), float64(len(names))/time.Since(start).Seconds())
 }

@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"image/png"
 	"net"
 	"os"
 	"path/filepath"
@@ -355,7 +356,13 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 	}); err != nil {
 		return nil, err
 	}
-	s.waitFrames(done)
+	ms := map[string]float64{}
+	t0 := time.Now()
+	lap := func(name string) { ms[name] = float64(time.Since(t0).Microseconds()) / 1000; t0 = time.Now() }
+	if !a.Fast { // a recorder wants what is on screen now, not the next presented frame
+		s.waitFrames(done)
+	}
+	lap("wait")
 	_, err := s.ui(cmdTimeout, func() (any, error) {
 		sh, err := s.shellOf(a)
 		if err != nil {
@@ -363,19 +370,47 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 		}
 		shot.Passive = len(qaview.Popovers(s.h.Display, sh)) > 0
 		defer func() { shot.Passive = false }()
+		if a.Fast && !shot.Passive {
+			img, _, err := shot.CaptureImage(s.h.ShotHandle(sh))
+			if err == nil {
+				lap("capture")
+				if err := qaview.OverlayImage(sh, img); err != nil {
+					return nil, err
+				}
+				lap("overlay")
+				f, err := os.Create(path)
+				if err != nil {
+					return nil, err
+				}
+				defer f.Close()
+				err = (&png.Encoder{CompressionLevel: png.BestSpeed}).Encode(f, img)
+				lap("encode")
+				return nil, err
+			}
+			if !errors.Is(err, shot.ErrNoImage) {
+				return nil, err
+			}
+		}
 		frame, err := shot.Capture(s.h.ShotHandle(sh), path)
 		if err != nil {
 			return nil, err
 		}
+		lap("capture")
 		if err := qaview.OverlayPNG(sh, path); err != nil {
 			return nil, err
 		}
-		return nil, s.addPopovers(sh, path, frame)
+		lap("overlay")
+		err = s.addPopovers(sh, path, frame)
+		lap("popovers")
+		return nil, err
 	})
 	if err != nil {
 		return nil, err
 	}
 	if a.Path != "" {
+		if a.Timing {
+			return map[string]any{"path": a.Path, "ms": ms}, nil
+		}
 		return map[string]string{"path": a.Path}, nil
 	}
 	b, err := os.ReadFile(path)
@@ -413,6 +448,11 @@ type shotArgs struct {
 	Title    string           `json:"title"`
 	Selector *qatree.Selector `json:"selector"`
 	Path     string           `json:"path"`
+	// Fast is for a recorder that shoots many frames: it does not wait for a presented frame, writes a
+	// quickly compressed PNG and, on macOS, skips the encode and decode between capture and overlay.
+	Fast bool `json:"fast"`
+	// Timing adds the milliseconds of each step to the result as "ms".
+	Timing bool `json:"timing"`
 }
 
 func (s *server) shellOf(a shotArgs) (*swt.Shell, error) {

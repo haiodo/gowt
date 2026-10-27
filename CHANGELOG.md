@@ -4,8 +4,8 @@
 
 Packaging (Tenniarb stage 9)
 - New: `mkapp.sh` takes `BUNDLE_ID`, `VERSION`, `BUILD`, `ICON` (an `.icns` or a PNG, converted with `sips` and `iconutil`, written as `AppIcon.icns` with `CFBundleIconFile`), a PNG for `DOC_ICON` and `DOC_UTI_CONFORMS` (default `public.data`). Tested on macOS by reading the plist back.
-- New: `tooling/mksyso` writes one `.syso` with a manifest, an icon (`.ico` or PNG sizes) and a VERSIONINFO resource (`-icon`, `-version`, `-product`, `-company`, `-description`, `-copyright`, `-original`, `-internal`), for amd64 and arm64; `-manifest` is optional. The object is parsed back and a linked program's `.rsrc` is read. `-tags gowt_nomanifest` stops the facade from importing `winmanifest`, for an app with its own manifest. Explorer showing the icon and version: not run (VM off).
-- New: `tooling/assoc -kind icons` writes hicolor mimetype (or app) icons from a PNG; `-kind mime -icon` names the icon in the XML. docs/packaging.md.
+- New: `tooling/mksyso` writes one `.syso` with a manifest, an icon (`.ico` or PNG sizes) and a VERSIONINFO resource (`-icon`, `-version`, `-product`, `-company`, `-description`, `-copyright`, `-original`, `-internal`), for amd64 and arm64; `-manifest` is optional. The object is parsed back and a linked program's `.rsrc` is read. `-tags gowt_nomanifest` stops the facade from importing `winmanifest`, for an app with its own manifest. Checked on the Windows 11 arm64 VM: Explorer shows the icon and the version fields read back.
+- New: `tooling/assoc -kind icons` writes hicolor mimetype (or app) icons from a PNG; `-kind mime -icon` names the icon in the XML; GNOME Files on Ubuntu 26.04 showed it for a file of the type. docs/packaging.md.
 
 QA windows and popovers (Tenniarb)
 - New: `Client.ShotOf(name, sel)`, `ShotTitle(name, title)` and `ShotWindow(name, index)`: a shot of the window that holds a control, has a title, or is at an index of the dump; the `shot` command takes `selector`, `title` or `window`. Before, only window 0 could be shot. On Windows the window order is the stacking order, so use the selector or the title there.

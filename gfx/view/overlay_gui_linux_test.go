@@ -9,6 +9,7 @@ import (
 	g "github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/gfx"
 	"github.com/haiodo/gowt/internal/gtk"
+	"github.com/haiodo/gowt/swt"
 )
 
 var mainq = make(chan func())
@@ -27,6 +28,17 @@ func TestMain(m *testing.M) {
 			os.Exit(code)
 		}
 	}
+}
+
+// postKey puts a press and a release of char into the GDK queue of the focused window. The key code
+// makes swt.CR the Return key; a printable char maps to no key code and goes by its character.
+func postKey(d *swt.Display, char uint16) {
+	e := swt.NewEvent()
+	e.Character, e.KeyCode = char, int32(char)
+	e.Type = swt.KeyDown
+	d.Post(e)
+	e.Type = swt.KeyUp
+	d.Post(e)
 }
 
 // TestOverlayEditGUI runs an Edit over a real view under Xvfb: the control follows the camera,

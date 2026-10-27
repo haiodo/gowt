@@ -35,7 +35,6 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	w, h := cv.Size()
 	v.comp.SetViewport(float64(w), float64(h), v.dpr)
 	v.wireInput()
-	installFocusTrace()
 	cv.Unwrap().AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { v.resize.Store(true) }))
 	display := cv.Unwrap().GetDisplay()
 	link := cg.NewFrameClock(func(fi gfx.FrameInfo) {

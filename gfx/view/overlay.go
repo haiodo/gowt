@@ -145,17 +145,13 @@ func (v *View) Edit(opts EditOptions) *Editor {
 		if v.editor != nil && v.editor.e == ed {
 			v.editor = nil
 		}
-		focusTrace("edit ends (refocus %v): hide the field", refocus)
 		o.drop() // out of the list now; the control is disposed after the event that ended the edit
 		t.SetVisible(false)
-		v.traceFirstResponder("after hiding the ended field")
 		display.AsyncExec(jrt.NewRunnable(func() {
-			focusTrace("deferred end of edit: refocus %v", refocus)
 			if !v.gone.Load() && refocus {
 				v.cv.Unwrap().SetFocus()
 			}
 			tv.Dispose()
-			v.traceFirstResponder("after the deferred end of edit")
 		}))
 	}
 	t.AddKeyListener(swt.KeyListenerKeyPressedAdapter(func(e *swt.KeyEvent) {
@@ -166,11 +162,8 @@ func (v *View) Edit(opts EditOptions) *Editor {
 	t.AddFocusListener(swt.FocusListenerFocusLostAdapter(func(*swt.FocusEvent) { ed.end(true, false) }))
 	tv.SetText(opts.Text)
 	focus := func() bool {
-		focusTrace("Edit: Focus")
 		ok := tv.Focus()
 		t.SelectAll()
-		focusTrace("Edit: Focus -> %v, focus control is the field: %v", ok, t.IsFocusControl())
-		v.traceFirstResponder("after the Focus of Edit")
 		return ok
 	}
 	// Focus after the event when not now: on macOS the opening key also reached a field focused in the

@@ -10,12 +10,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"image/png"
+	"image"
 	"net"
 	"os"
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/haiodo/gowt/internal/qatree"
@@ -59,6 +61,11 @@ const (
 type server struct {
 	h     Host
 	token string
+
+	// A Fast shot writes its frame after the command has returned; writes counts those still running.
+	writes   sync.WaitGroup
+	writeMu  sync.Mutex
+	writeErr error
 }
 
 // Start serves in the background on the socket named by GOWT_QA_SOCKET; without it Start does nothing.
@@ -336,6 +343,12 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 			return nil, fmt.Errorf("shot: %w", err)
 		}
 	}
+	if a.Drain {
+		s.writes.Wait()
+		s.writeMu.Lock()
+		defer s.writeMu.Unlock()
+		return map[string]string{}, s.writeErr
+	}
 	path := a.Path
 	if path == "" {
 		f, err := os.CreateTemp("", "gowtqa-*.png")
@@ -363,14 +376,16 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 		s.waitFrames(done)
 	}
 	lap("wait")
+	var frameImg *image.NRGBA
 	_, err := s.ui(cmdTimeout, func() (any, error) {
 		sh, err := s.shellOf(a)
 		if err != nil {
 			return nil, err
 		}
 		shot.Passive = len(qaview.Popovers(s.h.Display, sh)) > 0
-		defer func() { shot.Passive = false }()
-		if a.Fast && !shot.Passive {
+		shot.Fast = a.Fast
+		defer func() { shot.Passive, shot.Fast = false, false }()
+		if a.Fast && !shot.Passive && a.Path != "" {
 			img, _, err := shot.CaptureImage(s.h.ShotHandle(sh))
 			if err == nil {
 				lap("capture")
@@ -378,14 +393,8 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 					return nil, err
 				}
 				lap("overlay")
-				f, err := os.Create(path)
-				if err != nil {
-					return nil, err
-				}
-				defer f.Close()
-				err = (&png.Encoder{CompressionLevel: png.BestSpeed}).Encode(f, img)
-				lap("encode")
-				return nil, err
+				frameImg = img
+				return nil, nil
 			}
 			if !errors.Is(err, shot.ErrNoImage) {
 				return nil, err
@@ -406,6 +415,23 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 	})
 	if err != nil {
 		return nil, err
+	}
+	if frameImg != nil {
+		// Raw RGBA, no PNG: the UI thread is free for the next shot while the file is written.
+		// The frame order is the order of the calls; the file name says it is not a PNG.
+		rawPath := strings.TrimSuffix(a.Path, ".png") + ".rgba"
+		w, h := frameImg.Bounds().Dx(), frameImg.Bounds().Dy()
+		s.writes.Wait() // one write in flight: the pipeline is capture N while writing N-1
+		lap("flush")
+		s.writes.Add(1)
+		go func() {
+			defer s.writes.Done()
+			err := os.WriteFile(rawPath, frameImg.Pix, 0o644)
+			s.writeMu.Lock()
+			s.writeErr = errors.Join(s.writeErr, err)
+			s.writeMu.Unlock()
+		}()
+		return map[string]any{"path": rawPath, "raw": true, "w": w, "h": h, "ms": ms}, nil
 	}
 	if a.Path != "" {
 		if a.Timing {
@@ -453,6 +479,8 @@ type shotArgs struct {
 	Fast bool `json:"fast"`
 	// Timing adds the milliseconds of each step to the result as "ms".
 	Timing bool `json:"timing"`
+	// Drain takes no shot: it returns when the frames of earlier Fast shots are on disk.
+	Drain bool `json:"drain"`
 }
 
 func (s *server) shellOf(a shotArgs) (*swt.Shell, error) {

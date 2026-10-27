@@ -22,7 +22,7 @@ log=${LOG:-$frames/record.log}
 record() {
 	local bin=${BIN:-}
 	mkdir -p "$frames"
-	rm -f "$frames"/f-*.png "$frames"/frames.txt
+	rm -f "$frames"/f-*.png "$frames"/f-*.rgba "$frames"/frames.txt "$frames"/raw.txt
 	if [ -z "$bin" ]; then
 		bin=bin/demo/monitor-qa-$label
 		go build -tags gowtqa -o "$bin" ./examples/apps/monitor
@@ -43,7 +43,14 @@ assemble() {
 	local work=$frames/loop
 	rm -rf "$work"; mkdir -p "$work" "$out/video" "$out/img"
 	# Constant rate; frame n of the take is n/fps. head and tail overlap: out[i] = tail[i]*(1-i/x) + head[i]*i/x.
-	ffmpeg -v error -y -f concat -safe 0 -i "$frames/frames.txt" -filter_complex "
+	# macOS frames are raw RGBA (raw.txt: size and rate), Linux and Windows ones are PNGs paced by frames.txt.
+	local src=(-f concat -safe 0 -i "$frames/frames.txt") feed=(true)
+	if [ -f "$frames/raw.txt" ]; then
+		read -r size rate < "$frames/raw.txt"
+		src=(-f rawvideo -pixel_format rgba -video_size "$size" -framerate "$rate" -i -)
+		feed=(cat "$frames"/f-*.rgba)
+	fi
+	"${feed[@]}" | ffmpeg -v error -y "${src[@]}" -filter_complex "
 		[0:v]fps=$fps,format=rgb24,split=3[a][b][c];
 		[a]trim=start_frame=0:end_frame=$x,setpts=PTS-STARTPTS[head];
 		[b]trim=start_frame=$n:end_frame=$((n+x)),setpts=PTS-STARTPTS[tail];

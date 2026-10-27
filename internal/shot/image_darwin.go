@@ -22,6 +22,17 @@ func CaptureImage(view int64) (*image.NRGBA, Frame, error) {
 	win := objc.ID(view).Send(sel("window"))
 	v := win.Send(sel("contentView")).Send(sel("superview"))
 	ClearFocus(view)
+	img, err := ViewImage(v)
+	if err != nil {
+		return nil, Frame{}, err
+	}
+	return img, frameOf(win), nil
+}
+
+// ViewImage renders the view tree of v as cacheDisplayInRect does and copies the bitmap, with no PNG
+// in between.
+func ViewImage(v objc.ID) (*image.NRGBA, error) {
+	sel := objc.RegisterName
 	bounds := objc.Send[nsRect](v, sel("bounds"))
 	rep := v.Send(sel("bitmapImageRepForCachingDisplayInRect:"), bounds)
 	v.Send(sel("cacheDisplayInRect:toBitmapImageRep:"), bounds, rep)
@@ -32,7 +43,7 @@ func CaptureImage(view int64) (*image.NRGBA, Frame, error) {
 	// Only 8-bit RGBA with the alpha last is read; anything else goes the PNG way.
 	if data == nil || w <= 0 || h <= 0 || stride < 4*w || objc.Send[int](rep, sel("samplesPerPixel")) != 4 ||
 		objc.Send[int](rep, sel("bitsPerSample")) != 8 || format&1 != 0 {
-		return nil, Frame{}, ErrNoImage
+		return nil, ErrNoImage
 	}
 	src := unsafe.Slice((*byte)(data), stride*h)
 	img := image.NewNRGBA(image.Rect(0, 0, w, h))
@@ -49,5 +60,5 @@ func CaptureImage(view int64) (*image.NRGBA, Frame, error) {
 			}
 		}
 	}
-	return img, frameOf(win), nil
+	return img, nil
 }

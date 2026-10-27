@@ -12,6 +12,37 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
+// whenActive runs start once w has been the active window for half a second: a test process started
+// from a terminal on macOS can lose the activation again shortly after launch.
+func whenActive(t *testing.T, app *g.App, w *g.Window, start func()) {
+	d := app.Unwrap()
+	w.Unwrap().ForceActive()
+	stable := 0
+	var poll func(left int)
+	poll = func(left int) {
+		if d.GetActiveShell() == w.Unwrap() {
+			stable++
+		} else {
+			stable = 0
+			w.Unwrap().ForceActive()
+		}
+		switch {
+		case stable == 5:
+			start()
+		case left == 0:
+			t.Error("the OS did not activate the test window")
+			w.Close()
+		default:
+			app.After(100*time.Millisecond, func() { poll(left - 1) })
+		}
+	}
+	poll(50)
+}
+
+type listenerFunc func(*swt.Event)
+
+func (f listenerFunc) HandleEvent(e *swt.Event) { f(e) }
+
 // TestEditFocusGUI types OS key events into Edit fields opened inside a key event: by the view's key
 // handler on Space, then by OnCommit, which runs in the Enter that ended the first edit.
 func TestEditFocusGUI(t *testing.T) {
@@ -43,7 +74,6 @@ func TestEditFocusGUI(t *testing.T) {
 			}, g.Grow()))
 			w.SetSize(400, 300)
 			w.Show()
-			w.Unwrap().ForceActive()
 			d := app.Unwrap()
 			focused := func(phase string) bool {
 				if ed == nil {
@@ -60,16 +90,10 @@ func TestEditFocusGUI(t *testing.T) {
 					t.Errorf("%s: editor text %q, want %q", phase, got, want)
 				}
 			}
-			step := 300 * time.Millisecond
 			steps := []func(){
 				func() {
-					// A window of an earlier run in this process may have left the app inactive.
-					w.Unwrap().ForceActive()
-					v.Canvas().Unwrap().SetFocus()
-				},
-				func() {
-					if d.GetActiveShell() != w.Unwrap() || !v.Canvas().Unwrap().IsFocusControl() {
-						t.Errorf("the window is not active or the view has no focus: the OS did not activate the test")
+					if !v.Canvas().Unwrap().SetFocus() {
+						t.Error("the view did not take the focus")
 						return
 					}
 					postKey(d, ' ')
@@ -85,7 +109,7 @@ func TestEditFocusGUI(t *testing.T) {
 				},
 				func() {
 					if !slices.Equal(commits, []string{"x"}) {
-						t.Errorf("Enter: commits %v, want [x]", commits)
+						t.Errorf("Enter: commits %q, want [x]", commits)
 					}
 					if focused("after the Enter that opened the second editor") {
 						postKey(d, 'y')
@@ -93,15 +117,29 @@ func TestEditFocusGUI(t *testing.T) {
 				},
 				func() { typed("second editor", "y") },
 			}
-			for i, f := range steps {
-				app.After(time.Duration(i+1)*step, func() {
-					v.traceFirstResponder(fmt.Sprintf("test step %d begins", i))
-					if !t.Failed() {
-						f()
+			whenActive(t, app, w, func() {
+				// A field ends its edit when the window loses the focus: another app taking it would
+				// fail the steps for a reason outside the toolkit.
+				done := false
+				w.Unwrap().AddListener(swt.Deactivate, listenerFunc(func(*swt.Event) {
+					if !done {
+						t.Error("another application took the focus during the test")
 					}
+				}))
+				step := 300 * time.Millisecond
+				for i, f := range steps {
+					app.After(time.Duration(i)*step, func() {
+						v.traceFirstResponder(fmt.Sprintf("test step %d begins", i))
+						if !t.Failed() {
+							f()
+						}
+					})
+				}
+				app.After(time.Duration(len(steps))*step, func() {
+					done = true
+					w.Close()
 				})
-			}
-			app.After(time.Duration(len(steps)+1)*step, w.Close)
+			})
 		})
 	}
 	<-ok
@@ -137,37 +175,30 @@ func TestPopoverFromKeyGUI(t *testing.T) {
 			}, g.Grow()))
 			w.SetSize(400, 300)
 			w.Show()
-			w.Unwrap().ForceActive()
 			d := app.Unwrap()
-			step := 400 * time.Millisecond
-			app.After(step, func() {
-				w.Unwrap().ForceActive()
-				v.Canvas().Unwrap().SetFocus()
-			})
-			app.After(2*step, func() {
-				if d.GetActiveShell() != w.Unwrap() || !v.Canvas().Unwrap().IsFocusControl() {
-					t.Errorf("the window is not active or the view has no focus: the OS did not activate the test")
+			whenActive(t, app, w, func() {
+				step := 400 * time.Millisecond
+				if !v.Canvas().Unwrap().SetFocus() {
+					t.Error("the view did not take the focus")
+					w.Close()
 					return
 				}
 				postKey(d, ' ')
-			})
-			app.After(4*step, func() {
-				if t.Failed() {
-					return
-				}
-				if field == nil {
-					t.Error("Space did not reach the view's key handler")
-					return
-				}
-				postKey(d, 'x')
-			})
-			app.After(5*step, func() {
-				defer w.Close()
-				if field != nil {
-					if got := field.Text(); got != "x" {
-						t.Errorf("popover field text %q, want the typed x", got)
+				app.After(2*step, func() {
+					if field == nil {
+						t.Error("Space did not reach the view's key handler")
+						return
 					}
-				}
+					postKey(d, 'x')
+				})
+				app.After(3*step, func() {
+					defer w.Close()
+					if field != nil {
+						if got := field.Text(); got != "x" {
+							t.Errorf("popover field text %q, want the typed x", got)
+						}
+					}
+				})
 			})
 		})
 	}

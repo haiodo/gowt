@@ -29,3 +29,6 @@ func materialProblem(_ *gowt.Window, pane *gowt.Panel, _ gowt.RGB) string {
 	}
 	return ""
 }
+
+// shotHandle is what shot.Capture takes for w.
+func shotHandle(w *gowt.Window) int64 { return w.Unwrap().View.Id }

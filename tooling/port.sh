@@ -478,6 +478,15 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'bg == nil || bg\[3\] != 0' "$DB_GO")" = 1 ] || { echo "port.sh: Composite.drawBackground rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Canvas.drawWidget fills a caret white in difference blend mode, which inverts the pixels under it. Under a
+# StyledText with an alpha-0 background (gowt.NoBackground) they are transparent, and the caret came out plain white,
+# unseen on a light material. Canvas.caretFill (widgets_canvas_manual_darwin.go) draws it in the text colour there.
+if [ "$PLATFORM" = cocoa ]; then
+	CV_GO=swt/widgets_canvas_darwin.go
+	perl -0pi -e 's/cocoa\.OSCGContextSetFillColor\(ctx, \[\]float64\{float64\(1\), float64\(1\), float64\(1\), float64\(1\)\}\)/cocoa.OSCGContextSetFillColor(ctx, this.caretFill(ctx))/' "$CV_GO"
+	[ "$(grep -c 'this.caretFill(ctx)' "$CV_GO")" = 1 ] || { echo "port.sh: Canvas caretFill rewrite did not apply" >&2; exit 1; }
+fi
+
 # cocoa Shell.windowSendEvent passes Tab on while the window itself is the first responder (package look leaves a
 # window without a list so), and nothing moved the focus: SWT traverses from a focused control only.
 # swt/widgets_shell_manual_darwin.go sends it to the first or last tab group.

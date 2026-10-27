@@ -192,7 +192,7 @@ func (this *Canvas) drawWidget_(id int64, context *cocoa.NSGraphicsContext, rect
 			var colorspace int64 = cocoa.OSCGColorSpaceCreateDeviceRGB()
 			cocoa.OSCGContextSetFillColorSpace(ctx, colorspace)
 			cocoa.OSCGColorSpaceRelease(colorspace)
-			cocoa.OSCGContextSetFillColor(ctx, []float64{float64(1), float64(1), float64(1), float64(1)})
+			cocoa.OSCGContextSetFillColor(ctx, this.caretFill(ctx))
 			cocoa.OSCGContextFillRect(ctx, drawRect)
 		}
 		cocoa.OSCGContextRestoreGState(ctx)

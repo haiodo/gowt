@@ -56,7 +56,9 @@ func (v *View) wireInput() {
 				return
 			}
 			if v.onKey != nil {
+				focusTrace("view key down=%v code=%d char=%q: handler begin", down, e.KeyCode, rune(e.Character))
 				v.onKey(&Key{Down: down, Code: int(e.KeyCode), Char: rune(e.Character), Mods: modsOfMask(e.StateMask)})
+				focusTrace("view key down=%v: handler end, doit=%v", down, e.Doit)
 			}
 		}
 	}

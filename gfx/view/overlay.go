@@ -145,15 +145,19 @@ func (v *View) Edit(opts EditOptions) *Editor {
 		if v.editor != nil && v.editor.e == ed {
 			v.editor = nil
 		}
+		focusTrace("edit ends (refocus %v): hide the field", refocus)
 		o.drop() // out of the list now; the control is disposed after the event that ended the edit
 		t.SetVisible(false)
+		v.traceFirstResponder("after hiding the ended field")
 		v.ended = append(v.ended, tv)
 		display := v.cv.Unwrap().GetDisplay()
 		display.AsyncExec(jrt.NewRunnable(func() {
+			focusTrace("deferred end of edit: refocus %v", refocus)
 			if !v.gone.Load() && refocus {
 				v.cv.Unwrap().SetFocus()
 			}
 			v.disposeEnded()
+			v.traceFirstResponder("after the deferred end of edit")
 		}))
 	}
 	t.AddKeyListener(swt.KeyListenerKeyPressedAdapter(func(e *swt.KeyEvent) {
@@ -163,8 +167,11 @@ func (v *View) Edit(opts EditOptions) *Editor {
 	}))
 	t.AddFocusListener(swt.FocusListenerFocusLostAdapter(func(*swt.FocusEvent) { ed.end(true, false) }))
 	tv.SetText(opts.Text)
-	tv.Focus()
+	focusTrace("Edit: Focus")
+	focused := tv.Focus()
 	t.SelectAll()
+	focusTrace("Edit: Focus -> %v, focus control is the field: %v", focused, t.IsFocusControl())
+	v.traceFirstResponder("after Edit")
 	h := &Editor{o: o, e: ed}
 	v.editor = h
 	return h
@@ -186,7 +193,9 @@ func (h *Editor) Cancel() { h.e.end(false, false) }
 // field aborts the edit of the window's shared field editor, which by then is the new field's.
 func (v *View) disposeEnded() {
 	for _, tv := range v.ended {
+		focusTrace("dispose an ended field")
 		tv.Dispose()
+		v.traceFirstResponder("after the dispose")
 	}
 	v.ended = nil
 }

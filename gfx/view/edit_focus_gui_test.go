@@ -1,6 +1,7 @@
 package view
 
 import (
+	"fmt"
 	"os"
 	"slices"
 	"testing"
@@ -84,6 +85,7 @@ func TestEditFocusGUI(t *testing.T) {
 			}
 			for i, f := range steps {
 				app.After(time.Duration(i+1)*step, func() {
+					v.traceFirstResponder(fmt.Sprintf("test step %d begins", i))
 					if !t.Failed() {
 						f()
 					}

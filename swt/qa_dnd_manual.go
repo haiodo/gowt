@@ -85,7 +85,7 @@ func qaDropOn(ds *DragSource, dt *DropTarget, dst *Control, dx, dy int32) (enter
 			key = DNDDROP_MOVE
 		}
 	}
-	p := dst.ToDisplay(dx, dy)
+	p := qaDisplayPoint(dst, dx, dy)
 	newEvent := func() *DNDEvent {
 		e := newDNDEvent()
 		e.Widget, e.X, e.Y, e.Time = upcastDropTargetToWidget(dt), p.X, p.Y, int32(jrt.CurrentTimeMillis())
@@ -199,4 +199,17 @@ func qaSetData(ds *DragSource, td *TransferData) bool {
 		}
 	}
 	return false
+}
+
+// qaDisplayPoint is the display point that ToControl maps back to dx,dy. With a zoom other than 100 the
+// round trip ToDisplay then ToControl rounds twice and can land a point off; a neighbour is exact.
+func qaDisplayPoint(c *Control, dx, dy int32) *Point {
+	p := c.ToDisplay(dx, dy)
+	for _, d := range [...][2]int32{{0, 0}, {-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, 1}, {-1, 1}, {1, -1}} {
+		q := NewPoint(p.X+d[0], p.Y+d[1])
+		if b := c.ToControl(q.X, q.Y); b.X == dx && b.Y == dy {
+			return q
+		}
+	}
+	return p
 }

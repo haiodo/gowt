@@ -9,10 +9,8 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 )
 
-// TestQuitExitsCleanly quits a dirty window the way Cmd+Q does, after a message box from OnClose, and
-// checks that the process ends with status 0. The child runs in its own process because a crash on
-// the way out kills it. GOWT_QUIT_PATH picks "menu" (the menu item's action, a direct call of
-// applicationShouldTerminate:) or "terminate" (NSApp terminate:, the Dock and logout).
+// TestQuitExitsCleanly quits after a message box from OnClose and wants exit status 0; a child
+// process, since a crash on the way out kills it. "menu" is Cmd+Q, "terminate" the Dock and logout.
 func TestQuitExitsCleanly(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")

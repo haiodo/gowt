@@ -75,6 +75,7 @@ func Run(setup func(*App)) (err error) {
 	defer a.disposeClipboard()
 	apps.Store(a.display, a)
 	a.display.AddListener(swt.Close, quitListener(func() bool { return a.askQuit(nil) }))
+	a.hookTerminate()
 	a.display.AddListener(swt.OpenDocument, openListener(a.openIn))
 	defer a.attachInbox()()
 	defer apps.Delete(a.display)

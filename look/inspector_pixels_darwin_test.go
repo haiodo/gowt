@@ -97,6 +97,105 @@ func TestPanesNoBlackFill(t *testing.T) {
 	}
 }
 
+// A Text on the inspector glass is not darker than the glass above it, in forced dark and in light.
+// A borderless single-line field drew textBackgroundColor, opaque (30,30,30) in dark: a black bar.
+func TestInspectorTextOnGlass(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	for _, mode := range []struct {
+		name string
+		look gowt.Appearance
+	}{{"dark", gowt.AppearanceDark}, {"light", gowt.AppearanceLight}} {
+		t.Run(mode.name, func(t *testing.T) {
+			fields := map[string][4]int32{}
+			var ctl []*swt.Control
+			var names []string
+			probe := func(name string) gowt.Option {
+				return gowt.Custom(func(c *swt.Control) { ctl, names = append(ctl, c), append(names, name) })
+			}
+			path := filepath.Join(t.TempDir(), "fields.png")
+			if dir := os.Getenv("GOWT_PIXELS_DIR"); dir != "" {
+				path = filepath.Join(dir, "fields-"+mode.name+".png")
+			}
+			var width int32
+			var err error
+			onMain(func() {
+				err = gowt.Run(func(app *gowt.App) {
+					app.SetAppearance(mode.look)
+					w := app.Window("fields " + mode.name)
+					var content, insp *gowt.Panel
+					w.Add(
+						gowt.VBox(gowt.Ref(&content), gowt.Label("content")),
+						gowt.VBox(gowt.Ref(&insp), gowt.Padding(16), gowt.Gap(16),
+							gowt.Text(gowt.GrowX(), gowt.Value("Root"), probe("single-line")),
+							gowt.Text(gowt.GrowX(), gowt.Border(), gowt.Value("Root"), probe("single-line Border")),
+							gowt.Text(gowt.Multiline(), gowt.Border(), gowt.GrowX(), gowt.Size(0, 60), probe("multi-line Border"))))
+					look.SetInspector(w, content, insp, 260)
+					w.SetSize(700, 400)
+					w.Show()
+					app.After(500*time.Millisecond, func() {
+						defer w.Close()
+						defer app.SetAppearance(gowt.AppearanceSystem) // later tests run in the system appearance
+						s := w.Unwrap().GetBounds()
+						width = s.Width
+						for i, c := range ctl {
+							o, size := c.ToDisplay(0, 0), c.GetSize()
+							fields[names[i]] = [4]int32{o.X - s.X, o.Y - s.Y, size.X, size.Y}
+						}
+						if err := shot.WindowPNG(w.Unwrap().View.Id, path); err != nil {
+							t.Error(err)
+						}
+					})
+				})
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			f, err := os.Open(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer f.Close()
+			img, err := png.Decode(f)
+			if err != nil {
+				t.Fatal(err)
+			}
+			scale := float64(img.Bounds().Dx()) / float64(width)
+			for name, r := range fields {
+				// The right half of the field, clear of "Root" and of the border, against a strip of glass
+				// in the gap above it.
+				field := meanLuma(img, [4]int32{r[0] + r[2]/2, r[1] + 5, r[2]/2 - 6, r[3] - 10}, scale)
+				glass := meanLuma(img, [4]int32{r[0], r[1] - 10, r[2], 6}, scale)
+				t.Logf("%s at %v: field luma %.0f, glass %.0f", name, r, field, glass)
+				if field < glass-8 {
+					t.Errorf("%s at %v: field luma %.0f is darker than the glass above it, %.0f", name, r, field, glass)
+				}
+			}
+			if len(fields) != 3 {
+				t.Errorf("probed %d fields, want 3", len(fields))
+			}
+		})
+	}
+}
+
+// meanLuma is the mean Rec. 601 luma, 0..255, of r (window points) at scale pixels per point.
+func meanLuma(img image.Image, r [4]int32, scale float64) float64 {
+	px := image.Rect(int(float64(r[0])*scale), int(float64(r[1])*scale),
+		int(float64(r[0]+r[2])*scale), int(float64(r[1]+r[3])*scale)).Intersect(img.Bounds())
+	if px.Empty() {
+		return 0
+	}
+	sum := 0.0
+	for y := px.Min.Y; y < px.Max.Y; y++ {
+		for x := px.Min.X; x < px.Max.X; x++ {
+			cr, cg, cb, _ := img.At(x, y).RGBA()
+			sum += (0.299*float64(cr) + 0.587*float64(cg) + 0.114*float64(cb)) / 257
+		}
+	}
+	return sum / float64(px.Dx()*px.Dy())
+}
+
 // blackShare is the share of opaque near-black pixels in r (window points), at scale pixels per point.
 func blackShare(img image.Image, r [4]int32, scale float64) float64 {
 	px := image.Rect(int(float64(r[0])*scale), int(float64(r[1])*scale),

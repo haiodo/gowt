@@ -1,6 +1,7 @@
 //go:build darwin
 
-// Hand-written: inset, transparency and content height of a multi-line text view.
+// Hand-written: inset, transparency and content height of a multi-line text view, and the fill of a
+// borderless text field on glass.
 package cocoa
 
 import (
@@ -40,6 +41,17 @@ func ClearTextViewBackground(view *NSView) {
 		msg(sv, "setDrawsBackground:", 0)
 		msg(msg(sv, "contentView"), "setDrawsBackground:", 0)
 	}
+}
+
+// SetGlassFieldFill keeps textBackgroundColor under the view's light appearance and clears it under a
+// dark one, where it is an opaque (30,30,30) rectangle over the glass.
+func SetGlassFieldFill(view *NSView) {
+	v := uintptr(view.Id)
+	fill := msg(class("NSColor"), "textBackgroundColor")
+	if appearanceDark(msg(v, "effectiveAppearance")) {
+		fill = msg(class("NSColor"), "clearColor")
+	}
+	msg(v, "setBackgroundColor:", fill)
 }
 
 // TextViewContentHeight is the height of the text wrapped at width plus 2*insetY, one line at least.

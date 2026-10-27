@@ -428,11 +428,15 @@ func clearChild(ch *swt.Control, deep bool) {
 			clearControl(ch)
 		}
 	case *swt.Text:
-		// A single-line Text keeps its native field, as in the sidebar; a multi-line one is the
-		// text of an input row and shows the glass.
-		if !own && v.GetStyle()&swt.MULTI != 0 {
+		// A single-line Text keeps its native field, as in the sidebar, but a borderless one is no bezel,
+		// only a textBackgroundColor fill; a multi-line one is the text of an input row and shows the glass.
+		switch {
+		case own:
+		case v.GetStyle()&swt.MULTI != 0:
 			clearControl(ch)
 			cocoa.ClearTextViewBackground(ch.View)
+		case v.GetStyle()&(swt.BORDER|swt.SEARCH) == 0:
+			glassField(ch)
 		}
 	case *swt.Button:
 		if !own && v.GetStyle()&(swt.CHECK|swt.RADIO) != 0 {
@@ -498,6 +502,33 @@ func (clearRoot) HandleEvent(e *swt.Event) {
 			clearChild(ch, false)
 			return
 		}
+	}
+}
+
+const glassFieldKey = "gowt.look.glassField"
+
+// glassField sets the fill of a borderless single-line Text on glass and sets it again at each theme
+// switch, unless the app has given the Text a background since.
+func glassField(c *swt.Control) {
+	cocoa.SetGlassFieldFill(c.View)
+	if c.GetDataKey(glassFieldKey) != nil {
+		return
+	}
+	f := &fieldTheme{c}
+	c.SetDataKeyValue(glassFieldKey, f)
+	c.GetDisplay().AddListener(swt.Settings, f)
+	c.AddListener(swt.Dispose, f)
+}
+
+type fieldTheme struct{ c *swt.Control }
+
+func (f *fieldTheme) HandleEvent(e *swt.Event) {
+	if e.Type == swt.Dispose {
+		f.c.GetDisplay().RemoveListener(swt.Settings, f)
+		return
+	}
+	if f.c.GetBackgroundColor().Equals(f.c.DefaultBackground()) {
+		cocoa.SetGlassFieldFill(f.c.View)
 	}
 }
 

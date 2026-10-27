@@ -23,7 +23,7 @@ func cpuSpec() chartSpec {
 	return chartSpec{
 		names: []string{"System", "User"}, stacked: true, total: "CPU", fixedMax: 1,
 		fracs: []float64{0, 0.25, 0.5, 0.75, 1}, widest: "100%",
-		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
+		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.second, p.accent}[i] },
 		axis:  func(v float64) string { return pct(v) },
 		value: func(v float64) string { return pct(v) },
 	}
@@ -32,7 +32,7 @@ func cpuSpec() chartSpec {
 func netSpec() chartSpec {
 	return chartSpec{
 		names: []string{"Sent", "Received"}, minMax: 100e3, fracs: []float64{0, 0.5, 1}, widest: "000 KB/s",
-		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
+		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.second, p.accent}[i] },
 		axis:  rate, value: rate,
 	}
 }
@@ -195,6 +195,69 @@ func BenchmarkRasterTape(b *testing.B) {
 		if _, err := gfx.RenderSubtree(r, c.scene, c.node, area, 2, gfx.Color{}); err != nil {
 			b.Fatal(err)
 		}
+	}
+}
+
+func TestLabelEvery(t *testing.T) {
+	for _, c := range []struct{ gap, w, want float64 }{{50, 60, 2}, {30, 60, 2}, {25, 60, 3}, {12, 60, 6}, {4, 60, 12}} {
+		if got := labelEvery(c.gap, c.w); got != c.want {
+			t.Errorf("labelEvery(%v, %v) = %v, want %v", c.gap, c.w, got, c.want)
+		}
+	}
+}
+
+// A 60 s window keeps at least two time labels on a 180 pt plot and three on a 226 pt one, inside
+// the plot and apart, whatever second the window ends on.
+func TestTimeLabelsOnNarrowPlots(t *testing.T) {
+	// 44 pt is "15:04:05" in the macOS caption font, 50 pt leaves room for wider ones
+	for _, c := range []struct{ plotW, labelW, want float64 }{{180, 50, 2}, {226, 44, 3}, {260, 50, 3}} {
+		labelW := c.labelW
+		pps := (c.plotW - rightPad) / 60
+		every := labelEvery(10*pps, labelW+12)
+		for end := 1000.0; end < 1060; end++ {
+			hi := end*pps + rightPad
+			lo := hi - c.plotW
+			var ls []timeLabel
+			for tk := math.Floor(lo/pps/10) * 10; tk*pps <= hi; tk += 10 {
+				if x := tk * pps; x >= lo && math.Mod(tk/10, every) == 0 {
+					ls = append(ls, timeLabel{"", x - labelW/2, labelW})
+				}
+			}
+			got := placeLabels(ls, lo, hi)
+			if float64(len(got)) < c.want {
+				t.Errorf("%v pt plot ending at %vs: %d labels, want %v", c.plotW, end, len(got), c.want)
+			}
+			for i, l := range got {
+				if l.x < lo || l.x+l.w > hi || i > 0 && l.x < got[i-1].x+got[i-1].w+4 {
+					t.Errorf("%v pt plot ending at %vs: label %d at %.0f..%.0f, plot %.0f..%.0f", c.plotW, end, i, l.x, l.x+l.w, lo, hi)
+				}
+			}
+		}
+	}
+}
+
+// Whatever the system accent, the series of one chart never share a colour.
+func TestSeriesColoursDistinct(t *testing.T) {
+	accents := map[string]gfx.Color{
+		"blue": gfx.RGB(0, 122, 255), "orange": gfx.RGB(255, 149, 0), "graphite": gfx.RGB(142, 142, 147),
+		"red": gfx.RGB(255, 59, 48), "yellow": gfx.RGB(255, 204, 0), "green": gfx.RGB(52, 199, 89),
+		"purple": gfx.RGB(175, 82, 222), "pink": gfx.RGB(255, 45, 85),
+	}
+	for name, a := range accents {
+		for _, dark := range []bool{false, true} {
+			p := newPalette(dark, gfx.RGB(240, 240, 240), a, 11)
+			cs := []gfx.Color{p.accent, p.second, p.third}
+			for i := range cs {
+				for j := i + 1; j < len(cs); j++ {
+					if near(cs[i], cs[j]) || cs[i] == cs[j] {
+						t.Errorf("accent %s (dark %v): series %d and %d are both %v", name, dark, i, j, cs[i])
+					}
+				}
+			}
+		}
+	}
+	if p := newPalette(false, gfx.RGB(240, 240, 240), accents["orange"], 11); p.second != gfx.RGB(0, 122, 255) {
+		t.Errorf("orange accent: second series %v, want blue", p.second)
 	}
 }
 

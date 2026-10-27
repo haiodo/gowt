@@ -22,7 +22,7 @@ shoot() { # <png name> <executable> [args...]
 	local png=$1 exe=$2; shift 2
 	rm -f "$out/$png"
 	# The alarm is the backstop for a stuck window; GOWT_SNAP ends a healthy run by itself.
-	GOWT_SNAP_NOFOCUS=1 GOWT_SNAP="${PATHPFX:-}$out/$png" perl -e 'alarm 60; exec @ARGV' ${RUN:-} "$exe" "$@" >"$bin/last.log" 2>&1
+	GOWT_SNAP_NOFOCUS=1 GOWT_SNAP="${PATHPFX:-}$out/$png" perl -e 'alarm 120; exec @ARGV' ${RUN:-} "$exe" "$@" >"$bin/last.log" 2>&1
 	if [ ! -s "$out/$png" ]; then
 		echo "FAILED $png"; sed 's/^/  /' "$bin/last.log" | tail -5; fail=1
 	else

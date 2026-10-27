@@ -4,6 +4,9 @@ package main
 // labels beside it (they show blank until the next full repaint). Toolkit bug, worked around here only.
 func (m *monitor) repaintCards() {
 	for _, c := range m.cards {
+		if c.Unwrap().IsDisposed() { // a delayed repaint can come after the window closed
+			continue
+		}
 		c.Unwrap().RedrawChildren(true)
 	}
 }

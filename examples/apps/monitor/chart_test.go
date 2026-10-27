@@ -198,6 +198,14 @@ func BenchmarkRasterTape(b *testing.B) {
 	}
 }
 
+func TestLabelEvery(t *testing.T) {
+	for _, c := range []struct{ gap, w, want float64 }{{50, 60, 2}, {30, 60, 2}, {25, 60, 3}, {12, 60, 6}, {4, 60, 12}} {
+		if got := labelEvery(c.gap, c.w); got != c.want {
+			t.Errorf("labelEvery(%v, %v) = %v, want %v", c.gap, c.w, got, c.want)
+		}
+	}
+}
+
 func TestNiceCeil(t *testing.T) {
 	for in, want := range map[float64]float64{0: 1, 1: 1, 1.1: 2, 2.2: 2.5, 4.9: 5, 51: 100, 90e3: 100e3} {
 		if got := niceCeil(in); got != want {

@@ -109,6 +109,11 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 
 	tick := gfx.StrokeStyle{Width: 1}
 	off := float64(p.base.UnixNano()) / 1e9 // ticks fall on whole minutes and seconds of the clock
+	layout := "15:04"
+	if p.tickStep < 60 {
+		layout = "15:04:05"
+	}
+	every := labelEvery(p.tickStep*p.pps, gfx.DefaultMeasurer.MeasureText(layout, pal.small).Width+12)
 	for t := math.Ceil((p.xLo+off)/p.tickStep)*p.tickStep - off; t <= p.xHi; t += p.tickStep {
 		x := math.Round(t*p.pps) + 0.5
 		var l gfx.Path
@@ -116,12 +121,8 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 		l.LineTo(x, p.h-strip+4)
 		r.StrokePath(&l, tick, pal.tick)
 		at := p.base.Add(time.Duration(t * float64(time.Second)))
-		// a label on every second tick only: Pango text is the slow part of a Linux tile
-		if k := math.Round((float64(at.UnixNano())/1e9)/p.tickStep) * p.tickStep; math.Mod(k/p.tickStep, 2) == 0 {
-			layout := "15:04"
-			if p.tickStep < 60 {
-				layout = "15:04:05"
-			}
+		// a label on every second tick at most: Pango text is the slow part of a Linux tile
+		if k := math.Round((float64(at.UnixNano())/1e9)/p.tickStep) * p.tickStep; math.Mod(k/p.tickStep, every) == 0 {
 			s := at.Format(layout)
 			if p.visHi == 0 || (x+4 >= p.visLo && x+4+gfx.DefaultMeasurer.MeasureText(s, pal.small).Width <= p.visHi) { // a label the edge would cut is left out
 				r.Text(s, x+4, p.h-5, pal.small, pal.label)
@@ -211,6 +212,17 @@ func recordAxis(pal *palette, p *tapeParams, label func(float64) string) *gfx.Pi
 		r.Text(s, p.margin-8-gfx.DefaultMeasurer.MeasureText(s, pal.small).Width, y+pal.small.Size*0.36, pal.small, pal.label)
 	}
 	return r.Finish()
+}
+
+// labelEvery is how many ticks apart the time labels are, so that labels labelW wide do not touch
+// on ticks gap apart; the steps keep the labels on round times (20, 30, 60 s for 10 s ticks).
+func labelEvery(gap, labelW float64) float64 {
+	for _, n := range []float64{2, 3, 6} {
+		if n*gap >= labelW {
+			return n
+		}
+	}
+	return 12
 }
 
 // niceCeil rounds v up to 1, 2, 2.5, 5 or 10 times a power of ten: the axis moves in readable steps.

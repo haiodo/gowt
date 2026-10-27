@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"runtime"
 
 	"github.com/haiodo/gowt/gfx"
@@ -12,7 +13,7 @@ import (
 type palette struct {
 	dark                         bool
 	card                         gfx.Color // the surface the charts sit on, read from the native card
-	accent, orange, purple, red  gfx.Color
+	accent, second, third, red   gfx.Color // series colours in this order, then the load colour
 	grid, tick, label, labelSoft gfx.Color
 	bubble, bubbleEdge, text     gfx.Color
 	small, regular, strong       gfx.Font
@@ -35,13 +36,15 @@ func fontNames() (regular, strong string) {
 func newPalette(dark bool, card, accent gfx.Color, px float64) *palette {
 	p := &palette{dark: dark, card: card, accent: accent}
 	if dark {
-		p.orange, p.purple, p.red = gfx.RGB(255, 159, 10), gfx.RGB(191, 90, 242), gfx.RGB(255, 105, 97)
+		p.second, p.third, p.red = distinct(accent, gfx.RGB(255, 159, 10), gfx.RGB(10, 132, 255)),
+			distinct(accent, gfx.RGB(191, 90, 242), gfx.RGB(48, 209, 88)), gfx.RGB(255, 105, 97)
 		p.grid, p.tick = gfx.White.WithAlpha(0.10), gfx.White.WithAlpha(0.05)
 		p.label, p.labelSoft = gfx.White.WithAlpha(0.62), gfx.White.WithAlpha(0.38)
 		p.bubble, p.bubbleEdge = gfx.RGB(58, 58, 60), gfx.White.WithAlpha(0.14)
 		p.text = gfx.White.WithAlpha(0.92)
 	} else {
-		p.orange, p.purple, p.red = gfx.RGB(255, 149, 0), gfx.RGB(175, 82, 222), gfx.RGB(255, 59, 48)
+		p.second, p.third, p.red = distinct(accent, gfx.RGB(255, 149, 0), gfx.RGB(0, 122, 255)),
+			distinct(accent, gfx.RGB(175, 82, 222), gfx.RGB(52, 199, 89)), gfx.RGB(255, 59, 48)
 		p.grid, p.tick = gfx.Black.WithAlpha(0.10), gfx.Black.WithAlpha(0.045)
 		p.label, p.labelSoft = gfx.Black.WithAlpha(0.60), gfx.Black.WithAlpha(0.38)
 		p.bubble, p.bubbleEdge = gfx.RGB(255, 255, 255), gfx.Black.WithAlpha(0.12)
@@ -52,6 +55,49 @@ func newPalette(dark bool, card, accent gfx.Color, px float64) *palette {
 	p.regular = gfx.Font{Name: reg, Size: px + 1}
 	p.strong = gfx.Font{Name: strong, Size: px + 1}
 	return p
+}
+
+// distinct is want, or alt when the accent has nearly the hue of want: an orange accent would
+// draw User and System, Received and Sent in one colour.
+func distinct(accent, want, alt gfx.Color) gfx.Color {
+	if near(accent, want) {
+		return alt
+	}
+	return want
+}
+
+// near reports whether two colours read as one series colour: both saturated and less than 40
+// degrees of hue apart. A grey (graphite) accent is near nothing.
+func near(a, b gfx.Color) bool {
+	ha, sa := hueSat(a)
+	hb, sb := hueSat(b)
+	if sa < 0.25 || sb < 0.25 {
+		return false
+	}
+	d := math.Abs(ha - hb)
+	return min(d, 360-d) < 40
+}
+
+// hueSat is the HSV hue in degrees and saturation of c.
+func hueSat(c gfx.Color) (h, s float64) {
+	hi, lo := max(c.R, c.G, c.B), min(c.R, c.G, c.B)
+	if hi == 0 || hi == lo {
+		return 0, 0
+	}
+	d := hi - lo
+	switch hi {
+	case c.R:
+		h = math.Mod((c.G-c.B)/d, 6)
+	case c.G:
+		h = (c.B-c.R)/d + 2
+	default:
+		h = (c.R-c.G)/d + 4
+	}
+	h *= 60
+	if h < 0 {
+		h += 360
+	}
+	return h, d / hi
 }
 
 // mix is a blended with b, t of the way.

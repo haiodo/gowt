@@ -35,8 +35,8 @@ func memSegments() (used []segment, rest []segment) {
 	cached := segment{"Cached files", func(p *palette) gfx.Color { return mix(p.card, p.accent, 0.32) }, func(m sampler.Memory) uint64 { return m.Cached }}
 	free := segment{"Free", func(p *palette) gfx.Color { return p.track() }, func(m sampler.Memory) uint64 { return m.Free }}
 	if runtime.GOOS == "darwin" {
-		wired := segment{"Wired", func(p *palette) gfx.Color { return p.orange }, func(m sampler.Memory) uint64 { return m.Wired }}
-		comp := segment{"Compressed", func(p *palette) gfx.Color { return p.purple }, func(m sampler.Memory) uint64 { return m.Compressed }}
+		wired := segment{"Wired", func(p *palette) gfx.Color { return p.second }, func(m sampler.Memory) uint64 { return m.Wired }}
+		comp := segment{"Compressed", func(p *palette) gfx.Color { return p.third }, func(m sampler.Memory) uint64 { return m.Compressed }}
 		return []segment{app, wired, comp}, []segment{cached, free}
 	}
 	app.name = "Used"
@@ -182,7 +182,7 @@ func (m *monitor) build() {
 	m.cpu = newChart(chartSpec{
 		names: []string{"System", "User"}, stacked: true, total: "CPU", fixedMax: 1,
 		fracs: []float64{0, 0.25, 0.5, 0.75, 1}, widest: "100%",
-		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
+		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.second, p.accent}[i] },
 		axis:  pct, value: pct,
 	}, pal, windows[0])
 	used, rest := memSegments()
@@ -201,7 +201,7 @@ func (m *monitor) build() {
 	}, pal, windows[0])
 	m.net = newChart(chartSpec{
 		names: []string{"Sent", "Received"}, minMax: 100e3, fracs: []float64{0, 0.2, 0.4, 0.6, 0.8, 1}, widest: "000 KB/s",
-		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
+		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.second, p.accent}[i] },
 		axis:  rate, value: rate,
 	}, pal, windows[0])
 	m.cores = newCoreMeters(pal)
@@ -219,7 +219,7 @@ func (m *monitor) build() {
 	w.SetMinSize(900, 560)
 	// CPU and Network share a row and Memory takes the width under them: three charts stacked in the
 	// 600 pt high docs shot left a plot of about 30 pt each.
-	w.Add(gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.MD),
+	w.Add(gowt.VBox(gowt.Grow(), gowt.Padding(gowt.Spacing.XS), gowt.Gap(gowt.Spacing.MD),
 		m.header(),
 		gowt.HBox(gowt.Grow(), gowt.Gap(gowt.Spacing.MD),
 			gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.MD),
@@ -271,7 +271,7 @@ func (m *monitor) cpuCard() gowt.Option {
 		head("CPU", gowt.Spacer(), lbl(&m.cpuValue, "-", gowt.Typeface(gowt.Type.Title))),
 		m.cpu.option(gowt.Scaled(200), chartMin),
 		m.legend(m.series("User", func(p *palette) gfx.Color { return p.accent }, &m.userValue),
-			m.series("System", func(p *palette) gfx.Color { return p.orange }, &m.sysValue))))
+			m.series("System", func(p *palette) gfx.Color { return p.second }, &m.sysValue))))
 }
 
 // chartMin is the least height of a chart with its time labels: a plot of about 90 pt.
@@ -301,7 +301,7 @@ func (m *monitor) netCard() gowt.Option {
 		head("Network"),
 		m.net.option(gowt.Scaled(200), chartMin),
 		m.legend(m.series("Received", func(p *palette) gfx.Color { return p.accent }, &m.rxValue),
-			m.series("Sent", func(p *palette) gfx.Color { return p.orange }, &m.txValue))))
+			m.series("Sent", func(p *palette) gfx.Color { return p.second }, &m.txValue))))
 }
 
 func (m *monitor) coresCard() gowt.Option {

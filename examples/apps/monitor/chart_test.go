@@ -23,7 +23,7 @@ func cpuSpec() chartSpec {
 	return chartSpec{
 		names: []string{"System", "User"}, stacked: true, total: "CPU", fixedMax: 1,
 		fracs: []float64{0, 0.25, 0.5, 0.75, 1}, widest: "100%",
-		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
+		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.second, p.accent}[i] },
 		axis:  func(v float64) string { return pct(v) },
 		value: func(v float64) string { return pct(v) },
 	}
@@ -32,7 +32,7 @@ func cpuSpec() chartSpec {
 func netSpec() chartSpec {
 	return chartSpec{
 		names: []string{"Sent", "Received"}, minMax: 100e3, fracs: []float64{0, 0.5, 1}, widest: "000 KB/s",
-		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.orange, p.accent}[i] },
+		color: func(p *palette, i int) gfx.Color { return []gfx.Color{p.second, p.accent}[i] },
 		axis:  rate, value: rate,
 	}
 }
@@ -203,6 +203,31 @@ func TestLabelEvery(t *testing.T) {
 		if got := labelEvery(c.gap, c.w); got != c.want {
 			t.Errorf("labelEvery(%v, %v) = %v, want %v", c.gap, c.w, got, c.want)
 		}
+	}
+}
+
+// Whatever the system accent, the series of one chart never share a colour.
+func TestSeriesColoursDistinct(t *testing.T) {
+	accents := map[string]gfx.Color{
+		"blue": gfx.RGB(0, 122, 255), "orange": gfx.RGB(255, 149, 0), "graphite": gfx.RGB(142, 142, 147),
+		"red": gfx.RGB(255, 59, 48), "yellow": gfx.RGB(255, 204, 0), "green": gfx.RGB(52, 199, 89),
+		"purple": gfx.RGB(175, 82, 222), "pink": gfx.RGB(255, 45, 85),
+	}
+	for name, a := range accents {
+		for _, dark := range []bool{false, true} {
+			p := newPalette(dark, gfx.RGB(240, 240, 240), a, 11)
+			cs := []gfx.Color{p.accent, p.second, p.third}
+			for i := range cs {
+				for j := i + 1; j < len(cs); j++ {
+					if near(cs[i], cs[j]) || cs[i] == cs[j] {
+						t.Errorf("accent %s (dark %v): series %d and %d are both %v", name, dark, i, j, cs[i])
+					}
+				}
+			}
+		}
+	}
+	if p := newPalette(false, gfx.RGB(240, 240, 240), accents["orange"], 11); p.second != gfx.RGB(0, 122, 255) {
+		t.Errorf("orange accent: second series %v, want blue", p.second)
 	}
 }
 

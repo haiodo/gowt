@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.13.1 (2026-10-27)
 
 Toolbar over the inspector (Tenniarb)
 - New: `look.ToolbarItem.Inspector` puts an item over the inspector of a `look.SetInspector` window. The Inspector items come after the others, start at the inspector's left edge and follow it through a drag and a window resize; with the inspector hidden they sit at the right end of the toolbar. A `Space` with `Inspector` pushes the next ones to the right edge. macOS: an `NSTrackingSeparatorToolbarItem` before them, bound to an empty zero-height `NSSplitView` whose divider the pane layout keeps on the inspector edge and collapses with the inspector (an SWT window has no split view of its own). Windows and Linux: a strip at the top of the inspector, level with the bar, which ends the bar while the inspector is hidden; the inspector drag stops at the strip's width.
@@ -15,6 +15,10 @@ Flush material panel (Tenniarb)
 - New: `gowt.NoBackground()` makes a `StyledText` paint no background of its own, so the material or a coloured panel under it shows through, on macOS, Windows and Linux.
 - Fixed: `gowt.NoBorder()` was reported to `OnError` on a `StyledText`; it is accepted and wins over `Border()` in either order.
 - Tests: `TestMaterialPane` (package look) and `TestStyledTextNoBackground` (`GOWT_GUI_TEST=1`): Docker Xvfb and macOS; `TestMaterialShowsThrough` (macOS 26).
+
+Known issues
+- The toolbar Inspector, Text and Small items and `look.SetMaterial` were checked on macOS and in Linux Docker Xvfb only; Windows and a desktop Linux session are not checked yet.
+- A text toolbar item takes a click only, no menu.
 
 ## v0.13.0 (2026-10-27)
 

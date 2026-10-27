@@ -217,6 +217,8 @@ const ToolbarSearchKey = "gowt.qa.toolbarsearch"
 
 // ToolbarSearch is what such a shell tells the QA driver.
 type ToolbarSearch interface {
+	// Present reports whether the toolbar has the field now; a rebuilt toolbar has none for a moment.
+	Present() bool
 	ID() string
 	Placeholder() string
 	Text() string
@@ -233,5 +235,27 @@ type ToolbarSearch interface {
 // ToolbarSearchOf returns the toolbar search field of s.
 func ToolbarSearchOf(s *swt.Shell) (ToolbarSearch, bool) {
 	t, ok := s.GetDataKey(ToolbarSearchKey).(ToolbarSearch)
+	return t, ok
+}
+
+// ToolbarKey is the data key of a shell with a native toolbar, whose items are no swt controls.
+const ToolbarKey = "gowt.qa.toolbar"
+
+// ToolbarButton is a push item or a group segment of a native toolbar.
+type ToolbarButton struct {
+	ID, Title string
+	Enabled   bool
+}
+
+// Toolbar is what such a shell tells the QA driver.
+type Toolbar interface {
+	Buttons() []ToolbarButton
+	// Click runs the handler of button n of Buttons.
+	Click(n int) bool
+}
+
+// ToolbarOf returns the native toolbar of s.
+func ToolbarOf(s *swt.Shell) (Toolbar, bool) {
+	t, ok := s.GetDataKey(ToolbarKey).(Toolbar)
 	return t, ok
 }

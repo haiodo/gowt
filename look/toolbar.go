@@ -163,6 +163,7 @@ func (b *toolbarBar) fill() {
 	b.panel = p
 	shown := b.sidebar != nil && b.sidebar.AsComposite().GetVisible()
 	for _, it := range over {
+		it.ID = "" // the copy is hidden while the sidebar shows; the ID belongs to the item in the sidebar row
 		if c := b.item(p, it, &b.icons); c != nil {
 			c.SetVisible(!shown)
 			b.lead = append(b.lead, c)
@@ -249,6 +250,9 @@ func toolItem(tb *gowt.ToolBarView, it ToolbarItem, icons *[]func(on, off string
 	}
 	ti := tb.Item(text, it.OnClick)
 	ti.SetTooltip(it.Title)
+	if it.ID != "" {
+		ti.Unwrap().SetDataKeyValue("gowt.id", it.ID) // qatree.IDKey
+	}
 	if ok {
 		data := fmt.Sprintf(barSVG, shape)
 		*icons = append(*icons, func(on, off string) []*swt.Image {

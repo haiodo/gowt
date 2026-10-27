@@ -210,10 +210,33 @@ func toolbarItems(items []ToolbarItem) []cocoa.ToolbarItem {
 	return ci
 }
 
+// nativeToolbar gives the QA driver the buttons of the NSToolbar.
+type nativeToolbar struct{ b *cocoa.ToolbarButtons }
+
+func (t nativeToolbar) Buttons() []qaview.ToolbarButton {
+	var out []qaview.ToolbarButton
+	for _, b := range t.b.List() {
+		out = append(out, qaview.ToolbarButton{ID: b.ID, Title: b.Title, Enabled: b.Enabled})
+	}
+	return out
+}
+
+func (t nativeToolbar) Click(n int) bool { return t.b.Click(n) }
+
 func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
 	ok := cocoa.InstallToolbar(s.View, toolbarItems(items))
-	if f := cocoa.ToolbarSearch(s.View); ok && f != nil {
-		s.SetDataKeyValue(qaview.ToolbarSearchKey, f)
+	// The handles look the toolbar up on every call: SetSidebar rebuilds it behind this function.
+	if ok {
+		s.SetDataKeyValue(qaview.ToolbarKey, nativeToolbar{cocoa.ToolbarButtonsOf(s.View)})
+	} else {
+		s.SetDataKeyValue(qaview.ToolbarKey, nil)
+	}
+	hasSearch := false
+	for _, it := range items {
+		hasSearch = hasSearch || it.OnSearch != nil
+	}
+	if ok && hasSearch {
+		s.SetDataKeyValue(qaview.ToolbarSearchKey, cocoa.ToolbarSearch(s.View))
 	} else {
 		s.SetDataKeyValue(qaview.ToolbarSearchKey, nil)
 	}

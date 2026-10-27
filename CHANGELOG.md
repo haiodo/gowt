@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+Caret in a NoBackground StyledText (Tenniarb)
+- Fixed: a `StyledText` with `gowt.NoBackground()` showed no text caret on macOS, as in the code pane of `examples/materialpanel`. SWT's cocoa `Canvas` fills the caret white in difference blend mode to invert the pixels under it; under an alpha-0 background those pixels are transparent, so the caret came out plain white over the light material. A canvas whose background alpha is below 255 now draws its caret in its text colour; opaque backgrounds keep the inverting caret. Windows (the system caret) and Linux (cairo difference over the parent's pixels) invert pixels that are opaque there and needed no change.
+- Tests: `TestMaterialCaret` (package look, `GOWT_GUI_TEST=1`) types a character into the materialpanel layout and wants a thin contrasting column between a capture with the caret hidden and one of the captures over two blink periods with it shown; on macOS it captures what the window server composites. Passed in the Docker stand (Xvfb). Not run yet: macOS, Windows.
+
 ## v0.13.1 (2026-10-27)
 
 Toolbar over the inspector (Tenniarb)

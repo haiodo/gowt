@@ -7,6 +7,7 @@ import (
 	"cmp"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"runtime"
 	"sort"
@@ -77,6 +78,10 @@ type monitor struct {
 // snapping is true under GOWT_SNAP, a screenshot run. The charts need about 25 s of samples to show curves,
 // so the capture waits for them unless the caller set a longer delay.
 var snapping = os.Getenv("GOWT_SNAP") != ""
+
+// demo is set under GOWT_DEMO=1, the README recording: the screen capture loads this process to over
+// 100% CPU, so the table leaves it out instead of heading the list with the recorder's cost.
+var demo = os.Getenv("GOWT_DEMO") == "1"
 
 func main() {
 	if snapping {
@@ -208,7 +213,7 @@ func (m *monitor) build() {
 		m.header(),
 		gowt.HBox(gowt.Grow(), gowt.Gap(gowt.Spacing.MD),
 			gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.MD), m.cpuCard(), m.memCard(), m.netCard()),
-			gowt.VBox(gowt.Size(gowt.Scaled(440), 0), gowt.Gap(gowt.Spacing.MD), m.coresCard(), m.procCard()))))
+			gowt.VBox(gowt.Size(gowt.Scaled(440), 0), gowt.GrowY(), gowt.Gap(gowt.Spacing.MD), m.coresCard(), m.procCard()))))
 	w.Show()
 	m.refreshPalette()
 }
@@ -241,16 +246,19 @@ func (m *monitor) header() gowt.Option {
 	return gowt.HBox(append([]gowt.Option{gowt.GrowX(), gowt.Gap(gowt.Scaled(24))}, items...)...)
 }
 
+// head is a card's title row. Every row is as tall as a Title value, with or without one, so the
+// titles of cards side by side sit on one line.
 func head(title string, extra ...gowt.Option) gowt.Option {
-	return gowt.HBox(append([]gowt.Option{gowt.GrowX(), gowt.Gap(gowt.Spacing.MD),
-		gowt.Label(title, gowt.Typeface(gowt.Type.Subtitle))}, extra...)...)
+	h := int(math.Ceil(gowt.Type.Title.Px * 1.4))
+	return gowt.HBox(append([]gowt.Option{gowt.GrowX(), gowt.Size(0, h), gowt.Gap(gowt.Spacing.MD),
+		gowt.Label(title, gowt.Typeface(gowt.Type.Subtitle), gowt.GrowY(), gowt.Place(gowt.AlignStart, gowt.AlignCenter))}, extra...)...)
 }
 
 func (m *monitor) cpuCard() gowt.Option {
-	return m.card(gowt.GrowX(), gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS),
+	return m.card(gowt.Grow(), gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS),
 		head("CPU", m.legend("User", func(p *palette) gfx.Color { return p.accent }), m.legend("System", func(p *palette) gfx.Color { return p.orange }),
 			gowt.Spacer(), lbl(&m.cpuValue, "-", gowt.Typeface(gowt.Type.Title))),
-		m.cpu.option(gowt.Scaled(300), gowt.Scaled(60))))
+		m.cpu.option(gowt.Scaled(300), gowt.Scaled(76))))
 }
 
 func (m *monitor) memCard() gowt.Option {
@@ -264,7 +272,7 @@ func (m *monitor) memCard() gowt.Option {
 	legend = append(legend, gowt.Spacer(), lbl(&m.swapNote, "", kit.Faint(), gowt.Typeface(gowt.Type.Caption)))
 	return m.card(gowt.Grow(), gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS),
 		head("Memory", gowt.Spacer(), lbl(&m.memNote, "", kit.Faint()), lbl(&m.memValue, "-", gowt.Typeface(gowt.Type.Title))),
-		m.mem.option(gowt.Scaled(300), gowt.Scaled(48)),
+		m.mem.option(gowt.Scaled(300), gowt.Scaled(40)),
 		m.bar.strip(gowt.Scaled(16)),
 		gowt.HBox(append([]gowt.Option{gowt.GrowX(), gowt.Gap(gowt.Scaled(20))}, legend...)...)))
 }
@@ -274,11 +282,11 @@ func (m *monitor) netCard() gowt.Option {
 		head("Network", gowt.Spacer(),
 			m.legend("Received", func(p *palette) gfx.Color { return p.accent }), lbl(&m.rxValue, "-", gowt.Typeface(gowt.Type.Subtitle)),
 			m.legend("Sent", func(p *palette) gfx.Color { return p.orange }), lbl(&m.txValue, "-", gowt.Typeface(gowt.Type.Subtitle))),
-		m.net.option(gowt.Scaled(300), gowt.Scaled(44))))
+		m.net.option(gowt.Scaled(300), gowt.Scaled(32))))
 }
 
 func (m *monitor) coresCard() gowt.Option {
-	return m.card(gowt.GrowX(), gowt.VBox(gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS), gowt.Size(0, gowt.Scaled(190)),
+	return m.card(gowt.GrowX(), gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS), gowt.Size(0, gowt.Scaled(190)),
 		head("Cores", gowt.Spacer(), lbl(&m.coresNote, "", kit.Faint())),
 		m.cores.option(gowt.Scaled(200), gowt.Scaled(110))))
 }
@@ -287,10 +295,10 @@ var columns = []struct {
 	title string
 	width int
 	right bool
-}{{"Process", 190, false}, {"% CPU", 64, true}, {"Memory", 84, true}, {"PID", 62, true}}
+}{{"Process", 184, false}, {"% CPU", 64, true}, {"Memory", 80, true}, {"PID", 56, true}}
 
 func (m *monitor) procCard() gowt.Option {
-	return gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM),
+	return m.card(gowt.Grow(), gowt.VBox(gowt.Grow(), gowt.Gap(gowt.Spacing.SM), gowt.Padding(gowt.Spacing.XS),
 		head("Processes", gowt.Spacer(), gowt.Label("CPU is percent of one core", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
 		gowt.Table(gowt.Grow(), gowt.Size(0, gowt.Scaled(110)), gowt.Tooltip("100% is one core fully busy, as in Activity Monitor"), gowt.Init(func(t *gowt.TableView) {
 			m.table = t
@@ -304,7 +312,7 @@ func (m *monitor) procCard() gowt.Option {
 				m.cols = append(m.cols, col)
 			}
 			m.table.SetSort(m.cols[m.sortCol], gowt.SortDescending)
-		})))
+		}))))
 }
 
 // sortBy sorts by column i; a second click on the same column reverses it.
@@ -327,7 +335,13 @@ const maxRows = 40
 // fillTable shows the top processes in the sort order, rewriting rows in place so the selection and
 // the scroll position stay, and tracking the selected process by PID as the order changes.
 func (m *monitor) fillTable() {
-	ps := append([]sampler.Process(nil), m.procs...)
+	ps := make([]sampler.Process, 0, len(m.procs))
+	for _, p := range m.procs {
+		if demo && p.PID == os.Getpid() {
+			continue
+		}
+		ps = append(ps, p)
+	}
 	sort.Slice(ps, func(a, b int) bool {
 		x, y := ps[a], ps[b]
 		c := 0

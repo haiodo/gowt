@@ -59,6 +59,9 @@ func TestCardsKeepTheirTitles(t *testing.T) {
 	}
 	var snapErr error // not t.Fatal: this runs on the UI thread, where Goexit would hang the test
 	var ink []int
+	rows := -1
+	demo = true // the table leaves out this process, the second one below
+	defer func() { demo = false }()
 	dir := t.TempDir()
 	var err error
 	onMain(func() {
@@ -72,7 +75,7 @@ func TestCardsKeepTheirTitles(t *testing.T) {
 					Time: t0.Add(time.Duration(i) * time.Second), CPU: 0.2 + f, User: 0.15 + f, System: 0.05,
 					Cores:  []float64{0.1, 0.2 + f, 0.3, 0.4},
 					Mem:    sampler.Memory{Total: 8 << 30, Used: 3 << 30, App: 3 << 30, Cached: 2 << 30, Free: 3 << 30, SwapTotal: 1 << 30},
-					RxRate: 1e5 * f, TxRate: 5e4, Uptime: time.Hour, Procs: []sampler.Process{{PID: 1, Name: "init", CPU: 1, RSS: 1 << 20}},
+					RxRate: 1e5 * f, TxRate: 5e4, Uptime: time.Hour, Procs: []sampler.Process{{PID: 1, Name: "init", CPU: 1, RSS: 1 << 20}, {PID: os.Getpid(), Name: "monitor", CPU: 120, RSS: 1 << 20}},
 				}
 			}
 			var step func(i int)
@@ -99,6 +102,7 @@ func TestCardsKeepTheirTitles(t *testing.T) {
 						at := func(v int32) int { return int(float64(v)*k + 0.5) }
 						ink = append(ink, inkIn(img, image.Rect(at(p.X+8), dy+at(p.Y+6), at(p.X+90), dy+at(p.Y+30))))
 					}
+					rows = m.table.Len()
 					m.win.Close()
 				})
 			}
@@ -110,6 +114,9 @@ func TestCardsKeepTheirTitles(t *testing.T) {
 	}
 	if snapErr != nil {
 		t.Fatal(snapErr)
+	}
+	if rows != 1 {
+		t.Errorf("under GOWT_DEMO the table has %d rows, want 1: its own process is not left out", rows)
 	}
 	for i, n := range ink {
 		if n < 30 {

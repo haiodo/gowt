@@ -37,6 +37,7 @@ type App struct {
 	openPend   []string  // paths of this turn of the event loop, see openIn
 	windows    []*Window // in creation order, asked in turn when the app quits
 	asking     bool      // a quit question is open: a second request is refused
+	approved   bool      // the quit was answered yes: windows closing now are not asked again
 	dark       bool      // the theme the Adaptive colours were last applied for
 	appearance Appearance
 	paints     map[*swt.Control]*painted // controls given an Adaptive colour
@@ -782,6 +783,9 @@ func (w *Window) OnClose(f func() bool) { w.onClose = append(w.onClose, f) }
 // of swt added through Unwrap run after this one; during a quit question the window is not the last
 // one asked, so OnQuit is left to askQuit.
 func (a *App) windowClosing(w *Window, e *swt.ShellEvent) {
+	if a.approved {
+		return
+	}
 	for _, f := range w.onClose {
 		if !f() {
 			e.Doit = false

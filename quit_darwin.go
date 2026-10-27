@@ -36,6 +36,7 @@ func (a *App) hookTerminate() {
 			if !e.Doit {
 				return int64(cocoa.OSNSTerminateCancel)
 			}
+			app.approved = true // AppKit now closes the windows: their OnClose must not ask or open a modal
 			app.Quit()
 			return int64(cocoa.OSNSTerminateNow)
 		}, 3)

@@ -1,6 +1,18 @@
 # Changelog
 
-## Unreleased
+## v0.13.0 (2026-10-27)
+
+Highlights
+- `gfx`, a retained 2D scene drawn from cached tiles by a compositor, with CoreGraphics, cairo and Direct2D backends, `gfx/offscreen` for PNG without a window, `gfx/pen` for `.pen` designs, PDF export and printing (`PrintDialog`, `PrintToPDF`, `gfx/printing`).
+- A more convenient `gfx` API: `RGB`, `RGBA`, shape paths and `Recorder.Fill*` and `Stroke*` helpers, `gfx.Font` with family, weight, italic and spacing, per-corner radii, `View.Drag`, screen-space shadows, `Path.ArcTo`.
+- HUD layer: `Compositor.HUD()` is a second scene in view points over the scene, with its own hit test and `gfx.GroupHUD`.
+- Facade: `Window.Popover`, `view.View.Overlay` for controls over a gfx view, `App.OnQuit`, `OnAbout`, `OnPreferences`, `OnOpenFiles`, opt-in `SingleInstance`, and `App.After` returning `cancel`.
+- Open files and file association on macOS, Windows and Linux (the new `internal/dbus` serves `org.freedesktop.Application`).
+- QA driver: its own clipboard, mouse input and drag and drop between controls, scroll and pinch events, shots of other windows, popovers, toolbar items and context menus in the dump.
+- Packaging: `mkapp.sh` bundle id, version and icons, `tooling/mksyso` icon and VERSIONINFO, `tooling/assoc` Linux mime icons.
+- Windows hardening: natives that pump messages or call back into Go keep their pointer arguments off the goroutine stack (`DoDragDrop`, `GetMessage`, `PeekMessage`, dialogs, COM calls, `SendMessage` with pointers). `ScriptStringOut` gets the `SCRIPT_STRING_ANALYSIS` handle on Windows x64.
+- macOS fixes: Quit after a Save question no longer crashes, and a nil `NSString` argument no longer throws (28 guarded selectors, `DirDialog` without a start path).
+- Docs images: `GOWT_SNAP` captures the whole window on every OS at exactly 2 pixels per point, and the catalog opens each sample at one size.
 
 gfx HUD layer
 - New: `Compositor.HUD()` returns a second `Scene` in view points that is drawn over the scene, the lifted nodes and the sprites and ignores the camera (edge indicators, rulers, minimap, HUD text). It is drawn into one image of the bounds of its content, again only when it changes or the view size or backing scale does. `Compositor.OnViewport(f)` and `Viewport()` place nodes on resize and scale change; `Compositor.HUDHit` and `view.View.HUDHitTest` hit-test it; `view.Pointer.HUD` is the HUD node under the pointer (and `Pointer.Node` is nil then). New layer group `gfx.GroupHUD` above `GroupOverlay`: every `gfx.Host` must keep a fourth group (cg, cairo and d2d hosts do). Checked headless with a fake host, on cg and cairo hosts, in GUI tests on Linux (Docker, Xvfb), on a second Mac and on the Windows 11 arm64 VM (d2d host and `TestHUDGUI`).
@@ -61,6 +73,7 @@ Open documents
 - New: file association. `tooling/darwin/mkapp.sh` takes `DOC_EXTS`, `DOC_NAME`, `DOC_ICON`, `DOC_UTI` and writes `CFBundleDocumentTypes` with the icon; new `tooling/assoc` writes a Windows `.reg`, a Linux `.desktop`, a D-Bus service file and a shared-mime-info XML. docs/packaging.md, docs/events.md. Tests: `go test . ./internal/dbus ./tooling/assoc` (the two-process tests run on Linux with a session bus and on Windows; `gdbus call Open` against a running example on Linux in Docker; `open -a` with a file at launch and while running on a second Mac, macOS 27). Not run: a double click on a registered type, Open With from a real file manager, `DBusActivatable` start of a stopped program, the Windows `.reg` import.
 
 Windows natives that call back
+- Fixed: Windows, `ScriptStringOut` got the address of the slot that holds the `SCRIPT_STRING_ANALYSIS` handle, where os.c dereferences its first argument and expects the handle. The generated call now dereferences it (j2go `WinNativeEmitter` DEREF map, `derefPtr`). `TestScriptStringOut` in `internal/win32`.
 - Fixed: Windows, the same stale-stack defect as `DoDragDrop` in every other generated native that pumps messages or calls back into Go while it holds a pointer argument: `GetMessage`, `PeekMessage` (a send from another thread is dispatched inside the call; the message came back all zero), `TrackPopupMenu`, `MessageBox`, `ChooseColor`, `ChooseFont`, `PrintDlg`, `DocumentProperties`, `DragDetect`, `ShellExecuteEx`, `EnumDisplayMonitors`, `EnumFontFamilies`, `EnumEnhMetaFile`, `CoCreateInstance`, `CoGetClassObject`, `OleCreate`, `OleCreateFromFile`, `OleCreatePropertyFrame`, `OleGetClipboard`, `SHParseDisplayName` and every COM method call (`VtblCall`). They go through `syscallEscaping`, which keeps the pointer arguments on the heap (j2go `WinNativeEmitter` ESCAPING). Tests in `internal/win32/modal_escape_windows_test.go` fail without it on arm64 and amd64 (emulated) and pass with it. The 29 `SendMessage` overloads that take a pointer (text buffer, `RECT`, `TVITEM`, ...) escape too: a window procedure that fills the buffer after growing the stack wrote to a stale address (`TestSendMessageSurvivesStackGrowth`). The overload with integer arguments does not (an escaping call allocates its argument list). `BenchmarkSendMessageMix` (8 integer messages, one text buffer, one `RECT`): arm64 350 -> 390 ns, amd64 emulated 730 -> 820 ns per mix, 4 allocations. `CallWindowProc` and `DefWindowProc` take integers only, so there is no Go pointer to move.
 
 gfx shadows, ArcTo, SVG (Tenniarb request)
@@ -166,6 +179,14 @@ gfx: retained 2D canvas, still experimental (docs/gfx.md has a quick start)
 - Fix: the SVG writer takes `font-family` from `Font.Family` when `Name` is empty and writes `font-weight`, `font-style` and `letter-spacing`. New: `Tx.ClipRRect4`.
 - Changed: `pen.ParseSVGPath` moved to `gfx.ParseSVGPath`. `pen.Options.FontName` is gone: `gfx/pen` passes the family, weight and italic of a text node to the renderer, which resolves them; a family the renderer lacks falls back to its default sans there. `pen` reads `fontStyle` and `letterSpacing`.
 - Docs: every exported symbol of `gfx` has a doc comment, each package has Example functions, and `examples/gfxcanvas`, `examples/gfxpng` and `examples/gfxeditor` show a window, a PNG and an editor core.
+
+Known issues
+- An AppKit `NSException` still kills the process on macOS: purego cannot catch one. Only the 28 `NSString`-argument selectors in `internal/cocoa/nonnilstring_manual.go` and `NSColor.colorSpace` are guarded.
+- Windows: full test runs under x64 emulation on arm64 sometimes die.
+- Windows: `PostMessage` and `GetWindowText` are not yet audited for pointers on the goroutine stack; the message-pump natives listed under "Windows natives that call back" are.
+- macOS: `TestFocus` and `TestKeys` fail on one of our test machines, also on main.
+- Windows: with a display zoom other than 100%, a drop by a real mouse can land 1 px off, because `dropListener` in `dnd.go` rounds the display point twice. The QA drag is exact.
+- gfx HUD: a HUD hit is not clipped to the view while a drag is captured outside it.
 
 ## v0.12.2 (2026-10-25)
 

@@ -62,8 +62,18 @@ func TestEditFocusGUI(t *testing.T) {
 			}
 			step := 300 * time.Millisecond
 			steps := []func(){
-				func() { v.Canvas().Unwrap().SetFocus() },
-				func() { postKey(d, ' ') },
+				func() {
+					// A window of an earlier run in this process may have left the app inactive.
+					w.Unwrap().ForceActive()
+					v.Canvas().Unwrap().SetFocus()
+				},
+				func() {
+					if d.GetActiveShell() != w.Unwrap() || !v.Canvas().Unwrap().IsFocusControl() {
+						t.Errorf("the window is not active or the view has no focus: the OS did not activate the test")
+						return
+					}
+					postKey(d, ' ')
+				},
 				func() {
 					if focused("after Space") {
 						postKey(d, 'x')
@@ -130,9 +140,21 @@ func TestPopoverFromKeyGUI(t *testing.T) {
 			w.Unwrap().ForceActive()
 			d := app.Unwrap()
 			step := 400 * time.Millisecond
-			app.After(step, func() { v.Canvas().Unwrap().SetFocus() })
-			app.After(2*step, func() { postKey(d, ' ') })
+			app.After(step, func() {
+				w.Unwrap().ForceActive()
+				v.Canvas().Unwrap().SetFocus()
+			})
+			app.After(2*step, func() {
+				if d.GetActiveShell() != w.Unwrap() || !v.Canvas().Unwrap().IsFocusControl() {
+					t.Errorf("the window is not active or the view has no focus: the OS did not activate the test")
+					return
+				}
+				postKey(d, ' ')
+			})
 			app.After(4*step, func() {
+				if t.Failed() {
+					return
+				}
 				if field == nil {
 					t.Error("Space did not reach the view's key handler")
 					return

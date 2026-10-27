@@ -70,7 +70,9 @@ func (v *View) traceFirstResponder(label string) {
 	}
 	w := ftSend(v.nsview, "window")
 	key := ftSend(ftSend(uintptr(objc.ID(objc.GetClass("NSApplication"))), "sharedApplication"), "keyWindow")
-	focusTrace("%s: firstResponder %s; key window is the view's: %v, its firstResponder %s", label, ftFirst(w), key == w, ftFirst(key))
+	app := ftSend(uintptr(objc.ID(objc.GetClass("NSApplication"))), "sharedApplication")
+	focusTrace("%s: firstResponder %s; app active %v; key window is the view's: %v, its firstResponder %s",
+		label, ftFirst(w), ftSend(app, "isActive")&0xff != 0, key == w, ftFirst(key))
 }
 
 func ftReplace(cls, sel uintptr, imp int64, types string) uintptr {
@@ -129,6 +131,22 @@ func ftHookVoid1(cls uintptr, name string) {
 	purego.RegisterFunc(&orig, ftReplace(cls, ftSel(name), imp, "v@:@"))
 }
 
+// ftHookInsert wraps insertText:replacementRange: and logs the text inserted.
+func ftHookInsert(cls uintptr) {
+	if cls == 0 {
+		return
+	}
+	var orig func(self, sel, s uintptr, loc, n uint64)
+	imp := cocoa.NewCallbackN(5, func(a []int64) int64 {
+		text := cocoa.NewNSStringOverload1(int64(ftSend(uintptr(a[2]), "description"))).GetString()
+		focusTrace("insertText %q into %s begin", text, ftDesc(uintptr(a[0])))
+		orig(uintptr(a[0]), uintptr(a[1]), uintptr(a[2]), uint64(a[3]), uint64(a[4]))
+		focusTrace("insertText %q into %s end", text, ftDesc(uintptr(a[0])))
+		return 0
+	})
+	purego.RegisterFunc(&orig, ftReplace(cls, ftSel("insertText:replacementRange:"), imp, "v@:@{_NSRange=QQ}"))
+}
+
 // ftHookSendEvent wraps sendEvent: of the application or a window class and logs key events.
 func ftHookSendEvent(cls uintptr, who string) {
 	if cls == 0 {
@@ -167,6 +185,11 @@ func installFocusTrace() {
 		for _, c := range []string{"SWTTextField", "SWTCanvasView", "SWTEditorView"} {
 			ftHookBool(ftClass(c), "becomeFirstResponder")
 			ftHookBool(ftClass(c), "resignFirstResponder")
+		}
+		for _, c := range []string{"SWTCanvasView", "SWTEditorView"} {
+			ftHookInsert(ftClass(c))
+			ftHookVoid1(ftClass(c), "keyDown:")
+			ftHookVoid1(ftClass(c), "insertText:")
 		}
 		ftHookVoid1(ftClass("SWTTextField"), "textDidEndEditing:")
 		ftHookBool(ftClass("SWTTextField"), "abortEditing")

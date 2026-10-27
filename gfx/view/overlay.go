@@ -129,7 +129,6 @@ type Editor struct {
 // another Edit commits the one that is open.
 func (v *View) Edit(opts EditOptions) *Editor {
 	v.endEdit()
-	v.disposeEnded()
 	all := append([]g.Option{}, opts.Opts...)
 	if opts.Multiline {
 		all = append(all, g.Multiline())
@@ -140,6 +139,7 @@ func (v *View) Edit(opts EditOptions) *Editor {
 	}
 	tv := o.w.(*g.TextView)
 	t := tv.Unwrap()
+	display := v.cv.Unwrap().GetDisplay()
 	ed := &editor{text: tv.Text, onCommit: opts.OnCommit, onCancel: opts.OnCancel, multiline: opts.Multiline}
 	ed.finish = func(refocus bool) {
 		if v.editor != nil && v.editor.e == ed {
@@ -149,14 +149,12 @@ func (v *View) Edit(opts EditOptions) *Editor {
 		o.drop() // out of the list now; the control is disposed after the event that ended the edit
 		t.SetVisible(false)
 		v.traceFirstResponder("after hiding the ended field")
-		v.ended = append(v.ended, tv)
-		display := v.cv.Unwrap().GetDisplay()
 		display.AsyncExec(jrt.NewRunnable(func() {
 			focusTrace("deferred end of edit: refocus %v", refocus)
 			if !v.gone.Load() && refocus {
 				v.cv.Unwrap().SetFocus()
 			}
-			v.disposeEnded()
+			tv.Dispose()
 			v.traceFirstResponder("after the deferred end of edit")
 		}))
 	}
@@ -167,11 +165,23 @@ func (v *View) Edit(opts EditOptions) *Editor {
 	}))
 	t.AddFocusListener(swt.FocusListenerFocusLostAdapter(func(*swt.FocusEvent) { ed.end(true, false) }))
 	tv.SetText(opts.Text)
-	focusTrace("Edit: Focus")
-	focused := tv.Focus()
-	t.SelectAll()
-	focusTrace("Edit: Focus -> %v, focus control is the field: %v", focused, t.IsFocusControl())
-	v.traceFirstResponder("after Edit")
+	focus := func() bool {
+		focusTrace("Edit: Focus")
+		ok := tv.Focus()
+		t.SelectAll()
+		focusTrace("Edit: Focus -> %v, focus control is the field: %v", ok, t.IsFocusControl())
+		v.traceFirstResponder("after the Focus of Edit")
+		return ok
+	}
+	// Focus after the event when not now: on macOS the opening key also reached a field focused in the
+	// view's key handler, and SWT refuses the focus during a FocusOut (OnCommit of a focus-loss commit).
+	if v.inKey || !focus() {
+		display.AsyncExec(jrt.NewRunnable(func() {
+			if !ed.done && !t.IsDisposed() {
+				focus()
+			}
+		}))
+	}
 	h := &Editor{o: o, e: ed}
 	v.editor = h
 	return h
@@ -188,17 +198,6 @@ func (h *Editor) Commit() { h.e.end(true, false) }
 
 // Cancel ends the edit as Esc does. It does nothing once the edit has ended.
 func (h *Editor) Cancel() { h.e.end(false, false) }
-
-// disposeEnded disposes the fields of ended edits now. Edit calls it first: on macOS disposing a
-// field aborts the edit of the window's shared field editor, which by then is the new field's.
-func (v *View) disposeEnded() {
-	for _, tv := range v.ended {
-		focusTrace("dispose an ended field")
-		tv.Dispose()
-		v.traceFirstResponder("after the dispose")
-	}
-	v.ended = nil
-}
 
 // endEdit commits the open edit: a press on the view, where GTK keeps the focus in the field.
 func (v *View) endEdit() {

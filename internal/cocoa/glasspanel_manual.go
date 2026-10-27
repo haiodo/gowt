@@ -87,3 +87,17 @@ func PanelGlassClip(view *NSView) (radius float64, masks, ok bool) {
 	l := msg(bd, "layer")
 	return msgToF64(l, sel("cornerRadius")), msg(l, "masksToBounds")&0xff != 0, true
 }
+
+// BackdropOf names the class of the material InstallBackdrop or InstallPanelBackdrop put behind view,
+// "" without one, and for an NSVisualEffectView its material and blending mode.
+func BackdropOf(view *NSView) (name string, material, blending int) {
+	initAssociated()
+	bd := getAssociated(uintptr(view.Id), backdropKey())
+	if bd == 0 {
+		return "", 0, 0
+	}
+	if c := class("NSVisualEffectView"); c != 0 && msg(bd, "isKindOfClass:", c) != 0 {
+		return className(bd), int(msg(bd, "material")), int(msg(bd, "blendingMode"))
+	}
+	return className(bd), 0, 0
+}

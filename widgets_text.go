@@ -40,9 +40,9 @@ type StyleSpan struct {
 }
 
 // StyledText creates a multi-line styled editor.
-// Options: Scrollbars, Wrap, ReadOnly, Border, Value, OnChange, LineNumbers.
+// Options: Scrollbars, Wrap, ReadOnly, Border, NoBorder, NoBackground, Value, OnChange, LineNumbers.
 func StyledText(opts ...Option) Option {
-	return leaf("StyledText", sScrollbars|sWrap|sReadOnly|sBorder, opts, func(p *swt.Composite) Widget {
+	return leaf("StyledText", sScrollbars|sWrap|sReadOnly|sBorder|sNoBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewStyledText(p, resolve(swt.NONE, opts))
 		return &StyledTextView{base: base{&t.Control}, t: t, fonts: newUsedFonts(&t.Control)}
 	})
@@ -347,6 +347,21 @@ func LineNumbers() Option {
 			return fmt.Errorf("gowt: LineNumbers applies to StyledText, not to %s", nameOf(w.control()))
 		}
 		t.SetLineNumbers(true)
+		return nil
+	})
+}
+
+// NoBackground makes a StyledText paint no background of its own, so what is under it shows through:
+// the material of a look.SetMaterial pane, a coloured Panel. Selected text and TextStyle backgrounds
+// are still drawn. It is an alpha-0 background colour, which SWT draws as the background of the parent.
+func NoBackground() Option {
+	return hook(func(w Widget) error {
+		t, ok := w.(*StyledTextView)
+		if !ok {
+			return fmt.Errorf("gowt: NoBackground applies to StyledText, not to %s", nameOf(w.control()))
+		}
+		// White, not black: the GTK port takes an all-zero GdkRGBA for a disposed Color.
+		t.t.SetBackgroundWithColor(swt.NewColorDeviceRedGreenBlueAlpha(t.t.GetDisplay(), 255, 255, 255, 0))
 		return nil
 	})
 }

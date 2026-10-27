@@ -93,6 +93,17 @@ func setGlass(c *swt.Composite, on bool) { fluent.Glass(c, on) }
 
 func setGlassRadius(c *swt.Composite, r float64) { fluent.GlassRadius(c, r) }
 
+// setMaterial gives c the window background the sidebar and inspector panels inherit from the shell
+// (fluentShell), also where the app coloured the content around c.
+func setMaterial(c *swt.Composite, on bool) {
+	if on {
+		fluent.Background(c)
+		return
+	}
+	c.SetBackgroundWithColor(nil)
+	c.SetBackgroundMode(swt.INHERIT_NONE)
+}
+
 func glassButton(c *swt.Control) {
 	if b := fluent.ButtonOf(c); b != nil {
 		fluent.Button(b, false, false, false)

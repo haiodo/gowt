@@ -35,7 +35,8 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Value(v)` | initial value: string for Text, Combo, StyledText; int for Scale, Slider, Spinner, Progress; `time.Time` for DateTime |
 | `Bind(state)` | two-way: `*rx.State[string]` Text, Combo; `[bool]` Switch, Check Button; `[int]` Scale, Slider, Spinner, Combo, List index (Progress one way) |
 | `BindText(r)`, `BindEnabled(r)`, `BindVisible(r)` | Label, Button, Link text; enabled and visible state of any widget, see [events.md](events.md) |
-| `NoBorder()` | drops the frame of List, Table, Tree |
+| `NoBorder()` | drops the frame of List, Table, Tree, and the one `Border()` gives a Text or StyledText (it wins over `Border()` in either order) |
+| `NoBackground()` | StyledText paints no background of its own: a `look.SetMaterial` pane or a coloured panel under it shows through; selected text and `TextStyle` backgrounds are still drawn |
 | `CellSelect()` | Tree selects only the node text instead of the whole row |
 | `Search()` | Text as a search field with a magnifier icon and a clear button |
 | `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Size(w, h)`, `Place(h, v)`, `Cell(GridCell)`, `Anchor(FormCell)` | position in the parent's layout, see [windows-layouts.md](windows-layouts.md) |
@@ -74,7 +75,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | ToolBar | `ToolBar()` | `Item(text, onClick)` returns a `*ToolItem` (call it after the `Add` that creates the tool bar); `Separator()` |
 | CoolBar, Sash | `CoolBar(bands...)`, `Sash()` | each child of the cool bar becomes a band; `Sash.OnMove` |
 | Canvas | `Canvas(onPaint)` | the callback's `g.Size()` is the drawable size in points at paint time (`CanvasView.Size()` is the same number outside the callback); see [graphics.md](graphics.md); `OnMouseDown`, `OnMouseUp`, `OnMouseMove` (`Mouse`: X, Y, Button, Count); `OnResize(func(w, h int))` runs after layout gave the canvas a new size and once for the first size known |
-| StyledText | `StyledText(Scrollbars())` | `Text`, `SetText`, `Selection`, `Caret`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `Replace`, `SetStyle(start, length, TextStyle)`, `Styles`, `OnStyle(func(line string) []StyleSpan)`, `LineNumbers()` / `SetLineNumbers(bool)`, `OnChange`, `OnSelect`, `OnCaret`. Offsets are runes; each call converts to UTF-16 (O(n)). Example: [`examples/styledtext`](../examples/styledtext) |
+| StyledText | `StyledText(Scrollbars())` | `Text`, `SetText`, `Selection`, `Caret`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `Replace`, `SetStyle(start, length, TextStyle)`, `Styles`, `OnStyle(func(line string) []StyleSpan)`, `LineNumbers()` / `SetLineNumbers(bool)`, `NoBackground()`, `OnChange`, `OnSelect`, `OnCaret`. Offsets are runes; each call converts to UTF-16 (O(n)). Example: [`examples/styledtext`](../examples/styledtext) |
 
 A List row has text only (`swt.List` has no item images). A row with an icon is a Table without columns, header and grid lines; in a `look.SetSidebar` sidebar it gets the List look ([theme-look.md](theme-look.md)), on macOS the selected row's text in the accent colour, and the first column's icon too when it is a template image (`NSImage isTemplate`), as AppKit does: `icons.Get` icons without `icons.Color` are templates on macOS; any other image, `ImageFromProvider` and `FromSVG` ones included, and the images of later columns keep their colours. `icons.Get` tints the icon for the theme at call time, so set the icons again in `App.OnThemeChange`. See `examples/sidebartable`:
 

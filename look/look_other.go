@@ -18,6 +18,8 @@ func setGlass(*swt.Composite, bool) {}
 
 func setGlassRadius(*swt.Composite, float64) {}
 
+func setMaterial(*swt.Composite, bool) {}
+
 func glassButton(*swt.Control) {}
 
 func setGlassBorder(*swt.Control, bool) {}

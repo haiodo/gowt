@@ -10,6 +10,12 @@ Toolbar over the inspector (Tenniarb)
 - `cmd/finderdemo` puts the inspector toggle over the inspector.
 - Tests: `TestToolbarInspectorItems` (look GUI test: item frames against the inspector edge before and after a drag of the edge and with the inspector hidden, the text item's text and click) passed in the Docker stand (Xvfb). The cocoa unit tests `TestToolbarInspectorOrder`, `TestToolbarInspectorSeparator`, `TestInspectorDivider` and `TestToolbarTextAndSmall` pass on macOS without a window. Not run yet: the macOS GUI test, Windows.
 
+Flush material panel (Tenniarb)
+- New: `look.SetMaterial(container, on)` puts the material of the sidebar and inspector behind any container, flush with its edges and with square corners, for a pane such as a code panel under a canvas in a `Split`. macOS 26: the inspector's edge-to-edge Liquid Glass, clipped to the container; older macOS: the `NSVisualEffectView` fallback of the sidebar and inspector (under-window background, behind-window blending); the controls inside stop painting their own background, as with `SetGlass`. Windows: the Fluent window background (Layer). Linux: the theme's window background, following a theme switch. In a `Split` the sash beside the pane draws a hairline divider. `examples/materialpanel` shows it with a sidebar, an inspector and a diagram canvas.
+- New: `gowt.NoBackground()` makes a `StyledText` paint no background of its own, so the material or a coloured panel under it shows through, on macOS, Windows and Linux.
+- Fixed: `gowt.NoBorder()` was reported to `OnError` on a `StyledText`; it is accepted and wins over `Border()` in either order.
+- Tests: `TestMaterialPane` (package look) and `TestStyledTextNoBackground` (`GOWT_GUI_TEST=1`): Docker Xvfb and macOS; `TestMaterialShowsThrough` (macOS 26).
+
 ## v0.13.0 (2026-10-27)
 
 Highlights

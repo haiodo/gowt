@@ -3,10 +3,10 @@
 ## Unreleased
 
 Flush material panel (Tenniarb)
-- New: `look.SetMaterial(container, on)` puts the material of the sidebar and inspector behind any container, flush with its edges and with square corners, for a pane such as a code panel under a canvas in a `Split`. macOS 26: the inspector's edge-to-edge Liquid Glass, clipped to the container; older macOS: the `NSVisualEffectView` fallback of the sidebar and inspector (under-window background, behind-window blending); the controls inside stop painting their own background, as with `SetGlass`. Windows: the Fluent window background (Layer). Linux: the theme's window background, following a theme switch. `examples/materialpanel` shows it with a sidebar, an inspector and a diagram canvas.
+- New: `look.SetMaterial(container, on)` puts the material of the sidebar and inspector behind any container, flush with its edges and with square corners, for a pane such as a code panel under a canvas in a `Split`. macOS 26: the inspector's edge-to-edge Liquid Glass, clipped to the container; older macOS: the `NSVisualEffectView` fallback of the sidebar and inspector (under-window background, behind-window blending); the controls inside stop painting their own background, as with `SetGlass`. Windows: the Fluent window background (Layer). Linux: the theme's window background, following a theme switch. In a `Split` the sash beside the pane draws a hairline divider. `examples/materialpanel` shows it with a sidebar, an inspector and a diagram canvas.
 - New: `gowt.NoBackground()` makes a `StyledText` paint no background of its own, so the material or a coloured panel under it shows through, on macOS, Windows and Linux.
 - Fixed: `gowt.NoBorder()` was reported to `OnError` on a `StyledText`; it is accepted and wins over `Border()` in either order.
-- Tests: `TestMaterialPane` (package look) and `TestStyledTextNoBackground` (`GOWT_GUI_TEST=1`): Docker Xvfb.
+- Tests: `TestMaterialPane` (package look) and `TestStyledTextNoBackground` (`GOWT_GUI_TEST=1`): Docker Xvfb and macOS; `TestMaterialShowsThrough` (macOS 26).
 
 ## v0.13.0 (2026-10-27)
 

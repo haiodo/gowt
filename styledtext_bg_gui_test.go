@@ -12,9 +12,9 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// styledTextShot captures a window whose panel has the colour bg and holds one empty StyledText built
-// from opts that fills it. The panel passes no background on (INHERIT_NONE): a GTK StyledText takes
-// an inherited one by itself. GOWT_TEST_SHOTS=<dir> keeps the PNGs.
+// styledTextShot captures a window filled by a panel of the colour bg that holds, 40 points in, one
+// empty StyledText built from opts. The panel passes no background on (INHERIT_NONE): a GTK
+// StyledText takes an inherited one by itself. GOWT_TEST_SHOTS=<dir> keeps the PNGs.
 func styledTextShot(t *testing.T, name string, bg RGB, opts ...Option) (img image.Image, style int32, border int32, errs []error) {
 	t.Helper()
 	if os.Getenv("GOWT_GUI_TEST") == "" {
@@ -30,9 +30,9 @@ func styledTextShot(t *testing.T, name string, bg RGB, opts ...Option) (img imag
 		err = Run(func(app *App) {
 			app.OnError(func(e error) { errs = append(errs, e) })
 			var text *StyledTextView
-			w := app.Window("styled")
+			w := app.Window("styled", Padding(0))
 			w.SetSize(320, 200)
-			w.Add(VBox(Grow(), Padding(0), Background(bg),
+			w.Add(VBox(Grow(), Padding(40), Background(bg),
 				Init(func(p *Panel) { p.AsComposite().SetBackgroundMode(swt.INHERIT_NONE) }),
 				StyledText(append(opts, ReadOnly(), Grow(), Ref(&text))...)))
 			w.Show()
@@ -60,14 +60,19 @@ func styledTextShot(t *testing.T, name string, bg RGB, opts ...Option) (img imag
 	return img, style, border, errs
 }
 
-// centreNear reports whether the pixel at the centre of img is within 10 levels of c in every channel:
-// colour management on macOS moves a captured colour by a few levels.
-func centreNear(img image.Image, c RGB) (RGB, bool) {
+// centreLikePanel compares the pixel at the centre of img, in the StyledText, with one 20 points from
+// the left edge, in the panel padding: both pass the same colour management (macOS captures in
+// Display P3, where sRGB 40,160,90 reads 80,158,97).
+func centreLikePanel(img image.Image) (centre, panel RGB, same bool) {
 	b := img.Bounds()
-	r, g, bl, _ := img.At((b.Min.X+b.Max.X)/2, (b.Min.Y+b.Max.Y)/2).RGBA()
-	got := RGB{uint8(r >> 8), uint8(g >> 8), uint8(bl >> 8)}
+	at := func(x, y int) RGB {
+		r, g, bl, _ := img.At(x, y).RGBA()
+		return RGB{uint8(r >> 8), uint8(g >> 8), uint8(bl >> 8)}
+	}
+	y := (b.Min.Y + b.Max.Y) / 2
+	centre, panel = at((b.Min.X+b.Max.X)/2, y), at(b.Min.X+b.Dx()*20/320, y)
 	d := func(a, b uint8) int { return max(int(a)-int(b), int(b)-int(a)) }
-	return got, d(got.R, c.R) <= 10 && d(got.G, c.G) <= 10 && d(got.B, c.B) <= 10
+	return centre, panel, d(centre.R, panel.R) <= 4 && d(centre.G, panel.G) <= 4 && d(centre.B, panel.B) <= 4
 }
 
 // A StyledText with NoBackground shows the panel colour under it, one without it paints its own.
@@ -78,14 +83,14 @@ func TestStyledTextNoBackground(t *testing.T) {
 	for _, e := range errs {
 		t.Errorf("OnError: %v", e)
 	}
-	if got, ok := centreNear(img, marker); !ok {
-		t.Errorf("StyledText with NoBackground shows %v, want the panel colour %v", got, marker)
+	if got, panel, ok := centreLikePanel(img); !ok {
+		t.Errorf("StyledText with NoBackground shows %v, want the panel colour %v", got, panel)
 	}
 	if style&swt.BORDER != 0 || border != 0 {
 		t.Errorf("StyledText with Border and NoBorder: BORDER style %v, border width %d, want none", style&swt.BORDER != 0, border)
 	}
 	img, _, _, _ = styledTextShot(t, "background", marker)
-	if got, ok := centreNear(img, marker); ok {
+	if got, _, ok := centreLikePanel(img); ok {
 		t.Errorf("StyledText without NoBackground shows the panel colour %v, want its own background", got)
 	}
 }

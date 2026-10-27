@@ -12,7 +12,7 @@ import (
 
 // A SetMaterial pane under a canvas in a Split, on white content: the pane has the platform material
 // (materialProblem), and a StyledText in it with NoBackground and NoBorder has an alpha-0 background
-// and no frame, with nothing reported to OnError.
+// and no frame, with nothing reported to OnError; the sash beside the pane paints the divider.
 func TestMaterialPane(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
@@ -21,7 +21,7 @@ func TestMaterialPane(t *testing.T) {
 	var errs []error
 	var problem string
 	var textAlpha, border int32
-	var style int32
+	var style, sashes, painted int32
 	var err error
 	onMain(func() {
 		err = gowt.Run(func(app *gowt.App) {
@@ -30,8 +30,9 @@ func TestMaterialPane(t *testing.T) {
 			w.SetSize(480, 360)
 			var pane *gowt.Panel
 			var text *gowt.StyledTextView
+			var split *gowt.SplitView
 			w.Add(gowt.VBox(gowt.Grow(), gowt.Padding(0), gowt.Background(white),
-				gowt.Split(gowt.Vertical(), gowt.Grow(),
+				gowt.Split(gowt.Vertical(), gowt.Grow(), gowt.Ref(&split),
 					gowt.Canvas(func(g *gowt.GC) {}, gowt.Background(white)),
 					gowt.VBox(gowt.Ref(&pane), gowt.Padding(0),
 						gowt.StyledText(gowt.NoBackground(), gowt.NoBorder(), gowt.Grow(), gowt.Ref(&text),
@@ -43,6 +44,14 @@ func TestMaterialPane(t *testing.T) {
 				style = text.Unwrap().GetStyle()
 				border = text.Unwrap().GetBorderWidth()
 				problem = materialProblem(w, pane, white)
+				for _, ch := range split.Unwrap().GetChildren() {
+					if _, ok := ch.Impl().(*swt.Sash); ok {
+						sashes++
+						if ch.IsListening(swt.Paint) {
+							painted++
+						}
+					}
+				}
 				w.Close()
 			})
 		})
@@ -55,6 +64,9 @@ func TestMaterialPane(t *testing.T) {
 	}
 	if problem != "" {
 		t.Error(problem)
+	}
+	if sashes == 0 || painted != sashes {
+		t.Errorf("%d of %d sashes paint the divider, want all", painted, sashes)
 	}
 	if textAlpha != 0 {
 		t.Errorf("StyledText background alpha %d, want 0", textAlpha)

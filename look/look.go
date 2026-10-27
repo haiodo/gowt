@@ -68,8 +68,79 @@ func SetGlass(c Container, on bool) { setGlass(c.AsComposite(), on) }
 // sidebar and inspector fall back to. As with SetGlass, the container and the controls under it,
 // also those created later, stop painting their own background. Windows: the Fluent window
 // background (Layer) of the sidebar and inspector panels; Linux: the GTK window background. There
-// the controls inside keep their own background: give a StyledText gowt.NoBackground.
-func SetMaterial(c Container, on bool) { setMaterial(c.AsComposite(), on) }
+// the controls inside keep their own background: give a StyledText gowt.NoBackground. In a Split, the
+// sash beside the container draws a hairline in the separator colour, the thin divider of an
+// NSSplitView, on every system.
+func SetMaterial(c Container, on bool) {
+	comp := c.AsComposite()
+	setMaterial(comp, on)
+	comp.SetDataKeyValue(materialOnKey, on)
+	if split := comp.GetParent(); on && split != nil {
+		if _, ok := split.Impl().(*swt.SashForm); ok {
+			hookDividers(split)
+		}
+	}
+}
+
+const (
+	materialOnKey = "gowt.look.materialOn"
+	dividerKey    = "gowt.look.divider"
+)
+
+// hookDividers gives each sash of split the divider painter, once; SashForm makes its sashes in its
+// layout, so the sashes are looked for again after each resize.
+func hookDividers(split *swt.Composite) {
+	if split.GetDataKey(dividerKey) != nil {
+		return
+	}
+	split.SetDataKeyValue(dividerKey, true)
+	hook := func() {
+		if split.IsDisposed() {
+			return
+		}
+		for _, ch := range split.GetChildren() {
+			if _, ok := ch.Impl().(*swt.Sash); !ok || ch.GetDataKey(dividerKey) != nil {
+				continue
+			}
+			sash := ch
+			sash.SetDataKeyValue(dividerKey, true)
+			sash.AddPaintListener(painter(func(e *swt.PaintEvent) { paintDivider(e, sash, split) }))
+			sash.Redraw()
+		}
+	}
+	hook()
+	later := func() { split.GetDisplay().AsyncExec(jrt.NewRunnable(hook)) }
+	later()
+	split.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { later() }))
+}
+
+// paintDivider draws the hairline down the middle of sash when a SetMaterial pane of split touches it.
+func paintDivider(e *swt.PaintEvent, sash *swt.Control, split *swt.Composite) {
+	s := sash.GetBounds()
+	beside := false
+	for _, ch := range split.GetChildren() {
+		if on, _ := ch.GetDataKey(materialOnKey).(bool); !on {
+			continue
+		}
+		b := ch.GetBounds()
+		touch := func(a, b int32) bool { return a-b <= 1 && b-a <= 1 }
+		beside = beside || touch(s.Y+s.Height, b.Y) || touch(b.Y+b.Height, s.Y) ||
+			touch(s.X+s.Width, b.X) || touch(b.X+b.Width, s.X)
+	}
+	if !beside {
+		return
+	}
+	bg := sash.GetBackground().GetRGB()
+	fg := barForeground(*sash.GetDisplay().GetSystemColor(swt.COLOR_WIDGET_FOREGROUND).GetRGB(), *bg)
+	c := swt.NewColorRgb(blend(*bg, fg, 12))
+	e.Gc.SetForeground(c)
+	if s.Width > s.Height {
+		e.Gc.DrawLine(0, s.Height/2, s.Width, s.Height/2)
+	} else {
+		e.Gc.DrawLine(s.Width/2, 0, s.Width/2, s.Height)
+	}
+	c.Dispose()
+}
 
 // Capsule is the radius for SetGlassRadius that rounds the corners fully: half the shorter side,
 // followed on every resize.

@@ -56,7 +56,9 @@ func (v *View) wireInput() {
 				return
 			}
 			if v.onKey != nil {
+				v.inKey = true
 				v.onKey(&Key{Down: down, Code: int(e.KeyCode), Char: rune(e.Character), Mods: modsOfMask(e.StateMask)})
+				v.inKey = false
 			}
 		}
 	}

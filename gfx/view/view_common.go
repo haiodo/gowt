@@ -36,6 +36,7 @@ type View struct {
 	paint    time.Duration // the last widget paint, 0 where the OS composites
 	overlays []*Overlay
 	editor   *Editor
+	inKey    bool // the key handler runs; set on macOS only
 	platform
 }
 

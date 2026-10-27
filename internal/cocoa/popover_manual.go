@@ -54,8 +54,19 @@ func (st *popoverState) applyFocus() {
 		PopLog("applyFocus: nothing to do (focus view %v, window %v)", st.focus != nil, st.focus != nil && st.focus.Window() != nil)
 		return
 	}
+	v := uintptr(st.focus.Id)
+	field := msg(v, "isKindOfClass:", class("NSTextField"))&0xff != 0
+	if field && msg(v, "currentEditor") != 0 {
+		PopLog("applyFocus: the field is being edited")
+		return // a second makeFirstResponder: would end the edit
+	}
 	if w := st.focus.Window(); w != nil {
-		ok := msg(uintptr(w.Id), "makeFirstResponder:", uintptr(st.focus.Id))&0xff != 0
+		ok := msg(uintptr(w.Id), "makeFirstResponder:", v)&0xff != 0
+		// SWT's single-line Text takes the first responder without its field editor, so typed keys went
+		// nowhere until a click; selectText: starts the editor, as Text.ForceFocus does.
+		if ok && field {
+			msg(v, "selectText:", 0)
+		}
 		PopLog("applyFocus: makeFirstResponder=%v responder=%s key=%v", ok, className(msg(uintptr(w.Id), "firstResponder")),
 			msg(uintptr(w.Id), "isKeyWindow")&0xff != 0)
 	}

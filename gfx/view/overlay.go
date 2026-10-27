@@ -139,6 +139,7 @@ func (v *View) Edit(opts EditOptions) *Editor {
 	}
 	tv := o.w.(*g.TextView)
 	t := tv.Unwrap()
+	display := v.cv.Unwrap().GetDisplay()
 	ed := &editor{text: tv.Text, onCommit: opts.OnCommit, onCancel: opts.OnCancel, multiline: opts.Multiline}
 	ed.finish = func(refocus bool) {
 		if v.editor != nil && v.editor.e == ed {
@@ -146,7 +147,6 @@ func (v *View) Edit(opts EditOptions) *Editor {
 		}
 		o.drop() // out of the list now; the control is disposed after the event that ended the edit
 		t.SetVisible(false)
-		display := v.cv.Unwrap().GetDisplay()
 		display.AsyncExec(jrt.NewRunnable(func() {
 			if !v.gone.Load() && refocus {
 				v.cv.Unwrap().SetFocus()
@@ -161,8 +161,20 @@ func (v *View) Edit(opts EditOptions) *Editor {
 	}))
 	t.AddFocusListener(swt.FocusListenerFocusLostAdapter(func(*swt.FocusEvent) { ed.end(true, false) }))
 	tv.SetText(opts.Text)
-	tv.Focus()
-	t.SelectAll()
+	focus := func() bool {
+		ok := tv.Focus()
+		t.SelectAll()
+		return ok
+	}
+	// Focus after the event when not now: on macOS the opening key also reached a field focused in the
+	// view's key handler, and SWT refuses the focus during a FocusOut (OnCommit of a focus-loss commit).
+	if v.inKey || !focus() {
+		display.AsyncExec(jrt.NewRunnable(func() {
+			if !ed.done && !t.IsDisposed() {
+				focus()
+			}
+		}))
+	}
 	h := &Editor{o: o, e: ed}
 	v.editor = h
 	return h

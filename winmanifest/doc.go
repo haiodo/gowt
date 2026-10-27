@@ -8,5 +8,5 @@
 // tooling/mksyso (make winmanifest). Elsewhere the package is empty.
 //
 // Package gowt imports it, so programs built on the facade need no import of their own. A program
-// with its own manifest resource must not link both: it uses package swt and skips this import.
+// with its own manifest resource must not link both: it uses package swt and skips this import, or builds with -tags gowt_nomanifest.
 package winmanifest

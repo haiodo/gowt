@@ -1,10 +1,17 @@
-// Command mksyso writes a COFF object with one RT_MANIFEST resource (ID 1), for go build to link into a
-// Windows executable: mksyso -arch amd64|arm64 -manifest app.manifest -o out.syso. No windres needed.
+// Command mksyso writes a COFF object with Windows resources, for go build to link into an
+// executable: no windres needed. One object holds what the program needs, because a second .syso
+// with its own manifest or icon makes the linker fail with a duplicate resource.
+//
+//	mksyso -arch amd64 -o app_windows_amd64.syso -icon 16.png,32.png,48.png,256.png \
+//	    -version 1.2.3.4 -product App -company "Org" -description "App editor" [-manifest app.manifest]
+//
+// -icon takes an .ico file or square PNG files (at most 256), stored as they are. -manifest is
+// RT_MANIFEST; leave it out for a program on the gowt facade, whose winmanifest package has it.
+// Any of -version, -product, -company, -description, -copyright, -original and -internal writes a
+// VERSIONINFO resource (en-US, Unicode).
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
 	"flag"
 	"log"
 	"os"
@@ -12,61 +19,46 @@ import (
 
 func main() {
 	arch := flag.String("arch", "amd64", "amd64 or arm64")
-	manifest := flag.String("manifest", "", "manifest file")
+	manifest := flag.String("manifest", "", "manifest file (RT_MANIFEST)")
+	icon := flag.String("icon", "", "an .ico file, or PNG files separated by commas")
 	out := flag.String("o", "", "output .syso")
+	var v versionInfo
+	flag.StringVar(&v.version, "version", "", "file and product version, such as 1.2.3.4")
+	flag.StringVar(&v.product, "product", "", "ProductName")
+	flag.StringVar(&v.company, "company", "", "CompanyName")
+	flag.StringVar(&v.description, "description", "", "FileDescription, the name Task Manager shows")
+	flag.StringVar(&v.copyright, "copyright", "", "LegalCopyright")
+	flag.StringVar(&v.original, "original", "", "OriginalFilename")
+	flag.StringVar(&v.internal, "internal", "", "InternalName")
 	flag.Parse()
-	var machine, addr32nb uint16
-	switch *arch {
-	case "amd64":
-		machine, addr32nb = 0x8664, 3 // IMAGE_REL_AMD64_ADDR32NB
-	case "arm64":
-		machine, addr32nb = 0xAA64, 2 // IMAGE_REL_ARM64_ADDR32NB
-	default:
-		log.Fatalf("unknown -arch %q", *arch)
+
+	var rs []resource
+	if *manifest != "" {
+		data, err := os.ReadFile(*manifest)
+		if err != nil {
+			log.Fatal(err)
+		}
+		rs = append(rs, resource{rtManifest, 1, data})
 	}
-	data, err := os.ReadFile(*manifest)
+	if *icon != "" {
+		ics, err := icons(*icon)
+		if err != nil {
+			log.Fatal(err)
+		}
+		rs = append(rs, ics...)
+	}
+	if v != (versionInfo{}) {
+		data, err := versionResource(v)
+		if err != nil {
+			log.Fatal(err)
+		}
+		rs = append(rs, resource{rtVersion, 1, data})
+	}
+	obj, err := coff(*arch, rs)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	le := binary.LittleEndian
-	var rsrc bytes.Buffer
-	w := func(v ...any) {
-		for _, x := range v {
-			binary.Write(&rsrc, le, x)
-		}
-	}
-	dir := func(entryID, offset uint32) { // directory with one ID entry; offset has the subdirectory bit
-		w(uint32(0), uint32(0), uint32(0), uint16(0), uint16(1), entryID, offset)
-	}
-	dir(24, 0x80000000|24) // type RT_MANIFEST
-	dir(1, 0x80000000|48)  // name 1
-	dir(0x0409, 72)        // language en-US -> data entry
-	const entryOff = 72    // the data entry's OffsetToData needs a relocation
-	w(uint32(88), uint32(len(data)), uint32(0), uint32(0))
-	rsrc.Write(data)
-	for rsrc.Len()%4 != 0 {
-		rsrc.WriteByte(0)
-	}
-
-	const headers = 20 + 40
-	relocOff := headers + rsrc.Len()
-	symOff := relocOff + 10
-	var f bytes.Buffer
-	fw := func(v ...any) {
-		for _, x := range v {
-			binary.Write(&f, le, x)
-		}
-	}
-	fw(machine, uint16(1), uint32(0), uint32(symOff), uint32(1), uint16(0), uint16(0)) // file header
-	f.WriteString(".rsrc\x00\x00\x00")
-	fw(uint32(0), uint32(0), uint32(rsrc.Len()), uint32(headers), uint32(relocOff), uint32(0), uint16(1), uint16(0), uint32(0x40000040))
-	f.Write(rsrc.Bytes())
-	fw(uint32(entryOff), uint32(0), addr32nb) // relocation against symbol 0
-	f.WriteString(".rsrc\x00\x00\x00")
-	fw(uint32(0), uint16(1), uint16(0), uint8(3), uint8(0)) // static section symbol
-	fw(uint32(4))                                           // empty string table
-	if err := os.WriteFile(*out, f.Bytes(), 0o644); err != nil {
+	if err := os.WriteFile(*out, obj, 0o644); err != nil {
 		log.Fatal(err)
 	}
 }

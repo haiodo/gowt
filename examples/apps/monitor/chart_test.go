@@ -206,6 +206,36 @@ func TestLabelEvery(t *testing.T) {
 	}
 }
 
+// A 60 s window keeps at least two time labels on a 180 pt plot and three on a 226 pt one, inside
+// the plot and apart, whatever second the window ends on.
+func TestTimeLabelsOnNarrowPlots(t *testing.T) {
+	// 44 pt is "15:04:05" in the macOS caption font, 50 pt leaves room for wider ones
+	for _, c := range []struct{ plotW, labelW, want float64 }{{180, 50, 2}, {226, 44, 3}, {260, 50, 3}} {
+		labelW := c.labelW
+		pps := (c.plotW - rightPad) / 60
+		every := labelEvery(10*pps, labelW+12)
+		for end := 1000.0; end < 1060; end++ {
+			hi := end*pps + rightPad
+			lo := hi - c.plotW
+			var ls []timeLabel
+			for tk := math.Floor(lo/pps/10) * 10; tk*pps <= hi; tk += 10 {
+				if x := tk * pps; x >= lo && math.Mod(tk/10, every) == 0 {
+					ls = append(ls, timeLabel{"", x - labelW/2, labelW})
+				}
+			}
+			got := placeLabels(ls, lo, hi)
+			if float64(len(got)) < c.want {
+				t.Errorf("%v pt plot ending at %vs: %d labels, want %v", c.plotW, end, len(got), c.want)
+			}
+			for i, l := range got {
+				if l.x < lo || l.x+l.w > hi || i > 0 && l.x < got[i-1].x+got[i-1].w+4 {
+					t.Errorf("%v pt plot ending at %vs: label %d at %.0f..%.0f, plot %.0f..%.0f", c.plotW, end, i, l.x, l.x+l.w, lo, hi)
+				}
+			}
+		}
+	}
+}
+
 // Whatever the system accent, the series of one chart never share a colour.
 func TestSeriesColoursDistinct(t *testing.T) {
 	accents := map[string]gfx.Color{

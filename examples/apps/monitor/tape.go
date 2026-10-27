@@ -114,6 +114,11 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 		layout = "15:04:05"
 	}
 	every := labelEvery(p.tickStep*p.pps, gfx.DefaultMeasurer.MeasureText(layout, pal.small).Width+12)
+	lo, hi := math.Inf(-1), math.Inf(1)
+	if p.visHi != 0 {
+		lo, hi = p.visLo, p.visHi
+	}
+	var labels []timeLabel
 	for t := math.Ceil((p.xLo+off)/p.tickStep)*p.tickStep - off; t <= p.xHi; t += p.tickStep {
 		x := math.Round(t*p.pps) + 0.5
 		var l gfx.Path
@@ -123,11 +128,14 @@ func recordTape(p *tapeParams, ts []float64, vals [][]float64) tapeResult {
 		at := p.base.Add(time.Duration(t * float64(time.Second)))
 		// a label on every second tick at most: Pango text is the slow part of a Linux tile
 		if k := math.Round((float64(at.UnixNano())/1e9)/p.tickStep) * p.tickStep; math.Mod(k/p.tickStep, every) == 0 {
-			s := at.Format(layout)
-			if p.visHi == 0 || (x+4 >= p.visLo && x+4+gfx.DefaultMeasurer.MeasureText(s, pal.small).Width <= p.visHi) { // a label the edge would cut is left out
-				r.Text(s, x+4, p.h-5, pal.small, pal.label)
+			if s := at.Format(layout); x >= lo && x <= hi {
+				w := gfx.DefaultMeasurer.MeasureText(s, pal.small).Width
+				labels = append(labels, timeLabel{s, x - w/2, w})
 			}
 		}
+	}
+	for _, l := range placeLabels(labels, lo, hi) {
+		r.Text(l.s, l.x, p.h-5, pal.small, pal.label)
 	}
 	for _, f := range p.fracs {
 		y := math.Round(p.y(f*p.yMax)) + 0.5
@@ -223,6 +231,28 @@ func labelEvery(gap, labelW float64) float64 {
 		}
 	}
 	return 12
+}
+
+// timeLabel is a time label at x, w wide, centred under its tick.
+type timeLabel struct {
+	s    string
+	x, w float64
+}
+
+// placeLabels moves a label the plot edge [lo, hi] would cut inside it (dropped, a narrow plot kept
+// one label) and leaves out a label that would touch the one before it.
+func placeLabels(ls []timeLabel, lo, hi float64) []timeLabel {
+	var out []timeLabel
+	right := math.Inf(-1)
+	for _, l := range ls {
+		l.x = max(min(l.x, hi-l.w), lo)
+		if l.x < right+4 {
+			continue
+		}
+		out = append(out, l)
+		right = l.x + l.w
+	}
+	return out
 }
 
 // niceCeil rounds v up to 1, 2, 2.5, 5 or 10 times a power of ten: the axis moves in readable steps.

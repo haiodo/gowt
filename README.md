@@ -4,11 +4,19 @@
 
 Native GUI for Go, without cgo. Windows, tables, menus and dialogs are the operating system's own widgets: AppKit on macOS, Win32 on Windows, GTK 3 on Linux. The API is a small idiomatic Go layer (`gowt`) over Eclipse SWT, which is translated from Java to Go and bound to the OS libraries at run time.
 
-| macOS | Windows | Linux |
-|---|---|---|
-| ![Table, macOS](docs/img/table-macos.png) | ![Table, Windows](docs/img/table-windows.png) | ![Table, Linux](docs/img/table-linux.png) |
+<p align="center"><a href="docs/video/monitor-macos.mp4"><img src="docs/img/monitor-macos.webp" width="720" alt="The system monitor example on macOS: CPU and memory charts scrolling with live data"></a></p>
 
-A `gowt.Table` sample ([components](docs/components.md)). Windows is a Windows 11 virtual machine, Linux an Ubuntu GNOME desktop on Wayland in a virtual machine, see [docs/screenshots.md](docs/screenshots.md).
+[`monitor`](examples/apps/monitor) is a live system monitor: CPU, memory and network history charts drawn with `gfx`, native cards and a process table, all plain Go with no cgo. The loop above is the real app on macOS (click it for the full-quality video); the same source gives the three windows below.
+
+<table>
+<tr>
+<td align="center"><img src="docs/img/app-monitor-macos.png" width="400" alt="monitor, macOS"><br>macOS: AppKit</td>
+<td align="center"><img src="docs/img/app-monitor-windows.png" width="400" alt="monitor, Windows"><br>Windows: Win32</td>
+<td align="center"><img src="docs/img/app-monitor-linux.png" width="400" alt="monitor, Linux"><br>Linux: GTK 3</td>
+</tr>
+</table>
+
+One code, three native UIs. More widgets side by side: [components](docs/components.md); how the Windows and Linux shots are made: [docs/screenshots.md](docs/screenshots.md).
 
 ## Demo apps
 

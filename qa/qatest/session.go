@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -20,7 +21,8 @@ import (
 type session struct {
 	cmd     *exec.Cmd
 	exited  chan struct{}
-	dir     string // socket, data directory and app.log live here
+	dir     string // data directory and app.log live here
+	sockDir string // the socket, in a directory with a short path
 	conn    net.Conn
 	dec     *json.Decoder
 	token   string
@@ -28,6 +30,7 @@ type session struct {
 	nextID  int64
 	cmdLog  []string
 	broken  error
+	data    string // the app's data directory
 	startAt time.Time
 }
 
@@ -45,12 +48,16 @@ func launch(binary string, args []string) (*session, error) {
 	if err != nil {
 		return nil, err
 	}
-	// A short path: unix socket names are limited to about 100 bytes.
 	dir, err := os.MkdirTemp("", "gowtqa")
 	if err != nil {
 		return nil, err
 	}
-	sock, data := filepath.Join(dir, "s"), filepath.Join(dir, "data")
+	sockDir, err := shortDir()
+	if err != nil {
+		os.RemoveAll(dir)
+		return nil, err
+	}
+	sock, data := filepath.Join(sockDir, "s"), filepath.Join(dir, "data")
 	if err := os.Mkdir(data, 0o700); err != nil {
 		return nil, err
 	}
@@ -65,7 +72,7 @@ func launch(binary string, args []string) (*session, error) {
 	if err := cmd.Start(); err != nil {
 		return nil, fmt.Errorf("start %s: %w", bin, err)
 	}
-	s := &session{cmd: cmd, exited: make(chan struct{}), dir: dir, startAt: time.Now()}
+	s := &session{cmd: cmd, exited: make(chan struct{}), dir: dir, sockDir: sockDir, data: data, startAt: time.Now()}
 	go func() { cmd.Wait(); close(s.exited) }()
 	deadline := time.Now().Add(launchTimeout)
 	for {
@@ -90,6 +97,34 @@ func launch(binary string, args []string) (*session, error) {
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
+}
+
+// maxSockPath is what fits in sockaddr_un.sun_path of macOS (104 with the terminating zero) and
+// Linux (108), with a margin.
+const maxSockPath = 100
+
+// shortDir makes a private directory whose socket path fits the unix limit. TMPDIR alone does not
+// always: on macOS it is a long /var/folders path, and a CI may set it much longer. Windows falls
+// back to a loopback port when the app cannot bind, so any directory does there.
+func shortDir() (string, error) {
+	if runtime.GOOS == "windows" {
+		return os.MkdirTemp("", "q")
+	}
+	var tried []string
+	for _, base := range []string{os.Getenv("XDG_RUNTIME_DIR"), "/tmp", os.TempDir()} {
+		if base == "" {
+			continue
+		}
+		if len(base)+len("/q123456789/s") > maxSockPath {
+			tried = append(tried, base)
+			continue
+		}
+		if d, err := os.MkdirTemp(base, "q"); err == nil {
+			return d, nil
+		}
+		tried = append(tried, base)
+	}
+	return "", fmt.Errorf("qatest: no directory for the app's socket with a path under %d bytes (unix socket limit); tried %s", maxSockPath, strings.Join(tried, ", "))
 }
 
 // dial connects to the unix socket, or to the loopback port a Windows app wrote next to it.
@@ -181,5 +216,6 @@ func (s *session) stop() {
 	}
 	if os.Getenv(qa.EnvKeep) == "" {
 		os.RemoveAll(s.dir)
+		os.RemoveAll(s.sockDir)
 	}
 }

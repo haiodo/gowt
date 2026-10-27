@@ -363,6 +363,10 @@ func key(d *swt.Display, c *swt.Control, keys string) error {
 			return click(&entry{obj: it, n: Node{Path: "accelerator " + keys}})
 		}
 	}
+	if traverseKey(c, state, code, char) {
+		flush(d)
+		return nil
+	}
 	mk := func() *swt.Event {
 		ev := swt.NewEvent()
 		ev.KeyCode, ev.Character, ev.StateMask = code, char, state
@@ -404,6 +408,27 @@ func escapePopover(d *swt.Display, c *swt.Control) bool {
 	}
 	last.Escape()
 	return true
+}
+
+// traverseKey sends the Traverse event SWT sends before a Tab, Shift+Tab, Esc or Enter key reaches the
+// control. For Tab it then does the default traversal, as Control.traverse does unless a listener
+// cleared Doit, and the key is used up: it returns true. For Esc and Enter the listeners see the event
+// and the key then goes on as a key, as the code below does for them.
+func traverseKey(c *swt.Control, state, code int32, char uint16) bool {
+	switch {
+	case code == int32(swt.TAB) && state == 0:
+		return c.TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(swt.TRAVERSE_TAB_NEXT, char, code, 0, state, true)
+	case code == int32(swt.TAB) && state == swt.SHIFT:
+		return c.TraverseTraversalCharacterKeyCodeKeyLocationStateMaskDoit(swt.TRAVERSE_TAB_PREVIOUS, char, code, 0, state, true)
+	case code == int32(swt.ESC) && state == 0, code == int32(swt.CR) && state == 0:
+		ev := swt.NewEvent()
+		ev.Detail, ev.KeyCode, ev.Character, ev.StateMask = swt.TRAVERSE_ESCAPE, code, char, state
+		if code == int32(swt.CR) {
+			ev.Detail = swt.TRAVERSE_RETURN
+		}
+		c.NotifyListeners(swt.Traverse, ev)
+	}
+	return false
 }
 
 // accelerated finds the enabled item of m, submenus included, that has the accelerator state|code.

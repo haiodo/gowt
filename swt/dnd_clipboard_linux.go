@@ -93,6 +93,10 @@ func (this *Clipboard) ClearContents() {
 }
 
 func (this *Clipboard) ClearContentsClipboards(clipboards int32) {
+	if qaClipboardPath() != "" {
+		this.qaClear(clipboards)
+		return
+	}
 	this.CheckWidget()
 	if gtk.GTKGTK4 {
 		var proxy *ClipboardProxyGTK4 = ClipboardProxyGTK4_getInstance(this.display)
@@ -123,6 +127,9 @@ func (this *Clipboard) GetContents(transferLike TransferLike) any {
 }
 
 func (this *Clipboard) GetContentsTransferClipboards(transferLike TransferLike, clipboards int32) any {
+	if qaClipboardPath() != "" {
+		return this.qaGet(transferLike, clipboards)
+	}
 	var transfer *Transfer
 	if transferLike != nil {
 		transfer = transferLike.AsTransfer()
@@ -262,6 +269,10 @@ func (this *Clipboard) SetContents(data []any, dataTypes []*Transfer) {
 }
 
 func (this *Clipboard) SetContentsDataDataTypesClipboards(data []any, dataTypes []*Transfer, clipboards int32) {
+	if qaClipboardPath() != "" {
+		this.qaSet(data, dataTypes, clipboards)
+		return
+	}
 	this.CheckWidget()
 	if data == (nil) || dataTypes == (nil) || int32(len(data)) != int32(len(dataTypes)) || int32(len(data)) == 0 {
 		DNDError(ERROR_INVALID_ARGUMENT)
@@ -289,6 +300,9 @@ func (this *Clipboard) GetAvailableTypes() []*TransferData {
 }
 
 func (this *Clipboard) GetAvailableTypesClipboards(clipboards int32) []*TransferData {
+	if qaClipboardPath() != "" {
+		return this.qaTypes(clipboards)
+	}
 	this.CheckWidget()
 	if gtk.GTKGTK4 {
 		return this.Gtk4_getAvailableTypes(clipboards)
@@ -328,6 +342,9 @@ func (this *Clipboard) GetAvailableTypesClipboards(clipboards int32) []*Transfer
 }
 
 func (this *Clipboard) GetAvailableTypeNames() []string {
+	if qaClipboardPath() != "" {
+		return this.qaTypeNames()
+	}
 	this.CheckWidget()
 	if gtk.GTKGTK4 {
 		return this.Gtk4_getAvailableTypeNames()

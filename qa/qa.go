@@ -133,6 +133,23 @@ type PointerEvent struct {
 	Steps    int     // drag: moves before the release, 4 by default
 }
 
+// ClipboardFile is the name, in the app's data directory, of the clipboard of a QA run.
+const ClipboardFile = "clipboard.json"
+
+// Clipboard is what the clipboard of a QA run holds, as Client.Clipboard returns it and
+// Client.SetClipboard takes it. The app's Clipboard reads and writes it instead of the system
+// clipboard. An empty field means the format is not there. Image is PNG; Custom is by the first type
+// name of a swt Transfer. It mirrors the struct in swt/qa_clipboard_manual.go.
+type Clipboard struct {
+	Text   string            `json:"text,omitempty"`
+	RTF    string            `json:"rtf,omitempty"`
+	HTML   string            `json:"html,omitempty"`
+	URL    string            `json:"url,omitempty"`
+	Image  []byte            `json:"image,omitempty"`
+	Files  []string          `json:"files,omitempty"`
+	Custom map[string][]byte `json:"custom,omitempty"`
+}
+
 // Job is one running Job or Track of the app, as the "jobs" command reports it; it mirrors gowt.JobInfo.
 type Job struct {
 	Name       string `json:"name"`

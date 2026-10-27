@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.13.3 (2026-10-28)
 
 Focus of popover and inline edit fields (Tenniarb)
 - Fixed: on macOS a single-line `Text` with `Focused()` in a `Popover` became the first responder but took no typed keys until it was clicked, as in Tenniarb's operation box that Space opens over the canvas. The popover gave the focus with a bare `makeFirstResponder:`; SWT's single-line `Text` accepts it without starting its field editor and relies on the `selectText:` that `Text.ForceFocus` sends next. The popover now sends `selectText:` too, and does not ask again while the field is being edited, which ended the edit. `View.Edit` focuses through SWT's `ForceFocus` and needed no such change.

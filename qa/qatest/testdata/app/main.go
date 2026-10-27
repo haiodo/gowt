@@ -26,6 +26,7 @@ func main() {
 		var gv *view.View
 		var ed *view.Editor
 		var popBtn *gowt.ButtonView
+		var wrap *gowt.MenuItem
 		var pop *gowt.Popover
 		var resizes [][2]int
 		var dndLog []string
@@ -85,7 +86,7 @@ func main() {
 				m := gowt.PopupMenu(b)
 				m.OnShow(func() { note("menu show") })
 				m.Item("Rename", func() { note("menu rename") })
-				m.Item("Wrap", func() { note("menu wrap") }, gowt.Check())
+				wrap = m.Item("Wrap", func() { note("menu wrap") }, gowt.Check())
 				m.Submenu("More").Item("Deep", func() { note("menu deep") })
 			})),
 			gowt.Button("Pop", gowt.ID("pop"), gowt.Ref(&popBtn), gowt.OnClick(func() { pop.ShowAt(popBtn, gowt.PopoverBelow) })),
@@ -224,6 +225,7 @@ func main() {
 			off.Set(0)
 			report.Set("")
 			events, vetoClose, dndLog = nil, false, nil
+			wrap.SetChecked(false)
 			pop.Close()
 			if ed != nil {
 				ed.Cancel()

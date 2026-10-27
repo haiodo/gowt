@@ -15,6 +15,9 @@ type Frame struct{ X, Y, W, H float64 }
 // it (Windows); an open popover closes when its window is deactivated.
 var Passive bool
 
+// Fast makes the capture of a view inside a window capture skip the PNG round trip (macOS); set by a QA recorder shot.
+var Fast bool
+
 // WindowPNG is Capture without the frame.
 func WindowPNG(handle int64, path string) error {
 	_, err := Capture(handle, path)

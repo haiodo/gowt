@@ -10,11 +10,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"image"
 	"net"
 	"os"
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/haiodo/gowt/internal/qatree"
@@ -58,6 +61,11 @@ const (
 type server struct {
 	h     Host
 	token string
+
+	// A Fast shot writes its frame after the command has returned; writes counts those still running.
+	writes   sync.WaitGroup
+	writeMu  sync.Mutex
+	writeErr error
 }
 
 // Start serves in the background on the socket named by GOWT_QA_SOCKET; without it Start does nothing.
@@ -335,6 +343,12 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 			return nil, fmt.Errorf("shot: %w", err)
 		}
 	}
+	if a.Drain {
+		s.writes.Wait()
+		s.writeMu.Lock()
+		defer s.writeMu.Unlock()
+		return map[string]string{}, s.writeErr
+	}
 	path := a.Path
 	if path == "" {
 		f, err := os.CreateTemp("", "gowtqa-*.png")
@@ -355,27 +369,74 @@ func (s *server) shot(raw json.RawMessage) (any, error) {
 	}); err != nil {
 		return nil, err
 	}
-	s.waitFrames(done)
+	ms := map[string]float64{}
+	t0 := time.Now()
+	lap := func(name string) { ms[name] = float64(time.Since(t0).Microseconds()) / 1000; t0 = time.Now() }
+	if !a.Fast { // a recorder wants what is on screen now, not the next presented frame
+		s.waitFrames(done)
+	}
+	lap("wait")
+	var frameImg *image.NRGBA
 	_, err := s.ui(cmdTimeout, func() (any, error) {
 		sh, err := s.shellOf(a)
 		if err != nil {
 			return nil, err
 		}
 		shot.Passive = len(qaview.Popovers(s.h.Display, sh)) > 0
-		defer func() { shot.Passive = false }()
+		shot.Fast = a.Fast
+		defer func() { shot.Passive, shot.Fast = false, false }()
+		if a.Fast && !shot.Passive && a.Path != "" {
+			img, _, err := shot.CaptureImage(s.h.ShotHandle(sh))
+			if err == nil {
+				lap("capture")
+				if err := qaview.OverlayImage(sh, img); err != nil {
+					return nil, err
+				}
+				lap("overlay")
+				frameImg = img
+				return nil, nil
+			}
+			if !errors.Is(err, shot.ErrNoImage) {
+				return nil, err
+			}
+		}
 		frame, err := shot.Capture(s.h.ShotHandle(sh), path)
 		if err != nil {
 			return nil, err
 		}
+		lap("capture")
 		if err := qaview.OverlayPNG(sh, path); err != nil {
 			return nil, err
 		}
-		return nil, s.addPopovers(sh, path, frame)
+		lap("overlay")
+		err = s.addPopovers(sh, path, frame)
+		lap("popovers")
+		return nil, err
 	})
 	if err != nil {
 		return nil, err
 	}
+	if frameImg != nil {
+		// Raw RGBA, no PNG: the UI thread is free for the next shot while the file is written.
+		// The frame order is the order of the calls; the file name says it is not a PNG.
+		rawPath := strings.TrimSuffix(a.Path, ".png") + ".rgba"
+		w, h := frameImg.Bounds().Dx(), frameImg.Bounds().Dy()
+		s.writes.Wait() // one write in flight: the pipeline is capture N while writing N-1
+		lap("flush")
+		s.writes.Add(1)
+		go func() {
+			defer s.writes.Done()
+			err := os.WriteFile(rawPath, frameImg.Pix, 0o644)
+			s.writeMu.Lock()
+			s.writeErr = errors.Join(s.writeErr, err)
+			s.writeMu.Unlock()
+		}()
+		return map[string]any{"path": rawPath, "raw": true, "w": w, "h": h, "ms": ms}, nil
+	}
 	if a.Path != "" {
+		if a.Timing {
+			return map[string]any{"path": a.Path, "ms": ms}, nil
+		}
 		return map[string]string{"path": a.Path}, nil
 	}
 	b, err := os.ReadFile(path)
@@ -413,6 +474,13 @@ type shotArgs struct {
 	Title    string           `json:"title"`
 	Selector *qatree.Selector `json:"selector"`
 	Path     string           `json:"path"`
+	// Fast is for a recorder that shoots many frames: it does not wait for a presented frame, writes a
+	// quickly compressed PNG and, on macOS, skips the encode and decode between capture and overlay.
+	Fast bool `json:"fast"`
+	// Timing adds the milliseconds of each step to the result as "ms".
+	Timing bool `json:"timing"`
+	// Drain takes no shot: it returns when the frames of earlier Fast shots are on disk.
+	Drain bool `json:"drain"`
 }
 
 func (s *server) shellOf(a shotArgs) (*swt.Shell, error) {

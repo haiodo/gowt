@@ -68,3 +68,13 @@ To add a widget to the catalog, add a line to `samples` in `examples/catalog/mai
 | Ubuntu GNOME VM | `ONLY=apps make vm-docs-shots-linux` |
 
 `WINWD` (single backslashes, e.g. `C:\gowt\orch\gallery`) moves the work folder on the Windows VM. The PNGs are not quantised, about 5 MB for the 14 VM shots.
+
+## README video
+
+The loop at the top of the README (`docs/img/monitor-macos.webp`, linked to `docs/video/monitor-macos.mp4`) is the monitor app shot window-only through the QA socket (`tooling/demovideo`), so no desktop shows. Re-record it on macOS, from the repository root, each release:
+
+```
+tooling/demo-video.sh macos
+```
+
+It takes about 80 s (60 s of warm-up so the charts are full, then 20 s of shots; about 5 GB of raw frames in `bin/demo/macos`, deleted after the assembly unless `KEEP=1`), opens one window and does not touch the mouse. `tooling/demo-video.sh record <label>` and `assemble <label>` run the two halves apart (the recording needs a window server, the assembly needs `ffmpeg` and `img2webp`). `LOOP`, `FPS`, `WIDTH` and `Q` tune the loop length (20 s, a hard cut), the frame rate, the WebP width and its quality; the script prints the sizes (aim for 2-4 MB for the WebP) and fails if the QA shots come in under 10 fps.

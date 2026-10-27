@@ -13,6 +13,7 @@ import (
 
 	"github.com/ebitengine/purego/objc"
 
+	"github.com/haiodo/gowt/internal/shot"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -91,6 +92,11 @@ func visibleChildren(view objc.ID) []objc.ID {
 
 // capture draws view as cacheDisplayInRect does and returns the bitmap.
 func capture(view objc.ID) (*image.NRGBA, error) {
+	if shot.Fast { // a recorder: no PNG round trip per frame
+		if img, err := shot.ViewImage(view); err == nil {
+			return img, nil
+		}
+	}
 	sel := objc.RegisterName
 	bounds := objc.Send[nsRect](view, sel("bounds"))
 	rep := view.Send(sel("bitmapImageRepForCachingDisplayInRect:"), bounds)

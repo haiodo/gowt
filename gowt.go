@@ -37,6 +37,7 @@ type App struct {
 	openPend   []string  // paths of this turn of the event loop, see openIn
 	windows    []*Window // in creation order, asked in turn when the app quits
 	asking     bool      // a quit question is open: a second request is refused
+	approved   bool      // the quit was answered yes: windows closing now are not asked again
 	dark       bool      // the theme the Adaptive colours were last applied for
 	appearance Appearance
 	paints     map[*swt.Control]*painted // controls given an Adaptive colour
@@ -75,6 +76,7 @@ func Run(setup func(*App)) (err error) {
 	defer a.disposeClipboard()
 	apps.Store(a.display, a)
 	a.display.AddListener(swt.Close, quitListener(func() bool { return a.askQuit(nil) }))
+	a.hookTerminate()
 	a.display.AddListener(swt.OpenDocument, openListener(a.openIn))
 	defer a.attachInbox()()
 	defer apps.Delete(a.display)
@@ -97,7 +99,7 @@ func Run(setup func(*App)) (err error) {
 		snapTick = a.armSnap(p, &err)
 	}
 	qaStart(a)
-	// The display can dispose itself inside ReadAndDispatch: macOS Quit, Windows WM_ENDSESSION.
+	// The display can dispose itself inside ReadAndDispatch (Windows WM_ENDSESSION); a macOS quit sets a.quit.
 	for !a.quit.Load() && !a.display.IsDisposed() && len(a.display.GetShells()) > 0 {
 		snapTick()
 		if !a.dispatch(a.display.ReadAndDispatch) {
@@ -781,6 +783,9 @@ func (w *Window) OnClose(f func() bool) { w.onClose = append(w.onClose, f) }
 // of swt added through Unwrap run after this one; during a quit question the window is not the last
 // one asked, so OnQuit is left to askQuit.
 func (a *App) windowClosing(w *Window, e *swt.ShellEvent) {
+	if a.approved {
+		return
+	}
 	for _, f := range w.onClose {
 		if !f() {
 			e.Doit = false

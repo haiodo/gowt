@@ -91,6 +91,7 @@ Toolbar search (Tenniarb)
 - New: the toolbar search field is in the QA dump (a `Text` with the item ID, placeholder as `Text`, content as `Value`) and takes `Type`, `Key("Enter")`, `Key("Esc")` and `Focus` on macOS too. Test `TestToolbarSearch` (`GOWT_GUI_TEST=1`) on Linux Docker, the Windows VM and the second Mac.
 
 Quit hook
+- Fixed: macOS Quit after a Save question crashed with NSRangeException; Dock/logout quit now runs dispose handlers. The delegate's `applicationShouldTerminate:` no longer disposes inside the event loop (an allowed quit ends `Run`), `applicationWillTerminate:` disposes on the terminate: path, and windows AppKit closes after an approved quit skip their `OnClose`. `TestQuitExitsCleanly` (`GOWT_GUI_TEST=1`, macOS).
 - New: `App.OnQuit(func() bool)`; false cancels the quit. It runs on Cmd+Q, the app menu and the Dock (macOS), logout and shutdown (macOS, Windows) and the close of the last window, after every open window's `Window.OnClose` agreed (asked in creation order, the first refusal stops). `app.Unwrap().Close()` takes the same path for an own Quit item; `app.Quit()` still ends without asking. A `MessageBox` from a handler works during the system's quit request. Linux has no session-end path (GTK 3 without `GtkApplication`). Several `Window.OnClose` calls on one window now stop at the first false. Tests `TestQuit*` (`GOWT_GUI_TEST=1`) run on Linux under Xvfb and on the Windows VM; macOS not run. `examples/quit`, docs/events.md.
 
 Emoji in text (TSK-2026-10-24-gfx-tenniarb-11 D3, TSK-2026-10-03-product-36)

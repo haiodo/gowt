@@ -151,7 +151,7 @@ func (w *walker) control(c *swt.Control, vis, en bool) *entry {
 		if tb, ok := qaview.ToolbarOf(v); ok {
 			for n, b := range tb.Buttons() {
 				e.kids = append(e.kids, &entry{obj: toolbarButton{tb, n}, shell: v, n: Node{ID: b.ID, Class: "ToolItem", Text: b.Title,
-					Visible: e.n.Visible, Enabled: e.n.Enabled && b.Enabled}})
+					Visible: e.n.Visible, Enabled: e.n.Enabled && b.Enabled, Bounds: b.Bounds}})
 			}
 		}
 		if ts, ok := qaview.ToolbarSearchOf(v); ok && ts.Present() {

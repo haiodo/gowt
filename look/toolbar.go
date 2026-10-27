@@ -65,10 +65,15 @@ type toolbarBar struct {
 	icons []func(on, off string) []*swt.Image // set the images of one tool item in the given colours
 	// sideIcons are the icons of the side row, coloured for the sidebar background
 	sideIcons []func(on, off string) []*swt.Image
-	images    []*swt.Image
-	bg        swt.RGB // content colour the bar was styled for
-	line      *swt.Color
-	search    *gowt.TextView // the search field of an OnSearch item
+	// strip is the row of Inspector items: over the inspector, or at the end of the bar while it is hidden
+	strip      *gowt.Panel
+	stripIcons []func(on, off string) []*swt.Image
+	images     []*swt.Image
+	bg         swt.RGB // content colour the bar was styled for
+	stripBG    swt.RGB // colour the strip was styled for: the inspector's, or the content's while it is hidden
+	line       *swt.Color
+	stripLine  *swt.Color
+	search     *gowt.TextView // the search field of an OnSearch item
 }
 
 var bars = map[*swt.Shell]*toolbarBar{}
@@ -119,6 +124,10 @@ func (b *toolbarBar) build() {
 		b.side.Unwrap().Dispose()
 		b.side, b.sideIcons = nil, nil
 	}
+	if b.strip != nil {
+		b.strip.Unwrap().Dispose()
+		b.strip, b.stripIcons = nil, nil
+	}
 	if b.content != nil && len(b.items) > 0 {
 		b.fill()
 	}
@@ -134,15 +143,23 @@ func (b *toolbarBar) sideAdder() interface{ Add(...gowt.Option) } {
 	return a
 }
 
-// fill lays the items out as macOS does: Nav items, the window title, then the rest. The title takes
-// the free width unless a Space item does.
+// inspectorPane is the SetInspector pane of the window, nil without one.
+func (b *toolbarBar) inspectorPane() *pane { return inspectorOf(b.w) }
+
+// fill lays the items out as macOS does: Nav items, the window title, then the rest, and the Inspector
+// items in a strip of their own. The title takes the free width unless a Space item does.
 func (b *toolbarBar) fill() {
-	var lead, trail, over []ToolbarItem
+	var lead, trail, over, insp []ToolbarItem
 	spaced := false
 	side := b.sideAdder()
+	inspector := b.inspectorPane() != nil
 	for _, it := range b.items {
 		if it.Sidebar && !it.Space && side != nil {
 			over = append(over, it)
+			continue
+		}
+		if it.Inspector && inspector {
+			insp = append(insp, it)
 			continue
 		}
 		if it.Nav {
@@ -195,6 +212,21 @@ func (b *toolbarBar) fill() {
 			b.item(b.side, it, &b.sideIcons)
 		}
 	}
+	if len(insp) > 0 {
+		// The strip is a window child that barTop places, as the bar is: inside the inspector it would
+		// take the inspector's padding and miss the bar's height.
+		b.w.Add(gowt.Grid(len(insp), gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.Ref(&b.strip)))
+		st := b.strip.Unwrap()
+		st.SetBackgroundMode(swt.INHERIT_DEFAULT)
+		st.AddPaintListener(painter(func(e *swt.PaintEvent) {
+			r := st.GetClientArea()
+			e.Gc.SetForeground(b.stripLine)
+			e.Gc.DrawLine(0, r.Height-1, r.Width, r.Height-1)
+		}))
+		for _, it := range insp {
+			b.item(b.strip, it, &b.stripIcons)
+		}
+	}
 	b.restyle(true)
 }
 
@@ -210,6 +242,9 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		if it.ID != "" {
 			opts = append(opts, gowt.ID(it.ID))
 		}
+		if it.Small {
+			opts = append(opts, gowt.Typeface(smallFont))
+		}
 		p.Add(gowt.Text(opts...))
 		t.SetHint(it.Title)
 		t.OnChange(it.OnSearch)
@@ -218,6 +253,24 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 			b.search = t
 		}
 		return t
+	case it.Text != nil && len(it.Group) == 0:
+		var bt *gowt.ButtonView
+		opts := []gowt.Option{gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Tooltip(it.Title), gowt.Ref(&bt)}
+		if it.OnClick != nil {
+			opts = append(opts, gowt.OnClick(it.OnClick))
+		}
+		if it.ID != "" {
+			opts = append(opts, gowt.ID(it.ID))
+		}
+		if it.Small {
+			opts = append(opts, gowt.Typeface(smallFont))
+		}
+		p.Add(gowt.Button(it.Text.Peek(), opts...))
+		gowt.Watch(bt, it.Text, bt.SetText)
+		if it.Enabled != nil {
+			gowt.Watch(bt, it.Enabled, bt.SetEnabled)
+		}
+		return bt
 	default:
 		var tb *gowt.ToolBarView
 		p.Add(gowt.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&tb)))
@@ -225,12 +278,20 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		if len(segs) == 0 {
 			segs = []ToolbarItem{it}
 		}
+		size := 16
+		if it.Small {
+			size = 13
+			tb.SetFont(smallFont)
+		}
 		for _, g := range segs {
-			toolItem(tb, g, icons)
+			toolItem(tb, g, size, icons)
 		}
 		return tb
 	}
 }
+
+// smallFont is the text of a Small item: 11 to 13, as the small and regular control fonts of macOS.
+var smallFont = gowt.Font{Scale: 11.0 / 13}
 
 // sidebarShown moves the Sidebar items to the start of the bar while the sidebar is hidden; the row in
 // the sidebar hides with it.
@@ -240,9 +301,9 @@ func (b *toolbarBar) sidebarShown(on bool) {
 	}
 }
 
-// toolItem adds a flat button whose symbol icons sets in the bar's text colour, dimmed while Enabled
-// is false.
-func toolItem(tb *gowt.ToolBarView, it ToolbarItem, icons *[]func(on, off string) []*swt.Image) {
+// toolItem adds a flat button whose symbol, size points square, icons sets in the bar's text colour,
+// dimmed while Enabled is false.
+func toolItem(tb *gowt.ToolBarView, it ToolbarItem, size int, icons *[]func(on, off string) []*swt.Image) {
 	shape, ok := barSymbols[it.Symbol]
 	text := ""
 	if !ok {
@@ -257,8 +318,8 @@ func toolItem(tb *gowt.ToolBarView, it ToolbarItem, icons *[]func(on, off string
 		data := fmt.Sprintf(barSVG, shape)
 		*icons = append(*icons, func(on, off string) []*swt.Image {
 			d := tb.Unwrap().GetDisplay()
-			img := swt.NewImageDeviceImageDataProvider(d, svg.NewImageDataProvider([]byte(data), 16, 16, on))
-			dim := swt.NewImageDeviceImageDataProvider(d, svg.NewImageDataProvider([]byte(data), 16, 16, off))
+			img := swt.NewImageDeviceImageDataProvider(d, svg.NewImageDataProvider([]byte(data), size, size, on))
+			dim := swt.NewImageDeviceImageDataProvider(d, svg.NewImageDataProvider([]byte(data), size, size, off))
 			ti.Unwrap().SetDisabledImage(dim)
 			ti.Unwrap().SetImage(img)
 			return []*swt.Image{img, dim}
@@ -276,10 +337,14 @@ func (b *toolbarBar) restyle(force bool) {
 		return
 	}
 	bg := b.content.GetBackground().GetRGB()
-	if !force && *bg == b.bg {
+	sbg := *bg
+	if p := b.inspectorPane(); b.strip != nil && p.visible() {
+		sbg = *p.c.GetBackground().GetRGB()
+	}
+	if !force && *bg == b.bg && sbg == b.stripBG {
 		return
 	}
-	b.bg = *bg
+	b.bg, b.stripBG = *bg, sbg
 	fg := barForeground(*b.w.Unwrap().GetDisplay().GetSystemColor(swt.COLOR_WIDGET_FOREGROUND).GetRGB(), *bg)
 	p := b.panel.Unwrap()
 	p.SetBackgroundWithColor(swt.NewColorRgb(bg))
@@ -296,6 +361,15 @@ func (b *toolbarBar) restyle(force bool) {
 		for _, set := range b.sideIcons {
 			b.images = append(b.images, set(hexRGB(sfg), hexRGB(*blend(*sbg, sfg, 40)))...)
 		}
+	}
+	if b.strip != nil {
+		tfg := barForeground(*b.w.Unwrap().GetDisplay().GetSystemColor(swt.COLOR_WIDGET_FOREGROUND).GetRGB(), sbg)
+		b.strip.Unwrap().SetBackgroundWithColor(swt.NewColorRgb(&sbg))
+		b.stripLine = swt.NewColorRgb(blend(sbg, tfg, 12))
+		for _, set := range b.stripIcons {
+			b.images = append(b.images, set(hexRGB(tfg), hexRGB(*blend(sbg, tfg, 40)))...)
+		}
+		b.strip.Unwrap().Redraw()
 	}
 	disposeImages(old)
 	p.Redraw()
@@ -333,23 +407,45 @@ func disposeImages(imgs []*swt.Image) {
 	}
 }
 
-// barTop places the bar of s at the top of the content frame ct and returns the frame left below it.
-func barTop(s *swt.Shell, ct [4]int32) [4]int32 {
+// barTop places the bar of s at the top of the content frame ct and its strip of Inspector items at
+// the top of the inspector frame ib, or at the end of the bar where ib is 0 wide (a hidden inspector),
+// and returns the frames left below them.
+func barTop(s *swt.Shell, ct, ib [4]int32) ([4]int32, [4]int32) {
 	b := bars[s]
 	if b == nil || b.panel == nil {
-		return ct
+		return ct, ib
 	}
-	c := b.panel.Unwrap()
-	h := min(c.ComputeSize(ct[2], swt.DEFAULT).Y, ct[3])
-	c.SetBounds(ct[0], ct[1], ct[2], h)
+	h := min(b.height(ct[2]), ct[3])
+	w := ct[2]
+	if b.strip != nil {
+		st := b.strip.Unwrap()
+		if ib[2] > 0 {
+			st.SetBounds(ib[0], ib[1], ib[2], h)
+			ib = [4]int32{ib[0], ib[1] + h, ib[2], max(ib[3]-h, 0)}
+		} else {
+			sw := min(st.ComputeSize(swt.DEFAULT, h).X, w)
+			w -= sw
+			st.SetBounds(ct[0]+w, ct[1], sw, h)
+		}
+	}
+	b.panel.Unwrap().SetBounds(ct[0], ct[1], w, h)
 	b.restyle(false)
-	return [4]int32{ct[0], ct[1] + h, ct[2], ct[3] - h}
+	return [4]int32{ct[0], ct[1] + h, ct[2], ct[3] - h}, ib
+}
+
+// height is the height of the bar width points wide, as tall as the strip if that is taller.
+func (b *toolbarBar) height(width int32) int32 {
+	h := b.panel.Unwrap().ComputeSize(width, swt.DEFAULT).Y
+	if b.strip != nil {
+		h = max(h, b.strip.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).Y)
+	}
+	return h
 }
 
 // barHeight is the height the bar of s asks for, 0 without one.
 func barHeight(s *swt.Shell) int32 {
 	if b := bars[s]; b != nil && b.panel != nil {
-		return b.panel.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).Y
+		return b.height(swt.DEFAULT)
 	}
 	return 0
 }

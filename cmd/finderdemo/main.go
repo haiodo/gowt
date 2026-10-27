@@ -1,9 +1,10 @@
 // Command finderdemo shows the macOS 26 Finder and System Settings look: a floating Liquid Glass
 // sidebar (look.SetSidebar), an edge-to-edge glass inspector on the right (look.SetInspector), a
 // toolbar with an item over the sidebar, a back/forward capsule, a button, a search field and the
-// inspector toggle (look.SetToolbar) and grouped sections (gowt.Section). Windows and Linux get a plain
-// sidebar with the sidebar item in its first row, a plain inspector, the rest of the toolbar as a bar
-// of flat buttons and a search field, and painted sections.
+// inspector toggle over the inspector (look.SetToolbar) and grouped sections (gowt.Section). Windows
+// and Linux get a plain sidebar with the sidebar item in its first row, a plain inspector with the
+// toggle in its first row, the rest of the toolbar as a bar of flat buttons and a search field, and
+// painted sections.
 // GOWT_FINDERDEMO_SECS=n exits after n seconds; GOWT_FINDERDEMO_HIDE=1 starts with the sidebar hidden,
 // GOWT_FINDERDEMO_NARROW=1 at the narrowest window, GOWT_FINDERDEMO_INSPECTOR=0 with the inspector
 // hidden, GOWT_FINDERDEMO_NOSIDEBAR=1 without a sidebar.
@@ -80,7 +81,8 @@ func main() {
 			look.ToolbarItem{Space: true},
 			look.ToolbarItem{Title: "Share", Symbol: "square.and.arrow.up", OnClick: func() { log.Print("share") }},
 			look.ToolbarItem{Title: "Search", OnSearch: find},
-			look.ToolbarItem{Title: "Hide Inspector", Symbol: "sidebar.right", OnClick: toggleInfo})...)
+			look.ToolbarItem{Space: true, Inspector: true},
+			look.ToolbarItem{Title: "Hide Inspector", Symbol: "sidebar.right", Inspector: true, OnClick: toggleInfo})...)
 
 		var sidebar, content, info *gowt.Panel
 		// Finder: the list runs edge to edge, its rows inset their selection

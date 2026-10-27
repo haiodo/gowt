@@ -271,11 +271,76 @@ func SetSidebarEdge(view *NSView, x float64) {
 	fitSpacer(w)
 }
 
-// ReleaseSidebar forgets the sidebar edge of the window of view; call it when the window is disposed.
+// ReleaseSidebar forgets the sidebar edge and the inspector split view of the window of view; call it
+// when the window is disposed.
 func ReleaseSidebar(view *NSView) {
 	w := msg(uintptr(view.Id), "window")
 	delete(sidebarEdges, w)
 	delete(sidebarHidden, w)
+	delete(inspectorSplits, w)
+}
+
+// inspectorSplits holds, per window, the split view of InstallInspectorTracker, owned by the window.
+var inspectorSplits = map[uintptr]uintptr{}
+
+// InstallInspectorTracker gives the window of view an empty vertical NSSplitView whose divider
+// SetInspectorDivider keeps on the inspector edge: AppKit aligns toolbar items, through an
+// NSTrackingSeparatorToolbarItem, only with a split view divider, and the SWT window has none. It lies
+// zero points high under the content view, never seen or clicked. The first call rebuilds an earlier
+// toolbar with the separator.
+func InstallInspectorTracker(view *NSView) {
+	initAssociated()
+	w := msg(uintptr(view.Id), "window")
+	if w == 0 || inspectorSplits[w] != 0 || class("NSTrackingSeparatorToolbarItem") == 0 {
+		return
+	}
+	content := msg(w, "contentView")
+	theme := msg(content, "superview")
+	if theme == 0 {
+		return
+	}
+	sv := msg(msg(class("NSSplitView"), "alloc"), "init")
+	msg(sv, "setVertical:", 1)
+	msg(sv, "setDividerStyle:", 2) // NSSplitViewDividerStyleThin
+	for range 2 {
+		p := msg(msg(class("NSView"), "alloc"), "init")
+		msg(sv, "addSubview:", p)
+		msg(p, "release")
+	}
+	r := NewNSViewOverload1(int64(theme)).Bounds()
+	r.Height = 0
+	msgRectOnly(sv, sel("setFrame:"), r)
+	msg(sv, "setAutoresizingMask:", 2) // NSViewWidthSizable
+	msg(theme, "addSubview:positioned:relativeTo:", sv, windowBelowArg, content)
+	msg(sv, "release")
+	inspectorSplits[w] = sv
+	if d := getAssociated(w, toolbarKey()); d != 0 && toolbarDelegates[d] != nil {
+		InstallToolbar(view, toolbarDelegates[d].items)
+	}
+}
+
+var msgF64Index func(self, sel uintptr, v float64, i uintptr)
+
+// SetInspectorDivider puts the divider of the split view of InstallInspectorTracker x points from the
+// left edge of the window. A hidden inspector hides the second subview, which collapses it, as
+// NSSplitViewController collapses an inspector.
+func SetInspectorDivider(view *NSView, x float64, hidden bool) {
+	sv := inspectorSplits[msg(uintptr(view.Id), "window")]
+	if sv == 0 {
+		return
+	}
+	pane := msg(msg(sv, "subviews"), "objectAtIndex:", 1)
+	if hidden != (msg(pane, "isHidden")&0xff != 0) {
+		msg(pane, "setHidden:", boolArg(hidden))
+		msg(sv, "adjustSubviews")
+	}
+	if hidden {
+		return
+	}
+	if msgF64Index == nil {
+		purego.RegisterFunc(&msgF64Index, objcMsgSend)
+	}
+	msgF64Index(sv, sel("setPosition:ofDividerAtIndex:"), x, 0)
 }
 
 // sidebarHidden holds the windows whose sidebar is hidden.

@@ -13,6 +13,7 @@ var (
 	terminateOnce sync.Once
 	terminateCb   *swt.Callback
 	willEndCb     *swt.Callback
+	willEndAdded  bool
 )
 
 // hookTerminate replaces SWT's applicationShouldTerminate:, which disposes the display inside
@@ -48,6 +49,10 @@ func (a *App) hookTerminate() {
 			}
 			return 0
 		}, 3)
-		cocoa.OSClass_addMethod(cls, cocoa.OSSel_registerName("applicationWillTerminate:"), willEndCb.GetAddress(), "v@:@")
+		willEndAdded = cocoa.OSClass_addMethod(cls, cocoa.OSSel_registerName("applicationWillTerminate:"), willEndCb.GetAddress(), "v@:@")
+		// NSApplication reads which delegate methods exist when the delegate is set, so set it again.
+		app := cocoa.NSApplicationSharedApplication()
+		d := cocoa.OSObjc_msgSend(app.Id, cocoa.OSSel_registerName("delegate"))
+		cocoa.OSObjc_msgSendOverload44(app.Id, cocoa.OSSel_registerName("setDelegate:"), d)
 	})
 }

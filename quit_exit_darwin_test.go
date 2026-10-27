@@ -1,6 +1,7 @@
 package gowt
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -80,6 +81,11 @@ func TestQuitExitChild(t *testing.T) {
 					return
 				}
 				if path == "terminate" {
+					app := cocoa.NSApplicationSharedApplication()
+					d := cocoa.OSObjc_msgSend(app.Id, cocoa.OSSel_registerName("delegate"))
+					resp := cocoa.OSObjc_msgSendOverload44(d, cocoa.OSSel_registerName("respondsToSelector:"),
+						cocoa.OSSel_registerName("applicationWillTerminate:"))
+					fmt.Fprintf(os.Stderr, "diag: class_addMethod=%v delegate responds to applicationWillTerminate:=%v\n", willEndAdded, resp&0xff != 0)
 					cocoa.NSApplicationSharedApplication().Terminate(nil)
 					return
 				}

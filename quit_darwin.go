@@ -1,8 +1,6 @@
 package gowt
 
 import (
-	"fmt"
-	"os"
 	"sync"
 	"sync/atomic"
 
@@ -15,7 +13,6 @@ var (
 	terminateOnce sync.Once
 	terminateCb   *swt.Callback
 	willEndCb     *swt.Callback
-	willEndAdded  bool
 )
 
 // hookTerminate replaces SWT's applicationShouldTerminate:, which disposes the display inside
@@ -46,14 +43,12 @@ func (a *App) hookTerminate() {
 		cocoa.OSMethod_setImplementation(m, terminateCb.GetAddress())
 		// terminate: exits the process after NSTerminateNow, so Run's deferred dispose never runs: dispose here.
 		willEndCb = swt.NewCallbackFn(func([]int64) int64 {
-			fmt.Fprintln(os.Stderr, "diag: willTerminate called")
 			if app := terminateApp.Load(); app != nil && !app.display.IsDisposed() {
 				app.display.Dispose()
 			}
-			fmt.Fprintln(os.Stderr, "diag: disposed")
 			return 0
 		}, 3)
-		willEndAdded = cocoa.OSClass_addMethod(cls, cocoa.OSSel_registerName("applicationWillTerminate:"), willEndCb.GetAddress(), "v@:@")
+		cocoa.OSClass_addMethod(cls, cocoa.OSSel_registerName("applicationWillTerminate:"), willEndCb.GetAddress(), "v@:@")
 		// NSApplication reads which delegate methods exist when the delegate is set, so set it again.
 		app := cocoa.NSApplicationSharedApplication()
 		d := cocoa.OSObjc_msgSend(app.Id, cocoa.OSSel_registerName("delegate"))

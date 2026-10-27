@@ -98,7 +98,7 @@ func Run(setup func(*App)) (err error) {
 		snapTick = a.armSnap(p, &err)
 	}
 	qaStart(a)
-	// The display can dispose itself inside ReadAndDispatch: macOS Quit, Windows WM_ENDSESSION.
+	// The display can dispose itself inside ReadAndDispatch (Windows WM_ENDSESSION); a macOS quit sets a.quit.
 	for !a.quit.Load() && !a.display.IsDisposed() && len(a.display.GetShells()) > 0 {
 		snapTick()
 		if !a.dispatch(a.display.ReadAndDispatch) {

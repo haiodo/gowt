@@ -12,6 +12,7 @@ var (
 	terminateApp  atomic.Pointer[App]
 	terminateOnce sync.Once
 	terminateCb   *swt.Callback
+	willEndCb     *swt.Callback
 )
 
 // hookTerminate replaces SWT's applicationShouldTerminate:, which disposes the display inside
@@ -39,5 +40,13 @@ func (a *App) hookTerminate() {
 			return int64(cocoa.OSNSTerminateNow)
 		}, 3)
 		cocoa.OSMethod_setImplementation(m, terminateCb.GetAddress())
+		// terminate: exits the process after NSTerminateNow, so Run's deferred dispose never runs: dispose here.
+		willEndCb = swt.NewCallbackFn(func([]int64) int64 {
+			if app := terminateApp.Load(); app != nil && !app.display.IsDisposed() {
+				app.display.Dispose()
+			}
+			return 0
+		}, 3)
+		cocoa.OSClass_addMethod(cls, cocoa.OSSel_registerName("applicationWillTerminate:"), willEndCb.GetAddress(), "v@:@")
 	})
 }

@@ -34,9 +34,12 @@ func ObserveEffectiveAppearance(fn func()) {
 // EffectiveAppearanceDark reports whether NSApp.effectiveAppearance resolves to Dark Aqua; unlike the
 // AppleInterfaceStyle default it is already updated when the KVO callback runs.
 func EffectiveAppearanceDark() bool {
+	return appearanceDark(msg(msg(class("NSApplication"), "sharedApplication"), "effectiveAppearance"))
+}
+
+func appearanceDark(ap uintptr) bool {
 	names := [2]uintptr{nsString("NSAppearanceNameAqua"), nsString("NSAppearanceNameDarkAqua")}
 	arr := msg(class("NSArray"), "arrayWithObjects:count:", uintptr(unsafe.Pointer(&names[0])), 2)
-	ap := msg(msg(class("NSApplication"), "sharedApplication"), "effectiveAppearance")
 	best := msg(ap, "bestMatchFromAppearancesWithNames:", arr)
 	runtime.KeepAlive(names)
 	return goString(best) == "NSAppearanceNameDarkAqua"

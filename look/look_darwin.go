@@ -79,6 +79,17 @@ func setGlass(c *swt.Composite, on bool) {
 	}
 }
 
+// setMaterial is the SetGlass panel glass with radius 0; masksToBounds then clips the glass shadow at
+// the panel edges, as ClipBackdrop does for the inspector.
+func setMaterial(c *swt.Composite, on bool) {
+	if on {
+		c.SetDataKeyValue(glassRadiusKey, 0.0)
+	} else {
+		c.SetDataKeyValue(glassRadiusKey, nil)
+	}
+	setGlass(c, on)
+}
+
 const glassRadiusKey = "gowt.look.glassRadius"
 
 func setGlassRadius(c *swt.Composite, r float64) {

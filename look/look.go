@@ -61,6 +61,16 @@ func refreshInset(w *gowt.Window) { w.SetTopInset(topInset(w.Unwrap())) }
 // macOS 26; older macOS shows a blurred material, other systems nothing.
 func SetGlass(c Container, on bool) { setGlass(c.AsComposite(), on) }
 
+// SetMaterial puts the material of a SetSidebar sidebar and a SetInspector inspector behind the
+// container's content, flush with its edges and with square corners, for a pane of a Split such as
+// a code panel under a canvas; SetGlass gives a rounded card instead. macOS 26: the edge-to-edge
+// Liquid Glass of the inspector, clipped to the container. Older macOS: the blurred material the
+// sidebar and inspector fall back to. As with SetGlass, the container and the controls under it,
+// also those created later, stop painting their own background. Windows: the Fluent window
+// background (Layer) of the sidebar and inspector panels; Linux: the GTK window background. There
+// the controls inside keep their own background: give a StyledText gowt.NoBackground.
+func SetMaterial(c Container, on bool) { setMaterial(c.AsComposite(), on) }
+
 // Capsule is the radius for SetGlassRadius that rounds the corners fully: half the shorter side,
 // followed on every resize.
 const Capsule = -1

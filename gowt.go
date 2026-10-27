@@ -425,7 +425,8 @@ func Border() Option { return style{id: sBorder, set: swt.BORDER} }
 // CellAt and OnCellClick find a node only where its text or icon is.
 func CellSelect() Option { return style{id: sCellSelect, clear: swt.FULL_SELECTION} }
 
-// NoBorder removes the frame that List, Table and Tree have by default.
+// NoBorder removes the frame that List, Table and Tree have by default, and the one Border gives a
+// Text or StyledText; it wins over Border in either order.
 func NoBorder() Option { return style{id: sNoBorder, clear: swt.BORDER} }
 
 // Search makes a Text a search field with a magnifier icon and a clear button.

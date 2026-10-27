@@ -211,7 +211,9 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Multiline()`, `Password()`, `Search()` | Text |
 | `ReadOnly()` | Text, Combo, Spinner, StyledText |
 | `Border()` | VBox, HBox, Grid, Flow, Fill, Form, Pages, Boundary, Label, Text, Canvas, Scroll, CTabs, Spinner, StyledText |
-| `NoBorder()`, `MultiSelect()` | List, Table, Tree |
+| `NoBorder()` | List, Table, Tree, Text, StyledText |
+| `MultiSelect()` | List, Table, Tree |
+| `NoBackground()` | StyledText |
 | `CellSelect()` | Tree |
 | `Simple()` | Combo |
 | `Vertical()` | Scale, Slider, Progress, Split, Sash, Separator, Flow, Fill |

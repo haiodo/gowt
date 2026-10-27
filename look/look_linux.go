@@ -123,6 +123,50 @@ func setGlass(c *swt.Composite, on bool) {
 	c.Redraw()
 }
 
+const materialKey = "gowt.look.material"
+
+// setMaterial gives c, as its own SWT background, the theme's window background that the sidebar and
+// inspector panels show: a CSS class lost to the colour c inherits from a coloured parent.
+func setMaterial(c *swt.Composite, on bool) {
+	m, _ := c.GetDataKey(materialKey).(*material)
+	switch {
+	case on && m == nil:
+		m = &material{c}
+		c.SetDataKeyValue(materialKey, m)
+		c.GetDisplay().AddListener(swt.Settings, m)
+		c.AddListener(swt.Dispose, m)
+	case !on && m != nil:
+		m.detach()
+		c.SetDataKeyValue(materialKey, nil)
+		c.SetBackgroundWithColor(nil)
+		c.SetBackgroundMode(swt.INHERIT_NONE)
+	}
+	if on {
+		m.apply()
+	}
+}
+
+// material follows a theme switch, which changes the window background.
+type material struct{ c *swt.Composite }
+
+func (m *material) HandleEvent(e *swt.Event) {
+	if e.Type == swt.Dispose {
+		m.detach()
+		return
+	}
+	m.apply()
+}
+
+func (m *material) apply() {
+	m.c.SetBackgroundWithColor(m.c.GetDisplay().GetSystemColor(swt.COLOR_WIDGET_BACKGROUND))
+	m.c.SetBackgroundMode(swt.INHERIT_DEFAULT)
+}
+
+func (m *material) detach() {
+	m.c.GetDisplay().RemoveListener(swt.Settings, m)
+	m.c.RemoveListener(swt.Dispose, m)
+}
+
 // setGlassRadius: Capsule is a radius far above half the side, which CSS clamps to a half circle
 // and keeps on resize.
 func setGlassRadius(c *swt.Composite, r float64) {

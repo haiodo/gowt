@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+gfx HUD layer
+- New: `Compositor.HUD()` returns a second `Scene` in view points that is drawn over the scene, the lifted nodes and the sprites and ignores the camera (edge indicators, rulers, minimap, HUD text). It is drawn into one image of the bounds of its content, again only when it changes or the view size or backing scale does. `Compositor.OnViewport(f)` and `Viewport()` place nodes on resize and scale change; `Compositor.HUDHit` and `view.View.HUDHitTest` hit-test it; `view.Pointer.HUD` is the HUD node under the pointer (and `Pointer.Node` is nil then). New layer group `gfx.GroupHUD` above `GroupOverlay`: every `gfx.Host` must keep a fourth group (cg, cairo and d2d hosts do). Checked headless with a fake host, on cg and cairo hosts, in GUI tests on Linux (Docker, Xvfb), on a second Mac and on the Windows 11 arm64 VM (d2d host and `TestHUDGUI`).
+
 QA windows and popovers (Tenniarb)
 - New: `Client.ShotOf(name, sel)`, `ShotTitle(name, title)` and `ShotWindow(name, index)`: a shot of the window that holds a control, has a title, or is at an index of the dump; the `shot` command takes `selector`, `title` or `window`. Before, only window 0 could be shot. On Windows the window order is the stacking order, so use the selector or the title there.
 - Fixed: QA `Key("Esc")`, with the focus in the popover or not, now reaches an open `Popover` (its `OnEscape`, then close); `Close` on a `Popover` root closes it. Esc posted to a control did not pass the display filter the popover listens with.

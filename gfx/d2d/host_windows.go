@@ -53,7 +53,7 @@ type Host struct {
 	w, h   int     // back buffer size in device pixels
 	dpr    float64
 	bg     gfx.Color
-	groups [3][]*hostLayer
+	groups [4][]*hostLayer
 	dirty  bool
 	// Stats of the last Commit.
 	LastDraw    time.Duration

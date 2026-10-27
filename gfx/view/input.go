@@ -63,8 +63,11 @@ type Pointer struct {
 	// Outside is set when Pos lies outside the view. The coordinates stay exact, negative or past
 	// the view size; what to do with them (clamp, cancel, drop there) is the app's call.
 	Outside bool
-	// Node is the topmost node under the pointer, nil on empty space.
+	// Node is the topmost node under the pointer, nil on empty space and when HUD is set.
 	Node *gfx.Node
+	// HUD is the topmost node of the heads-up scene (Compositor.HUD) under the pointer. The HUD
+	// is tested before the scene: a pointer over a HUD node has Node nil.
+	HUD *gfx.Node
 	// Button is SWT's numbering: 1 left, 2 middle, 3 right; on a move the button held, 0 for a hover.
 	Button int
 	// Count is the click count of a Down (2 for a double click).
@@ -155,8 +158,9 @@ const (
 type router struct {
 	cam  camera
 	hit  func(gfx.Point) *gfx.Node
-	pre  func(*Pointer) // before the callbacks; the view takes focus here
-	down func()         // on every press, before pre: the view ends an inline edit here
+	hud  func(gfx.Point) *gfx.Node // view point; nil without a HUD
+	pre  func(*Pointer)            // before the callbacks; the view takes focus here
+	down func()                    // on every press, before pre: the view ends an inline edit here
 	minZ float64
 	maxZ float64
 
@@ -191,7 +195,12 @@ func newRouter(cam camera, hit func(gfx.Point) *gfx.Node) *router {
 
 func (r *router) pointer(k PointerKind, pos gfx.Point, button, count int, m g.Mods) {
 	p := &Pointer{Kind: k, Pos: pos, Scene: r.cam.SceneAt(pos), Button: button, Count: count, Mods: m}
-	p.Node = r.hit(p.Scene)
+	if r.hud != nil {
+		p.HUD = r.hud(pos)
+	}
+	if p.HUD == nil {
+		p.Node = r.hit(p.Scene)
+	}
 	if r.size != nil {
 		w, h := r.size()
 		p.Outside = pos.X < 0 || pos.Y < 0 || pos.X >= w || pos.Y >= h

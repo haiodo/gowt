@@ -197,6 +197,19 @@ comp.Frame(frameInfo) // on the UI goroutine, once per display frame
 - **Overlay**: `comp.NewSprite(pic, space, pos)` for selection, handles, remote cursors. Spaces:
   `SpaceScene` (zooms with the scene), `SpacePinned` (anchored to a scene point, screen size),
   `SpaceScreen`.
+- **HUD**: `comp.HUD()` is a second `Scene` in view points (y down, origin at the top left of the view), drawn over
+  the tiles, the lifted nodes and the sprites (`gfx.GroupHUD`, the top layer group of every host), and not moved or
+  zoomed by the camera: edge indicators for off-screen items, rulers, a minimap, text overlays. Build it like any
+  scene (`Update`, nodes with pictures, clips, opacity). The compositor draws it into one image covering the bounds of
+  its content inside the view, and again only when the HUD scene changes or the view size or backing scale does
+  (`Stats.HUDDraws`); a camera move, a zoom or a drag costs it nothing. `comp.OnViewport(func(w, h, dpr))` runs at
+  the first frame and on each change of the view size or scale: place the nodes there (a badge on the right edge is
+  `Move(n, w-40, 10)`), and the move is drawn in the same frame. `comp.Viewport()` reads the numbers.
+  Hit-testing: `comp.HUDHit(p, tol)` and `view.HUDHitTest(x, y)` see the HUD scene; in `view.OnPointer` the
+  `Pointer.HUD` field is the HUD node under the pointer and `Pointer.Node` is nil then, so the HUD wins over the scene.
+  A HUD node takes the pointer where its hit mode says (`HitBounds` is its picture bounds), so give a node that only
+  decorates `HitNone`. Wheel, pinch and smart-zoom events are not routed by the HUD: they still reach the scene.
+  The HUD is cut to the view; the image is made at the backing scale, so it is sharp on every display.
 - **Animation** runs on the frame clock (`FrameInfo.Time`, the display time of the frame): `MoveTo`,
   `FadeTo`, `RotateTo`, `ScaleTo` with `Linear`, `EaseIn`, `EaseOut`, `EaseInOut` or `CubicBezier`,
   and `FlyAlong(path, duration, ease, orient, done)` for a cursor along a cubic path. Set a goal

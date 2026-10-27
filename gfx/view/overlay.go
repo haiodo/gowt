@@ -129,6 +129,7 @@ type Editor struct {
 // another Edit commits the one that is open.
 func (v *View) Edit(opts EditOptions) *Editor {
 	v.endEdit()
+	v.disposeEnded()
 	all := append([]g.Option{}, opts.Opts...)
 	if opts.Multiline {
 		all = append(all, g.Multiline())
@@ -146,12 +147,13 @@ func (v *View) Edit(opts EditOptions) *Editor {
 		}
 		o.drop() // out of the list now; the control is disposed after the event that ended the edit
 		t.SetVisible(false)
+		v.ended = append(v.ended, tv)
 		display := v.cv.Unwrap().GetDisplay()
 		display.AsyncExec(jrt.NewRunnable(func() {
 			if !v.gone.Load() && refocus {
 				v.cv.Unwrap().SetFocus()
 			}
-			tv.Dispose()
+			v.disposeEnded()
 		}))
 	}
 	t.AddKeyListener(swt.KeyListenerKeyPressedAdapter(func(e *swt.KeyEvent) {
@@ -179,6 +181,15 @@ func (h *Editor) Commit() { h.e.end(true, false) }
 
 // Cancel ends the edit as Esc does. It does nothing once the edit has ended.
 func (h *Editor) Cancel() { h.e.end(false, false) }
+
+// disposeEnded disposes the fields of ended edits now. Edit calls it first: on macOS disposing a
+// field aborts the edit of the window's shared field editor, which by then is the new field's.
+func (v *View) disposeEnded() {
+	for _, tv := range v.ended {
+		tv.Dispose()
+	}
+	v.ended = nil
+}
 
 // endEdit commits the open edit: a press on the view, where GTK keeps the focus in the field.
 func (v *View) endEdit() {

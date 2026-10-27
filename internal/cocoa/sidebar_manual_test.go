@@ -259,3 +259,111 @@ func TestToolbarSidebarOrder(t *testing.T) {
 		t.Errorf("sidebar hidden: %s, want %s", got, want)
 	}
 }
+
+// Inspector items go last, after the tracking separator, once the window has an inspector split view;
+// without one they keep their place.
+func TestToolbarInspectorOrder(t *testing.T) {
+	items := []ToolbarItem{{Label: "info", Inspector: true}, {Label: "back", Nav: true}, {Space: true, Inspector: true}, {Label: "add"}}
+	order := func(s *toolbarState) string {
+		var ids []string
+		onMain(func() {
+			arr := s.ids()
+			for i, n := uintptr(0), msg(arr, "count"); i < n; i++ {
+				ids = append(ids, goString(msg(arr, "objectAtIndex:", i)))
+			}
+		})
+		return strings.Join(ids, " ")
+	}
+	want := "gowt.item.1 gowt.item.3 gowt.inspector gowt.item.0 NSToolbarFlexibleSpaceItem"
+	if got := order(&toolbarState{items: items, split: 1}); got != want {
+		t.Errorf("with inspector: %s, want %s", got, want)
+	}
+	want = "gowt.item.0 gowt.item.1 NSToolbarFlexibleSpaceItem gowt.item.3"
+	if got := order(&toolbarState{items: items}); got != want {
+		t.Errorf("without inspector: %s, want %s", got, want)
+	}
+}
+
+func TestToolbarInspectorSeparator(t *testing.T) {
+	onMain(func() {
+		sv := msg(msg(class("NSSplitView"), "alloc"), "init")
+		defer msg(sv, "release")
+		for range 2 {
+			msg(sv, "addSubview:", msg(msg(msg(class("NSView"), "alloc"), "init"), "autorelease"))
+		}
+		s := &toolbarState{items: []ToolbarItem{{Label: "info", Inspector: true}}, split: sv}
+		ti := s.item(0, inspectorID)
+		if ti == 0 || msg(ti, "isKindOfClass:", class("NSTrackingSeparatorToolbarItem"))&0xff == 0 || msg(ti, "splitView") != sv {
+			t.Fatalf("separator item %x", ti)
+		}
+		if (&toolbarState{}).item(0, inspectorID) != 0 {
+			t.Error("a separator without a split view")
+		}
+	})
+}
+
+func TestInspectorDivider(t *testing.T) {
+	onMain(func() {
+		sv := msg(msg(class("NSSplitView"), "alloc"), "init")
+		defer msg(sv, "release")
+		msg(sv, "setVertical:", 1)
+		for range 2 {
+			msg(sv, "addSubview:", msg(msg(msg(class("NSView"), "alloc"), "init"), "autorelease"))
+		}
+		msgRectOnly(sv, sel("setFrame:"), NSRect{Width: 900})
+		// The view is in no window, so its window is 0.
+		inspectorSplits[0] = sv
+		defer delete(inspectorSplits, 0)
+		v := NewNSViewOverload1(int64(msg(msg(class("NSView"), "alloc"), "init")))
+		defer v.Release()
+		subs := msg(sv, "subviews")
+		first, second := NewNSViewOverload1(int64(msg(subs, "objectAtIndex:", 0))), msg(subs, "objectAtIndex:", 1)
+		SetInspectorDivider(v, 640, false)
+		if w := first.Frame().Width; w != 640 {
+			t.Errorf("divider at 640: first pane %.1f wide", w)
+		}
+		SetInspectorDivider(v, 900, true)
+		if msg(second, "isHidden")&0xff == 0 || msg(sv, "isSubviewCollapsed:", second)&0xff == 0 {
+			t.Error("a hidden inspector does not collapse the second pane")
+		}
+		SetInspectorDivider(v, 560, false)
+		if w := first.Frame().Width; msg(second, "isHidden")&0xff != 0 || w != 560 {
+			t.Errorf("shown again at 560: hidden %d, first pane %.1f wide", msg(second, "isHidden")&0xff, w)
+		}
+	})
+}
+
+// A text item shows its text as a bordered title; a Small item gets a small button view whose click
+// runs the item.
+func TestToolbarTextAndSmall(t *testing.T) {
+	onMain(func() {
+		registerToolbarClass()
+		d := msg(msg(toolbarClass, "alloc"), "init")
+		defer msg(d, "release")
+		clicks := 0
+		s := &toolbarState{items: []ToolbarItem{
+			{Label: "Zoom", Text: "100%", Click: func() { clicks++ }},
+			{Label: "Fit", Text: "Fit", Small: true, Click: func() { clicks++ }},
+			{Label: "Add", Symbol: "plus", Small: true, Disabled: true},
+		}}
+		toolbarDelegates[d] = s
+		defer delete(toolbarDelegates, d)
+		text := s.item(d, itemIDPrefix+"0")
+		if goString(msg(text, "title")) != "100%" || msg(text, "isBordered")&0xff == 0 || msg(text, "view") != 0 {
+			t.Errorf("text item: title %q, bordered %d", goString(msg(text, "title")), msg(text, "isBordered")&0xff)
+		}
+		small := s.item(d, itemIDPrefix+"1")
+		b := msg(small, "view")
+		if b == 0 || b != s.buttons[1] || msg(b, "controlSize") != controlSizeSmall || goString(msg(b, "title")) != "Fit" {
+			t.Fatalf("small item view %x, size %d, title %q", b, msg(b, "controlSize"), goString(msg(b, "title")))
+		}
+		msg(b, "performClick:", 0)
+		if clicks != 1 {
+			t.Errorf("small button clicks %d", clicks)
+		}
+		add := msg(s.item(d, itemIDPrefix+"2"), "view")
+		if msg(add, "image") == 0 || msg(add, "isEnabled")&0xff != 0 {
+			t.Errorf("small symbol item: image %x, enabled %d", msg(add, "image"), msg(add, "isEnabled")&0xff)
+		}
+	})
+}

@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+Toolbar over the inspector (Tenniarb)
+- New: `look.ToolbarItem.Inspector` puts an item over the inspector of a `look.SetInspector` window. The Inspector items come after the others, start at the inspector's left edge and follow it through a drag and a window resize; with the inspector hidden they sit at the right end of the toolbar. A `Space` with `Inspector` pushes the next ones to the right edge. macOS: an `NSTrackingSeparatorToolbarItem` before them, bound to an empty zero-height `NSSplitView` whose divider the pane layout keeps on the inspector edge and collapses with the inspector (an SWT window has no split view of its own). Windows and Linux: a strip at the top of the inspector, level with the bar, which ends the bar while the inspector is hidden; the inspector drag stops at the strip's width.
+- New: `look.ToolbarItem.Text` (an `rx.Reader[string]`) makes a push item a bordered text button that follows the state, such as a zoom level "100%"; `OnClick` runs on a click. macOS: the item's title, bordered. Windows and Linux: a push `Button` in the bar.
+- New: `look.ToolbarItem.Small`, the small control size for a push item, a text item, a `Group` or a search field. macOS: `NSControlSizeSmall` and its 11-point font on a toolbar-bezel `NSButton` view (a push or text item), on the segmented control of a group and on the search field. Windows and Linux: 13-point icons and text at 11/13 of the system size.
+- QA: the native macOS toolbar buttons in the dump have `Bounds`, and a text item's node shows its text.
+- `cmd/finderdemo` puts the inspector toggle over the inspector.
+- Tests: `TestToolbarInspectorItems` (look GUI test: item frames against the inspector edge before and after a drag of the edge and with the inspector hidden, the text item's text and click) passed in the Docker stand (Xvfb). The cocoa unit tests `TestToolbarInspectorOrder`, `TestToolbarInspectorSeparator`, `TestInspectorDivider` and `TestToolbarTextAndSmall` pass on macOS without a window. Not run yet: the macOS GUI test, Windows.
+
 ## v0.13.0 (2026-10-27)
 
 Highlights

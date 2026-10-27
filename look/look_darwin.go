@@ -205,7 +205,11 @@ func toolbarItems(items []ToolbarItem) []cocoa.ToolbarItem {
 	ci := make([]cocoa.ToolbarItem, len(items))
 	for i, it := range items {
 		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick,
-			Group: toolbarItems(it.Group), Nav: it.Nav, Sidebar: it.Sidebar, Search: it.OnSearch, ID: it.ID, Disabled: it.Enabled != nil && !it.Enabled.Peek()}
+			Group: toolbarItems(it.Group), Nav: it.Nav, Sidebar: it.Sidebar, Inspector: it.Inspector, Small: it.Small,
+			Search: it.OnSearch, ID: it.ID, Disabled: it.Enabled != nil && !it.Enabled.Peek()}
+		if it.Text != nil {
+			ci[i].Text = it.Text.Peek()
+		}
 	}
 	return ci
 }
@@ -216,7 +220,7 @@ type nativeToolbar struct{ b *cocoa.ToolbarButtons }
 func (t nativeToolbar) Buttons() []qaview.ToolbarButton {
 	var out []qaview.ToolbarButton
 	for _, b := range t.b.List() {
-		out = append(out, qaview.ToolbarButton{ID: b.ID, Title: b.Title, Enabled: b.Enabled})
+		out = append(out, qaview.ToolbarButton{ID: b.ID, Title: b.Title, Enabled: b.Enabled, Bounds: b.Bounds})
 	}
 	return out
 }
@@ -273,6 +277,12 @@ func bindToolbar(s *swt.Shell, items []ToolbarItem) {
 		for j, g := range it.Group {
 			bind(i, j, g.Enabled)
 		}
+		if r := it.Text; r != nil {
+			rx.Effect(func() {
+				t := r.Get()
+				rx.Untrack(func() { cocoa.SetToolbarItemText(s.View, i, t) })
+			})
+		}
 	}
 }
 
@@ -323,6 +333,7 @@ func setInspectorChrome(s *swt.Shell, ib *swt.Composite, sash *swt.Control) {
 	cocoa.InstallBackdrop(ib.View, cocoa.BackdropGlass, false)
 	cocoa.SetGlassCornerRadius(ib.View, 0)
 	cocoa.ClipBackdrop(ib.View)
+	cocoa.InstallInspectorTracker(s.View)
 	clearTree(ib)
 	clearAdded(ib)
 	clearControl(sash)
@@ -332,9 +343,12 @@ func setInspectorChrome(s *swt.Shell, ib *swt.Composite, sash *swt.Control) {
 // inspectorInset is 0: the inspector is flush with the window edges, see setInspectorChrome.
 func inspectorInset() int32 { return 0 }
 
+// syncInspector also moves the divider the Inspector toolbar items follow to the inspector edge, or
+// collapses it for a hidden inspector (bg 0 wide).
 func syncInspector(ib *swt.Composite, bg [4]int32) {
 	cocoa.SetBackdropFrame(ib.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
 	cocoa.SetEdgeLine(ib.View)
+	cocoa.SetInspectorDivider(ib.View, float64(bg[0]), bg[2] == 0)
 }
 
 // hookPanes refreshes the window of a sidebar or inspector when it is shown, and now if it already is.

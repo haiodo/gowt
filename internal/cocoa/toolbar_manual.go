@@ -1,12 +1,13 @@
 //go:build darwin
 
 // Hand-written: a real NSToolbar on a window (unified style, Liquid Glass items on macOS 26, search
-// field, segmented groups, a spacer that keeps items past a sidebar),
-// NSGlassEffectContainerView grouping of glass surfaces. NSToolbar needs a delegate, so one ObjC class is registered at run time.
+// field, segmented groups, a spacer that keeps items past a sidebar, a separator that keeps items
+// over an inspector), NSGlassEffectContainerView grouping of glass surfaces. NSToolbar needs a delegate, so one ObjC class is registered at run time.
 package cocoa
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -18,16 +19,19 @@ import (
 // Search makes it a search field with Label as placeholder; Group makes it one segmented capsule of
 // the group's items, each with its own Label, Symbol and Click.
 type ToolbarItem struct {
-	Label    string
-	Symbol   string // SF Symbol name, "" for text only
-	Space    bool
-	Click    func()
-	Group    []ToolbarItem
-	Nav      bool // navigational: placed before the window title
-	Sidebar  bool // with SetSidebarEdge: placed over the sidebar, ending at its edge
-	Search   func(text string)
-	ID       string // names a search item for the QA driver
-	Disabled bool   // a push item or group segment shown dimmed; SetToolbarItemEnabled changes it
+	Label     string
+	Symbol    string // SF Symbol name, "" for text only
+	Space     bool
+	Click     func()
+	Group     []ToolbarItem
+	Nav       bool   // navigational: placed before the window title
+	Sidebar   bool   // with SetSidebarEdge: placed over the sidebar, ending at its edge
+	Inspector bool   // with InstallInspectorTracker: after the separator on the inspector divider
+	Text      string // a push item shows this as a bordered title instead of its symbol; SetToolbarItemText changes it
+	Small     bool   // NSControlSizeSmall: the item gets a button view of that size
+	Search    func(text string)
+	ID        string // names the item for the QA driver
+	Disabled  bool   // a push item or group segment shown dimmed; SetToolbarItemEnabled changes it
 }
 
 const (
@@ -36,6 +40,7 @@ const (
 	flexibleSpaceID     = "NSToolbarFlexibleSpaceItem"
 	sidebarSpacerID     = "gowt.sidebar"
 	sidebarEndID        = "gowt.sidebar.end"
+	inspectorID         = "gowt.inspector"
 	selectMomentary     = 2
 	representExpanded   = 1
 	displayIconOnly     = 2
@@ -55,6 +60,8 @@ type toolbarState struct {
 	// index in items of a search item to its magnifier button and its NSSearchToolbarItem, owned by the toolbar
 	searchButtons, searchItems map[int]uintptr
 	searchFields               map[int]uintptr // index in items to the NSSearchField, owned by its item
+	split                      uintptr         // NSSplitView of InstallInspectorTracker, 0 without an inspector
+	buttons                    map[int]uintptr // index in items of a Small push item to its NSButton view, owned by its item
 }
 
 var (
@@ -68,8 +75,13 @@ func toolbarKey() uintptr { return sel("gowtToolbar") }
 // overSidebar reports whether it goes over the sidebar: a Sidebar item of a window with a sidebar.
 func (s *toolbarState) overSidebar(it ToolbarItem) bool { return s.sidebar && it.Sidebar && !it.Space }
 
+// overInspector reports whether it goes after the inspector separator: an Inspector item of a window
+// with an inspector.
+func (s *toolbarState) overInspector(it ToolbarItem) bool { return s.split != 0 && it.Inspector }
+
 // ids lists the items in toolbar order. With a sidebar that is the spacer, the Sidebar items, a second
 // spacer they end before, then the rest: all navigational up to the title, so AppKit keeps the order.
+// With an inspector the Inspector items come last, after the separator that tracks its divider.
 func (s *toolbarState) ids() uintptr { return s.idList(!s.collapsed) }
 
 // idList is ids without the two spacers when spacers is false, for a hidden sidebar.
@@ -101,9 +113,20 @@ func (s *toolbarState) idList(spacers bool) uintptr {
 		}
 	}
 	for i, it := range s.items {
-		if !s.overSidebar(it) {
+		if !s.overSidebar(it) && !s.overInspector(it) {
 			add(i, it)
 		}
+	}
+	sep := false
+	for i, it := range s.items {
+		if !s.overInspector(it) {
+			continue
+		}
+		if !sep {
+			msg(arr, "addObject:", nsString(inspectorID))
+			sep = true
+		}
+		add(i, it)
 	}
 	return arr
 }
@@ -226,6 +249,12 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		}
 		return msg(ti, "autorelease")
 	}
+	if id == inspectorID {
+		if s.split == 0 {
+			return 0
+		}
+		return msg(class("NSTrackingSeparatorToolbarItem"), "trackingSeparatorToolbarItemWithIdentifier:splitView:dividerIndex:", nsString(id), s.split, 0)
+	}
 	if strings.HasPrefix(id, searchButtonPrefix) {
 		return s.searchButton(target, id)
 	}
@@ -257,6 +286,9 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 			}
 			msgF64(ti, sel("setPreferredWidthForSearchField:"), searchFieldWidth)
 		}
+		if it.Small {
+			setSmall(f)
+		}
 		if collapsibleSearch() {
 			msg(ti, "setHidden:", boolArg(!searchOpenAtStart))
 			if s.searchItems == nil {
@@ -279,12 +311,30 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		for j, g := range it.Group {
 			setSegmentEnabled(ti, j, !g.Disabled)
 		}
+		if v := msg(ti, "view"); it.Small && v != 0 {
+			setSmall(v)
+		}
 	default:
 		ti = msg(msg(class("NSToolbarItem"), "alloc"), "initWithItemIdentifier:", nsString(id))
-		msg(ti, "setTarget:", target)
-		msg(ti, "setAction:", sel("gowtClick:"))
-		if img := symbolImage(it.Symbol, it.Label); img != 0 {
+		if it.Small {
+			s.smallButton(ti, target, id, it)
+		} else {
+			msg(ti, "setTarget:", target)
+			msg(ti, "setAction:", sel("gowtClick:"))
+		}
+		img := symbolImage(it.Symbol, it.Label)
+		switch {
+		case it.Text != "":
+			// A title on an item without a custom view gives AppKit's own bordered text button.
+			msg(ti, "setTitle:", nsString(it.Text))
+			msg(ti, "setBordered:", 1)
+		case img != 0 && it.Small:
+			msg(msg(ti, "view"), "setImage:", img)
+			msg(msg(ti, "view"), "setImagePosition:", imageOnly)
+		case img != 0:
 			msg(ti, "setImage:", img)
+		case it.Small:
+			msg(msg(ti, "view"), "setTitle:", nsString(it.Label))
 		}
 		msg(ti, "setEnabled:", boolArg(!it.Disabled))
 		ti = msg(ti, "autorelease")
@@ -295,6 +345,43 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		msg(ti, "setNavigational:", 1)
 	}
 	return ti
+}
+
+const (
+	controlSizeSmall = 1  // NSControlSizeSmall
+	bezelToolbar     = 11 // NSBezelStyleToolbar
+	pushIn           = 7  // NSButtonTypeMomentaryPushIn
+	imageOnly        = 1  // NSImageOnly
+)
+
+// smallButton gives item ti a toolbar button of the small control size as its view: NSToolbarItem
+// has no control size of its own. The button runs the item's click through its identifier.
+func (s *toolbarState) smallButton(ti, target uintptr, id string, it *ToolbarItem) {
+	b := msg(msg(class("NSButton"), "alloc"), "init")
+	msg(b, "setButtonType:", pushIn)
+	msg(b, "setBezelStyle:", bezelToolbar)
+	msg(b, "setTitle:", nsString(""))
+	msg(b, "setIdentifier:", nsString(id))
+	msg(b, "setTarget:", target)
+	msg(b, "setAction:", sel("gowtClick:"))
+	msg(b, "setEnabled:", boolArg(!it.Disabled))
+	setSmall(b)
+	msg(ti, "setView:", b)
+	msg(b, "release")
+	if s.buttons == nil {
+		s.buttons = map[int]uintptr{}
+	}
+	i, _ := strconv.Atoi(strings.TrimPrefix(id, itemIDPrefix))
+	s.buttons[i] = b
+}
+
+// setSmall gives control v the small control size and the system font of that size, which a control
+// does not take by itself.
+func setSmall(v uintptr) {
+	msg(v, "setControlSize:", controlSizeSmall)
+	if respondsTo(v, "setFont:") {
+		msg(v, "setFont:", uintptr(NSFontSystemFontOfSize(NSFontSystemFontSizeForControlSize(controlSizeSmall)).Id))
+	}
 }
 
 // groupItem is one momentary segmented capsule, the way Finder shows back and forward. It falls back
@@ -401,14 +488,23 @@ func registerToolbarClass() {
 	click := purego.NewCallback(func(self, _, sender uintptr) {
 		defer enterCallback()()
 		s := toolbarDelegates[self]
-		if s == nil || !respondsTo(sender, "itemIdentifier") {
+		if s == nil {
+			return
+		}
+		var id string
+		switch {
+		case respondsTo(sender, "itemIdentifier"):
+			id = goString(msg(sender, "itemIdentifier"))
+		case respondsTo(sender, "identifier"): // the button view of a Small item
+			id = goString(msg(sender, "identifier"))
+		default:
 			return
 		}
 		selected := -1
 		if respondsTo(sender, "selectedIndex") {
 			selected = int(int64(msg(sender, "selectedIndex")))
 		}
-		s.clicked(goString(msg(sender, "itemIdentifier")), selected)
+		s.clicked(id, selected)
 	})
 	search := purego.NewCallback(func(self, _, field uintptr) {
 		defer enterCallback()()
@@ -477,7 +573,8 @@ func InstallToolbar(view *NSView, items []ToolbarItem) bool {
 	registerToolbarClass()
 	d := msg(msg(toolbarClass, "alloc"), "init")
 	_, sidebar := sidebarEdges[w]
-	toolbarDelegates[d] = &toolbarState{items: append([]ToolbarItem(nil), items...), sidebar: sidebar, collapsed: sidebarHidden[w]}
+	toolbarDelegates[d] = &toolbarState{items: append([]ToolbarItem(nil), items...), sidebar: sidebar, collapsed: sidebarHidden[w],
+		split: inspectorSplits[w]}
 	setAssociated(w, toolbarKey(), d, 1)
 	msg(d, "release")
 	toolbarSeq++
@@ -509,6 +606,9 @@ func SetToolbarItemEnabled(view *NSView, item, segment int, on bool) {
 	switch {
 	case segment < 0:
 		it.Disabled = !on
+		if b := s.buttons[item]; b != 0 { // AppKit does not validate an item with a view
+			msg(b, "setEnabled:", boolArg(on))
+		}
 	case segment < len(it.Group):
 		it.Group[segment].Disabled = !on
 		if g := s.groups[item]; g != 0 {
@@ -520,6 +620,27 @@ func SetToolbarItemEnabled(view *NSView, item, segment int, on bool) {
 	}
 	if tb := msg(w, "toolbar"); tb != 0 {
 		msg(tb, "validateVisibleItems")
+	}
+}
+
+// SetToolbarItemText sets the text that text item number item of the toolbar of the window of view
+// shows; a toolbar rebuilt for a sidebar keeps it, since it is stored in the items.
+func SetToolbarItemText(view *NSView, item int, text string) {
+	w, s := toolbarOf(view)
+	if s == nil || item < 0 || item >= len(s.items) {
+		return
+	}
+	s.items[item].Text = text
+	tb := msg(w, "toolbar")
+	if tb == 0 {
+		return
+	}
+	id := itemIDPrefix + strconv.Itoa(item)
+	items := msg(tb, "items")
+	for i, n := uintptr(0), msg(items, "count"); i < n; i++ {
+		if ti := msg(items, "objectAtIndex:", i); goString(msg(ti, "itemIdentifier")) == id {
+			msg(ti, "setTitle:", nsString(text))
+		}
 	}
 }
 
@@ -651,10 +772,13 @@ func (f *ToolbarSearchField) Collapse() {
 	}
 }
 
-// ToolbarButton is a push item or a group segment of the toolbar, as the QA driver lists it.
+// ToolbarButton is a push item or a group segment of the toolbar, as the QA driver lists it. Title is
+// the text of a text item, else the label. Bounds is in the coordinates of the view of
+// ToolbarButtonsOf, top-left origin; all 0 while AppKit shows no frame for the item.
 type ToolbarButton struct {
 	ID, Title string
 	Enabled   bool
+	Bounds    [4]int
 }
 
 // ToolbarButtons are the buttons of a window's toolbar, looked up on every call.
@@ -663,8 +787,9 @@ type ToolbarButtons struct{ view *NSView }
 // ToolbarButtonsOf returns the handle of the buttons of the toolbar of the window of view.
 func ToolbarButtonsOf(view *NSView) *ToolbarButtons { return &ToolbarButtons{view} }
 
-// each walks the buttons in order: the items that click, a group as its segments.
-func (b *ToolbarButtons) each(f func(it *ToolbarItem) bool) {
+// each walks the buttons in order: the items that click, a group as its segments. i is the index of
+// the item, j that of the segment, -1 for an item that is no group.
+func (b *ToolbarButtons) each(f func(i, j int, it *ToolbarItem) bool) {
 	_, s := toolbarOf(b.view)
 	if s == nil {
 		return
@@ -675,12 +800,12 @@ func (b *ToolbarButtons) each(f func(it *ToolbarItem) bool) {
 		case it.Space || it.Search != nil:
 		case len(it.Group) > 0:
 			for j := range it.Group {
-				if !f(&it.Group[j]) {
+				if !f(i, j, &it.Group[j]) {
 					return
 				}
 			}
 		case it.Click != nil:
-			if !f(it) {
+			if !f(i, -1, it) {
 				return
 			}
 		}
@@ -689,18 +814,88 @@ func (b *ToolbarButtons) each(f func(it *ToolbarItem) bool) {
 
 // List returns the buttons in toolbar order.
 func (b *ToolbarButtons) List() []ToolbarButton {
+	w, s := toolbarOf(b.view)
+	if s == nil {
+		return nil
+	}
+	frames := itemFrames(w, b.view)
 	var out []ToolbarButton
-	b.each(func(it *ToolbarItem) bool {
-		out = append(out, ToolbarButton{it.ID, it.Label, !it.Disabled})
+	b.each(func(i, j int, it *ToolbarItem) bool {
+		title := it.Label
+		if it.Text != "" {
+			title = it.Text
+		}
+		r := frames[itemIDPrefix+strconv.Itoa(i)]
+		if n := len(s.items[i].Group); j >= 0 && n > 0 {
+			// AppKit gives no segment frames: the segments are taken as equally wide.
+			r = [4]int{r[0] + r[2]*j/n, r[1], r[2] / n, r[3]}
+		}
+		out = append(out, ToolbarButton{it.ID, title, !it.Disabled, r})
 		return true
 	})
+	return out
+}
+
+// itemFrames maps the identifier of each toolbar item on screen to its frame in the coordinates of
+// view, top-left origin. An item without a view of its own has no public frame: the AppKit view
+// showing it answers item, which is not public API, so an item it misses has no frame.
+func itemFrames(w uintptr, view *NSView) map[string][4]int {
+	out := map[string][4]int{}
+	if w == 0 {
+		return out
+	}
+	content := msg(w, "contentView")
+	theme := msg(content, "superview")
+	if theme == 0 {
+		return out
+	}
+	flipped := msg(uintptr(view.Id), "isFlipped")&0xff != 0
+	height := view.Bounds().Height
+	rect := func(v uintptr) [4]int {
+		nv := NewNSViewOverload1(int64(v))
+		r := nv.ConvertRect_toView_(nv.Bounds(), view)
+		if !flipped {
+			r.Y = height - r.Y - r.Height
+		}
+		return [4]int{int(math.Round(r.X)), int(math.Round(r.Y)), int(math.Round(r.Width)), int(math.Round(r.Height))}
+	}
+	toolbarItem := class("NSToolbarItem")
+	var walk func(v uintptr)
+	walk = func(v uintptr) {
+		if v == content {
+			return
+		}
+		if respondsTo(v, "item") {
+			if it := msg(v, "item"); it != 0 && msg(it, "isKindOfClass:", toolbarItem)&0xff != 0 {
+				out[goString(msg(it, "itemIdentifier"))] = rect(v)
+			}
+		}
+		subs := msg(v, "subviews")
+		for i, n := uintptr(0), msg(subs, "count"); i < n; i++ {
+			walk(msg(subs, "objectAtIndex:", i))
+		}
+	}
+	walk(theme)
+	if tb := msg(w, "toolbar"); tb != 0 {
+		items := msg(tb, "items")
+		for i, n := uintptr(0), msg(items, "count"); i < n; i++ {
+			ti := msg(items, "objectAtIndex:", i)
+			id := goString(msg(ti, "itemIdentifier"))
+			if _, ok := out[id]; ok {
+				continue
+			}
+			if v := msg(ti, "view"); v != 0 && msg(v, "window") == w {
+				out[id] = rect(v)
+			}
+		}
+	}
 	return out
 }
 
 // Click runs the handler of button n of List, as a click on it does.
 func (b *ToolbarButtons) Click(n int) bool {
 	ok := false
-	b.each(func(it *ToolbarItem) bool {
+	b.each(func(_, _ int, it *ToolbarItem) bool {
 		if n == 0 {
 			if it.Click != nil && !it.Disabled {
 				it.Click()

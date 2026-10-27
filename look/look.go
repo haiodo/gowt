@@ -117,10 +117,21 @@ type ToolbarItem struct {
 	// macOS in the title bar, level with the traffic lights (Finder, Mail), on Windows and Linux in a row
 	// at the top of the sidebar. Without SetSidebar it is an ordinary item.
 	Sidebar bool
+	// Inspector places the item over the inspector of a SetInspector window, starting at its left edge
+	// and following it; with the inspector hidden it sits at the right end. On macOS it comes after an
+	// NSTrackingSeparatorToolbarItem, on Windows and Linux in a row at the top of the inspector. Without
+	// SetInspector it is an ordinary item.
+	Inspector bool
+	// Text, when set, makes a push item a bordered button showing this text instead of a symbol and
+	// following its changes, such as a zoom level "100%"; Title stays the tooltip.
+	Text rx.Reader[string]
+	// Small gives a push item, a text item, a Group or a search field the small control size
+	// (NSControlSizeSmall, an 11-point font on macOS); elsewhere smaller icons and text.
+	Small bool
 	// OnSearch makes the item a search field (NSSearchToolbarItem) with Title as the placeholder. It
 	// gets the text after a typing pause, on Return and on clearing.
 	OnSearch func(text string)
-	// ID names a search item for the QA driver (qa.ID), as gowt.ID names a widget.
+	// ID names the item for the QA driver (qa.ID), as gowt.ID names a widget.
 	ID string
 	// Enabled, when set, enables and disables a push item or a Group segment as it changes, for as
 	// long as the toolbar stays; nil keeps the item enabled.
@@ -336,8 +347,8 @@ func SetInspectorVisible(w *gowt.Window, on bool) { inspectorOf(w).setVisible(on
 // InspectorVisible reports whether the inspector of a SetInspector window is shown; false without one.
 func InspectorVisible(w *gowt.Window) bool { return inspectorOf(w).visible() }
 
-// SetInspectorWidth sets the inspector width in points, at least 160; a hidden inspector comes back
-// at it.
+// SetInspectorWidth sets the inspector width in points, at least 160, and on Windows and Linux at
+// least the room of its Inspector toolbar items; a hidden inspector comes back at it.
 func SetInspectorWidth(w *gowt.Window, width int) { inspectorOf(w).setWidth(width) }
 
 // InspectorWidth is the inspector width in points, also while it is hidden; 0 without SetInspector.
@@ -505,13 +516,19 @@ func (p *pane) notify() {
 
 // minWidth is the narrowest pane. For the sidebar that is minSidebarWidth, or the room its Sidebar
 // toolbar items need where that is more (the macOS toolbar group up to its inset from the edge, the
-// Windows and Linux row).
+// Windows and Linux row); for the inspector minInspectorWidth, or the Windows and Linux strip of its
+// Inspector items.
 func (p *pane) minWidth() int32 {
+	b := bars[p.l.w.Unwrap()]
 	if p.trailing {
-		return minInspectorWidth()
+		m := minInspectorWidth()
+		if b != nil && b.strip != nil {
+			m = max(m, b.strip.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X)
+		}
+		return m
 	}
 	m := max(minSidebarWidth(), p.l.itemsMin)
-	if b := bars[p.l.w.Unwrap()]; b != nil && b.side != nil {
+	if b != nil && b.side != nil {
 		m = max(m, b.side.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X)
 	}
 	return m
@@ -590,15 +607,19 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 		syncSidebar(s, p.c, bg, p.hidden)
 		ct = rest
 	}
+	var ib [4]int32
 	if p := l.insp; p != nil {
-		bg, ib, rest, sh := inspectorFrames(ct[0], r.Y, ct[2], r.Height, p.shown(), p.inset(), top, sidebarDivider())
-		p.c.SetBounds(ib[0], ib[1], ib[2], ib[3])
+		var bg, rest, sh [4]int32
+		bg, ib, rest, sh = inspectorFrames(ct[0], r.Y, ct[2], r.Height, p.shown(), p.inset(), top, sidebarDivider())
 		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
 		p.sash.SetVisible(!p.hidden)
 		syncInspector(p.c, bg)
 		ct = rest
 	}
-	ct = barTop(s, ct)
+	ct, ib = barTop(s, ct, ib)
+	if p := l.insp; p != nil {
+		p.c.SetBounds(ib[0], ib[1], ib[2], ib[3])
+	}
 	l.content.SetBounds(ct[0], ct[1], ct[2], ct[3])
 	l.fitMinSize()
 }

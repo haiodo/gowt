@@ -253,10 +253,12 @@ func ToolbarSearchOf(s *swt.Shell) (ToolbarSearch, bool) {
 // ToolbarKey is the data key of a shell with a native toolbar, whose items are no swt controls.
 const ToolbarKey = "gowt.qa.toolbar"
 
-// ToolbarButton is a push item or a group segment of a native toolbar.
+// ToolbarButton is a push item or a group segment of a native toolbar. Bounds is in the coordinates
+// of the shell's client area, all 0 where the toolbar shows no frame for it.
 type ToolbarButton struct {
 	ID, Title string
 	Enabled   bool
+	Bounds    [4]int
 }
 
 // Toolbar is what such a shell tells the QA driver.

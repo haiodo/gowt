@@ -52,7 +52,7 @@ if err != nil {
 | tabs | `gowt.Tabs(gowt.Tab("General", children...), gowt.Tab("Advanced", ...))` |
 | a titled frame | `gowt.Group("Options", children...)` |
 | a scrolled column | `gowt.Scroll(children...)` |
-| panes with draggable sashes | `gowt.Split(children...)`, `split.SetWeights(1, 3)` |
+| panes with draggable sashes | `gowt.Split(children...)`, `split.SetWeights(1, 3)`; `gowt.Divider()` draws a separator hairline on each sash |
 | settings rows on a card | `gowt.Section(rows...)` |
 | a part whose failure shows in place | `gowt.Boundary(children...)`, `Failed(func(err, reset) Option)`; see [events.md](events.md#boundary-errors-shown-in-place) |
 
@@ -217,6 +217,7 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `CellSelect()` | Tree |
 | `Simple()` | Combo |
 | `Vertical()` | Scale, Slider, Progress, Split, Sash, Separator, Flow, Fill |
+| `Divider()` | Split: a hairline in the system separator colour on each sash, the thin divider of an `NSSplitView`, on every system |
 | `Smooth()`, `Indeterminate()` | Progress |
 | `Flat()` | ToolBar |
 | `Wrap()` | Label, StyledText, ToolBar |

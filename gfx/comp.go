@@ -482,7 +482,7 @@ func (c *Compositor) ensureTiles(moved bool) {
 }
 
 // next takes the most urgent job: tiles in view first, then the nearest to the view's center.
-func (c *Compositor) next() (job, bool) {
+func (c *Compositor) next(idle func()) (job, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	for {
@@ -503,6 +503,7 @@ func (c *Compositor) next() (job, bool) {
 		if len(c.queue) > 0 {
 			break
 		}
+		idle()
 		c.cond.Wait()
 	}
 	ctr := c.snap.Load().center
@@ -545,7 +546,14 @@ func (c *Compositor) worker() {
 		}
 	}()
 	for {
-		j, ok := c.next()
+		// a target is a whole tile of memory per worker; between bursts of work it would only sit there.
+		// Released where the worker starts to wait: only then it is known that the queue is empty.
+		j, ok := c.next(func() {
+			if t != nil {
+				t.Close()
+				t = nil
+			}
+		})
 		if !ok {
 			return
 		}
@@ -570,13 +578,7 @@ func (c *Compositor) worker() {
 		c.pending.Add(-1)
 		c.mu.Lock()
 		c.pushLocked(result{j.t, gen, img})
-		idle := len(c.queue) == 0
 		c.mu.Unlock()
-		// a target is a whole tile of memory per worker; between bursts of work it would only sit there
-		if idle && t != nil {
-			t.Close()
-			t = nil
-		}
 	}
 }
 

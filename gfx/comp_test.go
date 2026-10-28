@@ -24,7 +24,18 @@ type fakeRenderer struct {
 	mu    sync.Mutex
 	draws []drawRec
 	delay time.Duration
-	open  int // targets made and not closed
+	open  int        // targets made and not closed
+	cv    *sync.Cond // signalled by every Close
+}
+
+// cond needs r.mu held by the caller of Wait; the zero fakeRenderer has none yet.
+func (r *fakeRenderer) cond() *sync.Cond {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.cv == nil {
+		r.cv = sync.NewCond(&r.mu)
+	}
+	return r.cv
 }
 
 func (r *fakeRenderer) MeasureText(s string, f Font) TextMetrics { return TextMetrics{} }
@@ -66,6 +77,7 @@ func (t *fakeTarget) Close() {
 	t.r.mu.Lock()
 	t.r.open--
 	t.r.mu.Unlock()
+	t.r.cond().Broadcast()
 }
 
 type fakeLayer struct {
@@ -247,7 +259,20 @@ func TestIdleWorkersHoldNoTarget(t *testing.T) {
 	g := newRig(t, Options{Workers: 4})
 	g.addBackground()
 	g.settle()
+	// a worker closes its target after its last result is applied; wait for that, with a guard
+	cv := g.r.cond()
+	timedOut := false
+	stop := time.AfterFunc(5*time.Second, func() {
+		g.r.mu.Lock()
+		timedOut = true
+		g.r.mu.Unlock()
+		cv.Broadcast()
+	})
+	defer stop.Stop()
 	g.r.mu.Lock()
+	for g.r.open != 0 && !timedOut {
+		cv.Wait()
+	}
 	open := g.r.open
 	g.r.mu.Unlock()
 	if open != 0 {

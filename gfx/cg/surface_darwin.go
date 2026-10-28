@@ -5,10 +5,12 @@ package cg
 import (
 	"math"
 	"os"
+	"runtime"
 	"sync"
 	"unsafe"
 
 	"github.com/haiodo/gowt/gfx"
+	"github.com/haiodo/gowt/gfx/internal/cache"
 )
 
 // kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little: BGRA bytes in memory,
@@ -29,13 +31,20 @@ type Options struct {
 type Renderer struct {
 	opts    Options
 	cs      uintptr
-	fonts   sync.Map // fontKey -> uintptr
-	lines   sync.Map // lineKey -> uintptr
-	sprites sync.Map // spriteKey -> *shadowSprite
-	images  sync.Map // *gfx.Raster -> *Image
-	metrics sync.Map // lineKey -> gfx.TextMetrics
-	skip    uint32   // bit per gfx.OpKind to leave out; benchmarks use it to split the cost
+	fonts   sync.Map // fontKey -> uintptr; unbounded, since a lineKey holds its font by address
+	lines   cache.Gen[lineKey, *ctLine]
+	sprites cache.Gen[spriteKey, *shadowSprite]
+	images  cache.Weak[gfx.Raster, *Image]
+	metrics cache.Gen[lineKey, gfx.TextMetrics]
+	skip    uint32 // bit per gfx.OpKind to leave out; benchmarks use it to split the cost
 }
+
+// Generation sizes of the caches, far above what one frame of a dense scene lays out.
+const (
+	maxLines   = 4096
+	maxMetrics = 16384
+	maxSprites = 256
+)
 
 type fontKey struct {
 	name, family string
@@ -65,6 +74,7 @@ func NewRenderer(o Options) *Renderer {
 		_, _ = RegisterFonts(o.FontDir) // a missing directory leaves the system fonts
 	}
 	r := &Renderer{opts: o, cs: cgColorSpaceCreateDeviceRGB()}
+	r.lines.Max, r.metrics.Max, r.sprites.Max = maxLines, maxMetrics, maxSprites
 	return r
 }
 
@@ -222,10 +232,10 @@ func (r *Renderer) sprite(radius, blur float64, col gfx.Color, scale, offset flo
 	}
 	k := spriteKey{radius, blur, col, scale, reach}
 	if v, ok := r.sprites.Load(k); ok {
-		return v.(*shadowSprite)
+		return v
 	}
 	v, _ := r.sprites.LoadOrStore(k, r.buildSprite(radius, blur, col, scale, reach))
-	return v.(*shadowSprite)
+	return v
 }
 
 func (r *Renderer) buildSprite(radius, blur float64, col gfx.Color, scale, reach float64) *shadowSprite {
@@ -258,6 +268,15 @@ func (r *Renderer) buildSprite(radius, blur float64, col gfx.Color, scale, reach
 	out := &shadowSprite{q: q, m: m, reach: reach, centerFill: col}
 	out.corner = [4]*Image{piece(0, q+1, q, q), piece(q+1, q+1, q, q), piece(0, 0, q, q), piece(q+1, 0, q, q)}
 	out.edge = [4]*Image{piece(q, side-reach, 1, reach), piece(q, 0, 1, reach), piece(0, q, reach, 1), piece(side-reach, q, reach, 1)}
+	var refs [8]uintptr
+	for i, p := range append(out.corner[:], out.edge[:]...) {
+		refs[i] = p.ref
+	}
+	runtime.AddCleanup(out, func(refs [8]uintptr) {
+		for _, ref := range refs {
+			cgImageRelease(ref)
+		}
+	}, refs)
 	return out
 }
 
@@ -280,4 +299,5 @@ func (sp *shadowSprite) draw(s *Surface, x, y, w, h float64) {
 		cgFillColor(ctx, c.R, c.G, c.B, c.A)
 		cgFillRect(ctx, cgRect{x0 + q, y0 + q, x1 - x0 - 2*q, y1 - y0 - 2*q})
 	}
+	runtime.KeepAlive(sp) // its cleanup releases the pieces
 }

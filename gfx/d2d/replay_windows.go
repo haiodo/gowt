@@ -65,6 +65,8 @@ type replayer struct {
 	// openClips are the clips of the items drawn so far that the next item shares
 	openClips []gfx.Clip
 	openPops  []pop
+	// hold keeps what owns the cached bitmaps and layouts of the batch reachable until EndDraw
+	hold []any
 }
 
 func (rp *replayer) init(t *Target) {
@@ -613,6 +615,7 @@ func (rp *replayer) image(op *gfx.Op) {
 	}
 	rp.applyM()
 	vcall(rp.dc, d2DCDrawBitmap, ui(img.bmp), ref(&rectF{float32(op.A), float32(op.B), float32(op.A + op.C), float32(op.B + op.D)}), fl(1), ui(1), ui(0))
+	rp.hold = append(rp.hold, op.Image) // a Raster's bitmap is released with the Raster
 }
 
 // bitmapOf returns the bitmap behind img: a snapshot as it is, a Raster converted once.
@@ -622,7 +625,7 @@ func (r *Renderer) bitmapOf(dc uintptr, img gfx.Image) *Image {
 		return v
 	case *gfx.Raster:
 		if c, ok := r.images.Load(v); ok {
-			return c.(*Image)
+			return c
 		}
 		dst := make([]byte, v.W*v.H*4)
 		for i := 0; i+3 < len(v.Pix); i += 4 {
@@ -637,11 +640,11 @@ func (r *Renderer) bitmapOf(dc uintptr, img gfx.Image) *Image {
 			return nil
 		}
 		c := &Image{bmp, float64(v.W), float64(v.H)}
-		actual, loaded := r.images.LoadOrStore(v, c)
+		actual, loaded := r.images.LoadOrStore(v, c, (*Image).Release)
 		if loaded {
 			c.Release()
 		}
-		return actual.(*Image)
+		return actual
 	}
 	return nil
 }
@@ -683,7 +686,9 @@ func (rp *replayer) text(str string, op *gfx.Op) {
 	if lay == nil {
 		return
 	}
-	if !rp.r.opts.TextCache {
+	if rp.r.opts.TextCache {
+		rp.hold = append(rp.hold, lay)
+	} else {
 		defer release(lay.ptr)
 	}
 	c := op.Color

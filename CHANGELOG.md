@@ -12,6 +12,11 @@ gfx memory: blank tiles
 - Fixed: every tile worker of a compositor (up to 6 per gfx view) kept its 512x512 target for the life of the view. A worker now closes its target when the queue runs dry, and the next burst makes a new one. On macOS the tile image then keeps the bitmap of the closed context instead of a copy made on the next tile. In the monitor run above `CG Image` went from 28.7 to 0.3 MB and the live tile targets from 31 to none; `TestCompositorHeadless` frame times did not change.
 - Tests: `TestBlankTilesHaveNoLayer` and `TestIdleWorkersHoldNoTarget` (package gfx); the compositor tests that count tile layers or draws cover their view with a background node.
 
+gfx caches no longer grow without end (Tenniarb)
+- Fixed: every backend kept the native copy of a `gfx.Raster` (macOS `CGImage`, Windows `ID2D1Bitmap`, Linux cairo surface) in a map keyed by the `*Raster` and never removed it, so the map also kept the Raster and its pixels alive. A scene that makes a new Raster on each edit grew by the Go pixels plus the native copy every time: Tenniarb measured 804 MB RSS after 10 edits of an element with an image. The map now holds the Raster weakly, and the native copy is released once the Raster is collected. A headless loop of 50 new 1600x1000 Rasters on macOS: Go heap 306 MB before, 7 MB after; RSS 597 MB before, 59 MB after.
+- Fixed: the per-string and per-shadow caches were unbounded as well: macOS laid-out lines, text metrics and shadow sprites; Windows text layouts and shadow bitmaps; Linux text metrics. Each now keeps two generations of a fixed size: 4096 lines or layouts, 16384 metrics, 256 shadows. A dropped native object is released when no draw holds it any more. A pan over the 10k-node synthetic document lays out as many lines as with an unbounded cache (1047 at the mid zoom), and the draw benchmarks are unchanged. Font caches stay unbounded: they grow only with the number of distinct fonts.
+- Tests: `TestRasterImagesReleased`, `TestTextCachesBounded`, `TestTextCacheHitRate` (gfx/cg), `TestCachesBounded` (gfx/cairo, gfx/d2d) and the unit tests of `gfx/internal/cache`. `GFX_CACHE_MEASURE=1` runs `TestRasterChurnMemory`, the loop above.
+
 ## v0.13.5 (2026-10-28)
 
 Split divider on glass (Tenniarb)

@@ -218,8 +218,8 @@ func (r *Renderer) newContext() uintptr {
 // ascent and the rest of the logical height as the descent. Results are cached per font and string.
 func (r *Renderer) MeasureText(s string, f gfx.Font) gfx.TextMetrics {
 	k := lineKey{f, s}
-	if v, ok := r.metrics.Load(k); ok {
-		return v.(gfx.TextMetrics)
+	if m, ok := r.metrics.Load(k); ok {
+		return m
 	}
 	r.pmu.Lock()
 	l := layoutNew(r.mctx)
@@ -240,7 +240,7 @@ func (r *Renderer) MeasureText(s string, f gfx.Font) gfx.TextMetrics {
 		Ascent:  float64(base) / pangoScale,
 		Descent: float64(logical.h-base) / pangoScale,
 	}
-	r.metrics.Store(k, m)
+	r.metrics.LoadOrStore(k, m)
 	return m
 }
 

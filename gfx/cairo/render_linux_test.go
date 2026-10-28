@@ -4,7 +4,10 @@ package cairo
 
 import (
 	"crypto/sha256"
+	"runtime"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/haiodo/gowt/gfx"
 )
@@ -332,5 +335,41 @@ func TestConcurrentTargets(t *testing.T) {
 		if got := <-done; got != first {
 			t.Errorf("goroutine result %v differs from %v", got, first)
 		}
+	}
+}
+
+// TestCachesBounded: the surface of a Raster goes once the Raster is unreachable, and the metrics
+// cache stays bounded however many strings are measured.
+func TestCachesBounded(t *testing.T) {
+	r := newRenderer(t, Options{})
+	tg := r.NewTarget(16, 16)
+	defer tg.Close()
+	keep := gfx.NewRaster(16, 16)
+	for i := 0; i <= 200; i++ {
+		rc := gfx.NewRecorderWith(r)
+		if i < 200 { // the last picture, which the Target's iterator still holds, has only keep
+			rc.DrawImage(gfx.NewRaster(16, 16), 0, 0, 16, 16)
+		}
+		rc.DrawImage(keep, 0, 0, 16, 16)
+		tg.Begin(1, gfx.Point{}, gfx.Color{})
+		tg.Draw([]gfx.Item{{Pic: rc.Finish(), M: gfx.Identity(), Alpha: 1}})
+	}
+	deadline := time.Now().Add(5 * time.Second)
+	for r.images.Len() > 1 && time.Now().Before(deadline) {
+		runtime.GC()
+		time.Sleep(time.Millisecond)
+	}
+	if n := r.images.Len(); n != 1 {
+		t.Fatalf("%d surfaces left for 1 live Raster", n)
+	}
+	if _, ok := r.images.Load(keep); !ok {
+		t.Fatal("the surface of the live Raster was destroyed")
+	}
+	f := gfx.Font{Family: "sans", Size: 12}
+	for i := 0; i < 3*maxMetrics; i++ {
+		r.MeasureText(strconv.Itoa(i), f)
+	}
+	if n := r.metrics.Len(); n > 2*maxMetrics {
+		t.Fatalf("%d metrics cached, want at most %d", n, 2*maxMetrics)
 	}
 }

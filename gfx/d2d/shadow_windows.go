@@ -4,6 +4,7 @@ package d2d
 
 import (
 	"math"
+	"runtime"
 
 	"github.com/haiodo/gowt/gfx"
 )
@@ -24,8 +25,6 @@ type shadowSprite struct {
 	q, m int // corner size and blur margin, in device pixels
 	side int
 }
-
-func (s *shadowSprite) release() { s.img.Release() }
 
 type wholeKey struct {
 	w, h, radius, blur float64
@@ -101,7 +100,7 @@ func blurShadow(w, h int, bx, by, bw, bh, r, sigma float64, col gfx.Color) []byt
 func (rp *replayer) sprite(radius, blur float64, col gfx.Color, scale float64) *shadowSprite {
 	k := spriteKey{radius, blur, col, scale}
 	if v, ok := rp.r.sprites.Load(k); ok {
-		return v.(*shadowSprite)
+		return v
 	}
 	m := int(math.Ceil(1.5 * blur * scale))
 	q := int(math.Ceil(radius*scale)) + 2*m // keeps the 1 pixel strip clear of both blur ramps
@@ -113,11 +112,9 @@ func (rp *replayer) sprite(radius, blur float64, col gfx.Color, scale float64) *
 		return nil
 	}
 	sp := &shadowSprite{&Image{bmp, float64(side), float64(side)}, q, m, side}
-	v, loaded := rp.r.sprites.LoadOrStore(k, sp)
-	if loaded {
-		sp.release()
-	}
-	return v.(*shadowSprite)
+	runtime.AddCleanup(sp, release, bmp)
+	v, _ := rp.r.sprites.LoadOrStore(k, sp)
+	return v
 }
 
 func (rp *replayer) drawPiece(bmp uintptr, dx, dy, dw, dh float64, sx, sy, sw, sh int) {
@@ -145,13 +142,14 @@ func (rp *replayer) drawShadow(x, y, w, h, radius float64, sh gfx.Shadow) {
 		rp.drawPiece(b, x0, y0+q, q, y1-y0-2*q, 0, qi, qi, 1)
 		rp.drawPiece(b, x1-q, y0+q, q, y1-y0-2*q, qi+1, qi, qi, 1)
 		rp.drawPiece(b, x0+q, y0+q, x1-x0-2*q, y1-y0-2*q, qi, qi, 1, 1)
+		rp.hold = append(rp.hold, sp)
 		_ = s
 		return
 	}
 	k := wholeKey{w, h, radius, sh.Blur, sh.Color, sc}
 	var img *Image
 	if v, ok := rp.r.wholes.Load(k); ok {
-		img = v.(*Image)
+		img = v
 	} else {
 		m := int(math.Ceil(1.5 * sh.Blur * sc))
 		bw, bh := int(math.Ceil(w*sc)), int(math.Ceil(h*sc))
@@ -165,11 +163,10 @@ func (rp *replayer) drawShadow(x, y, w, h, radius float64, sh gfx.Shadow) {
 			return
 		}
 		img = &Image{bmp, float64(pw), float64(ph)}
-		if v, loaded := rp.r.wholes.LoadOrStore(k, img); loaded {
-			img.Release()
-			img = v.(*Image)
-		}
+		runtime.AddCleanup(img, release, bmp)
+		img, _ = rp.r.wholes.LoadOrStore(k, img)
 	}
+	rp.hold = append(rp.hold, img)
 	pw, ph := int(img.w), int(img.h)
 	m := float64((pw - int(math.Ceil(w*sc))) / 2)
 	rp.drawPiece(img.bmp, x-m/sc, y-m/sc, float64(pw)/sc, float64(ph)/sc, 0, 0, pw, ph)
@@ -285,6 +282,7 @@ func (rp *replayer) shadowUnder(local gfx.Rect, sh gfx.Shadow, draw func(mrp *re
 	}
 	draw(mrp)
 	done()
+	runtime.KeepAlive(mrp) // its hold
 	var fx uintptr
 	if hr := vcall(rp.dc, d2DCCreateEffect, ref(clsidShadow), ref(&fx)); failed(hr) {
 		release(bmp)

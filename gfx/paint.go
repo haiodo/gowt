@@ -42,8 +42,8 @@ func NewRadialGradient(c0 Point, r0 float64, c1 Point, r1 float64, stops ...Stop
 }
 
 // Raster is a portable image: non-premultiplied RGBA, 4 bytes per pixel, rows top to bottom.
-// Backends convert it on first use and keep the converted copy by the *Raster, so a Raster
-// must not change after it was drawn.
+// Backends convert it on first use and keep the converted copy by the *Raster until the Raster
+// is collected, so a Raster must not change after it was drawn.
 type Raster struct {
 	W, H int
 	Pix  []byte

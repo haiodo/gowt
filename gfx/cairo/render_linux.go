@@ -5,10 +5,12 @@ package cairo
 import (
 	"math"
 	"os"
+	"runtime"
 	"sync"
 	"unsafe"
 
 	"github.com/haiodo/gowt/gfx"
+	"github.com/haiodo/gowt/gfx/internal/cache"
 )
 
 var _ gfx.Renderer = (*Renderer)(nil)
@@ -30,9 +32,12 @@ type Renderer struct {
 	mctx    uintptr // context for measuring
 	pmu     sync.Mutex
 	descs   sync.Map // fontKey -> uintptr
-	metrics sync.Map // lineKey -> gfx.TextMetrics
-	images  sync.Map // *gfx.Raster -> *Image
+	metrics cache.Gen[lineKey, gfx.TextMetrics]
+	images  cache.Weak[gfx.Raster, *Image]
 }
+
+// maxMetrics is the generation size of the metrics cache, far above what one frame measures.
+const maxMetrics = 16384
 
 // The measurer of recordings made before any renderer exists (see gfx.DefaultMeasurer).
 func init() {
@@ -51,6 +56,7 @@ func NewRenderer(o Options) (*Renderer, error) {
 		_, _ = RegisterFonts(o.FontDir) // a missing directory leaves the system fonts
 	}
 	r := &Renderer{opts: o, fm: fmNew(), fopts: fontOptionsCreate()}
+	r.metrics.Max = maxMetrics
 	fontOptionsSetAA(r.fopts, antialiasGray)
 	fontOptionsSetHint(r.fopts, hintStyleNone)
 	fontOptionsSetMetrics(r.fopts, hintMetricsOff)
@@ -505,6 +511,7 @@ func (t *Target) image(op *gfx.Op) {
 	patternSetFilter(getSource(cr), filterGood)
 	paint(cr)
 	restore(cr)
+	runtime.KeepAlive(op.Image) // a Raster's surface is destroyed with the Raster
 }
 
 func (r *Renderer) surfaceOf(img gfx.Image) *Image {
@@ -513,7 +520,7 @@ func (r *Renderer) surfaceOf(img gfx.Image) *Image {
 		return v
 	case *gfx.Raster:
 		if c, ok := r.images.Load(v); ok {
-			return c.(*Image)
+			return c
 		}
 		if v.W <= 0 || v.H <= 0 {
 			return nil
@@ -534,11 +541,11 @@ func (r *Renderer) surfaceOf(img gfx.Image) *Image {
 		}
 		surfaceMarkDirty(s)
 		c := &Image{surf: s, w: float64(v.W), h: float64(v.H), wpx: v.W, hpx: v.H}
-		actual, loaded := r.images.LoadOrStore(v, c)
+		actual, loaded := r.images.LoadOrStore(v, c, (*Image).Release)
 		if loaded {
 			c.Release()
 		}
-		return actual.(*Image)
+		return actual
 	}
 	return nil
 }

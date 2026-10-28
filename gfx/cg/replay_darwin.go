@@ -4,6 +4,7 @@ package cg
 
 import (
 	"math"
+	"runtime"
 	"unsafe"
 
 	"github.com/haiodo/gowt/gfx"
@@ -29,15 +30,15 @@ func (t target) Snapshot(wpt, hpt float64) gfx.Image { return t.Surface.Snapshot
 func (r *Renderer) MeasureText(s string, f gfx.Font) gfx.TextMetrics {
 	font := r.font(f)
 	k := lineKey{font, s, f.Spacing}
-	if v, ok := r.metrics.Load(k); ok {
-		return v.(gfx.TextMetrics)
+	if m, ok := r.metrics.Load(k); ok {
+		return m
 	}
 	line := r.newLine(s, font, f.Spacing)
 	var a, d, l float64
 	w := ctLineTypographicBounds(line, &a, &d, &l)
 	cfRelease(line)
 	m := gfx.TextMetrics{Width: w, Ascent: a, Descent: d}
-	r.metrics.Store(k, m)
+	r.metrics.LoadOrStore(k, m)
 	return m
 }
 
@@ -222,6 +223,7 @@ func (s *Surface) replayOps(p *gfx.Picture) {
 			cgScale(ctx, 1, -1)
 			cgDrawImage(ctx, cgRect{0, 0, op.C, op.D}, img.ref)
 			cgRestoreGSt(ctx)
+			runtime.KeepAlive(op.Image) // a Raster's CGImage is released with the Raster
 		case gfx.OpClipRect:
 			cgClipRect(ctx, cgRect{op.A, op.B, op.C, op.D})
 		case gfx.OpClipRRect:
@@ -259,7 +261,7 @@ func (r *Renderer) cgImage(img gfx.Image) *Image {
 		return v
 	case *gfx.Raster:
 		if c, ok := r.images.Load(v); ok {
-			return c.(*Image)
+			return c
 		}
 		ctx := cgBitmapContextCreate(0, uintptr(v.W), uintptr(v.H), 8, uintptr(v.W*4), r.cs, bitmapInfoBGRA)
 		if ctx == 0 {
@@ -276,11 +278,11 @@ func (r *Renderer) cgImage(img gfx.Image) *Image {
 		}
 		c := &Image{cgBitmapContextCreateImage(ctx), float64(v.W), float64(v.H)}
 		cgContextRelease(ctx)
-		actual, loaded := r.images.LoadOrStore(v, c)
+		actual, loaded := r.images.LoadOrStore(v, c, (*Image).Release)
 		if loaded {
 			c.Release()
 		}
-		return actual.(*Image)
+		return actual
 	}
 	return nil
 }

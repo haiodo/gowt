@@ -64,7 +64,13 @@ func TestMaterialShowsThrough(t *testing.T) {
 		t.Fatal(err)
 	}
 	b := img.Bounds()
-	r, g, bl, _ := img.At((b.Min.X+b.Max.X)/2, (b.Min.Y+b.Max.Y)/2+b.Dy()/6).RGBA()
+	// The red padding left of the pane, 20 of 400 points in: not red means the capture is unusable
+	// (display asleep or locked, no Screen Recording permission).
+	r, g, bl, _ := img.At(b.Min.X+b.Dx()*20/400, (b.Min.Y+b.Max.Y)/2).RGBA()
+	if r>>8 < g>>8+100 || r>>8 < bl>>8+100 {
+		t.Skipf("screen capture unavailable (got %d,%d,%d where red is expected)", r>>8, g>>8, bl>>8)
+	}
+	r, g, bl, _ = img.At((b.Min.X+b.Max.X)/2, (b.Min.Y+b.Max.Y)/2+b.Dy()/6).RGBA()
 	if r>>8 < g>>8+25 || r>>8 < bl>>8+25 {
 		t.Errorf("pane middle %d,%d,%d over red: want the red to show through the glass", r>>8, g>>8, bl>>8)
 	}

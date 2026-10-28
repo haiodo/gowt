@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+Split divider on glass (Tenniarb)
+- Fixed: a `gowt.Divider()` `Split` in a macOS 26 sidebar showed no line where the glass took on a shade near the line's. The hairline was one opaque colour, `separatorColor` over the window colour, while the glass beneath the alpha-0 sash shows what lies behind it: over a light grey content the glass and the line differed by 3 levels. On an alpha-0 sash the line is now drawn translucent, `separatorColor` with its own alpha (Windows and Linux: the text colour at 15%), so it darkens the glass in light mode and lightens it in dark. A sash with an opaque background keeps the opaque line.
+- Tests: `TestSidebarSplitDivider` (package look, `GOWT_GUI_TEST=1`, macOS, best with `GOWT_SNAP_SCREEN=1`) captures a `Divider` `Split` sidebar over content of four greys in light and dark and wants the hairline at least 8 levels off the glass.
+
 GUI tests on the hosted runners, round 2
 - Fixed: on Windows a process that shaped text with a fallback font (emoji) a few thousand times died with `fatal error: too many callback functions`. `TextLayout` took a new `syscall.NewCallback` slot for the metafile enumeration of each such run, and Go never frees one (a pool of 2000). The slot is now reused, as is the one of `Tree` sorting with a comparator.
 - Fixed: a QA drag (`qatest` `DragDropTo`) from a `Tree` or `Table` on macOS asked AppKit for a drag image of the selected rows with a nil event (`NSApp.currentEvent` outside an event). The QA app on the macOS 26 runner died (SIGABRT) in every such drag, and this call is the likely cause; macOS 27 survives it. A QA drag now skips that image; the listeners still get `DragStart`.

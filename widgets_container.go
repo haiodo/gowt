@@ -238,27 +238,23 @@ func (s *SplitView) hookDividers() {
 	f.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { later() }))
 }
 
-// paintDivider draws the separator line along the long side of sash, over the first opaque
-// background behind it: on glass the sash and its parents have an alpha-0 one.
+// paintDivider draws the separator line along the long side of sash. On glass the sash background is
+// alpha-0 and what shows through is not known here, so the line is drawn translucent over it: an
+// opaque colour worked out for one backdrop vanished where the glass took on that shade.
 func paintDivider(gc *swt.GC, sash *swt.Control) {
-	bg := sash.GetDisplay().GetSystemColor(swt.COLOR_WIDGET_BACKGROUND).GetRGB()
-	for c := sash; c != nil; {
-		if col := c.GetBackground(); col.GetAlpha() == 255 {
-			bg = col.GetRGB()
-			break
-		}
-		p := c.GetParent()
-		if p == nil {
-			break
-		}
-		c = &p.Control
-	}
 	dark := systemDark()
 	if a := appOf(sash); a != nil {
 		dark = a.Dark()
 	}
-	fg := sash.GetDisplay().GetSystemColor(swt.COLOR_WIDGET_FOREGROUND).GetRGB()
-	line := tabSeparator(sash.GetDisplay(), rgbOf(bg), rgbOf(fg), dark).color()
+	fg := rgbOf(sash.GetDisplay().GetSystemColor(swt.COLOR_WIDGET_FOREGROUND).GetRGB())
+	var line *swt.Color
+	if bg := sash.GetBackground(); bg.GetAlpha() == 255 {
+		line = tabSeparator(sash.GetDisplay(), rgbOf(bg.GetRGB()), fg, dark).color()
+	} else {
+		c, alpha := glassSeparator(fg, dark)
+		line = c.color()
+		gc.SetAlpha(alpha)
+	}
 	defer line.Dispose()
 	gc.SetForeground(line)
 	s := sash.GetSize()

@@ -2,6 +2,7 @@ package swt
 
 import (
 	"math/rand"
+	"runtime"
 	"slices"
 	"testing"
 
@@ -177,7 +178,12 @@ func TestTextComboLabelEmoji(t0 *testing.T) {
 		if got := txt.GetText(); got != s {
 			t.Fatalf("Text %q", got)
 		}
-		if got := multi.GetText(); got != s+"\n"+s {
+		// Windows Text stores line breaks as CRLF and returns them, as SWT does.
+		nl := "\n"
+		if runtime.GOOS == "windows" {
+			nl = "\r\n"
+		}
+		if got := multi.GetText(); got != s+nl+s {
 			t.Fatalf("multi %q", got)
 		}
 		if got := cb.GetText(); got != s {

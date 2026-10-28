@@ -54,9 +54,14 @@ func respondsTo(obj uintptr, selector string) bool {
 // GlassAvailable reports whether NSGlassEffectView exists (macOS 26 or newer).
 func GlassAvailable() bool { return class("NSGlassEffectView") != 0 }
 
+// reduceTransparency reports the Reduce transparency accessibility setting; tests replace it.
+var reduceTransparency = func() bool {
+	return msg(msg(class("NSWorkspace"), "sharedWorkspace"), "accessibilityDisplayShouldReduceTransparency")&0xff != 0
+}
+
 // InstallBackdrop puts a material view directly behind view and returns whether it replaced or
 // removed an earlier one. kind is BackdropNone, BackdropTranslucent or BackdropGlass; Glass falls
-// back to Translucent before macOS 26.
+// back to Translucent before macOS 26 and under Reduce transparency.
 //
 // The material is a sibling of view, not a child: SWT inserts every new child at the bottom of its
 // parent (Control.setZOrder_ with NSWindowBelow), which would bury a child backdrop under the
@@ -86,6 +91,11 @@ func installBackdrop(view *NSView, kind int, window, child bool) (had bool) {
 	}
 	if kind == BackdropNone || host == 0 {
 		return had
+	}
+	// Under Reduce transparency the macOS 26 runner drew NSGlassEffectView in Aqua's white
+	// windowBackgroundColor in Dark Aqua. Read once per install: a toggle while running needs a reinstall.
+	if kind == BackdropGlass && reduceTransparency() {
+		kind = BackdropTranslucent
 	}
 	inside := child && kind == BackdropGlass && GlassAvailable() && glassGroupContent(host, kind, window) == 0
 	var bd uintptr

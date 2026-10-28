@@ -36,6 +36,25 @@ func TestInstallBackdropReplaces(t *testing.T) {
 	})
 }
 
+// Under Reduce transparency a Glass backdrop is the NSVisualEffectView material, also for a panel.
+func TestGlassBackdropReduceTransparency(t *testing.T) {
+	old := reduceTransparency
+	reduceTransparency = func() bool { return true }
+	defer func() { reduceTransparency = old }()
+	onMain(func() {
+		v := msg(msg(class("NSView"), "alloc"), "init")
+		host := msg(msg(class("NSView"), "alloc"), "init")
+		msg(host, "addSubview:", v)
+		view := NewNSViewOverload1(int64(v))
+		for _, panel := range []bool{false, true} {
+			installBackdrop(view, BackdropGlass, false, panel)
+			if name, _, _ := BackdropOf(view); name != "NSVisualEffectView" {
+				t.Errorf("panel %v: backdrop %q, want NSVisualEffectView", panel, name)
+			}
+		}
+	})
+}
+
 func TestPanelBackdropIsLowestChild(t *testing.T) {
 	if !GlassAvailable() {
 		t.Skip("no NSGlassEffectView")

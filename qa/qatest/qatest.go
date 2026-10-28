@@ -305,7 +305,7 @@ func (c *Client) artifactDir() string {
 	return dir
 }
 
-// saveOnFailure leaves a shot, the dump and the command log of a failed test, and the app's log tail.
+// saveOnFailure leaves a shot, the dump and the command log of a failed test, and the app's log.
 func (c *Client) saveOnFailure() {
 	if !c.t.Failed() {
 		return
@@ -323,7 +323,10 @@ func (c *Client) saveOnFailure() {
 		}
 	}
 	os.WriteFile(filepath.Join(dir, "commands.log"), []byte(c.s.commandLog()), 0o644)
-	os.WriteFile(filepath.Join(dir, "app.log.tail"), []byte(c.s.logTail()), 0o644)
+	// The whole log: a crash prints its cause first and every goroutine after it.
+	if b, err := os.ReadFile(filepath.Join(c.s.dir, "app.log")); err == nil {
+		os.WriteFile(filepath.Join(dir, "app.log"), b, 0o644)
+	}
 	c.t.Logf("qatest: artifacts of the failed test in %s %s", dir, strings.Join(notes, "; "))
 }
 

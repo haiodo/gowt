@@ -32,7 +32,9 @@ var (
 
 // Only callbacks the native side calls synchronously and forgets before Dispose are recycled; window procedures, hooks
 // and COM callbacks may be called by Windows after Dispose and keep their slot.
-var callbackRecycleSites = []string{"(*Display).GetMonitors", "(*Device).GetFontList", "(*FontData).SetLocale"}
+// A site missing here keeps a slot per call: ShapeGcHdcRun (fallback font) ran the pool of 2000 dry.
+var callbackRecycleSites = []string{"(*Display).GetMonitors", "(*Device).GetFontList", "(*FontData).SetLocale",
+	"(*TextLayout).ShapeGcHdcRun", "(*Tree).SortHParentAll"}
 
 func callbackSite() string {
 	var pcs [1]uintptr

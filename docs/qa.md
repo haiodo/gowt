@@ -317,7 +317,7 @@ The click that starts this job returns after the job and its `Then` have finishe
 | `failure.png` | screenshot of the first window |
 | `dump.json` | the full control tree |
 | `commands.log` | every command sent, with arguments, result or error, and time taken |
-| `app.log.tail` | the last 4 KiB of the app's stdout and stderr |
+| `app.log` | the app's stdout and stderr, whole: a crash prints its cause before the goroutines |
 
 If the connection to the app is already lost, the screenshot and the dump are skipped and the log files are still written.
 

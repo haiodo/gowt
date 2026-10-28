@@ -1,14 +1,17 @@
 package look_test
 
 import (
+	"fmt"
 	"image"
 	"image/png"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/shot"
 	"github.com/haiodo/gowt/look"
 	"github.com/haiodo/gowt/swt"
@@ -119,7 +122,9 @@ func TestInspectorTextOnGlass(t *testing.T) {
 				path = filepath.Join(dir, "fields-"+mode.name+".png")
 			}
 			var width int32
-			var ref [4]int32 // the middle of the content pane: dark in dark, light in light
+			var ref [4]int32    // the middle of the content pane: dark in dark, light in light
+			var backdrop string // the material behind the inspector and the appearances, at the capture
+			late := path[:len(path)-len(".png")] + "-late.png"
 			var err error
 			onMain(func() {
 				err = gowt.Run(func(app *gowt.App) {
@@ -136,8 +141,18 @@ func TestInspectorTextOnGlass(t *testing.T) {
 					w.SetSize(700, 400)
 					w.Show()
 					app.After(500*time.Millisecond, func() {
-						defer w.Close()
-						defer app.SetAppearance(gowt.AppearanceSystem) // later tests run in the system appearance
+						// A second capture a second later tells a glass that is slow to follow the
+						// appearance from one that never does.
+						defer app.After(time.Second, func() {
+							defer w.Close()
+							defer app.SetAppearance(gowt.AppearanceSystem) // later tests run in the system appearance
+							if err := shot.WindowPNG(w.Unwrap().View.Id, late); err != nil {
+								t.Error(err)
+							}
+						})
+						name, _, _ := cocoa.BackdropOf(insp.Unwrap().View)
+						backdrop = fmt.Sprintf("%s, its appearance dark %v, NSApp dark %v", name,
+							cocoa.BackdropDark(insp.Unwrap().View), cocoa.EffectiveAppearanceDark())
 						s := w.Unwrap().GetBounds()
 						width = s.Width
 						for i, c := range ctl {
@@ -178,11 +193,32 @@ func TestInspectorTextOnGlass(t *testing.T) {
 					t.Errorf("%s at %v: field luma %.0f is darker than the glass above it, %.0f", name, r, field, glass)
 				}
 			}
+			if t.Failed() {
+				t.Logf("backdrop %s; glass luma a second later: %s", backdrop, lateGlass(late, fields, scale))
+			}
 			if len(fields) != 3 {
 				t.Errorf("probed %d fields, want 3", len(fields))
 			}
 		})
 	}
+}
+
+// lateGlass is the glass luma above each field in the capture at path.
+func lateGlass(path string, fields map[string][4]int32, scale float64) string {
+	f, err := os.Open(path)
+	if err != nil {
+		return err.Error()
+	}
+	defer f.Close()
+	img, err := png.Decode(f)
+	if err != nil {
+		return err.Error()
+	}
+	var out []string
+	for name, r := range fields {
+		out = append(out, fmt.Sprintf("%s %.0f", name, meanLuma(img, [4]int32{r[0], r[1] - 10, r[2], 6}, scale)))
+	}
+	return strings.Join(out, ", ")
 }
 
 // meanLuma is the mean Rec. 601 luma, 0..255, of r (window points) at scale pixels per point.

@@ -32,10 +32,10 @@ func TestShortDir(t *testing.T) {
 	}
 }
 
-// A connection the app dropped fails the call with the end of the app's log.
+// A connection the app dropped fails the call with the app's log from the crash on, not its goroutine dump tail.
 func TestLostConnectionShowsLog(t *testing.T) {
 	dir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(dir, "app.log"), []byte("panic: boom\n"), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "app.log"), []byte("started\npanic: boom\n"+strings.Repeat("goroutine dump\n", 1000)), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	app, conn := net.Pipe()

@@ -14,26 +14,28 @@ Options go last in the call. Some set a style that must be known at creation, th
 
 | Option | Meaning |
 |---|---|
-| `Check()`, `Radio()` | button kind; `Check` also makes Table/Tree rows and ToolBar items checkable |
+| `Check()`, `Radio()`, `Toggle()` | button kind; `Check` also makes Table/Tree rows and ToolBar items checkable. `Toggle` stays pressed until clicked again (Wrap, Clip): macOS a push-on-push-off `NSButton`, GTK `GtkToggleButton`, Windows the WinUI ToggleButton with the accent fill while on |
 | `Multiline()`, `Password()`, `ReadOnly()` | Text (and `ReadOnly` for Combo) |
 | `Inset(x, y)`, `AutoGrow(minHeight, maxHeight)` | multi-line Text: space between text and edges (`x` both sides, `y` above and below, one pair as in AppKit); height that follows the wrapped lines between the two limits (0 is no maximum), shorter text centred vertically |
 | `Border()`, `Flat()`, `Wrap()` | frame; flat tool bar; Label and StyledText text wrapped into lines, tool bar items wrapped into rows |
 | `Vertical()` | Scale, Slider, Progress, Sash, Split orientation |
 | `MultiSelect()` | List, Table, Tree |
-| `Borderless()`, `Circle()` | push Button: no frame (an icon beside a field); round. `Circle()` with `look.GlassButton()` is a glass circle on macOS 26, the paperclip of the iPad composer. Give a round button a square `Size`. Windows keeps the rectangle |
+| `Borderless()`, `Circle()` | push Button: no frame (an icon beside a field, + and - in a section header); round. A `Toggle` Button takes `Borderless` too: macOS the recessed scope-bar bezel (a frame under the pointer, a pressed-in fill while on), GTK `flat`, Windows Subtle. `Circle()` with `look.GlassButton()` is a glass circle on macOS 26, the paperclip of the iPad composer. Give a round button a square `Size`. Windows keeps the rectangle |
 | `Primary()`, `Destructive()` | push Button: the main action of the window (also its default button, Enter presses it), and an action that deletes or discards. macOS: the accent default button and `hasDestructiveAction`; GTK: `suggested-action` and `destructive-action`; Windows: the WinUI accent fill for Primary, a standard button for Destructive. Together they are a red default button |
+| `Small()` | Segmented and Button: the small control size of an inspector, macOS `NSControlSizeSmall` with its 11-point font, Windows and Linux the font smaller by the same ratio |
+| `Momentary()` | Segmented: the segments are buttons that run `OnSelect` and do not stay selected |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
 | `AccessibleLabel(s)` | any widget: the name a screen reader says for a control with no text, an icon-only Button. macOS `accessibilityLabel`, Linux the ATK name, Windows nothing (`Accessible` is a stub) |
 | `ID(id)` | any widget, a Panel or a Window: names it for the QA driver, which picks controls by it. Stored in the data key `gowt.id` in every build, it changes nothing on screen. Rows made by `Each` pass an id from their row data |
 | `Gap(n)`, `Padding(n)` | containers: space between children and from the edge, see [windows-layouts.md](windows-layouts.md) |
 | `Ref(&x)`, `Init(f)` | store the created widget in `x`; run `f` on it once it and its children exist |
 | `OnClick(f)` | Button `func()`, Link `func(href string)` |
-| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
-| `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)` |
+| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio/Toggle Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
+| `OnSelect(f)` | Combo, List, Table, Tabs, CTabs, Segmented `func(int)`; Tree `func(*Node)` |
 | `OnActivate(f)` | Text `func()` (Enter); List, Table `func(int)`; Tree `func(*Node)` |
-| `Hint(s)`, `Checked(b)`, `Selected(i)` | initial state: Text placeholder; Switch and Check/Radio Button; Combo, List, Table, Tabs, CTabs |
+| `Hint(s)`, `Checked(b)`, `Selected(i)` | initial state: Text placeholder; Switch and Check/Radio/Toggle Button; Combo, List, Table, Tabs, CTabs, Segmented |
 | `Value(v)` | initial value: string for Text, Combo, StyledText; int for Scale, Slider, Spinner, Progress; `time.Time` for DateTime |
-| `Bind(state)` | two-way: `*rx.State[string]` Text, Combo; `[bool]` Switch, Check Button; `[int]` Scale, Slider, Spinner, Combo, List index (Progress one way) |
+| `Bind(state)` | two-way: `*rx.State[string]` Text, Combo; `[bool]` Switch, Check or Toggle Button; `[int]` Scale, Slider, Spinner, Combo, List, Segmented index (Progress one way) |
 | `BindText(r)`, `BindEnabled(r)`, `BindVisible(r)` | Label, Button, Link text; enabled and visible state of any widget, see [events.md](events.md) |
 | `NoBorder()` | drops the frame of List, Table, Tree, and the one `Border()` gives a Text or StyledText (it wins over `Border()` in either order) |
 | `NoBackground()` | StyledText paints no background of its own: a `look.SetMaterial` pane or a coloured panel under it shows through; selected text and `TextStyle` backgrounds are still drawn |
@@ -56,7 +58,8 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Label | `Label(text)` | `SetText`, `SetImage` |
 | Spacer, Separator | `Spacer()`, `Separator()` | an empty cell that takes the free space of a VBox, HBox or Grid row; a horizontal line (`Vertical()` for a vertical one). Both create a `*LabelView` |
 | Switch | `Switch(text, opts...)` | on/off toggle; options `Checked`, `OnChange`, `Bind`; methods `Checked`, `SetChecked`, `SetText`, `OnChange(func(bool))`. A check box on every OS (SWT creates no NSSwitch or GtkSwitch) |
-| Button | `Button(text, opts...)` | push by default; `Check()`/`Radio()`; `OnClick(f)`; `Checked`, `SetChecked`, `SetImage`, `OnClick` |
+| Button | `Button(text, opts...)` | push by default; `Check()`/`Radio()`/`Toggle()`; `OnClick(f)`; `Checked`, `SetChecked`, `SetImage`, `OnClick` |
+| Segmented | `Segmented([]Segment{...}, opts...)` | segments side by side, one selected (Fixed, Hug, Fill), or with `Momentary()` a row of buttons; a `Segment` has `Text`, `Image` and `Tooltip` (an icon-only segment is named to screen readers by its tooltip). The segments share the width equally, `GrowX()` stretches them. `Index` (-1 if none), `Select(i)` (-1 clears), `OnSelect(func(int))`; options `Selected`, `OnSelect`, `Bind` (int), `Small`, `Momentary`. macOS `NSSegmentedControl`, GTK toggle buttons joined as a `linked` box, Windows toggle buttons painted as one WinUI segmented control (a raised card with an accent pill on the selected segment) |
 | Text | `Text()` | `Text`, `SetText`, `Append`, `Lines`, `TrimHead(keep)`, `ScrollToEnd`, `SetHint` (or the option `Hint`), `OnChange(func(string))`, `OnActivate(func())` (Enter); multi-line: `SetInset(x, y)`, `ContentHeight(width)` (height of the wrapped text at a width, inset included, one line at least), `SetAutoGrow(min, max)` |
 | Link | `Link(html, opts...)` | text with `<a href="...">`; `OnClick(func(href string))` gets the href |
 | Combo | `Combo(items)` | `Index` (-1 if none), `Items`, `Select`, `Text`, `OnSelect(func(int))`, `OnChange(func(string))` |

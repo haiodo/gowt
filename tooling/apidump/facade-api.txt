@@ -547,6 +547,27 @@ gowt SectionView.SetTooltip(s string)
 gowt SectionView.SetVisible(v bool)
 gowt SectionView.Unwrap() *github.com/haiodo/gowt/swt.Composite
 gowt SectionView.Visible() bool
+gowt Segment.Image field *Image
+gowt Segment.Text field string
+gowt Segment.Tooltip field string
+gowt SegmentedView.Dispose()
+gowt SegmentedView.Enabled() bool
+gowt SegmentedView.Focus() bool
+gowt SegmentedView.Index() int
+gowt SegmentedView.OnDispose(f func())
+gowt SegmentedView.OnSelect(f func(index int))
+gowt SegmentedView.Select(i int)
+gowt SegmentedView.SetBackground(c Paint)
+gowt SegmentedView.SetEnabled(v bool)
+gowt SegmentedView.SetFont(f Font)
+gowt SegmentedView.SetForeground(c Paint)
+gowt SegmentedView.SetHeight(h int)
+gowt SegmentedView.SetMaxHeight(h int)
+gowt SegmentedView.SetSize(width int, height int)
+gowt SegmentedView.SetTooltip(s string)
+gowt SegmentedView.SetVisible(v bool)
+gowt SegmentedView.Unwrap() *github.com/haiodo/gowt/swt.Composite
+gowt SegmentedView.Visible() bool
 gowt SliderView.Dispose()
 gowt SliderView.Enabled() bool
 gowt SliderView.Focus() bool
@@ -1021,6 +1042,7 @@ gowt func LineNumbers() Option
 gowt func Link(text string, opts ...Option) Option
 gowt func List(items []string, opts ...Option) Option
 gowt func MaxHeight(h int) Option
+gowt func Momentary() Option
 gowt func MultiSelect() Option
 gowt func Multiline() Option
 gowt func NoBackground() Option
@@ -1054,6 +1076,7 @@ gowt func Scroll(opts ...Option) Option
 gowt func Scrollbars() Option
 gowt func Search() Option
 gowt func Section(opts ...Option) Option
+gowt func Segmented(segments []Segment, opts ...Option) Option
 gowt func Selected(i int) Option
 gowt func Separator(opts ...Option) Option
 gowt func SetAppName(name string)
@@ -1062,6 +1085,7 @@ gowt func Simple() Option
 gowt func SingleInstance(id string) (bool, error)
 gowt func Size(w int, h int) Option
 gowt func Slider(min int, max int, opts ...Option) Option
+gowt func Small() Option
 gowt func Smooth() Option
 gowt func Spacer(opts ...Option) Option
 gowt func Span(cols int) Option
@@ -1073,6 +1097,7 @@ gowt func Tab(title string, opts ...Option) Option
 gowt func Table(opts ...Option) Option
 gowt func Tabs(opts ...Option) Option
 gowt func Text(opts ...Option) Option
+gowt func Toggle() Option
 gowt func ToolBar(opts ...Option) Option
 gowt func Tooltip(s string) Option
 gowt func Tree(opts ...Option) Option
@@ -1142,6 +1167,8 @@ gowt type SashView struct
 gowt type ScaleView struct
 gowt type ScrollView struct
 gowt type SectionView struct
+gowt type Segment struct
+gowt type SegmentedView struct
 gowt type SliderView struct
 gowt type SortDir int
 gowt type SpacingScale struct

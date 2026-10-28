@@ -27,14 +27,16 @@ type buttonLook struct {
 	subtle, circle, border bool
 	hot                    bool
 	accent, danger         bool // Primary and Destructive: a solid accent or critical fill
+	seg, segs              int  // a Segment: its index and the number of segments, segs 0 for a plain button
 }
 
 var buttons = map[uintptr]*buttonLook{}
 
-// Button repaints a push button in the WinUI 3 style. Each flag adds to what an earlier call set.
+// Button repaints a push or toggle button in the WinUI 3 style; a toggle that is on has the accent
+// fill of a checked ToggleButton. Each flag adds to what an earlier call set.
 func Button(b *swt.Button, subtle, circle, border bool) {
 	h := uintptr(b.Handle)
-	if h == 0 || b.GetStyle()&(swt.PUSH) == 0 {
+	if h == 0 || b.GetStyle()&(swt.PUSH|swt.TOGGLE) == 0 {
 		return
 	}
 	l := buttons[h]
@@ -61,6 +63,20 @@ func ButtonKind(b *swt.Button, primary, destructive bool) {
 	}
 }
 
+// Segment paints toggle button b as segment i of n of one WinUI segmented control: the segments share a
+// rounded frame on a subtle fill, and the one that is on is a raised card with an accent pill under its
+// content. The buttons must touch, with no gap between them.
+func Segment(b *swt.Button, i, n int) {
+	Button(b, false, false, false)
+	if l := buttons[uintptr(b.Handle)]; l != nil {
+		l.seg, l.segs = i, n
+		call(pInvalidateRect, uintptr(b.Handle), 0, 1)
+	}
+}
+
+// on reports a toggle button that is on.
+func (l *buttonLook) on() bool { return l.b.GetStyle()&swt.TOGGLE != 0 && l.b.GetSelection() }
+
 // solid returns the fill and the text colour of an accent or critical button, and whether this is one.
 func (l *buttonLook) solid(pal Palette, pushed bool, bg RGB) (fill, text RGB, ok bool) {
 	var base RGB
@@ -69,7 +85,7 @@ func (l *buttonLook) solid(pal Palette, pushed bool, bg RGB) (fill, text RGB, ok
 		base, text = RGB{0xFF, 0x99, 0xA4}, RGB{0, 0, 0}
 	case l.danger:
 		base, text = RGB{0xC4, 0x2B, 0x1C}, RGB{255, 255, 255}
-	case l.accent:
+	case l.accent, l.segs == 0 && l.on():
 		base, text = pal.Accent, pal.OnAccent
 	default:
 		return RGB{}, RGB{}, false
@@ -199,10 +215,13 @@ func (l *buttonLook) draw(hwnd, hdc uintptr, w, h int32) {
 	} else {
 		p.fillRect(bg, 0, 0, w, h)
 	}
-	if filled {
+	switch {
+	case l.segs > 0:
+		l.drawSegment(p, pal, bg, tint, w, h, r, dpi, enabled, pushed)
+	case filled:
 		p.fillRound(fill, 0, 0, w, h, r)
 	}
-	if (!l.subtle || l.border) && !solid {
+	if (!l.subtle || l.border) && !solid && l.segs == 0 {
 		p.strokeRound(pal.Stroke(bg), 0, 0, w, h, r, 1)
 	}
 
@@ -240,5 +259,41 @@ func (l *buttonLook) draw(hwnd, hdc uintptr, w, h int32) {
 	if focused(hwnd) && call(pSendMessage, hwnd, wmQueryUIState, 0, 0)&1 == 0 {
 		in := px(2, dpi)
 		p.strokeRound(pal.Text, in, in, w-2*in, h-2*in, max(r-in, 0), px(2, dpi))
+	}
+}
+
+// drawSegment paints this button's slice of the segmented control: the shared frame is drawn wider
+// than the button on the sides that meet a neighbour, so the bitmap cuts it there.
+func (l *buttonLook) drawSegment(p *painter, pal Palette, bg, tint RGB, w, h, r int32, dpi int, enabled, pushed bool) {
+	x, fw := int32(0), w
+	if l.seg > 0 {
+		x, fw = -2*r, fw+2*r
+	}
+	if l.seg < l.segs-1 {
+		fw += 2 * r
+	}
+	base := pal.Black.over(0.02, bg)
+	if pal.Dark {
+		base = RGB{}.over(0.10, bg)
+	}
+	p.fillRound(base, x, 0, fw, h, r)
+	p.strokeRound(pal.Stroke(bg), x, 0, fw, h, r, 1)
+	in := px(3, dpi)
+	switch {
+	case l.on():
+		card := tint.over(0.70, base)
+		if pal.Dark {
+			card = tint.over(0.08, base)
+		}
+		p.fillRound(card, in, in, w-2*in, h-2*in, max(r-1, 1))
+		p.strokeRound(pal.Stroke(card), in, in, w-2*in, h-2*in, max(r-1, 1), 1)
+		pw, ph := px(16, dpi), px(3, dpi)
+		if enabled {
+			p.fillRound(pal.Accent, (w-pw)/2, h-in-ph-px(1, dpi), pw, ph, ph/2)
+		}
+	case enabled && pushed:
+		p.fillRound(pal.Black.over(0.06, base), in, in, w-2*in, h-2*in, max(r-1, 1))
+	case enabled && l.hot:
+		p.fillRound(pal.Black.over(0.04, base), in, in, w-2*in, h-2*in, max(r-1, 1))
 	}
 }

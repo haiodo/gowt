@@ -11,13 +11,28 @@ import (
 
 const (
 	bezelStyleCircular = 7
-	borderShapeCircle  = 3 // NSControlBorderShapeCircle, macOS 26
+	bezelStyleRecessed = 13 // NSBezelStyleAccessoryBar, the scope-bar button of Finder's search
+	borderShapeCircle  = 3  // NSControlBorderShapeCircle, macOS 26
 )
 
 // SetButtonBorderless removes the bezel. AppKit still dims the image while the button is pressed.
 func SetButtonBorderless(view *NSView) {
 	msg(uintptr(view.Id), "setBordered:", 0)
 }
+
+// SetButtonRecessed gives a toggle button the recessed bezel, drawn only under the pointer while the
+// button is off; on, it shows the pressed-in fill.
+func SetButtonRecessed(view *NSView) {
+	v := uintptr(view.Id)
+	msg(v, "setBezelStyle:", bezelStyleRecessed)
+	msg(v, "setShowsBorderOnlyWhileMouseInside:", 1)
+}
+
+// SetControlSmall gives a control NSControlSizeSmall and the system font of that size.
+func SetControlSmall(view *NSView) { setSmall(uintptr(view.Id)) }
+
+// ControlSize returns the NSControlSize of a control.
+func ControlSize(view *NSView) int { return int(msg(uintptr(view.Id), "controlSize")) }
 
 // ButtonBordered reports whether the button draws a bezel.
 func ButtonBordered(view *NSView) bool {

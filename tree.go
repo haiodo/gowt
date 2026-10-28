@@ -49,11 +49,12 @@ const (
 	sAsCalendar
 	sScrollbars
 	sFit
+	sToggle
 )
 
 var styleNames = [...]string{"Check", "Radio", "Multiline", "Password", "ReadOnly", "Border", "CellSelect",
 	"NoBorder", "Search", "MultiSelect", "Simple", "Vertical", "Smooth", "Indeterminate", "Flat", "Wrap",
-	"Bottom", "Closable", "DropDown", "Right", "Center", "AsTime", "AsCalendar", "Scrollbars", "Fit"}
+	"Bottom", "Closable", "DropDown", "Right", "Center", "AsTime", "AsCalendar", "Scrollbars", "Fit", "Toggle"}
 
 func (s styleID) String() string {
 	for i, n := range styleNames {

@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+Inspector controls (Tenniarb)
+- New: `gowt.Segmented([]gowt.Segment{...}, opts...)`, a segmented control for a panel: segments with `Text`, an `Image` or both and a `Tooltip` each, sharing the width equally (`GrowX()` stretches them). One segment is selected: `Index`, `Select`, `OnSelect(func(int))`, the options `Selected`, `OnSelect` and `Bind(*rx.State[int])`. `gowt.Momentary()` makes the segments buttons that run `OnSelect` and stay unselected (+ and - under a list). macOS: `NSSegmentedControl` inside the composite, segments filled equally, per-segment tooltips, an icon-only segment named to VoiceOver by its tooltip; GTK: toggle buttons joined like a `linked` box; Windows: toggle buttons painted as one WinUI segmented control, the selected segment a raised card with an accent pill.
+- New: `gowt.Toggle()` makes a `Button` a toggle button that stays pressed (Wrap, Clip), with `Checked`, `OnChange(func(bool))` and `Bind(*rx.State[bool])`: macOS a push-on-push-off `NSButton`, GTK `GtkToggleButton`, Windows the WinUI ToggleButton with the accent fill while on. `Borderless()` now takes a toggle too: on macOS the recessed scope-bar bezel, a frame only under the pointer and a pressed-in fill while on (an eye in a section header); GTK `flat`; Windows Subtle.
+- New: `gowt.Small()` gives a `Segmented` or a `Button` the small control size of an inspector: macOS `NSControlSizeSmall` with its 11-point font, Windows and Linux the font smaller by the same ratio.
+- Changed: `examples/materialpanel` has a "Layout" section in its inspector with these controls.
+- Tests: `TestSegmented`, `TestSegmentedMomentary` and `TestToggleButton` (`GOWT_GUI_TEST=1`, every OS), `TestSegmentedNative` (macOS: labels, tooltips, control size, tracking mode, frame, recessed bezel), and `TestInspectorControlsOnGlass` (package look, macOS, light and dark captures of the controls on the inspector glass: the segmented controls draw, an on toggle stands out from an off one, no black fill). Not run yet on macOS: the GUI tests.
+
 ## v0.13.5 (2026-10-28)
 
 Split divider on glass (Tenniarb)

@@ -266,12 +266,17 @@ func Indeterminate() Option { return style{id: sIndeterminate, set: swt.INDETERM
 // Flat gives a ToolBar the flat look.
 func Flat() Option { return style{id: sFlat, set: swt.FLAT} }
 
-// Borderless draws a push Button without its frame (macOS: no bezel, GTK: "flat"); Windows keeps it.
+// Borderless draws a push or Toggle Button without its frame, for an icon in a section header (+, -,
+// an eye): macOS no bezel, and for a toggle the recessed scope-bar bezel that shows a frame under the
+// pointer and a pressed-in fill while on; GTK "flat"; Windows the WinUI Subtle button.
 func Borderless() Option {
 	return hook(func(w Widget) error {
 		b, ok := pushButton(w)
+		if v, isButton := w.(*ButtonView); isButton && v.b.GetStyle()&swt.TOGGLE != 0 {
+			b, ok = v.b, true
+		}
 		if !ok {
-			return fmt.Errorf("gowt: Borderless applies to a push Button, not to %s", nameOf(w.control()))
+			return fmt.Errorf("gowt: Borderless applies to a push or Toggle Button, not to %s", nameOf(w.control()))
 		}
 		setButtonBorderless(b)
 		return nil

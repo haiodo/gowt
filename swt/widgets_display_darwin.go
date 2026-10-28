@@ -4481,6 +4481,7 @@ func (this *Display) ApplicationDidFinishLaunching(id int64, sel int64, notifica
 }
 
 func (this *Display) ApplicationWillFinishLaunching(id int64, sel int64, notification int64) {
+	this.hookGetURL()
 	var loaded bool = false
 	var loc *jrt.Locale = jrt.LocaleDefault()
 	var languageISOValue string = loc.GetLanguage()

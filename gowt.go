@@ -34,7 +34,8 @@ type App struct {
 	onError    func(error)
 	onQuit     []func() bool
 	open       openBox
-	openPend   []string  // paths of this turn of the event loop, see openIn
+	urls       openBox
+	openPend   []string  // paths and URLs of this turn of the event loop, see openIn
 	windows    []*Window // in creation order, asked in turn when the app quits
 	asking     bool      // a quit question is open: a second request is refused
 	approved   bool      // the quit was answered yes: windows closing now are not asked again
@@ -78,6 +79,7 @@ func Run(setup func(*App)) (err error) {
 	a.display.AddListener(swt.Close, quitListener(func() bool { return a.askQuit(nil) }))
 	a.hookTerminate()
 	a.display.AddListener(swt.OpenDocument, openListener(a.openIn))
+	a.display.AddListener(swt.OpenUrl, openListener(a.openIn))
 	defer a.attachInbox()()
 	defer apps.Delete(a.display)
 	// Deferred last, so rx stops waking the loop before the display is disposed.
@@ -91,8 +93,8 @@ func Run(setup func(*App)) (err error) {
 	densityChosen, densityFactor = Density{}, 1
 	Type, _, _, _ = resolveTokens(a.systemInfo(), DensityNative)
 	setup(a)
-	if files := argFiles(os.Args[1:]); len(files) > 0 {
-		a.openIn(files...)
+	if args := argOpen(os.Args[1:]); len(args) > 0 {
+		a.openIn(args...)
 	}
 	snapTick := func() {}
 	if p := os.Getenv("GOWT_SNAP"); p != "" {
@@ -307,7 +309,7 @@ func (a *App) OnQuit(f func() bool) { a.onQuit = append(a.onQuit, f) }
 // the app to open: Finder (double click, "Open With", a drop on the Dock icon) on macOS, the command
 // line on every OS (Explorer and file managers start the program with the file as argument), and,
 // with SingleInstance, a second launch forwarding its arguments to the running app. Paths are
-// absolute and without duplicates within one call; URLs other than file: are ignored. Files that
+// absolute and without duplicates within one call; URLs other than file: go to OnOpenURLs. Files that
 // arrive before the first handler (a launch by double click) are kept and delivered to it once it is
 // set. Several calls add several handlers. Users of Unwrap can still add an swt.OpenDocument
 // listener. See docs/events.md and docs/packaging.md.
@@ -315,6 +317,23 @@ func (a *App) OnOpenFiles(f func(paths []string)) {
 	a.open.handlers = append(a.open.handlers, f)
 	if q := a.open.queue; len(q) > 0 {
 		a.open.queue = nil
+		a.openIn(q...)
+	}
+}
+
+// OnOpenURLs registers f, called on the UI thread with the URLs the system or another process asks
+// the app to open, of any scheme but file: (those go to OnOpenFiles): a link to a scheme the app
+// registers, such as myapp://, on macOS (CFBundleURLTypes in Info.plist, at launch and while running),
+// command-line arguments of the form scheme:... on every OS (a .desktop file with Exec=app %U and
+// MimeType=x-scheme-handler/myapp on Linux), and, with SingleInstance, the URLs of a second launch
+// forwarded to the running app. URLs come as given, without duplicates within one call. URLs that
+// arrive before the first handler (a launch by link) are kept and delivered to it once it is set.
+// Several calls add several handlers. Users of Unwrap can still add an swt.OpenUrl listener on macOS.
+// See docs/events.md.
+func (a *App) OnOpenURLs(f func(urls []string)) {
+	a.urls.handlers = append(a.urls.handlers, f)
+	if q := a.urls.queue; len(q) > 0 {
+		a.urls.queue = nil
 		a.openIn(q...)
 	}
 }

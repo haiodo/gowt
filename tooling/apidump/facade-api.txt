@@ -19,6 +19,7 @@ gowt App.OnAbout(f func()) bool
 gowt App.OnError(f func(error))
 gowt App.OnJobs(f func([]JobInfo))
 gowt App.OnOpenFiles(f func(paths []string))
+gowt App.OnOpenURLs(f func(urls []string))
 gowt App.OnPreferences(f func()) bool
 gowt App.OnQuit(f func() bool)
 gowt App.OnThemeChange(f func(dark bool))

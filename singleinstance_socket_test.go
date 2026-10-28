@@ -17,7 +17,7 @@ func TestSocketForward(t *testing.T) {
 	inbox.Lock()
 	inbox.backlog = nil
 	inbox.Unlock()
-	if first, err := singleInstanceSocket(id, []string{"/x/a", "/x/b"}); first || err != nil {
+	if first, err := singleInstanceSocket(id, []string{"/x/a", "tenniarb://open?id=1", "/x/b"}); first || err != nil {
 		t.Fatalf("second = %v, %v; want forwarded", first, err)
 	}
 	// The receiver reads on its own goroutine; 2 s was not enough once on a hosted Windows runner.
@@ -26,12 +26,12 @@ func TestSocketForward(t *testing.T) {
 		inbox.Lock()
 		got = inbox.backlog
 		inbox.Unlock()
-		if len(got) >= 2 {
+		if len(got) >= 3 {
 			break
 		}
 	}
-	if !reflect.DeepEqual(got, []string{"/x/a", "/x/b"}) {
-		t.Fatalf("backlog = %q after 10 s, want the two forwarded paths", got)
+	if !reflect.DeepEqual(got, []string{"/x/a", "tenniarb://open?id=1", "/x/b"}) {
+		t.Fatalf("backlog = %q after 10 s, want the forwarded paths and URL", got)
 	}
 }
 

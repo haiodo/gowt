@@ -47,15 +47,54 @@ func TestOpenPathWindowsForms(t *testing.T) {
 	}
 }
 
-func TestArgFiles(t *testing.T) {
+func TestArgOpen(t *testing.T) {
 	dir := t.TempDir()
 	f := filepath.Join(dir, "doc.tnb")
 	if err := os.WriteFile(f, nil, 0o644); err != nil {
 		t.Fatal(err)
 	}
-	got := argFiles([]string{"-psn_0_123", "--flag", filepath.Join(dir, "missing"), f, f, "http://x/y"})
-	if !reflect.DeepEqual(got, []string{f}) {
-		t.Errorf("argFiles = %v, want [%s]", got, f)
+	got := argOpen([]string{"-psn_0_123", "--flag", filepath.Join(dir, "missing"), f, "tenniarb://open?id=1", f, "http://x/y", "tenniarb://open?id=1"})
+	if want := []string{f, "tenniarb://open?id=1", "http://x/y"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("argOpen = %v, want %v", got, want)
+	}
+}
+
+func TestOpenURL(t *testing.T) {
+	for in, want := range map[string]bool{
+		"tenniarb://open?id=1": true,
+		"mailto:a@b.c":         true,
+		"HTTPS://x/y":          true,
+		"file:///x/a":          false,
+		"file://otherhost/x":   false,
+		"/x/a":                 false,
+		"rel/a:b":              false,
+		`C:\Users\a\x.txt`:     false,
+		`ab:\x`:                false,
+		"-psn_0_123":           false,
+		"":                     false,
+	} {
+		if got := openURL(in); got != want {
+			t.Errorf("openURL(%q) = %v, want %v", in, got, want)
+		}
+	}
+}
+
+// One turn of the event loop: files go to OnOpenFiles, other URLs to OnOpenURLs, each queued while
+// it has no handler.
+func TestOpenFlushSplits(t *testing.T) {
+	a := &App{}
+	abs, _ := filepath.Abs("/x/a")
+	a.openPend = []string{"/x/a", "tenniarb://open?id=1", "file:///x/a", "tenniarb://open?id=1", "https://h/p"}
+	a.openFlush()
+	if !reflect.DeepEqual(a.open.queue, []string{abs}) || !reflect.DeepEqual(a.urls.queue, []string{"tenniarb://open?id=1", "https://h/p"}) || a.openPend != nil {
+		t.Fatalf("queues: files %v, urls %v, pending %v", a.open.queue, a.urls.queue, a.openPend)
+	}
+	var got []string
+	a.urls.handlers = append(a.urls.handlers, func(u []string) { got = append(got, u...) })
+	a.openPend = []string{"/x/b", "tenniarb://x"}
+	a.openFlush()
+	if !reflect.DeepEqual(got, []string{"tenniarb://x"}) || len(a.open.queue) != 2 {
+		t.Errorf("handler got %v, file queue %v", got, a.open.queue)
 	}
 }
 
@@ -124,7 +163,8 @@ func runChild(t *testing.T, id string, args ...string) {
 	}
 }
 
-// With GOWT_GUI_TEST the forwarded files also reach an OnOpenFiles handler on the UI thread.
+// With GOWT_GUI_TEST the forwarded files and URL also reach OnOpenFiles and OnOpenURLs on the UI
+// thread; OnOpenURLs is set late, so the URL comes from the queue.
 func TestSingleInstanceForwards(t *testing.T) {
 	if runtime.GOOS == "darwin" {
 		t.Skip("macOS: Launch Services keeps one instance")
@@ -143,28 +183,33 @@ func TestSingleInstanceForwards(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	runChild(t, id, a, b, a)
+	const link = "tenniarb://open?id=1"
+	runChild(t, id, a, link, b, a)
 	runChild(t, id)
-	want := []string{a, b}
+	want, wantURLs := []string{a, b}, []string{link}
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		for i := 0; i < 100; i++ {
 			inbox.Lock()
-			got, n := openPaths(inbox.backlog), len(inbox.backlog)
+			got, urls, n := openPaths(inbox.backlog), openURLs(inbox.backlog), len(inbox.backlog)
 			inbox.Unlock()
-			if reflect.DeepEqual(got, want) && n >= 2 {
+			if reflect.DeepEqual(got, want) && reflect.DeepEqual(urls, wantURLs) && n >= 3 {
 				return
 			}
 			time.Sleep(20 * time.Millisecond)
 		}
 		t.Fatalf("backlog = %v", inbox.backlog)
 	}
-	var got []string
-	onUI := false
+	var got, gotURLs []string
 	onMain(func() {
 		err := Run(func(app *App) {
 			app.OnOpenFiles(func(p []string) {
-				got, onUI = p, true
-				app.Quit()
+				got = p
+				app.After(200*time.Millisecond, func() {
+					app.OnOpenURLs(func(u []string) {
+						gotURLs = u
+						app.Quit()
+					})
+				})
 			})
 			app.Window("open").Show()
 			app.After(10*time.Second, app.Quit)
@@ -173,7 +218,7 @@ func TestSingleInstanceForwards(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	if !onUI || !reflect.DeepEqual(got, want) {
-		t.Errorf("handler got %v (called: %v), want %v", got, onUI, want)
+	if !reflect.DeepEqual(got, want) || !reflect.DeepEqual(gotURLs, wantURLs) {
+		t.Errorf("handlers got %v and %v, want %v and %v", got, gotURLs, want, wantURLs)
 	}
 }

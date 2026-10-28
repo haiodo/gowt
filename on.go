@@ -32,8 +32,9 @@ func OnClick[F func() | func(string)](f F) Option {
 }
 
 // OnChange runs f with the new value after the user changed it: the text of a Text, Combo or
-// StyledText (func(string)), the state of a Switch or a Check or Toggle button (func(bool)), the value of a
-// Scale, Slider or Spinner (func(int)), the value of a DateTime (func(time.Time)).
+// StyledText (func(string)), the state of a Switch, a Check or Toggle button or a Disclosure
+// (func(bool)), the value of a Scale, Slider or Spinner (func(int)), the value of a DateTime
+// (func(time.Time)).
 func OnChange[F func(string) | func(bool) | func(int) | func(time.Time)](f F) Option {
 	return hook(func(w Widget) error {
 		switch g := any(f).(type) {

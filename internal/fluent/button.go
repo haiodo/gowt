@@ -28,6 +28,7 @@ type buttonLook struct {
 	hot                    bool
 	accent, danger         bool // Primary and Destructive: a solid accent or critical fill
 	seg, segs              int  // a Segment: its index and the number of segments, segs 0 for a plain button
+	chevron                bool // an ARROW button painted as the expander chevron
 }
 
 var buttons = map[uintptr]*buttonLook{}
@@ -61,6 +62,20 @@ func ButtonKind(b *swt.Button, primary, destructive bool) {
 		l.danger = l.danger || (primary && destructive)
 		call(pInvalidateRect, uintptr(b.Handle), 0, 1)
 	}
+}
+
+// Chevron paints an ARROW button as the chevron of a WinUI Expander: no fill until the pointer is over
+// it, pointing down for the DOWN alignment and right otherwise.
+func Chevron(b *swt.Button) {
+	h := uintptr(b.Handle)
+	if h == 0 || b.GetStyle()&swt.ARROW == 0 || buttons[h] != nil {
+		return
+	}
+	l := &buttonLook{b: b, subtle: true, chevron: true}
+	buttons[h] = l
+	attach(h, l.proc)
+	b.AddDisposeListener(disposer(func() { delete(buttons, h) }))
+	call(pInvalidateRect, h, 0, 1)
 }
 
 // Segment paints toggle button b as segment i of n of one WinUI segmented control: the segments share a
@@ -223,6 +238,20 @@ func (l *buttonLook) draw(hwnd, hdc uintptr, w, h int32) {
 	}
 	if (!l.subtle || l.border) && !solid && l.segs == 0 {
 		p.strokeRound(pal.Stroke(bg), 0, 0, w, h, r, 1)
+	}
+	if l.chevron {
+		fg := pal.Text
+		if !enabled {
+			fg = pal.Disabled
+		}
+		s, lw, cx, cy := px(4, dpi), max(px(1, dpi), 1), w/2, h/2
+		if l.b.GetAlignment()&swt.DOWN != 0 {
+			p.line(fg, cx-s, cy-s/2, cx, cy+s/2, lw)
+			p.line(fg, cx, cy+s/2, cx+s, cy-s/2, lw)
+		} else {
+			p.line(fg, cx-s/2, cy-s, cx+s/2, cy, lw)
+			p.line(fg, cx+s/2, cy, cx-s/2, cy+s, lw)
+		}
 	}
 
 	txt := l.b.GetText()

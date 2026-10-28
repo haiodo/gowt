@@ -9,6 +9,24 @@ func setButtonBorderless(b *swt.Button) { gtk.AddStyleClass(b.Handle, "flat") }
 
 func setButtonCircle(b *swt.Button) { gtk.AddStyleClass(b.Handle, "circular") }
 
+// newChevron is a flat arrow button showing pan-end or pan-down, the chevrons of a GtkExpander; SWT's
+// go-next and go-down are arrows in Adwaita.
+func newChevron(p *swt.Composite) *swt.Button {
+	b := swt.NewButton(p, swt.ARROW|swt.RIGHT)
+	gtk.AddStyleClass(b.Handle, "flat")
+	return b
+}
+
+func setChevron(b *swt.Button, expanded bool) {
+	if expanded {
+		b.SetAlignment(swt.DOWN)
+		gtk.SetButtonIconName(b.Handle, "pan-down-symbolic")
+	} else {
+		b.SetAlignment(swt.RIGHT)
+		gtk.SetButtonIconName(b.Handle, "pan-end-symbolic")
+	}
+}
+
 // Small has set the font already.
 func setButtonSmall(*swt.Button) {}
 

@@ -21,7 +21,7 @@ func Watch[T any](w Widget, r rx.Reader[T], apply func(T)) {
 
 // Bind keeps the widget's value and s in step both ways, as Svelte's bind:value: a user's edit sets
 // s, a Set of s changes the widget. The value is the text of a Text or Combo (string), the state of
-// a Switch or a Check or Toggle button (bool), the value of a Scale, Slider, Spinner or Progress (one
+// a Switch or a Check or Toggle button or whether a Disclosure is expanded (bool), the value of a Scale, Slider, Spinner or Progress (one
 // way), or the selected index of a Combo, List or Segmented (int). A Text is rewritten only when s differs from it, so typing keeps the caret.
 func Bind[T string | bool | int](s *rx.State[T]) Option {
 	return hook(func(w Widget) error {
@@ -55,8 +55,10 @@ func bindBool(w Widget, s *rx.State[bool]) error {
 		twoWay(w, s, w.Checked, w.SetChecked, onSelection(w.b))
 	case *SwitchView:
 		twoWay(w, s, w.Checked, w.SetChecked, onSelection(w.b))
+	case *DisclosureView:
+		twoWay(w, s, w.Expanded, w.SetExpanded, w.listen)
 	default:
-		return fmt.Errorf("gowt: Bind(*rx.State[bool]) applies to Switch and Button, not to %s", nameOf(w.control()))
+		return fmt.Errorf("gowt: Bind(*rx.State[bool]) applies to Switch, Button and Disclosure, not to %s", nameOf(w.control()))
 	}
 	return nil
 }

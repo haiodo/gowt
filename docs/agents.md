@@ -54,6 +54,7 @@ if err != nil {
 | a scrolled column | `gowt.Scroll(children...)` |
 | panes with draggable sashes | `gowt.Split(children...)`, `split.SetWeights(1, 3)`; `gowt.Divider()` draws a separator hairline on each sash |
 | settings rows on a card | `gowt.Section(rows...)` |
+| a collapsible inspector section | `gowt.Disclosure("Layout", gowt.Trailing(buttons...), children...)` |
 | a part whose failure shows in place | `gowt.Boundary(children...)`, `Failed(func(err, reset) Option)`; see [events.md](events.md#boundary-errors-shown-in-place) |
 
 `Gap(points)` is the space between children (default `Spacing.SM`), `Padding(points)` the space from the container's edge (default `Spacing.PageMargin` for a Window and a Tab page, `Spacing.SM` for a Group, 0 elsewhere).
@@ -230,6 +231,7 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Toggle()` | Button |
 | `Small()` | Segmented, Button |
 | `Momentary()` | Segmented |
+| `Collapsed()`, `Trailing(children...)` | Disclosure |
 | `Fit()` | Table.Column, Tree.Column |
 | `Field(label, control, opts...)`, `FieldTop()` | children of `Fields` |
 | `Bottom()` | Tabs, CTabs |
@@ -245,7 +247,7 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Checked(b)` | Switch, Check/Radio/Toggle Button |
 | `Selected(i)` | Combo, List, Table, Tabs, CTabs, Segmented |
 | `Value(n)` | Scale, Slider, Spinner, Progress |
-| `Bind(state)` | Text, Combo (`string`); Switch, Check or Toggle Button (`bool`); Scale, Slider, Spinner, Combo, List, Segmented (`int`) |
+| `Bind(state)` | Text, Combo (`string`); Switch, Check or Toggle Button, Disclosure (`bool`); Scale, Slider, Spinner, Combo, List, Segmented (`int`) |
 | `BindText(r)` | Label, Button, Link |
 | `Rows(list, key, fill)` | Table |
 | `Nodes(list, key, children, fill)` | Tree |

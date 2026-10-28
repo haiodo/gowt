@@ -10,9 +10,10 @@ import (
 )
 
 const (
-	bezelStyleCircular = 7
-	bezelStyleRecessed = 13 // NSBezelStyleAccessoryBar, the scope-bar button of Finder's search
-	borderShapeCircle  = 3  // NSControlBorderShapeCircle, macOS 26
+	bezelStyleCircular   = 7
+	bezelStyleRecessed   = 13 // NSBezelStyleAccessoryBar, the scope-bar button of Finder's search
+	bezelStyleDisclosure = 5
+	borderShapeCircle    = 3 // NSControlBorderShapeCircle, macOS 26
 )
 
 // SetButtonBorderless removes the bezel. AppKit still dims the image while the button is pressed.
@@ -26,6 +27,19 @@ func SetButtonRecessed(view *NSView) {
 	v := uintptr(view.Id)
 	msg(v, "setBezelStyle:", bezelStyleRecessed)
 	msg(v, "setShowsBorderOnlyWhileMouseInside:", 1)
+}
+
+// SetButtonDisclosure gives a toggle button the disclosure bezel, the chevron of an outline row, with
+// no title.
+func SetButtonDisclosure(view *NSView) {
+	v := uintptr(view.Id)
+	msg(v, "setBezelStyle:", bezelStyleDisclosure)
+	msg(v, "setTitle:", nsString(""))
+}
+
+// AccessibilityRole returns the accessibility role of a view, such as "AXDisclosureTriangle".
+func AccessibilityRole(view *NSView) string {
+	return goString(msg(uintptr(view.Id), "accessibilityRole"))
 }
 
 // SetControlSmall gives a control NSControlSizeSmall and the system font of that size.

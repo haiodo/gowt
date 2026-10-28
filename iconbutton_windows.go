@@ -10,6 +10,21 @@ func setButtonBorderless(b *swt.Button) { fluent.Button(b, true, false, false) }
 
 func setButtonCircle(b *swt.Button) { fluent.Button(b, false, true, false) }
 
+// newChevron is an arrow button that fluent paints as the WinUI expander chevron.
+func newChevron(p *swt.Composite) *swt.Button {
+	b := swt.NewButton(p, swt.ARROW|swt.RIGHT)
+	fluent.Chevron(b)
+	return b
+}
+
+func setChevron(b *swt.Button, expanded bool) {
+	if expanded {
+		b.SetAlignment(swt.DOWN)
+	} else {
+		b.SetAlignment(swt.RIGHT)
+	}
+}
+
 // Small has set the font already; fluent sizes the button from it.
 func setButtonSmall(*swt.Button) {}
 

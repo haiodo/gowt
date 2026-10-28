@@ -41,3 +41,25 @@ func TestSegmentedNative(t *testing.T) {
 		}
 	})
 }
+
+// The Disclosure chevron is the native disclosure button: its bezel, its on state as the expansion,
+// and the accessibility role VoiceOver reads.
+func TestDisclosureNative(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		d := put[*DisclosureView](w, Disclosure("Layout", Label("body")))
+		v := d.chevron.View
+		if b := cocoa.ButtonBezelStyle(v); b != 5 {
+			t.Errorf("chevron bezel %d, want 5 (disclosure)", b)
+		}
+		if role := cocoa.AccessibilityRole(v); role != "AXDisclosureTriangle" {
+			t.Errorf("chevron role %q, want AXDisclosureTriangle", role)
+		}
+		if !d.chevron.GetSelection() {
+			t.Error("an expanded Disclosure has its chevron off")
+		}
+		d.SetExpanded(false)
+		if d.chevron.GetSelection() {
+			t.Error("a folded Disclosure has its chevron on")
+		}
+	})
+}

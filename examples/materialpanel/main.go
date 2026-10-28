@@ -2,7 +2,7 @@
 // window (look.SetBottomPanel): on macOS 26 its glass and the canvas colour run on under the floating
 // sidebar, and its StyledText paints no background of its own. The sidebar is a Split of a list and
 // an outline with a hairline between them (gowt.Divider). The inspector has the small controls of an
-// inspector: a section header with borderless icon buttons, segmented controls and toggle buttons.
+// inspector: a collapsible section with borderless icon buttons, segmented controls and toggles.
 package main
 
 import (
@@ -56,7 +56,7 @@ func main() {
 			}})
 		look.SetSidebar(w, sidebar, content, gowt.Scaled(200))
 		look.SetBottomPanel(w, content, codePane, gowt.Scaled(200))
-		look.SetInspector(w, content, insp, gowt.Scaled(220))
+		look.SetInspector(w, content, insp, gowt.Scaled(260))
 		w.Show()
 	})
 	if err != nil {
@@ -64,8 +64,8 @@ func main() {
 	}
 }
 
-// inspectorControls is a "Layout" section: a header with a toggle and + and - buttons, a
-// Fixed/Hug/Fill choice, an alignment choice of icons, momentary +/- segments, Wrap/Clip toggles.
+// inspectorControls is a collapsible "Layout" section whose header has an eye toggle and + and -
+// buttons, over a Fixed/Hug/Fill choice, an alignment choice, momentary segments and Wrap/Clip toggles.
 func inspectorControls(app *gowt.App) gowt.Option {
 	sizing := rx.New(1)
 	shown := rx.New(true)
@@ -73,11 +73,18 @@ func inspectorControls(app *gowt.App) gowt.Option {
 	icon := func(name string) gowt.Option {
 		return gowt.Init(func(b *gowt.ButtonView) { b.SetImage(img(name)) })
 	}
-	return gowt.VBox(gowt.GrowX(), gowt.Gap(gowt.Spacing.SM),
-		gowt.HBox(gowt.GrowX(), gowt.Gap(0),
-			gowt.Label("Layout", gowt.Typeface(gowt.Type.BodyStrong), gowt.Place(gowt.AlignStart, gowt.AlignCenter)),
-			gowt.Spacer(),
-			gowt.Button("", gowt.Toggle(), gowt.Borderless(), gowt.Small(), gowt.Tooltip("Show on canvas"), gowt.Bind(shown), icon("search")),
+	eye := gowt.Init(func(b *gowt.ButtonView) {
+		gowt.Watch(b, shown, func(on bool) {
+			if on {
+				b.SetImage(img("eye"))
+			} else {
+				b.SetImage(img("eye-off"))
+			}
+		})
+	})
+	return gowt.Disclosure("Layout", gowt.GrowX(), gowt.Gap(gowt.Spacing.SM),
+		gowt.Trailing(
+			gowt.Button("", gowt.Toggle(), gowt.Borderless(), gowt.Small(), gowt.Tooltip("Show on canvas"), gowt.Bind(shown), eye),
 			gowt.Button("", gowt.Borderless(), gowt.Small(), gowt.Tooltip("Add"), icon("add")),
 			gowt.Button("", gowt.Borderless(), gowt.Small(), gowt.Tooltip("Remove"), icon("remove"))),
 		gowt.Segmented([]gowt.Segment{{Text: "Fixed"}, {Text: "Hug"}, {Text: "Fill"}}, gowt.Small(), gowt.GrowX(), gowt.Bind(sizing)),

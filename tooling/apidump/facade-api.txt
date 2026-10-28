@@ -175,6 +175,26 @@ gowt DateTimeView.Unwrap() *github.com/haiodo/gowt/swt.DateTime
 gowt DateTimeView.Value() time.Time
 gowt DateTimeView.Visible() bool
 gowt Density.Legacy() bool
+gowt DisclosureView.Add(children ...Option)
+gowt DisclosureView.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt DisclosureView.Dispose()
+gowt DisclosureView.Enabled() bool
+gowt DisclosureView.Expanded() bool
+gowt DisclosureView.Focus() bool
+gowt DisclosureView.OnChange(f func(expanded bool))
+gowt DisclosureView.OnDispose(f func())
+gowt DisclosureView.SetBackground(c Paint)
+gowt DisclosureView.SetEnabled(v bool)
+gowt DisclosureView.SetExpanded(v bool)
+gowt DisclosureView.SetFont(f Font)
+gowt DisclosureView.SetForeground(c Paint)
+gowt DisclosureView.SetHeight(h int)
+gowt DisclosureView.SetMaxHeight(h int)
+gowt DisclosureView.SetSize(width int, height int)
+gowt DisclosureView.SetTooltip(s string)
+gowt DisclosureView.SetVisible(v bool)
+gowt DisclosureView.Unwrap() *github.com/haiodo/gowt/swt.Composite
+gowt DisclosureView.Visible() bool
 gowt Drag.Files field func() []string
 gowt Drag.Image field func() *Image
 gowt Drag.OnDone field func(op Op)
@@ -1000,6 +1020,7 @@ gowt func Checked(on bool) Option
 gowt func ChosenDensity() Density
 gowt func Circle() Option
 gowt func Closable() Option
+gowt func Collapsed() Option
 gowt func Combo(items []string, opts ...Option) Option
 gowt func CoolBar(opts ...Option) Option
 gowt func Custom(f func(*github.com/haiodo/gowt/swt.Control)) Option
@@ -1007,6 +1028,7 @@ gowt func DateTime(opts ...Option) Option
 gowt func DensityFactor(f float64) Density
 gowt func Destructive() Option
 gowt func Disabled() Option
+gowt func Disclosure(title string, opts ...Option) Option
 gowt func Divider() Option
 gowt func DragFrom(w Widget, d Drag) *DragHandle
 gowt func DropDown() Option
@@ -1100,6 +1122,7 @@ gowt func Text(opts ...Option) Option
 gowt func Toggle() Option
 gowt func ToolBar(opts ...Option) Option
 gowt func Tooltip(s string) Option
+gowt func Trailing(children ...Option) Option
 gowt func Tree(opts ...Option) Option
 gowt func Typeface(f Font) Option
 gowt func VBox(opts ...Option) Option
@@ -1122,6 +1145,7 @@ gowt type ComboView struct
 gowt type CoolBarView struct
 gowt type DateTimeView struct
 gowt type Density struct
+gowt type DisclosureView struct
 gowt type Drag struct
 gowt type DragHandle struct
 gowt type Drop struct

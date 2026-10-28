@@ -14,8 +14,8 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// On the inspector glass, light and dark: segmented controls draw, a toggle that is on stands out from
-// one that is off, nothing fills black. GOWT_PIXELS_DIR keeps inspector-controls-<mode>.png.
+// On the inspector glass, light and dark, under a Disclosure header: segmented controls draw, a toggle
+// that is on stands out from one that is off, nothing fills black. GOWT_PIXELS_DIR keeps inspector-controls-<mode>.png.
 func TestInspectorControlsOnGlass(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
@@ -78,13 +78,12 @@ func captureInspectorControls(t *testing.T, mode gowt.Appearance, path string) (
 			w.Add(
 				gowt.VBox(gowt.Ref(&content), gowt.Label("content")),
 				gowt.VBox(gowt.Ref(&insp), gowt.Padding(gowt.Spacing.MD), gowt.Gap(gowt.Spacing.SM),
-					gowt.HBox(gowt.GrowX(), gowt.Gap(0),
-						gowt.Label("Layout", gowt.Typeface(gowt.Type.BodyStrong)),
-						gowt.Spacer(),
-						gowt.Button("", gowt.Toggle(), gowt.Borderless(), gowt.Small(), gowt.Checked(true), icon("search"), probe("eye on")),
-						gowt.Button("", gowt.Toggle(), gowt.Borderless(), gowt.Small(), icon("search"), probe("eye off")),
-						gowt.Button("", gowt.Borderless(), gowt.Small(), icon("add"), probe("add"))),
-					gowt.Segmented([]gowt.Segment{{Text: "Fixed"}, {Text: "Hug"}, {Text: "Fill"}}, gowt.Small(), gowt.GrowX(), gowt.Selected(1), probe("sizing")),
+					gowt.Disclosure("Layout", gowt.GrowX(), probe("section"),
+						gowt.Trailing(
+							gowt.Button("", gowt.Toggle(), gowt.Borderless(), gowt.Small(), gowt.Checked(true), icon("eye"), probe("eye on")),
+							gowt.Button("", gowt.Toggle(), gowt.Borderless(), gowt.Small(), icon("eye"), probe("eye off")),
+							gowt.Button("", gowt.Borderless(), gowt.Small(), icon("add"), probe("add"))),
+						gowt.Segmented([]gowt.Segment{{Text: "Fixed"}, {Text: "Hug"}, {Text: "Fill"}}, gowt.Small(), gowt.GrowX(), gowt.Selected(1), probe("sizing"))),
 					gowt.Segmented([]gowt.Segment{{Image: img("back"), Tooltip: "Left"}, {Image: img("menu"), Tooltip: "Center"}, {Image: img("forward"), Tooltip: "Right"}},
 						gowt.GrowX(), gowt.Selected(0), probe("align")),
 					gowt.Segmented([]gowt.Segment{{Text: "+"}, {Text: "-"}}, gowt.Momentary(), gowt.Small(), probe("points")),
@@ -112,8 +111,8 @@ func captureInspectorControls(t *testing.T, mode gowt.Appearance, path string) (
 			t.Fatal(e)
 		}
 	}
-	if len(rects) != 8 {
-		t.Fatalf("probed %d controls, want 8", len(rects))
+	if len(rects) != 9 {
+		t.Fatalf("probed %d controls, want 9", len(rects))
 	}
 	return rects, width
 }

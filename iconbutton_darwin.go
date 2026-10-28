@@ -16,6 +16,15 @@ func setButtonBorderless(b *swt.Button) {
 
 func setButtonSmall(b *swt.Button) { cocoa.SetControlSmall(b.View) }
 
+// newChevron is a push-on-push-off button with the disclosure bezel: on is expanded.
+func newChevron(p *swt.Composite) *swt.Button {
+	b := swt.NewButton(p, swt.TOGGLE)
+	cocoa.SetButtonDisclosure(b.View)
+	return b
+}
+
+func setChevron(b *swt.Button, expanded bool) { b.SetSelection(expanded) }
+
 // SWT makes a TOGGLE a push-on-push-off NSButton, which AppKit draws on and off itself.
 func styleToggle(*swt.Button) {}
 

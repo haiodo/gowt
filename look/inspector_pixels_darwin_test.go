@@ -119,6 +119,7 @@ func TestInspectorTextOnGlass(t *testing.T) {
 				path = filepath.Join(dir, "fields-"+mode.name+".png")
 			}
 			var width int32
+			var ref [4]int32 // the middle of the content pane: dark in dark, light in light
 			var err error
 			onMain(func() {
 				err = gowt.Run(func(app *gowt.App) {
@@ -143,6 +144,8 @@ func TestInspectorTextOnGlass(t *testing.T) {
 							o, size := c.ToDisplay(0, 0), c.GetSize()
 							fields[names[i]] = [4]int32{o.X - s.X, o.Y - s.Y, size.X, size.Y}
 						}
+						o, size := content.Unwrap().ToDisplay(0, 0), content.Unwrap().GetSize()
+						ref = [4]int32{o.X - s.X + size.X/2 - 10, o.Y - s.Y + size.Y/2 - 10, 20, 20}
 						if err := shot.WindowPNG(w.Unwrap().View.Id, path); err != nil {
 							t.Error(err)
 						}
@@ -162,6 +165,9 @@ func TestInspectorTextOnGlass(t *testing.T) {
 				t.Fatal(err)
 			}
 			scale := float64(img.Bounds().Dx()) / float64(width)
+			if l := meanLuma(img, ref, scale); (l < 128) != (mode.look == gowt.AppearanceDark) {
+				t.Skipf("the capture does not show the %s appearance: content pane luma %.0f", mode.name, l)
+			}
 			for name, r := range fields {
 				// The right half of the field, clear of "Root" and of the border, against a strip of glass
 				// in the gap above it.

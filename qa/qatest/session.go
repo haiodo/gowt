@@ -172,7 +172,15 @@ func (s *session) call(cmd string, args any, timeout time.Duration) (json.RawMes
 	if err != nil {
 		s.broken = fmt.Errorf("%s: connection to the app lost: %w", cmd, err)
 		s.cmdLog = append(s.cmdLog, fmt.Sprintf("%s %s %s: %v", start.Format("15:04:05.000"), cmd, raw, err))
-		return nil, s.broken
+		if errors.Is(err, os.ErrDeadlineExceeded) {
+			return nil, s.broken
+		}
+		// The app is going away: the end of its log names the panic or the exception.
+		select {
+		case <-s.exited:
+		case <-time.After(2 * time.Second):
+		}
+		return nil, fmt.Errorf("%w\napp log:\n%s", s.broken, s.logTail())
 	}
 	status := "ok"
 	if !resp.OK {

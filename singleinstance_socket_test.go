@@ -20,19 +20,19 @@ func TestSocketForward(t *testing.T) {
 	if first, err := singleInstanceSocket(id, []string{"/x/a", "/x/b"}); first || err != nil {
 		t.Fatalf("second = %v, %v; want forwarded", first, err)
 	}
-	for i := 0; i < 100; i++ {
+	// The receiver reads on its own goroutine; 2 s was not enough once on a hosted Windows runner.
+	var got []string
+	for deadline := time.Now().Add(10 * time.Second); time.Now().Before(deadline); time.Sleep(20 * time.Millisecond) {
 		inbox.Lock()
-		got := inbox.backlog
+		got = inbox.backlog
 		inbox.Unlock()
-		if len(got) == 2 {
-			if !reflect.DeepEqual(got, []string{"/x/a", "/x/b"}) {
-				t.Fatalf("backlog = %v", got)
-			}
-			return
+		if len(got) >= 2 {
+			break
 		}
-		time.Sleep(20 * time.Millisecond)
 	}
-	t.Fatal("nothing arrived")
+	if !reflect.DeepEqual(got, []string{"/x/a", "/x/b"}) {
+		t.Fatalf("backlog = %q after 10 s, want the two forwarded paths", got)
+	}
 }
 
 func TestSocketStaleFile(t *testing.T) {

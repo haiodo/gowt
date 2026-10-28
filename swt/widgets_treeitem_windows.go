@@ -227,13 +227,13 @@ func (this *TreeItem) GetBackgroundIndex(index int32) *Color {
 	} else {
 		pixel = -1
 	}
-	var cond557 *Color
+	var cond556 *Color
 	if pixel == -1 {
-		cond557 = this.GetBackground()
+		cond556 = this.GetBackground()
 	} else {
-		cond557 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
+		cond556 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
 	}
-	return cond557
+	return cond556
 }
 
 func (this *TreeItem) GetBounds() *Rectangle {
@@ -373,13 +373,13 @@ func (this *TreeItem) GetBoundsIndexGetTextGetImageFullTextFullImageClipHDC(inde
 					if index == 0 {
 						string_ = this.text
 					} else {
-						var cond558 string
+						var cond557 string
 						if this.strings != (nil) {
-							cond558 = this.strings[index]
+							cond557 = this.strings[index]
 						} else {
-							cond558 = ""
+							cond557 = ""
 						}
-						string_ = cond558
+						string_ = cond557
 					}
 					if string_ != "" {
 						var textRect *win32.RECT = win32.NewRECT()
@@ -456,13 +456,13 @@ func (this *TreeItem) GetFont() *Font {
 	if !this.parent.CheckData(this, true) {
 		this.Error(ERROR_WIDGET_DISPOSED)
 	}
-	var cond559 *Font
+	var cond558 *Font
 	if this.font != (nil) {
-		cond559 = this.font
+		cond558 = this.font
 	} else {
-		cond559 = this.parent.GetFont()
+		cond558 = this.parent.GetFont()
 	}
-	return cond559
+	return cond558
 }
 
 func (this *TreeItem) GetFontIndex(index int32) *Font {
@@ -506,13 +506,13 @@ func (this *TreeItem) GetForegroundIndex(index int32) *Color {
 	} else {
 		pixel = -1
 	}
-	var cond560 *Color
+	var cond559 *Color
 	if pixel == -1 {
-		cond560 = this.GetForeground()
+		cond559 = this.GetForeground()
 	} else {
-		cond560 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
+		cond559 = ColorWin32_new(upcastDisplayToDevice(this.display), pixel)
 	}
-	return cond560
+	return cond559
 }
 
 func (this *TreeItem) GetGrayed() bool {
@@ -626,13 +626,13 @@ func (this *TreeItem) GetParentItem() *TreeItem {
 	this.CheckWidget()
 	var hwnd int64 = this.parent.Handle
 	var hItem int64 = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_PARENT), this.Handle)
-	var cond561 *TreeItem
+	var cond560 *TreeItem
 	if hItem != 0 {
-		cond561 = this.parent._getItem(hItem)
+		cond560 = this.parent._getItem(hItem)
 	} else {
-		cond561 = nil
+		cond560 = nil
 	}
-	return cond561
+	return cond560
 }
 
 func (this *TreeItem) getText_() string {
@@ -654,13 +654,13 @@ func (this *TreeItem) GetTextIndex(index int32) string {
 	if this.strings != (nil) {
 		if 0 <= index && index < int32(len(this.strings)) {
 			var string_ string = this.strings[index]
-			var cond562 string
+			var cond561 string
 			if string_ != "" {
-				cond562 = string_
+				cond561 = string_
 			} else {
-				cond562 = ""
+				cond561 = ""
 			}
-			return cond562
+			return cond561
 		}
 	}
 	return ""
@@ -701,13 +701,13 @@ func (this *TreeItem) IndexOf(itemLike TreeItemLike) int32 {
 	}
 	var hwnd int64 = this.parent.Handle
 	var hItem int64 = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CHILD), this.Handle)
-	var cond563 int32
+	var cond562 int32
 	if hItem == 0 {
-		cond563 = -1
+		cond562 = -1
 	} else {
-		cond563 = this.parent.FindIndex(hItem, item.Handle)
+		cond562 = this.parent.FindIndex(hItem, item.Handle)
 	}
-	return cond563
+	return cond562
 }
 
 func (this *TreeItem) Redraw() {
@@ -939,9 +939,9 @@ func (this *TreeItem) SetExpanded(expanded bool) {
 			for hItem != 0 && (noAnimate || hItem != this.Handle) && index < count {
 				var rect *win32.RECT = win32.NewRECT()
 				if win32.OSTreeView_GetItemRect(hwnd, hItem, rect, true) {
-					t564 := index
+					t563 := index
 					index++
-					rects[t564] = rect
+					rects[t563] = rect
 				}
 				hItem = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_NEXTVISIBLE), hItem)
 			}
@@ -963,13 +963,13 @@ func (this *TreeItem) SetExpanded(expanded bool) {
 	}
 	var hOldItem int64 = win32.OSSendMessageOverload4(hwnd, win32.OSTVM_GETNEXTITEM, int64(win32.OSTVGN_CARET), int64(0))
 	this.parent.ignoreExpand = true
-	var cond565 int32
+	var cond564 int32
 	if expanded {
-		cond565 = win32.OSTVE_EXPAND
+		cond564 = win32.OSTVE_EXPAND
 	} else {
-		cond565 = win32.OSTVE_COLLAPSE
+		cond564 = win32.OSTVE_COLLAPSE
 	}
-	win32.OSSendMessageOverload4(hwnd, win32.OSTVM_EXPAND, int64(cond565), this.Handle)
+	win32.OSSendMessageOverload4(hwnd, win32.OSTVM_EXPAND, int64(cond564), this.Handle)
 	this.parent.ignoreExpand = false
 	if noScroll && hTopItem != 0 {
 		var collapsed bool = false
@@ -1064,13 +1064,13 @@ func (this *TreeItem) SetFont(fontLike FontLike) {
 		this.Error(ERROR_INVALID_ARGUMENT)
 	}
 	var oldFont *Font = this.font
-	var cond566 *Font
+	var cond565 *Font
 	if font == (nil) {
-		cond566 = font
+		cond565 = font
 	} else {
-		cond566 = FontWin32_newFontTargetZoom(font, this.NativeZoom)
+		cond565 = FontWin32_newFontTargetZoom(font, this.NativeZoom)
 	}
-	var newFont *Font = (cond566)
+	var newFont *Font = (cond565)
 	if oldFont == newFont {
 		return
 	}

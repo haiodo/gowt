@@ -288,24 +288,24 @@ func (this *ExpandBar) findBackgroundControl_() *Control {
 }
 
 func (this *ExpandBar) findThemeControl_() *Control {
-	var cond645 *Control
+	var cond644 *Control
 	if this.IsAppThemed() {
-		cond645 = upcastExpandBarToControl(this)
+		cond644 = upcastExpandBarToControl(this)
 	} else {
-		cond645 = this.Composite.findThemeControl_()
+		cond644 = this.Composite.findThemeControl_()
 	}
-	return cond645
+	return cond644
 }
 
 func (this *ExpandBar) GetBandHeight() int32 {
 	var hDC int64 = win32.OSGetDC(this.Handle)
-	var cond646 int64
+	var cond645 int64
 	if this.hFont == 0 {
-		cond646 = this.impl.defaultFont_()
+		cond645 = this.impl.defaultFont_()
 	} else {
-		cond646 = this.hFont
+		cond645 = this.hFont
 	}
-	var oldHFont int64 = win32.OSSelectObject(hDC, cond646)
+	var oldHFont int64 = win32.OSSelectObject(hDC, cond645)
 	var lptm *win32.TEXTMETRIC = win32.NewTEXTMETRIC()
 	win32.OSGetTextMetrics(hDC, lptm)
 	win32.OSSelectObject(hDC, oldHFont)
@@ -518,13 +518,13 @@ func (this *ExpandBar) updateTextDirection_(textDirection int32) bool {
 	if this.Composite.updateTextDirection_(textDirection) {
 		for _, item := range this.items {
 			if item != (nil) {
-				var cond647 int32
+				var cond646 int32
 				if textDirection == WidgetAUTO_TEXT_DIRECTION {
-					cond647 = WidgetAUTO_TEXT_DIRECTION
+					cond646 = WidgetAUTO_TEXT_DIRECTION
 				} else {
-					cond647 = this.style & FLIP_TEXT_DIRECTION
+					cond646 = this.style & FLIP_TEXT_DIRECTION
 				}
-				item.impl.updateTextDirection_(cond647)
+				item.impl.updateTextDirection_(cond646)
 			}
 		}
 		return true
@@ -603,13 +603,13 @@ func (this *ExpandBar) wM_KEYDOWN_(wParam int64, lParam int64) *win32.LRESULT {
 	case win32.OSVK_SPACE, win32.OSVK_RETURN:
 		var event *Event = NewEvent()
 		event.Item = upcastExpandItemToWidget(this.focusItem)
-		var cond648 int32
+		var cond647 int32
 		if this.focusItem.expanded {
-			cond648 = Collapse
+			cond647 = Collapse
 		} else {
-			cond648 = Expand
+			cond647 = Expand
 		}
-		this.SendEventEventTypeEvent(cond648, event)
+		this.SendEventEventTypeEvent(cond647, event)
 		this.focusItem.expanded = !this.focusItem.expanded
 		this.ShowItem(this.focusItem)
 		return win32.LRESULTZERO
@@ -684,13 +684,13 @@ func (this *ExpandBar) wM_LBUTTONUP_(wParam int64, lParam int64) *win32.LRESULT 
 	if hover {
 		var event *Event = NewEvent()
 		event.Item = upcastExpandItemToWidget(this.focusItem)
-		var cond649 int32
+		var cond648 int32
 		if this.focusItem.expanded {
-			cond649 = Collapse
+			cond648 = Collapse
 		} else {
-			cond649 = Expand
+			cond648 = Expand
 		}
-		this.SendEventEventTypeEvent(cond649, event)
+		this.SendEventEventTypeEvent(cond648, event)
 		this.focusItem.expanded = !this.focusItem.expanded
 		this.ShowItem(this.focusItem)
 	}

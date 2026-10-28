@@ -2,12 +2,18 @@ package swt
 
 import (
 	"os"
+	"runtime"
 	"testing"
 )
 
 // uiRun runs f where the toolkit may be used. macOS needs the main thread; its TestMain replaces
-// this in widgets_viewtable_gui_darwin_test.go.
-var uiRun = func(f func()) { f() }
+// this in widgets_viewtable_gui_darwin_test.go. Elsewhere the body keeps one OS thread: a Win32 window
+// belongs to the thread that made it, and a body moved to another thread hangs in SendMessage to its own window.
+var uiRun = func(f func()) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	f()
+}
 
 // uiT is the t of a test body that runs on the UI thread, where FailNow must not end the goroutine.
 type uiT struct {

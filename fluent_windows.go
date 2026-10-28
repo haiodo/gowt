@@ -60,6 +60,11 @@ func fluentList(l *swt.List) { fluent.List(l, rowHeight()) }
 
 func fluentTree(t *swt.Tree) { fluent.Tree(t, rowHeight()) }
 
+// fluentStyledText makes the StyledText background its own. Under the Fluent shell (INHERIT_DEFAULT) SWT
+// fills the space below the last line with the parent's background while the lines get the list one.
+// Ceiling: setEnabled(false) no longer greys it, as for any StyledText given a background.
+func fluentStyledText(t *swt.StyledText) { t.SetBackgroundWithColor(t.GetBackground()) }
+
 // fluentShell hides focus rectangles until the keyboard is used and sets the Fluent window background.
 func fluentShell(s *swt.Shell) {
 	fluent.Shell(s)

@@ -108,21 +108,25 @@ func TestPrintNothingToPrint(t *testing.T) {
 		t.Skip("set GOWT_GUI_TEST=1")
 	}
 	path := filepath.Join(t.TempDir(), "empty.pdf")
-	var drawErr error
-	var started bool
+	var drawErr, perr error
+	var drawn bool
 	onMain(func() {
 		gowt.Run(func(app *gowt.App) {
 			job, err := gowt.PrintToPDF(path, gowt.PrintOptions{})
 			if err != nil {
+				perr = err
 				return
 			}
-			started = true
-			job.Print(1, func(p *gowt.PrintPage) {
+			perr = job.Print(1, func(p *gowt.PrintPage) {
+				drawn = true
 				drawErr = printing.Scene(p, gfx.NewScene(), nil, gfx.Rect{}, printing.Options{})
 			})
 		})
 	})
-	if started && drawErr == nil {
+	if !drawn {
+		t.Skip("the job never reached the page, no PDF printer here:", perr)
+	}
+	if drawErr == nil {
 		t.Error("an empty scene printed without an error")
 	}
 }

@@ -83,16 +83,16 @@ func (this *DropTarget) initDropTarget(control *Control, style int32) {
 		this.OnDispose()
 	}})
 	var effect any = control.impl.getDataKey_(DropTargetDEFAULT_DROP_TARGET_EFFECT)
-	_, ok1137 := dropTargetAdapterImplAsDropTargetEffect(effect)
-	if ok1137 {
+	_, ok1136 := dropTargetAdapterImplAsDropTargetEffect(effect)
+	if ok1136 {
 		this.dropEffect = castanyToDropTargetEffect(effect)
 	} else {
-		_, ok1138 := isControlToTable(control)
-		if ok1138 {
+		_, ok1137 := isControlToTable(control)
+		if ok1137 {
 			this.dropEffect = upcastTableDropTargetEffectToDropTargetEffect(NewTableDropTargetEffect(castControlToTable(control)))
 		} else {
-			_, ok1139 := isControlToTree(control)
-			if ok1139 {
+			_, ok1138 := isControlToTree(control)
+			if ok1138 {
 				this.dropEffect = upcastTreeDropTargetEffectToDropTargetEffect(NewTreeDropTargetEffect(castControlToTree(control)))
 			}
 		}
@@ -128,37 +128,37 @@ func (this *DropTarget) checkSubclass_() {
 
 func (this *DropTarget) CreateCOMInterfaces() {
 	var is32 bool = win32.CPTR_SIZEOF == 4
-	anon1140 := &DropTargetAnon1{}
-	anon1140.impl = anon1140
+	anon1139 := &DropTargetAnon1{}
+	anon1139.impl = anon1139
+	var cond1140 int32
+	if is32 {
+		cond1140 = 5
+	} else {
+		cond1140 = 4
+	}
 	var cond1141 int32
 	if is32 {
-		cond1141 = 5
-	} else {
 		cond1141 = 4
+	} else {
+		cond1141 = 3
 	}
 	var cond1142 int32
 	if is32 {
+		cond1142 = 5
+	} else {
 		cond1142 = 4
-	} else {
-		cond1142 = 3
 	}
-	var cond1143 int32
-	if is32 {
-		cond1143 = 5
-	} else {
-		cond1143 = 4
-	}
-	anon1140.initCOMObject([]int32{2, 0, 0, cond1141, cond1142, 0, cond1143})
-	anon1140.fnmethod0_ = func(args []int64) int64 {
+	anon1139.initCOMObject([]int32{2, 0, 0, cond1140, cond1141, 0, cond1142})
+	anon1139.fnmethod0_ = func(args []int64) int64 {
 		return int64(this.QueryInterface(args[0], args[1]))
 	}
-	anon1140.fnmethod1_ = func(args []int64) int64 {
+	anon1139.fnmethod1_ = func(args []int64) int64 {
 		return int64(this.AddRef())
 	}
-	anon1140.fnmethod2_ = func(args []int64) int64 {
+	anon1139.fnmethod2_ = func(args []int64) int64 {
 		return int64(this.Release())
 	}
-	anon1140.fnmethod3_ = func(args []int64) int64 {
+	anon1139.fnmethod3_ = func(args []int64) int64 {
 		return jrt.Cast[int64](Win32DPIUtilsRunWithProperDPIAwareness(this.GetDisplay(), func() any {
 			if int32(len(args)) == 5 {
 				return int32(this.DragEnter(args[0], int32(args[1]), int32(args[2]), int32(args[3]), args[4]))
@@ -167,7 +167,7 @@ func (this *DropTarget) CreateCOMInterfaces() {
 			}
 		}))
 	}
-	anon1140.fnmethod4_ = func(args []int64) int64 {
+	anon1139.fnmethod4_ = func(args []int64) int64 {
 		return jrt.Cast[int64](Win32DPIUtilsRunWithProperDPIAwareness(this.GetDisplay(), func() any {
 			if int32(len(args)) == 4 {
 				return int32(this.DragOver(int32(args[0]), int32(args[1]), int32(args[2]), args[3]))
@@ -176,10 +176,10 @@ func (this *DropTarget) CreateCOMInterfaces() {
 			}
 		}))
 	}
-	anon1140.fnmethod5_ = func(args []int64) int64 {
+	anon1139.fnmethod5_ = func(args []int64) int64 {
 		return int64(this.DragLeave())
 	}
-	anon1140.fnmethod6_ = func(args []int64) int64 {
+	anon1139.fnmethod6_ = func(args []int64) int64 {
 		return jrt.Cast[int64](Win32DPIUtilsRunWithProperDPIAwareness(this.GetDisplay(), func() any {
 			if int32(len(args)) == 5 {
 				return int32(this.Drop(args[0], int32(args[1]), int32(args[2]), int32(args[3]), args[4]))
@@ -188,7 +188,7 @@ func (this *DropTarget) CreateCOMInterfaces() {
 			}
 		}))
 	}
-	this.iDropTarget = &anon1140.COMObject
+	this.iDropTarget = &anon1139.COMObject
 }
 
 func (this *DropTarget) DisposeCOMInterfaces() {
@@ -595,16 +595,16 @@ func (this *DropTarget) SetEventData(eventLike DNDEventLike, pDataObject int64, 
 	var dataTypes []*TransferData = make([]*TransferData, 0)
 	var dataObject *win32.IDataObject = win32.NewIDataObject(pDataObject)
 	dataObject.AddRef()
-	var tret1144 bool
-	tretd1145 := false
+	var tret1143 bool
+	tretd1144 := false
 	func() {
 		defer func() {
 			dataObject.Release()
 		}()
 		var address []int64 = make([]int64, 1)
 		if dataObject.EnumFormatEtc(win32.COMDATADIR_GET, address) != win32.COMS_OK {
-			tret1144 = false
-			tretd1145 = true
+			tret1143 = false
+			tretd1144 = true
 			return
 		}
 		var enumFormatetc *win32.IEnumFORMATETC = win32.NewIEnumFORMATETC(address[0])
@@ -638,8 +638,8 @@ func (this *DropTarget) SetEventData(eventLike DNDEventLike, pDataObject int64, 
 			}()
 		}()
 	}()
-	if tretd1145 {
-		return tret1144
+	if tretd1144 {
+		return tret1143
 	}
 	if int32(len(dataTypes)) == 0 {
 		return false

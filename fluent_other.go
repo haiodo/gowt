@@ -20,6 +20,8 @@ func fluentList(*swt.List) {}
 
 func fluentTree(*swt.Tree) {}
 
+func fluentStyledText(*swt.StyledText) {}
+
 func fluentShell(*swt.Shell) {}
 
 func controlHeight(opts []Option) []Option { return opts }

@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -161,6 +162,9 @@ func TestGfxSnapHasScene(t *testing.T) {
 	bin, out := os.Getenv("GOWT_QA_APP"), filepath.Join(dir, "snap.png")
 	if bin == "" {
 		bin = filepath.Join(dir, "app")
+		if runtime.GOOS == "windows" {
+			bin += ".exe"
+		}
 		if b, err := exec.Command("go", "build", "-o", bin, "./testdata/app").CombinedOutput(); err != nil {
 			t.Fatalf("build: %v\n%s", err, b)
 		}

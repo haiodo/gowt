@@ -549,25 +549,34 @@ func (c *Compositor) worker() {
 		if !ok {
 			return
 		}
-		if t == nil {
-			t = c.r.NewTarget(c.o.TilePx, c.o.TilePx)
-		}
 		gen := j.t.gen.Load()
 		start := time.Now()
 		rect := j.s.rect(j.t.key)
 		c.scene.Collect(rect, &items)
-		if ss, ok := t.(ScreenScaler); ok {
-			ss.SetScreenScale(j.s.dpr)
+		var img Image = blankTile{}
+		if len(items.List) > 0 {
+			if t == nil {
+				t = c.r.NewTarget(c.o.TilePx, c.o.TilePx)
+			}
+			if ss, ok := t.(ScreenScaler); ok {
+				ss.SetScreenScale(j.s.dpr)
+			}
+			t.Begin(j.s.scale, rect.Min, Color{})
+			t.Draw(items.List)
+			img = t.Snapshot(float64(c.o.TilePx)/j.s.dpr, float64(c.o.TilePx)/j.s.dpr)
 		}
-		t.Begin(j.s.scale, rect.Min, Color{})
-		t.Draw(items.List)
-		img := t.Snapshot(float64(c.o.TilePx)/j.s.dpr, float64(c.o.TilePx)/j.s.dpr)
 		c.rasterNs.Add(int64(time.Since(start)))
 		c.rastered.Add(1)
 		c.pending.Add(-1)
 		c.mu.Lock()
 		c.pushLocked(result{j.t, gen, img})
+		idle := len(c.queue) == 0
 		c.mu.Unlock()
+		// a target is a whole tile of memory per worker; between bursts of work it would only sit there
+		if idle && t != nil {
+			t.Close()
+			t = nil
+		}
 	}
 }
 
@@ -668,8 +677,23 @@ func (c *Compositor) drain() {
 	}
 }
 
+// blankTile is the result of a tile with nothing in it: it gets no image and no layer. A clear
+// image of a whole tile costs as much memory as a drawn one.
+type blankTile struct{}
+
+func (blankTile) Size() (float64, float64) { return 0, 0 }
+
 // show puts a finished image on the layer of t and releases it.
 func (c *Compositor) show(t *tile, img Image) {
+	if _, ok := img.(blankTile); ok {
+		if t.layer != nil {
+			t.layer.Remove()
+			t.layer = nil
+		}
+		t.has = true
+		c.layoutDrty = true
+		return
+	}
 	if t.layer == nil {
 		t.layer = c.host.NewLayer(GroupTiles)
 	}

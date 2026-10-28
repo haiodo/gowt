@@ -24,10 +24,16 @@ type fakeRenderer struct {
 	mu    sync.Mutex
 	draws []drawRec
 	delay time.Duration
+	open  int // targets made and not closed
 }
 
 func (r *fakeRenderer) MeasureText(s string, f Font) TextMetrics { return TextMetrics{} }
-func (r *fakeRenderer) NewTarget(w, h int) Target                { return &fakeTarget{r: r, w: w, h: h} }
+func (r *fakeRenderer) NewTarget(w, h int) Target {
+	r.mu.Lock()
+	r.open++
+	r.mu.Unlock()
+	return &fakeTarget{r: r, w: w, h: h}
+}
 
 func (r *fakeRenderer) tileDraws() []drawRec {
 	r.mu.Lock()
@@ -56,7 +62,11 @@ func (t *fakeTarget) Draw(items []Item) {
 func (t *fakeTarget) Size() (int, int)            { return t.w, t.h }
 func (t *fakeTarget) Pixels() []byte              { return nil }
 func (t *fakeTarget) Snapshot(w, h float64) Image { return &fakeImg{w, h, t.cur.items} }
-func (t *fakeTarget) Close()                      {}
+func (t *fakeTarget) Close() {
+	t.r.mu.Lock()
+	t.r.open--
+	t.r.mu.Unlock()
+}
 
 type fakeLayer struct {
 	h       *fakeHost
@@ -162,8 +172,12 @@ func (g *rig) addBox(id int, x, y, w, h float64) *Node {
 	return add(g.s, nil, id, x, y, w, h)
 }
 
+// addBackground covers the 800x600 view and its ring of tiles, so that no tile there is blank.
+func (g *rig) addBackground() { g.addBox(99, -300, -300, 1700, 1400) }
+
 func TestFirstFrameFillsViewAndMargin(t *testing.T) {
 	g := newRig(t, Options{})
+	g.addBackground()
 	g.addBox(1, 100, 100, 50, 50)
 	g.c.SetCamera(Camera{Zoom: 1})
 	g.settle()
@@ -184,6 +198,7 @@ func TestFirstFrameFillsViewAndMargin(t *testing.T) {
 
 func TestDamageRedrawsOnlyTouchedTiles(t *testing.T) {
 	g := newRig(t, Options{})
+	g.addBackground()
 	n := g.addBox(1, 100, 100, 50, 50)
 	g.settle()
 	before := len(g.r.tileDraws())
@@ -206,8 +221,43 @@ func TestDamageRedrawsOnlyTouchedTiles(t *testing.T) {
 	}
 }
 
+func TestBlankTilesHaveNoLayer(t *testing.T) {
+	g := newRig(t, Options{})
+	n := g.addBox(1, 100, 100, 50, 50)
+	g.settle()
+	tiles := g.h.live(GroupTiles)
+	if len(tiles) != 1 || tiles[0].frame.Min != (Point{0, 0}) {
+		t.Fatalf("%d tile layers for one box in one tile", len(tiles))
+	}
+	for _, d := range g.r.tileDraws() {
+		if d.items == 0 {
+			t.Fatal("a blank tile was drawn")
+		}
+	}
+	// the box leaves tile 0 for tile 2: the layer of the tile it left goes
+	g.s.Update(func(tx *Tx) { tx.Move(n, 600, 100) })
+	g.settle()
+	tiles = g.h.live(GroupTiles)
+	if len(tiles) != 1 || tiles[0].frame.Min != (Point{512, 0}) {
+		t.Fatalf("after the move: %d tile layers", len(tiles))
+	}
+}
+
+func TestIdleWorkersHoldNoTarget(t *testing.T) {
+	g := newRig(t, Options{Workers: 4})
+	g.addBackground()
+	g.settle()
+	g.r.mu.Lock()
+	open := g.r.open
+	g.r.mu.Unlock()
+	if open != 0 {
+		t.Errorf("%d tile targets kept by idle workers", open)
+	}
+}
+
 func TestPanIsWholePixelsAndEvicts(t *testing.T) {
 	g := newRig(t, Options{})
+	g.addBackground()
 	g.addBox(1, 100, 100, 50, 50)
 	g.settle()
 	for i, ox := range []float64{13.3, 100.77, 255.5} {
@@ -272,6 +322,7 @@ func TestZoomGestureScalesThenRedraws(t *testing.T) {
 func TestVisibleTilesFirst(t *testing.T) {
 	g := newRig(t, Options{Workers: 1})
 	g.r.delay = 2 * time.Millisecond
+	g.addBackground()
 	g.addBox(1, 100, 100, 50, 50)
 	g.c.SetCamera(Camera{Zoom: 1})
 	g.settle()

@@ -4369,7 +4369,7 @@ func ControlCalcDiff(component float64, factor float64, wantDarker bool) float64
 	if wantDarker {
 		return component * float64(-1) * factor
 	} else {
-		return (1 - component) * factor
+		return (1.0 - component) * factor
 	}
 }
 

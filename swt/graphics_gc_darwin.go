@@ -273,7 +273,7 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			if this.data.Fg != (nil) {
 				this.data.Fg.Release()
 			}
-			cond336 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+			cond336 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255.0))
 			this.data.Fg = cond336
 			var fg *cocoa.NSColor = cond336
 			fg.Retain()
@@ -291,7 +291,7 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			if this.data.Fg != (nil) {
 				this.data.Fg.Release()
 			}
-			cond337 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+			cond337 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255.0))
 			this.data.Fg = cond337
 			var fg *cocoa.NSColor = cond337
 			fg.Retain()
@@ -310,7 +310,7 @@ func (this *GC) CheckGC(mask int32) *cocoa.NSAutoreleasePool {
 			if this.data.Bg != (nil) {
 				this.data.Bg.Release()
 			}
-			cond338 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+			cond338 := cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255.0))
 			this.data.Bg = cond338
 			var bg *cocoa.NSColor = cond338
 			bg.Retain()
@@ -786,7 +786,7 @@ func (this *GC) CreateString(string_ string, flags int32, draw bool) *cocoa.NSAt
 			var fg *cocoa.NSColor = this.data.Fg
 			if fg == (nil) {
 				var color []float64 = this.data.Foreground
-				this.data.Fg = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+				this.data.Fg = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255.0))
 				fg = this.data.Fg
 				fg.Retain()
 			}
@@ -1029,8 +1029,8 @@ func (this *GC) DrawArc(x int32, y int32, width int32, height int32, startAngle 
 		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
 		var xOffset float64 = this.data.DrawXOffset
 		var yOffset float64 = this.data.DrawYOffset
-		transform.TranslateXBy(float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2))
-		transform.ScaleXBy(float64(float32(width)/2), float64(float32(height)/2))
+		transform.TranslateXBy(float64(x)+xOffset+float64(float32(width)/2.0), float64(y)+yOffset+float64(float32(height)/2.0))
+		transform.ScaleXBy(float64(float32(width)/2.0), float64(float32(height)/2.0))
 		var path *cocoa.NSBezierPath = this.data.Path
 		var center cocoa.NSPoint = cocoa.NSPoint{}
 		var sAngle float32 = float32(-startAngle)
@@ -1195,7 +1195,7 @@ func (this *GC) DrawImageSrcImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDes
 		destRect.Y = float64(destY)
 		destRect.Width = float64(destWidth)
 		destRect.Height = float64(destHeight)
-		imageHandle.DrawInRect(destRect, srcRect, int64(cocoa.OSNSCompositingOperationSourceOver), float64(float32(this.data.Alpha)/255))
+		imageHandle.DrawInRect(destRect, srcRect, int64(cocoa.OSNSCompositingOperationSourceOver), float64(float32(this.data.Alpha)/255.0))
 		this.Handle.RestoreGraphicsState()
 	}
 }
@@ -1486,7 +1486,7 @@ func (this *GC) DrawRoundRectangle(x int32, y int32, width int32, height int32, 
 		rect.Y = float64(y) + this.data.DrawYOffset
 		rect.Width = float64(width)
 		rect.Height = float64(height)
-		path.AppendBezierPathWithRoundedRect(rect, float64(float32(arcWidth)/2), float64(float32(arcHeight)/2))
+		path.AppendBezierPathWithRoundedRect(rect, float64(float32(arcWidth)/2.0), float64(float32(arcHeight)/2.0))
 		var pattern *Pattern = this.data.ForegroundPattern
 		if pattern != (nil) {
 			this.SetPatternPhase(pattern)
@@ -1616,7 +1616,7 @@ func (this *GC) DoDrawText(string_ string, x int32, y int32, flags int32) {
 			var bg *cocoa.NSColor = this.data.Bg
 			if bg == (nil) {
 				var color []float64 = this.data.Background
-				this.data.Bg = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255))
+				this.data.Bg = cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255.0))
 				bg = this.data.Bg
 				bg.Retain()
 			}
@@ -1662,8 +1662,8 @@ func (this *GC) FillArc(x int32, y int32, width int32, height int32, startAngle 
 		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
 		var xOffset float64 = this.data.DrawXOffset
 		var yOffset float64 = this.data.DrawYOffset
-		transform.TranslateXBy(float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2))
-		transform.ScaleXBy(float64(float32(width)/2), float64(float32(height)/2))
+		transform.TranslateXBy(float64(x)+xOffset+float64(float32(width)/2.0), float64(y)+yOffset+float64(float32(height)/2.0))
+		transform.ScaleXBy(float64(float32(width)/2.0), float64(float32(height)/2.0))
 		var path *cocoa.NSBezierPath = this.data.Path
 		var center cocoa.NSPoint = cocoa.NSPoint{}
 		path.MoveToPoint(center)
@@ -1728,8 +1728,8 @@ func (this *GC) FillGradientRectangle(x int32, y int32, width int32, height int3
 		if fromRGB.Equals(toRGB) {
 			this.FillRectangle(x, y, width, height)
 		} else {
-			var startingColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(fromRGB.Red)/255), float64(float32(fromRGB.Green)/255), float64(float32(fromRGB.Blue)/255), float64(float32(this.data.Alpha)/255))
-			var endingColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(toRGB.Red)/255), float64(float32(toRGB.Green)/255), float64(float32(toRGB.Blue)/255), float64(float32(this.data.Alpha)/255))
+			var startingColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(fromRGB.Red)/255.0), float64(float32(fromRGB.Green)/255.0), float64(float32(fromRGB.Blue)/255.0), float64(float32(this.data.Alpha)/255.0))
+			var endingColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(toRGB.Red)/255.0), float64(float32(toRGB.Green)/255.0), float64(float32(toRGB.Blue)/255.0), float64(float32(this.data.Alpha)/255.0))
 			var gradient *cocoa.NSGradient = (castcocoaNSObjectTococoaNSGradient(cocoa.NewNSGradient().Alloc())).InitWithStartingColor(startingColor, endingColor)
 			var rect cocoa.NSRect = cocoa.NSRect{}
 			rect.X = float64(x)
@@ -1808,7 +1808,7 @@ func (this *GC) FillPattern(path *cocoa.NSBezierPath, patternLike PatternLike) {
 	var dify float64 = end.Y - start.Y
 	if difx == 0 && dify == 0 {
 		var color []float64 = pattern.color1
-		cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255)).SetFill()
+		cocoa.NSColorColorWithDeviceRed(color[0], color[1], color[2], float64(float32(this.data.Alpha)/255.0)).SetFill()
 		path.Fill()
 		this.Handle.RestoreGraphicsState()
 		return
@@ -2046,7 +2046,7 @@ func (this *GC) FillRoundRectangle(x int32, y int32, width int32, height int32, 
 		rect.Y = float64(y)
 		rect.Width = float64(width)
 		rect.Height = float64(height)
-		path.AppendBezierPathWithRoundedRect(rect, float64(float32(arcWidth)/2), float64(float32(arcHeight)/2))
+		path.AppendBezierPathWithRoundedRect(rect, float64(float32(arcWidth)/2.0), float64(float32(arcHeight)/2.0))
 		var pattern *Pattern = this.data.BackgroundPattern
 		if pattern != (nil) {
 			this.SetPatternPhase(pattern)

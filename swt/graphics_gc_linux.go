@@ -625,14 +625,14 @@ func (this *GC) DrawArc(x int32, y int32, width int32, height int32, startAngle 
 	var yOffset float64 = this.data.CairoYoffset
 	if width == height {
 		if arcAngle >= 0 {
-			gtk.CairoCairo_arc_negative(cairo, float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2), float64(float32(width)/2), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
+			gtk.CairoCairo_arc_negative(cairo, float64(x)+xOffset+float64(float32(width)/2.0), float64(y)+yOffset+float64(float32(height)/2.0), float64(float32(width)/2.0), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
 		} else {
-			gtk.CairoCairo_arc(cairo, float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2), float64(float32(width)/2), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
+			gtk.CairoCairo_arc(cairo, float64(x)+xOffset+float64(float32(width)/2.0), float64(y)+yOffset+float64(float32(height)/2.0), float64(float32(width)/2.0), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
 		}
 	} else {
 		gtk.CairoCairo_save(cairo)
-		gtk.CairoCairo_translate(cairo, float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2))
-		gtk.CairoCairo_scale(cairo, float64(float32(width)/2), float64(float32(height)/2))
+		gtk.CairoCairo_translate(cairo, float64(x)+xOffset+float64(float32(width)/2.0), float64(y)+yOffset+float64(float32(height)/2.0))
+		gtk.CairoCairo_scale(cairo, float64(float32(width)/2.0), float64(float32(height)/2.0))
 		if arcAngle >= 0 {
 			gtk.CairoCairo_arc_negative(cairo, float64(0), float64(0), float64(1), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
 		} else {
@@ -758,7 +758,7 @@ func (this *GC) DrawImageSrcImageSrcXSrcYSrcWidthSrcHeightDestXDestYDestWidthDes
 	if this.data.Alpha != 0 {
 		gtk.CairoCairo_save(cairo)
 		if (this.data.Style & MIRRORED) != 0 {
-			gtk.CairoCairo_scale(cairo, float64(-1), float64(1))
+			gtk.CairoCairo_scale(cairo, float64(-1.0), float64(1))
 			gtk.CairoCairo_translate(cairo, float64(-2*destX-destWidth), float64(0))
 		}
 		gtk.CairoCairo_rectangle(cairo, float64(destX), float64(destY), float64(destWidth), float64(destHeight))
@@ -838,11 +838,11 @@ func (this *GC) DrawOval(x int32, y int32, width int32, height int32) {
 	var xOffset float64 = this.data.CairoXoffset
 	var yOffset float64 = this.data.CairoYoffset
 	if width == height {
-		gtk.CairoCairo_arc_negative(cairo, float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2), float64(float32(width)/2), float64(0), float64(-2*float32(3.141592653589793)))
+		gtk.CairoCairo_arc_negative(cairo, float64(x)+xOffset+float64(float32(width)/2.0), float64(y)+yOffset+float64(float32(height)/2.0), float64(float32(width)/2.0), float64(0), float64(-2*float32(3.141592653589793)))
 	} else {
 		gtk.CairoCairo_save(cairo)
-		gtk.CairoCairo_translate(cairo, float64(x)+xOffset+float64(float32(width)/2), float64(y)+yOffset+float64(float32(height)/2))
-		gtk.CairoCairo_scale(cairo, float64(float32(width)/2), float64(float32(height)/2))
+		gtk.CairoCairo_translate(cairo, float64(x)+xOffset+float64(float32(width)/2.0), float64(y)+yOffset+float64(float32(height)/2.0))
+		gtk.CairoCairo_scale(cairo, float64(float32(width)/2.0), float64(float32(height)/2.0))
 		gtk.CairoCairo_arc_negative(cairo, float64(0), float64(0), float64(1), float64(0), float64(-2*float32(3.141592653589793)))
 		gtk.CairoCairo_restore(cairo)
 	}
@@ -1001,8 +1001,8 @@ func (this *GC) DrawRoundRectangle(x int32, y int32, width int32, height int32, 
 	if naw == 0 || nah == 0 {
 		gtk.CairoCairo_rectangle(cairo, float64(x)+xOffset, float64(y)+yOffset, float64(width), float64(height))
 	} else {
-		var naw2 float32 = float32(naw) / 2
-		var nah2 float32 = float32(nah) / 2
+		var naw2 float32 = float32(naw) / 2.0
+		var nah2 float32 = float32(nah) / 2.0
 		var fw float32 = float32(nw) / naw2
 		var fh float32 = float32(nh) / nah2
 		gtk.CairoCairo_save(cairo)
@@ -1078,7 +1078,7 @@ func (this *GC) DrawTextStringXYFlags(string_ string, x int32, y int32, flags in
 		if this.data.StringWidth == -1 {
 			this.ComputeStringSize()
 		}
-		gtk.CairoCairo_scale(cairo, float64(-1), float64(1))
+		gtk.CairoCairo_scale(cairo, float64(-1.0), float64(1))
 		gtk.CairoCairo_translate(cairo, float64(-2*x-this.data.StringWidth), float64(0))
 	}
 	gtk.CairoCairo_move_to(cairo, float64(x), float64(y))
@@ -1119,15 +1119,15 @@ func (this *GC) FillArc(x int32, y int32, width int32, height int32, startAngle 
 	var cairo int64 = this.data.Cairo
 	if width == height {
 		if arcAngle >= 0 {
-			gtk.CairoCairo_arc_negative(cairo, float64(float32(x)+float32(width)/2), float64(float32(y)+float32(height)/2), float64(float32(width)/2), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
+			gtk.CairoCairo_arc_negative(cairo, float64(float32(x)+float32(width)/2.0), float64(float32(y)+float32(height)/2.0), float64(float32(width)/2.0), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
 		} else {
-			gtk.CairoCairo_arc(cairo, float64(float32(x)+float32(width)/2), float64(float32(y)+float32(height)/2), float64(float32(width)/2), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
+			gtk.CairoCairo_arc(cairo, float64(float32(x)+float32(width)/2.0), float64(float32(y)+float32(height)/2.0), float64(float32(width)/2.0), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
 		}
-		gtk.CairoCairo_line_to(cairo, float64(float32(x)+float32(width)/2), float64(float32(y)+float32(height)/2))
+		gtk.CairoCairo_line_to(cairo, float64(float32(x)+float32(width)/2.0), float64(float32(y)+float32(height)/2.0))
 	} else {
 		gtk.CairoCairo_save(cairo)
-		gtk.CairoCairo_translate(cairo, float64(float32(x)+float32(width)/2), float64(float32(y)+float32(height)/2))
-		gtk.CairoCairo_scale(cairo, float64(float32(width)/2), float64(float32(height)/2))
+		gtk.CairoCairo_translate(cairo, float64(float32(x)+float32(width)/2.0), float64(float32(y)+float32(height)/2.0))
+		gtk.CairoCairo_scale(cairo, float64(float32(width)/2.0), float64(float32(height)/2.0))
 		if arcAngle >= 0 {
 			gtk.CairoCairo_arc_negative(cairo, float64(0), float64(0), float64(1), float64(float32(-startAngle)*float32(3.141592653589793)/180), float64(float32(-(startAngle+arcAngle))*float32(3.141592653589793)/180))
 		} else {
@@ -1177,7 +1177,7 @@ func (this *GC) FillGradientRectangle(x int32, y int32, width int32, height int3
 	var pattern int64
 	var surface int64 = gtk.CairoCairo_get_target(cairo)
 	if surface != 0 {
-		var scaleFactor float32 = float32(DPIUtilGetDeviceZoom()) / 100
+		var scaleFactor float32 = float32(DPIUtilGetDeviceZoom()) / 100.0
 		gtk.CairoCairo_surface_set_device_scale(surface, float64(scaleFactor), float64(scaleFactor))
 	}
 	if fromRGB.Equals(toRGB) {
@@ -1189,8 +1189,8 @@ func (this *GC) FillGradientRectangle(x int32, y int32, width int32, height int3
 	} else {
 		pattern = gtk.CairoCairo_pattern_create_linear(0.0, 0.0, 1.0, 0.0)
 	}
-	gtk.CairoCairo_pattern_add_color_stop_rgba(pattern, float64(0), float64(float32(fromRGB.Red)/255), float64(float32(fromRGB.Green)/255), float64(float32(fromRGB.Blue)/255), float64(float32(this.data.Alpha)/255))
-	gtk.CairoCairo_pattern_add_color_stop_rgba(pattern, float64(1), float64(float32(toRGB.Red)/255), float64(float32(toRGB.Green)/255), float64(float32(toRGB.Blue)/255), float64(float32(this.data.Alpha)/255))
+	gtk.CairoCairo_pattern_add_color_stop_rgba(pattern, float64(0), float64(float32(fromRGB.Red)/255.0), float64(float32(fromRGB.Green)/255.0), float64(float32(fromRGB.Blue)/255.0), float64(float32(this.data.Alpha)/255.0))
+	gtk.CairoCairo_pattern_add_color_stop_rgba(pattern, float64(1), float64(float32(toRGB.Red)/255.0), float64(float32(toRGB.Green)/255.0), float64(float32(toRGB.Blue)/255.0), float64(float32(this.data.Alpha)/255.0))
 	gtk.CairoCairo_save(cairo)
 	gtk.CairoCairo_translate(cairo, float64(x), float64(y))
 	gtk.CairoCairo_scale(cairo, float64(width), float64(height))
@@ -1216,11 +1216,11 @@ func (this *GC) FillOval(x int32, y int32, width int32, height int32) {
 	}
 	var cairo int64 = this.data.Cairo
 	if width == height {
-		gtk.CairoCairo_arc_negative(cairo, float64(float32(x)+float32(width)/2), float64(float32(y)+float32(height)/2), float64(float32(width)/2), float64(0), float64(2*float32(3.141592653589793)))
+		gtk.CairoCairo_arc_negative(cairo, float64(float32(x)+float32(width)/2.0), float64(float32(y)+float32(height)/2.0), float64(float32(width)/2.0), float64(0), float64(2*float32(3.141592653589793)))
 	} else {
 		gtk.CairoCairo_save(cairo)
-		gtk.CairoCairo_translate(cairo, float64(float32(x)+float32(width)/2), float64(float32(y)+float32(height)/2))
-		gtk.CairoCairo_scale(cairo, float64(float32(width)/2), float64(float32(height)/2))
+		gtk.CairoCairo_translate(cairo, float64(float32(x)+float32(width)/2.0), float64(float32(y)+float32(height)/2.0))
+		gtk.CairoCairo_scale(cairo, float64(float32(width)/2.0), float64(float32(height)/2.0))
 		gtk.CairoCairo_arc_negative(cairo, float64(0), float64(0), float64(1), float64(0), float64(2*float32(3.141592653589793)))
 		gtk.CairoCairo_restore(cairo)
 	}
@@ -1330,8 +1330,8 @@ func (this *GC) FillRoundRectangle(x int32, y int32, width int32, height int32, 
 	if naw == 0 || nah == 0 {
 		gtk.CairoCairo_rectangle(cairo, float64(x), float64(y), float64(width), float64(height))
 	} else {
-		var naw2 float32 = float32(naw) / 2
-		var nah2 float32 = float32(nah) / 2
+		var naw2 float32 = float32(naw) / 2.0
+		var nah2 float32 = float32(nah) / 2.0
 		var fw float32 = float32(nw) / naw2
 		var fh float32 = float32(nh) / nah2
 		gtk.CairoCairo_save(cairo)
@@ -2701,7 +2701,7 @@ func GCSetCairoPatternColor(pattern int64, offset int32, cLike ColorLike, alpha 
 	}
 	_ = c
 	var rgba gtk.GdkRGBA = c.Handle
-	gtk.CairoCairo_pattern_add_color_stop_rgba(pattern, float64(offset), rgba.Red, rgba.Green, rgba.Blue, float64(float32(alpha)/255))
+	gtk.CairoCairo_pattern_add_color_stop_rgba(pattern, float64(offset), rgba.Red, rgba.Green, rgba.Blue, float64(float32(alpha)/255.0))
 }
 
 func GCTransformRectangle(affineTransformation []float64, rectangleLike RectangleLike) []int32 {

@@ -480,7 +480,7 @@ func (this *ToolItem) drawWidget_(id int64, context *cocoa.NSGraphicsContext, re
 			pt.X += float64(ToolItemARROW_WIDTH)
 			path.LineToPoint(pt)
 			pt.Y += float64(ToolItemARROW_WIDTH - 1)
-			pt.X -= float64(float32(ToolItemARROW_WIDTH) / 2)
+			pt.X -= float64(float32(ToolItemARROW_WIDTH) / 2.0)
 			path.LineToPoint(pt)
 			path.ClosePath()
 			var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()

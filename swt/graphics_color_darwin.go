@@ -330,10 +330,10 @@ func (this *Color) Init(red int32, green int32, blue int32, alpha int32) {
 		Error(ERROR_INVALID_ARGUMENT)
 	}
 	var rgbColor []float64 = make([]float64, 4)
-	rgbColor[0] = float64(float32(red) / 255)
-	rgbColor[1] = float64(float32(green) / 255)
-	rgbColor[2] = float64(float32(blue) / 255)
-	rgbColor[3] = float64(float32(alpha) / 255)
+	rgbColor[0] = float64(float32(red) / 255.0)
+	rgbColor[1] = float64(float32(green) / 255.0)
+	rgbColor[2] = float64(float32(blue) / 255.0)
+	rgbColor[3] = float64(float32(alpha) / 255.0)
 	this.Handle = rgbColor
 }
 
@@ -372,6 +372,6 @@ func ColorCocoa_newDeviceHandleAlpha(deviceLike DeviceLike, handle []float64, al
 	var rgbColor []float64 = handle
 	var color *Color = newColor(device)
 	color.Handle = rgbColor
-	color.Handle[3] = float64(float32(alpha) / 255)
+	color.Handle[3] = float64(float32(alpha) / 255.0)
 	return color
 }

@@ -280,12 +280,12 @@ func (this *Button) drawBezelWithFrame_inView_(id int64, sel int64, cellFrame co
 		var path *cocoa.NSBezierPath
 		var lineWidth float32
 		if isDefault {
-			lineWidth = 2
+			lineWidth = 2.0
 		} else {
 			if (this.style & FLAT) == 0 {
 				lineWidth = 0.75
 			} else {
-				lineWidth = 1
+				lineWidth = 1.0
 			}
 		}
 		var bezelStyle int64 = button.BezelStyle()
@@ -303,12 +303,12 @@ func (this *Button) drawBezelWithFrame_inView_(id int64, sel int64, cellFrame co
 		}
 		if !isHighlighted {
 			var backgroundRGB []float64 = this.background
-			var backgroundNSColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2], float64(1))
+			var backgroundNSColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2], float64(1.0))
 			if (this.style & FLAT) == 0 {
 				var topRGB []float64 = ControlGetLighterOrDarkerColor(this.background, 0.2, false)
-				var topColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(topRGB[0], topRGB[1], topRGB[2], float64(1))
+				var topColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(topRGB[0], topRGB[1], topRGB[2], float64(1.0))
 				var bottomRGB []float64 = ControlGetLighterOrDarkerColor(this.background, 0.1, true)
-				var bottomColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(bottomRGB[0], bottomRGB[1], bottomRGB[2], float64(1))
+				var bottomColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(bottomRGB[0], bottomRGB[1], bottomRGB[2], float64(1.0))
 				var ma *cocoa.NSMutableArray = cocoa.NSMutableArrayArrayWithCapacity(int64(4))
 				ma.AddObject(upcastcocoaNSColorTococoaId(topColor))
 				ma.AddObject(upcastcocoaNSColorTococoaId(backgroundNSColor))
@@ -323,12 +323,12 @@ func (this *Button) drawBezelWithFrame_inView_(id int64, sel int64, cellFrame co
 			}
 		} else {
 			var colorRGB0 []float64 = ControlGetLighterOrDarkerColor(this.background, float64(0.1), true)
-			var color0 *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(colorRGB0[0], colorRGB0[1], colorRGB0[2], float64(1))
+			var color0 *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(colorRGB0[0], colorRGB0[1], colorRGB0[2], float64(1.0))
 			color0.SetFill()
 			path.Fill()
 		}
 		path.SetLineWidth(float64(lineWidth))
-		var borderNSColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(borderRGB[0], borderRGB[1], borderRGB[2], float64(1))
+		var borderNSColor *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(borderRGB[0], borderRGB[1], borderRGB[2], float64(1.0))
 		borderNSColor.SetStroke()
 		path.Stroke()
 		gc.RestoreGraphicsState()
@@ -346,7 +346,7 @@ func (this *Button) drawInteriorWithFrame_inView_(id int64, sel int64, cellRect 
 		var imageSize cocoa.NSSize = this.image.Handle.Size()
 		var nsCell *cocoa.NSCell = cocoa.NewNSCellOverload1(id)
 		var x float64 = float64(0)
-		var y float64 = (imageSize.Height - cellRect.Height) / 2
+		var y float64 = (imageSize.Height - cellRect.Height) / 2.0
 		var imageRect cocoa.NSRect = nsCell.ImageRectForBounds(cellRect)
 		var stringSize cocoa.NSSize = (castcocoaNSViewTococoaNSButton(this.View)).AttributedTitle().Size()
 		switch this.style & (LEFT | RIGHT | CENTER) {
@@ -354,7 +354,7 @@ func (this *Button) drawInteriorWithFrame_inView_(id int64, sel int64, cellRect 
 			x = imageRect.X + imageRect.Width + float64(ButtonIMAGE_GAP)
 			break
 		case CENTER:
-			x = cellRect.X + imageRect.X + imageRect.Width + ((cellRect.Width - stringSize.Width) / 2) - imageSize.Width - float64(ButtonIMAGE_GAP)
+			x = cellRect.X + imageRect.X + imageRect.Width + ((cellRect.Width - stringSize.Width) / 2.0) - imageSize.Width - float64(ButtonIMAGE_GAP)
 			break
 		case RIGHT:
 			x = cellRect.X + cellRect.Width - stringSize.Width - imageSize.Width - float64(ButtonIMAGE_GAP)
@@ -403,7 +403,7 @@ func (this *Button) drawTitleWithFrameInView_(id int64, sel int64, title int64, 
 			rect.X = titleRect.X
 			break
 		case CENTER:
-			rect.X = titleRect.X + (titleRect.Width-rect.Width)/2
+			rect.X = titleRect.X + (titleRect.Width-rect.Width)/2.0
 			break
 		case RIGHT:
 			rect.X = titleRect.X + titleRect.Width - rect.Width
@@ -808,7 +808,7 @@ func (this *Button) titleRectForBounds_(id int64, sel int64, cellFrame cocoa.NSR
 		var imageSize cocoa.NSSize = this.image.Handle.Size()
 		rect.X += imageSize.Width + float64(ButtonIMAGE_GAP)
 		rect.Width -= (imageSize.Width + float64(ButtonIMAGE_GAP))
-		rect.Width = float64(math.Max(float64(0), float64(rect.Width)))
+		rect.Width = float64(math.Max(float64(0.0), float64(rect.Width)))
 	}
 	return rect
 }

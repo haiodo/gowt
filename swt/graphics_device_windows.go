@@ -385,7 +385,7 @@ func (this *Device) ComputePoints(logFont *win32.LOGFONT, hFont int64) float32 {
 }
 
 func (this *Device) CalculateFontConversionFactor(hDC int64, zoom int32) float32 {
-	var conversionFactor float32 = 72
+	var conversionFactor float32 = 72.0
 	if this.IsAutoScalable() && zoom != DEFAULT {
 		conversionFactor /= float32(DPIUtilMapZoomToDPI(zoom))
 	} else {
@@ -660,7 +660,7 @@ func (this *Device) GetFontList(faceName string, scalable bool) []*FontData {
 	var count int32 = 0
 	var result []*FontData = make([]*FontData, this.nFonts-offset)
 	for i := int32(offset); i < this.nFonts; i++ {
-		var fd *FontData = FontDataWin32_new(this.logFonts[i], float32(this.pixels[i])*72/float32(logPixelsY))
+		var fd *FontData = FontDataWin32_new(this.logFonts[i], float32(this.pixels[i])*72.0/float32(logPixelsY))
 		var j int32
 		for j = 0; j < count; j++ {
 			if fd.Equals(result[j]) {

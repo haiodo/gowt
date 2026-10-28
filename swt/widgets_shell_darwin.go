@@ -1234,7 +1234,7 @@ func (this *Shell) SetAlpha(alpha int32) {
 	}
 	this.CheckWidget()
 	alpha &= 0xFF
-	this.window.SetAlphaValue(float64(float32(alpha) / 255))
+	this.window.SetAlphaValue(float64(float32(alpha) / 255.0))
 }
 
 func (this *Shell) setBoundsXYWidthHeightMoveResize_(x int32, y int32, width int32, height int32, move bool, resize bool) {

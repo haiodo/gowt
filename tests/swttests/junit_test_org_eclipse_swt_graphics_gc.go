@@ -210,7 +210,7 @@ func (this *Test_org_eclipse_swt_graphics_GC) Test_dispose() {
 
 func (this *Test_org_eclipse_swt_graphics_GC) Test_drawImage_nonAutoScalableGC_bug_2504() {
 	var shell *swt.Shell = swt.NewShellDisplay(this.display)
-	var targetScale float32 = 2
+	var targetScale float32 = 2.0
 	var srcSize int32 = 50
 	var image *swt.Image = swt.NewImageDeviceWidthHeight(upcastswtDisplayToswtDevice(this.display), srcSize, srcSize)
 	var gcSrc *swt.GC = swt.NewGCDrawable(upcastswtImageToswtDrawable(image))

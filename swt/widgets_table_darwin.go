@@ -975,7 +975,7 @@ func (this *Table) drawInteriorWithFrame_inView_(id int64, sel int64, rect cocoa
 	if drawBackground && !drawSelection {
 		context.SaveGraphicsState()
 		var colorRGB []float64 = background.Handle
-		var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], float64(1))
+		var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], float64(1.0))
 		color.SetFill()
 		cocoa.NSBezierPathFillRect(cellRect)
 		context.RestoreGraphicsState()

@@ -113,9 +113,9 @@ func (this *RGB) initRGBHueSaturationBrightness(hue float32, saturation float32,
 }
 
 func (this *RGB) GetHSB() []float32 {
-	var r float32 = float32(this.Red) / 255
-	var g float32 = float32(this.Green) / 255
-	var b float32 = float32(this.Blue) / 255
+	var r float32 = float32(this.Red) / 255.0
+	var g float32 = float32(this.Green) / 255.0
+	var b float32 = float32(this.Blue) / 255.0
 	var max float32 = float32(math.Max(float64(float32(math.Max(float64(r), float64(g)))), float64(b)))
 	var min float32 = float32(math.Min(float64(float32(math.Min(float64(r), float64(g)))), float64(b)))
 	var delta float32 = max - min

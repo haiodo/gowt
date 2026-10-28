@@ -179,7 +179,11 @@ final class ExpressionEmitter {
 	private String emitNumber(NumberLiteral nl) {
 		String t = stripNumericSuffix(nl.getToken());
 		ITypeBinding type = nl.resolveTypeBinding();
-		if (type == null || !(t.startsWith("0x") || t.startsWith("0X"))) return t;
+		boolean hex = t.startsWith("0x") || t.startsWith("0X");
+		// 255f without its suffix is a Go int constant: 236/255f would fold as integer division to 0.
+		if (type != null && !hex && (type.getName().equals("float") || type.getName().equals("double"))
+				&& t.chars().noneMatch(c -> c == '.' || c == 'e' || c == 'E')) return t + ".0";
+		if (type == null || !hex) return t;
 		long v = Long.parseUnsignedLong(t.substring(2).replace("_", ""), 16);
 		if (type.getName().equals("int") && v > Integer.MAX_VALUE) return Integer.toString((int) v);
 		if (type.getName().equals("long") && v < 0) return Long.toString(v);

@@ -245,7 +245,7 @@ func (this *ImageList) ScaleSurface(imageLike ImageLike, width int32, height int
 	var sy []float64 = make([]float64, 1)
 	gtk.CairoCairo_surface_get_device_scale(image.Surface, sx, sy)
 	if sx[0] == 0 || sy[0] == 0 {
-		sy[0] = float64(float32(DPIUtilGetDeviceZoom()) / 100)
+		sy[0] = float64(float32(DPIUtilGetDeviceZoom()) / 100.0)
 		sx[0] = sy[0]
 	}
 	gtk.CairoCairo_surface_set_device_scale(scaledSurface, sx[0], sy[0])
@@ -283,7 +283,7 @@ func ImageListConvertSurface(imageLike ImageLike) int64 {
 		var sy []float64 = make([]float64, 1)
 		gtk.CairoCairo_surface_get_device_scale(image.Surface, sx, sy)
 		if sx[0] == 0 || sy[0] == 0 {
-			sy[0] = float64(float32(DPIUtilGetDeviceZoom()) / 100)
+			sy[0] = float64(float32(DPIUtilGetDeviceZoom()) / 100.0)
 			sx[0] = sy[0]
 		}
 		gtk.CairoCairo_surface_set_device_scale(newSurface, sx[0], sy[0])

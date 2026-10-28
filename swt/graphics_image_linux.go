@@ -677,7 +677,7 @@ func (this *Image) CreateFromPixbuf(type_ int32, pixbuf int64) {
 	this.Type = type_
 	var pixbufWidth int32 = gtk.GDKGdk_pixbuf_get_width(pixbuf)
 	var pixbufHeight int32 = gtk.GDKGdk_pixbuf_get_height(pixbuf)
-	var scaleFactor float64 = float64(float32(DPIUtilGetDeviceZoom()) / 100)
+	var scaleFactor float64 = float64(float32(DPIUtilGetDeviceZoom()) / 100.0)
 	this.width = int32(int64(math.Floor(float64(float64(pixbufWidth)/scaleFactor) + 0.5)))
 	this.height = int32(int64(math.Floor(float64(float64(pixbufHeight)/scaleFactor) + 0.5)))
 	var stride int32 = gtk.GDKGdk_pixbuf_get_rowstride(pixbuf)
@@ -1086,7 +1086,7 @@ func (this *Image) Init(width int32, height int32) {
 		Error(ERROR_NO_HANDLES)
 	}
 	this.currentDeviceZoom = 100
-	gtk.CairoCairo_surface_set_device_scale(this.Surface, float64(1), float64(1))
+	gtk.CairoCairo_surface_set_device_scale(this.Surface, float64(1.0), float64(1.0))
 	var cairo int64 = gtk.CairoCairo_create(this.Surface)
 	if cairo == 0 {
 		Error(ERROR_NO_HANDLES)
@@ -1123,7 +1123,7 @@ func (this *Image) InitImageImageZoom(imageLike ImageDataLike, zoom int32) {
 	}
 	var imageDataWidth int32 = image.Width
 	var imageDataHeight int32 = image.Height
-	var scaleFactor float64 = float64(float32(zoom) / 100)
+	var scaleFactor float64 = float64(float32(zoom) / 100.0)
 	this.width = int32(int64(math.Floor(float64(float64(imageDataWidth)/scaleFactor) + 0.5)))
 	this.height = int32(int64(math.Floor(float64(float64(imageDataHeight)/scaleFactor) + 0.5)))
 	var hasAlpha bool = image.TransparentPixel != -1 || image.Alpha != -1 || image.MaskData != (nil) || image.AlphaData != (nil)

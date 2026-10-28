@@ -646,10 +646,10 @@ func (this *TextLayout) DrawGcXYSelectionStartSelectionEndSelectionForegroundSel
 										switch style.UnderlineStyle {
 										case UNDERLINE_ERROR:
 											{
-												path.SetLineWidth(float64(2))
+												path.SetLineWidth(float64(2.0))
 												path.SetLineCapStyle(int64(cocoa.OSNSRoundLineCapStyle))
 												path.SetLineJoinStyle(int64(cocoa.OSNSRoundLineJoinStyle))
-												path.SetLineDash([]float64{float64(1), float64(3)}, int64(2), float64(0))
+												path.SetLineDash([]float64{float64(1), float64(3.0)}, int64(2), float64(0))
 												point.X = underlineX
 												point.Y = underlineY + 0.5
 												path.MoveToPoint(point)

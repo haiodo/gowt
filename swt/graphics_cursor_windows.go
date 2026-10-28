@@ -785,7 +785,7 @@ func (this *Cursor_ImageDataWithMaskCursorHandleProvider) ValidateMask(sourceLik
 }
 
 func (this *Cursor_ImageDataWithMaskCursorHandleProvider) createHandle_(device *Device, zoom int32) *Cursor_CursorHandle {
-	var scaledZoomFactor float32 = float32(zoom) / 100
+	var scaledZoomFactor float32 = float32(zoom) / 100.0
 	var scaledSourceWidth int32 = int32(math.Floor(float64(float32(this.source.Width)*scaledZoomFactor) + 0.5))
 	var scaledSourceHeight int32 = int32(math.Floor(float64(float32(this.source.Height)*scaledZoomFactor) + 0.5))
 	var scaledSource *ImageData = this.source.ScaledTo(scaledSourceWidth, scaledSourceHeight)

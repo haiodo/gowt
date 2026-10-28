@@ -111,7 +111,7 @@ func (this *TableColumn) drawInteriorWithFrame_inView_(id int64, sel int64, cell
 			var context *cocoa.NSGraphicsContext = cocoa.NSGraphicsContextCurrentContext()
 			context.SaveGraphicsState()
 			var colorRGB []float64 = this.parent.headerBackground
-			var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], float64(1))
+			var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], float64(1.0))
 			color.SetFill()
 			var rect cocoa.NSRect = cocoa.NSRect{}
 			rect.X = cellRect.X
@@ -142,7 +142,7 @@ func (this *TableColumn) drawInteriorWithFrame_inView_(id int64, sel int64, cell
 	if this.parent.headerBackground != (nil) {
 		context.SaveGraphicsState()
 		var colorRGB []float64 = this.parent.headerBackground
-		var color1 *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], float64(1))
+		var color1 *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], float64(1.0))
 		color1.SetFill()
 		var rect cocoa.NSRect = cocoa.NSRect{}
 		rect.X = headerRect.X
@@ -243,7 +243,7 @@ func (this *TableColumn) drawInteriorWithFrame_inView_(id int64, sel int64, cell
 		var sourceRect cocoa.NSRect = cocoa.NSRect{}
 		sourceRect.Width = destRect.Width
 		sourceRect.Height = destRect.Height
-		this.image.Handle.DrawInRect(destRect, sourceRect, int64(cocoa.OSNSCompositingOperationSourceOver), float64(1))
+		this.image.Handle.DrawInRect(destRect, sourceRect, int64(cocoa.OSNSCompositingOperationSourceOver), float64(1.0))
 		if isFlipped {
 			context.RestoreGraphicsState()
 		}

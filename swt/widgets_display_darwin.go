@@ -1341,7 +1341,7 @@ func (this *Display) GetWidgetColorRGB(id int32) []float64 {
 		color = cocoa.NSColorBlackColor()
 		break
 	case COLOR_INFO_BACKGROUND:
-		return []float64{float64(236 / 255), float64(235 / 255), float64(236 / 255), float64(1)}
+		return []float64{float64(236 / 255.0), float64(235 / 255.0), float64(236 / 255.0), float64(1)}
 	case COLOR_TITLE_FOREGROUND:
 		color = cocoa.NSColorWindowFrameTextColor()
 		break
@@ -1364,9 +1364,9 @@ func (this *Display) GetWidgetColorRGB(id int32) []float64 {
 		color = cocoa.NSColorControlDarkShadowColor()
 		break
 	case COLOR_WIDGET_NORMAL_SHADOW:
-		return []float64{float64(159 / 255), float64(159 / 255), float64(159 / 255), float64(1)}
+		return []float64{float64(159 / 255.0), float64(159 / 255.0), float64(159 / 255.0), float64(1)}
 	case COLOR_WIDGET_LIGHT_SHADOW:
-		return []float64{float64(232 / 255), float64(232 / 255), float64(232 / 255), float64(1)}
+		return []float64{float64(232 / 255.0), float64(232 / 255.0), float64(232 / 255.0), float64(1)}
 	case COLOR_WIDGET_HIGHLIGHT_SHADOW:
 		color = cocoa.NSColorControlLightHighlightColor()
 		break

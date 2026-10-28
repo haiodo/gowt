@@ -165,8 +165,8 @@ func (this *Pattern) initPatternDeviceX1Y1X2Y2Color1Alpha1Color2Alpha2(device *D
 		this.color2 = color2.Handle
 		this.alpha1 = alpha1
 		this.alpha2 = alpha2
-		var start *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color1.Handle[0], color1.Handle[1], color1.Handle[2], float64(float32(alpha1)/255))
-		var end *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color2.Handle[0], color2.Handle[1], color2.Handle[2], float64(float32(alpha2)/255))
+		var start *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color1.Handle[0], color1.Handle[1], color1.Handle[2], float64(float32(alpha1)/255.0))
+		var end *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(color2.Handle[0], color2.Handle[1], color2.Handle[2], float64(float32(alpha2)/255.0))
 		this.gradient = (castcocoaNSObjectTococoaNSGradient(cocoa.NewNSGradient().Alloc())).InitWithStartingColor(start, end)
 		this.impl.init_()
 	}

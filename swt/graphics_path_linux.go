@@ -153,17 +153,17 @@ func (this *Path) AddArc(x float32, y float32, width float32, height float32, st
 	if width == height {
 		var angle float32 = -startAngle * float32(3.141592653589793) / 180
 		if this.closed {
-			gtk.CairoCairo_move_to(this.Handle, float64((x+width/2))+float64(width/2)*math.Cos(float64(angle)), float64((y+height/2))+float64(height/2)*math.Sin(float64(angle)))
+			gtk.CairoCairo_move_to(this.Handle, float64((x+width/2.0))+float64(width/2.0)*math.Cos(float64(angle)), float64((y+height/2.0))+float64(height/2.0)*math.Sin(float64(angle)))
 		}
 		if arcAngle >= 0 {
-			gtk.CairoCairo_arc_negative(this.Handle, float64(x+width/2), float64(y+height/2), float64(width/2), float64(angle), float64(-(startAngle+arcAngle)*float32(3.141592653589793)/180))
+			gtk.CairoCairo_arc_negative(this.Handle, float64(x+width/2.0), float64(y+height/2.0), float64(width/2.0), float64(angle), float64(-(startAngle+arcAngle)*float32(3.141592653589793)/180))
 		} else {
-			gtk.CairoCairo_arc(this.Handle, float64(x+width/2), float64(y+height/2), float64(width/2), float64(angle), float64(-(startAngle+arcAngle)*float32(3.141592653589793)/180))
+			gtk.CairoCairo_arc(this.Handle, float64(x+width/2.0), float64(y+height/2.0), float64(width/2.0), float64(angle), float64(-(startAngle+arcAngle)*float32(3.141592653589793)/180))
 		}
 	} else {
 		gtk.CairoCairo_save(this.Handle)
-		gtk.CairoCairo_translate(this.Handle, float64(x+width/2), float64(y+height/2))
-		gtk.CairoCairo_scale(this.Handle, float64(width/2), float64(height/2))
+		gtk.CairoCairo_translate(this.Handle, float64(x+width/2.0), float64(y+height/2.0))
+		gtk.CairoCairo_scale(this.Handle, float64(width/2.0), float64(height/2.0))
 		var angle float32 = -startAngle * float32(3.141592653589793) / 180
 		if this.closed {
 			gtk.CairoCairo_move_to(this.Handle, math.Cos(float64(angle)), math.Sin(float64(angle)))

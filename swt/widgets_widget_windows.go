@@ -1863,7 +1863,7 @@ func (this *Widget) initWidgetParentStyle(parent *Widget, style int32) {
 func (this *Widget) RegisterDPIChangeListener() {
 	if this.display.IsRescalingAtRuntime() {
 		this.impl._addListener_(ZoomChanged, &ListenerFunc{fn: func(event *Event) {
-			var scalingFactor float32 = 1 * float32(DPIUtilGetZoomForAutoscaleProperty(event.Detail)) / float32(DPIUtilGetZoomForAutoscaleProperty(this.NativeZoom))
+			var scalingFactor float32 = 1.0 * float32(DPIUtilGetZoomForAutoscaleProperty(event.Detail)) / float32(DPIUtilGetZoomForAutoscaleProperty(this.NativeZoom))
 			this.impl.handleDPIChange_(event, scalingFactor)
 		}})
 	}

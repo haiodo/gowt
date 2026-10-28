@@ -86,7 +86,7 @@ func (this *ColorDialog) Open() *RGB {
 		display = DisplayGetCurrent()
 	}
 	if this.rgb != (nil) {
-		var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(this.rgb.Red)/255), float64(float32(this.rgb.Green)/255), float64(float32(this.rgb.Blue)/255), float64(1))
+		var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(this.rgb.Red)/255.0), float64(float32(this.rgb.Green)/255.0), float64(float32(this.rgb.Blue)/255.0), float64(1))
 		panel.SetColor(color)
 	}
 	var appName *cocoa.NSString = DisplayGetApplicationName()
@@ -107,7 +107,7 @@ func (this *ColorDialog) Open() *RGB {
 		for i := int32(0); i < int32(len(this.rgbs)); i++ {
 			var rgb *RGB = this.rgbs[i]
 			if rgb != (nil) {
-				var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(rgb.Red)/255), float64(float32(rgb.Green)/255), float64(float32(rgb.Blue)/255), float64(1))
+				var color *cocoa.NSColor = cocoa.NSColorColorWithDeviceRed(float64(float32(rgb.Red)/255.0), float64(float32(rgb.Green)/255.0), float64(float32(rgb.Blue)/255.0), float64(1))
 				var key *cocoa.NSString = appName
 				if i > 0 {
 					key = key.StringByAppendingString(cocoa.NSStringStringWith(fmt.Sprintf(" %d", i)))

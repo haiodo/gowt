@@ -450,7 +450,7 @@ func SwtTestUtilAssertSimilarBrightness(message string, expected int32, actual i
 	if expected != actual {
 		var expectedIntensity float64 = SwtTestUtilGetBrightness(expected)
 		var actualIntensity float64 = SwtTestUtilGetBrightness(actual)
-		junit.AssertEqualsDelta(float64(expectedIntensity), float64(actualIntensity), float64(float64(255/8)), message)
+		junit.AssertEqualsDelta(float64(expectedIntensity), float64(actualIntensity), float64(float64(255.0/8)), message)
 	}
 }
 

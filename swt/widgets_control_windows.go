@@ -1678,7 +1678,7 @@ func (this *Control) print_(gc *GC) bool {
 	var hdc int64 = gc.Handle
 	var state int32 = 0
 	var gdipGraphics int64 = gc.GetGCData().GdipGraphics
-	var scaleFactor float32 = 1 * float32(gc.GetGCData().NativeZoom) / float32(this.NativeZoom)
+	var scaleFactor float32 = 1.0 * float32(gc.GetGCData().NativeZoom) / float32(this.NativeZoom)
 	if gdipGraphics != 0 {
 		var clipRgn int64 = int64(0)
 		win32.GdipGraphics_SetPixelOffsetMode(gdipGraphics, win32.GdipPixelOffsetModeNone)

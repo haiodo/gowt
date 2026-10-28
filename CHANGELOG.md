@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+Float literals in translated SWT arithmetic
+- Fixed: on macOS `COLOR_INFO_BACKGROUND` (tooltips), `COLOR_WIDGET_NORMAL_SHADOW` and `COLOR_WIDGET_LIGHT_SHADOW` were black. SWT writes them as `236/255f`; j2go dropped the `f` suffix, so Go saw `236 / 255`, an integer division of two constants, and folded it to 0. j2go now writes a float or double literal without a point or exponent with `.0` (`255f` is `255.0`), so a division of constants is a float division as in Java. Expressions with a typed operand already converted it and are unchanged. The only other line whose value changed is the delta of `SWTTestUtil`'s colour intensity check, `255f/8` (now 31.875, was 31). staticcheck SA4025 reports nothing on darwin, linux or windows.
+- Tests: the j2go golden rule `numbers` has `Floats.java` (`236/255f`, `1/2d`, `int / float`). `TestWidgetColorRGBFloatLiterals` (package swt, macOS, no window) checks the three colours; `TestSystemColorInfoBackgroundNotBlack` (`GOWT_GUI_TEST=1`) checks `Display.GetSystemColor(COLOR_INFO_BACKGROUND)`. Not run yet: the GUI test.
+
 ## v0.13.3 (2026-10-28)
 
 Focus of popover and inline edit fields (Tenniarb)

@@ -3478,3 +3478,10 @@ A class listed there (binary name, one per line) dispatches every public/protect
 subclass overrode it, and its protected constructors are exported. SWT users subclass such classes and install the object
 (`CTabFolderRenderer` with `CTabFolder.setRenderer`); with no subclass in the translated set the port made them final. A Go subclass
 embeds the base, builds it with `New<Base>`, calls `SetImpl_(x)` and defines the exported hook names (`DrawSelected_`).
+
+## Float literals without a point (`emitNumber`)
+
+`stripNumericSuffix` drops `f`/`d`, so `255f` came out as `255`, an untyped Go int constant: `236/255f` folded to `236 / 255` = 0
+(macOS `Display.getWidgetColorRGB`, black tooltips). A float or double literal without `.` or an exponent now gets `.0`
+(`255.0`), so a constant-only division stays a float division. Go folds it exactly instead of in float32 (a few ULPs, the same as
+literals with a point always had). Tests: `testdata/numbers` (`Floats.java`).

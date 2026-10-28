@@ -4284,14 +4284,14 @@ func (this *GC_DrawScalingImageToImageOperation) ComputeSourceRectangle(imageHan
 		src = srcLike.AsRectangle()
 	}
 	_ = src
-	var scaleFactorX float32 = (1 * float32(imageHandle.Width())) / float32(fullImageBounds.Width)
-	var scaleFactorY float32 = (1 * float32(imageHandle.Height())) / float32(fullImageBounds.Height)
+	var scaleFactorX float32 = (1.0 * float32(imageHandle.Width())) / float32(fullImageBounds.Width)
+	var scaleFactorY float32 = (1.0 * float32(imageHandle.Height())) / float32(fullImageBounds.Height)
 	var srcXPixels int32 = int32(math.Floor(float64(scaleFactorX*float32(src.X)) + 0.5))
 	var srcWidthPixels int32 = int32(math.Floor(float64(scaleFactorX*float32((src.X+src.Width)))+0.5)) - srcXPixels
 	var srcYPixels int32 = int32(math.Floor(float64(scaleFactorY*float32(src.Y)) + 0.5))
 	var srcHeightPixels int32 = int32(math.Floor(float64(scaleFactorY*float32((src.Y+src.Height)))+0.5)) - srcYPixels
 	var srcPixels *Rectangle = NewRectangle(srcXPixels, srcYPixels, srcWidthPixels, srcHeightPixels)
-	if float32(math.Abs(float64(scaleFactorX-1))) >= 0.01 || float32(math.Abs(float64(scaleFactorY-1))) >= 0.01 {
+	if float32(math.Abs(float64(scaleFactorX-1.0))) >= 0.01 || float32(math.Abs(float64(scaleFactorY-1.0))) >= 0.01 {
 		var errX int32 = srcPixels.X + srcPixels.Width - imageHandle.Width()
 		var errY int32 = srcPixels.Y + srcPixels.Height - imageHandle.Height()
 		if errX != 0 || errY != 0 {
@@ -4315,7 +4315,7 @@ func (this *GC_DrawScalingImageToImageOperation) CalculateZoomForImage(gcZoom in
 	if this.this_0.drawable != (nil) && !this.this_0.drawable.IsAutoScalable() {
 		return gcZoom
 	}
-	var imageScaleFactor float32 = float32(math.Max(float64(1*float32(destWidth)/float32(srcWidth)), float64(1*float32(destHeight)/float32(srcHeight))))
+	var imageScaleFactor float32 = float32(math.Max(float64(1.0*float32(destWidth)/float32(srcWidth)), float64(1.0*float32(destHeight)/float32(srcHeight))))
 	var imageZoom int32 = int32(math.Floor(float64(float32(gcZoom)*imageScaleFactor) + 0.5))
 	return imageZoom
 }

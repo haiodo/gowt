@@ -177,8 +177,8 @@ func (this *Path) AddArc(x float32, y float32, width float32, height float32, st
 			}
 		}()
 		var transform *cocoa.NSAffineTransform = cocoa.NSAffineTransformTransform()
-		transform.TranslateXBy(float64(x+width/2), float64(y+height/2))
-		transform.ScaleXBy(float64(width/2), float64(height/2))
+		transform.TranslateXBy(float64(x+width/2.0), float64(y+height/2.0))
+		transform.ScaleXBy(float64(width/2.0), float64(height/2.0))
 		var path *cocoa.NSBezierPath = cocoa.NSBezierPathBezierPath()
 		var center cocoa.NSPoint = cocoa.NSPoint{}
 		var sAngle float32 = -startAngle

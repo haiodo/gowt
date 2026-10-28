@@ -1071,7 +1071,7 @@ func (this *Image) GetBackground() *Color {
 	var red int32 = (alphaInfo.transparentPixel >> 16) & 0xFF
 	var green int32 = (alphaInfo.transparentPixel >> 8) & 0xFF
 	var blue int32 = (alphaInfo.transparentPixel >> 0) & 0xFF
-	return ColorCocoa_new(this.device, []float64{float64(float32(red) / 255), float64(float32(green) / 255), float64(float32(blue) / 255), float64(1)})
+	return ColorCocoa_new(this.device, []float64{float64(float32(red) / 255.0), float64(float32(green) / 255.0), float64(float32(blue) / 255.0), float64(1)})
 }
 
 func (this *Image) GetBounds() *Rectangle {

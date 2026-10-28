@@ -754,10 +754,10 @@ func (this *Table) CreateRenderers(columnHandle int64, modelIndex int32, check b
 		gtk.OSG_object_setOverload3(pixbufRenderer, gtk.OSMode, gtk.GTKGTK_CELL_RENDERER_MODE_ACTIVATABLE, int64(0))
 	}
 	if (columnStyle & RIGHT) != 0 {
-		gtk.OSG_object_setOverload4(textRenderer, gtk.OSXalign, 1, int64(0))
+		gtk.OSG_object_setOverload4(textRenderer, gtk.OSXalign, 1.0, int64(0))
 		gtk.GTKGtk_tree_view_column_pack_end(columnHandle, textRenderer, true)
 		gtk.GTKGtk_tree_view_column_pack_end(columnHandle, pixbufRenderer, false)
-		gtk.GTKGtk_tree_view_column_set_alignment(columnHandle, 1)
+		gtk.GTKGtk_tree_view_column_set_alignment(columnHandle, 1.0)
 	} else {
 		if (columnStyle & CENTER) != 0 {
 			gtk.OSG_object_setOverload4(textRenderer, gtk.OSXalign, 0.5, int64(0))
@@ -767,7 +767,7 @@ func (this *Table) CreateRenderers(columnHandle int64, modelIndex int32, check b
 		} else {
 			gtk.GTKGtk_tree_view_column_pack_start(columnHandle, pixbufRenderer, false)
 			gtk.GTKGtk_tree_view_column_pack_start(columnHandle, textRenderer, true)
-			gtk.GTKGtk_tree_view_column_set_alignment(columnHandle, 0)
+			gtk.GTKGtk_tree_view_column_set_alignment(columnHandle, 0.0)
 		}
 	}
 	gtk.GTKGtk_tree_view_column_add_attribute(columnHandle, pixbufRenderer, gtk.OSPixbuf, modelIndex+TableCELL_PIXBUF)
@@ -3150,7 +3150,7 @@ func (this *Table) SetTopIndex(index int32) {
 	this.cachedAdjustment = gtk.GTKGtk_adjustment_get_value(vAdjustment)
 	this.topIndex = index
 	var path int64 = gtk.GTKGtk_tree_model_get_path(this.modelHandle, this._getItem(index).Handle)
-	gtk.GTKGtk_tree_view_scroll_to_cell(this.Handle, path, int64(0), true, 0, 0)
+	gtk.GTKGtk_tree_view_scroll_to_cell(this.Handle, path, int64(0), true, 0.0, 0.0)
 	gtk.GTKGtk_tree_path_free(path)
 }
 

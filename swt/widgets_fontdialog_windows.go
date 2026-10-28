@@ -173,7 +173,7 @@ func (this *FontDialog) Open() *FontData {
 		if success {
 			var logFont *win32.LOGFONT = win32.NewLOGFONT()
 			win32.OSMoveMemoryOverload38(logFont, lpLogFont, win32.LOGFONTSizeof)
-			this.fontData = FontDataWin32_new(logFont, float32(lpcf.IPointSize)/10)
+			this.fontData = FontDataWin32_new(logFont, float32(lpcf.IPointSize)/10.0)
 			if this.effectsVisible {
 				var red int32 = lpcf.RgbColors & 0xFF
 				var green int32 = (lpcf.RgbColors >> 8) & 0xFF

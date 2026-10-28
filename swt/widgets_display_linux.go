@@ -2183,8 +2183,8 @@ func (this *Display) ToGdkRGBA(rgba gtk.GdkRGBA, brightness float64) gtk.GdkRGBA
 		cond274 = 2 - luminosity
 	}
 	saturationHSL /= cond274
-	saturationHSL = float64(math.Max(float64(0), float64(float64(math.Min(float64(1), float64(saturationHSL*brightness))))))
-	luminosity = float64(math.Max(float64(0), float64(float64(math.Min(float64(1), float64(luminosity*brightness))))))
+	saturationHSL = float64(math.Max(float64(0.0), float64(float64(math.Min(float64(1.0), float64(saturationHSL*brightness))))))
+	luminosity = float64(math.Max(float64(0.0), float64(float64(math.Min(float64(1.0), float64(luminosity*brightness))))))
 	luminosity *= float64(2)
 	var cond275 float64
 	if luminosity <= 1 {
@@ -2230,10 +2230,10 @@ func (this *Display) StyleContextEstimateBackgroundColor(context int64, state in
 	var g int32 = int32(uint8(buffer[1]))
 	var b int32 = int32(uint8(buffer[0]))
 	var rgba gtk.GdkRGBA = gtk.GdkRGBA{}
-	rgba.Alpha = float64(float32(a) / 255)
-	rgba.Red = float64(float32(DisplayInversePremultipliedColor(r, a)) / 255)
-	rgba.Green = float64(float32(DisplayInversePremultipliedColor(g, a)) / 255)
-	rgba.Blue = float64(float32(DisplayInversePremultipliedColor(b, a)) / 255)
+	rgba.Alpha = float64(float32(a) / 255.0)
+	rgba.Red = float64(float32(DisplayInversePremultipliedColor(r, a)) / 255.0)
+	rgba.Green = float64(float32(DisplayInversePremultipliedColor(g, a)) / 255.0)
+	rgba.Blue = float64(float32(DisplayInversePremultipliedColor(b, a)) / 255.0)
 	return rgba
 }
 

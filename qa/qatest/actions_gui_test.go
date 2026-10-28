@@ -83,10 +83,11 @@ func TestExpandLazy(t *testing.T) {
 func TestKeys(t *testing.T) {
 	guiOnly(t)
 	app := qatest.App(t)
-	app.Find(qa.ID("click")).Key("Mod+K")
+	// The list, not a button: with Keyboard navigation off, the macOS default, a button takes no focus.
+	app.Find(qa.ID("list")).Key("Mod+K")
 	app.Find(qa.ID("name")).Key("a")
 	app.Find(qa.ID("name")).Key("Enter")
-	app.Find(qa.ID("click")).Key("Mod+R")
+	app.Find(qa.ID("list")).Key("Mod+R")
 	app.Key("Mod+K") // to the control the line above focused
 	wantEvents(t, app, "key mod+k", "keydown name 97", "keydown name 13", "activate name", "menu run", "key mod+k")
 	wantErr(t, actErr(app, qa.ID("click"), "key", map[string]string{"keys": "Hyper+K"}), "modifier")
@@ -96,12 +97,13 @@ func TestFocus(t *testing.T) {
 	guiOnly(t)
 	before := frontApp()
 	app := qatest.App(t)
-	app.Find(qa.ID("click")).Focus()
+	// The list, not a button: with Keyboard navigation off, the macOS default, a button takes no focus.
+	app.Find(qa.ID("list")).Focus()
 	app.Find(qa.ID("name")).Focus()
 	if n := app.Find(qa.ID("name")).Node(); !n.Focused {
 		t.Errorf("name after Focus: %+v", n)
 	}
-	app.Find(qa.ID("click")).Focus()
+	app.Find(qa.ID("list")).Focus()
 	ev := events(t, app)
 	if n := len(ev); n < 2 || ev[n-2] != "focus name true" || ev[n-1] != "focus name false" {
 		t.Errorf("events %q, want focus name true, then false at the end", ev)

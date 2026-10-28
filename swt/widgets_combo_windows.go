@@ -71,13 +71,13 @@ var ComboStateFlagsOffset int32 = func() (r int32) {
 			fmt.Fprintln(os.Stderr, "gowt: deferred init ComboStateFlagsOffset:", e)
 		}
 	}()
-	var cond577 int32
+	var cond576 int32
 	if win32.CPTR_SIZEOF == 8 {
-		cond577 = 0x68
+		cond576 = 0x68
 	} else {
-		cond577 = 0x54
+		cond576 = 0x54
 	}
-	r = cond577
+	r = cond576
 	return
 }()
 
@@ -211,16 +211,16 @@ func (this *Combo) ApplyEditSegments() {
 			} else {
 				separator = defaultSeparator
 			}
-			t578 := charCount
+			t577 := charCount
 			charCount++
-			newChars[t578] = separator
+			newChars[t577] = separator
 			segmentCount++
 		} else {
 			if string_ != "" {
-				idx580 := charCount
-				t579 := charCount
+				idx579 := charCount
+				t578 := charCount
 				charCount++
-				newChars[idx580] = jrt.CharAt(string_, t579-segmentCount)
+				newChars[idx579] = jrt.CharAt(string_, t578-segmentCount)
 			}
 		}
 	}
@@ -232,9 +232,9 @@ func (this *Combo) ApplyEditSegments() {
 		} else {
 			separator = defaultSeparator
 		}
-		t581 := charCount
+		t580 := charCount
 		charCount++
-		newChars[t581] = separator
+		newChars[t580] = separator
 		segmentCount++
 	}
 	var start []int32 = make([]int32, 1)
@@ -283,9 +283,9 @@ func (this *Combo) ApplyListSegments() {
 		selection = int32(win32.OSSendMessageOverload4(this.Handle, win32.OSCB_GETCURSEL, int64(0), int64(0)))
 	}
 	for {
-		t582 := index
+		t581 := index
 		index--
-		if !(t582 > 0) {
+		if !(t581 > 0) {
 			break
 		}
 		buffer = nil
@@ -384,9 +384,9 @@ func (this *Combo) checkSubclass_() {
 }
 
 func (this *Combo) ClearSegments(applyText bool) {
-	t583 := this.clearSegmentsCount
+	t582 := this.clearSegmentsCount
 	this.clearSegmentsCount++
-	if t583 != 0 {
+	if t582 != 0 {
 		return
 	}
 	if this.segments == (nil) {
@@ -840,13 +840,13 @@ func (this *Combo) getNameText_() string {
 
 func (this *Combo) SetListVisible(visible bool) {
 	this.CheckWidget()
-	var cond584 int32
+	var cond583 int32
 	if visible {
-		cond584 = 1
+		cond583 = 1
 	} else {
-		cond584 = 0
+		cond583 = 0
 	}
-	win32.OSSendMessageOverload4(this.Handle, win32.OSCB_SHOWDROPDOWN, int64(cond584), int64(0))
+	win32.OSSendMessageOverload4(this.Handle, win32.OSCB_SHOWDROPDOWN, int64(cond583), int64(0))
 }
 
 func (this *Combo) getOrientation_() int32 {
@@ -863,13 +863,13 @@ func (this *Combo) GetSegments(string_ string) *Event {
 			{
 				var i int32 = 1
 				var segmentCount int32 = int32(len(event.Segments))
-				var cond585 int32
+				var cond584 int32
 				if string_ == "" {
-					cond585 = 0
+					cond584 = 0
 				} else {
-					cond585 = jrt.StringLength(string_)
+					cond584 = jrt.StringLength(string_)
 				}
-				var lineLength int32 = cond585
+				var lineLength int32 = cond584
 				for ; i < segmentCount; func() {
 					i++
 				}() {
@@ -959,14 +959,14 @@ func (this *Combo) GetSegmentsText(text string, eventLike EventLike) string {
 			} else {
 				separator = defaultSeparator
 			}
-			t586 := segmentCount
+			t585 := segmentCount
 			segmentCount++
-			newChars[charCount+t586] = separator
+			newChars[charCount+t585] = separator
 		} else {
-			idx588 := charCount + segmentCount
-			t587 := charCount
+			idx587 := charCount + segmentCount
+			t586 := charCount
 			charCount++
-			newChars[idx588] = oldChars[t587]
+			newChars[idx587] = oldChars[t586]
 		}
 	}
 	for segmentCount < nSegments {
@@ -977,9 +977,9 @@ func (this *Combo) GetSegmentsText(text string, eventLike EventLike) string {
 		} else {
 			separator = defaultSeparator
 		}
-		t589 := segmentCount
+		t588 := segmentCount
 		segmentCount++
-		newChars[charCount+t589] = separator
+		newChars[charCount+t588] = separator
 	}
 	return jrt.FromChars(newChars[0 : 0+int32(len(newChars))])
 }
@@ -1033,13 +1033,13 @@ func (this *Combo) GetTextHeightInPixels() int32 {
 	if result == win32.OSCB_ERR {
 		this.Error(ERROR_CANNOT_GET_ITEM_HEIGHT)
 	}
-	var cond590 int32
+	var cond589 int32
 	if (this.style & DROP_DOWN) != 0 {
-		cond590 = result + 6
+		cond589 = result + 6
 	} else {
-		cond590 = result + 10
+		cond589 = result + 10
 	}
-	return cond590
+	return cond589
 }
 
 func (this *Combo) GetTextLimit() int32 {
@@ -1105,9 +1105,9 @@ func (this *Combo) IndexOfStringStart(string_ string, start int32) int32 {
 	var last int32 = 0
 	var buffer *win32.TCHAR = win32.NewTCHARStringTerminate(string_, true)
 	for {
-		cond591 := index
-		last = cond591
-		index = int32(win32.OSSendMessage(this.Handle, win32.OSCB_FINDSTRINGEXACT, int64(cond591), buffer))
+		cond590 := index
+		last = cond590
+		index = int32(win32.OSSendMessage(this.Handle, win32.OSCB_FINDSTRINGEXACT, int64(cond590), buffer))
 		if index == win32.OSCB_ERR || index <= last {
 			return -1
 		}

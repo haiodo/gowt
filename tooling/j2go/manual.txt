@@ -7,7 +7,8 @@ org.eclipse.swt.graphics.RoundingMode
 # thenComparingInt over a method ref to getX(Point) does not type in Go (Point params are PointLike); swt/custom_styledtext_manual.go.
 org.eclipse.swt.custom.StyledText#SELECTION_COMPARATOR
 org.eclipse.swt.widgets.TaskItem#updateImage()
-# Cluster movement over grapheme clusters on macOS: swt/graphics_textlayout_manual_darwin.go.
+# Cluster movement over grapheme clusters on macOS (swt/graphics_textlayout_manual_darwin.go) and over ZWJ emoji
+# sequences on Windows (swt/graphics_textlayout_manual_windows.go).
 org.eclipse.swt.graphics.TextLayout#_getOffset(I,I,Z)
 
 # Browser: the engine is package webview (browser/webbrowser_manual.go); createWebBrowser is hand-written, and with it

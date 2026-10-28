@@ -133,13 +133,13 @@ func BidiUtilEnumSystemLanguageGroupsProc(lpLangGrpId int64, lpLangGrpIdString i
 
 func BidiUtilGetKeyboardLanguage() int32 {
 	var layout int64 = win32.OSGetKeyboardLayout(0)
-	var cond939 int32
+	var cond938 int32
 	if BidiUtilIsBidiLang(layout) {
-		cond939 = BidiUtilKEYBOARD_BIDI
+		cond938 = BidiUtilKEYBOARD_BIDI
 	} else {
-		cond939 = BidiUtilKEYBOARD_NON_BIDI
+		cond938 = BidiUtilKEYBOARD_NON_BIDI
 	}
-	return cond939
+	return cond938
 }
 
 func BidiUtilGetKeyboardLanguageList() []int64 {

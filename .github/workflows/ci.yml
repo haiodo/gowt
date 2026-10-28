@@ -81,16 +81,37 @@ jobs:
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
+      - name: Runner settings the GUI tests depend on
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          sw_vers
+          for k in "-g AppleShowScrollBars" "-g AppleKeyboardUIMode" "-g AppleInterfaceStyle" \
+            "com.apple.universalaccess reduceTransparency" "com.apple.universalaccess increaseContrast"; do
+            # shellcheck disable=SC2086
+            echo "$k: $(defaults read $k 2>&1)"
+          done
+          system_profiler SPDisplaysDataType | grep -E 'Chipset|Metal|Resolution' || true
       - name: Packages with GOWT_GUI_TEST tests
         shell: bash
         run: |
           pkgs=$(git ls-files '*_test.go' | xargs grep -l GOWT_GUI_TEST | xargs -n1 dirname | sort -u | sed 's|^|./|' |
             xargs go list -e -f '{{if or .GoFiles .CgoFiles .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}')
           echo "$pkgs"
+          # Shots, dumps and app logs of failed tests, uploaded below; pwd -W gives Go a Windows path.
+          art="$(pwd -W 2>/dev/null || pwd)/gui-artifacts"
+          export GOWT_QA_ARTIFACTS="$art/qa" GOWT_PIXELS_DIR="$art/pixels" GOWT_TEST_SHOTS="$art/shots"
+          mkdir -p "$GOWT_QA_ARTIFACTS" "$GOWT_PIXELS_DIR" "$GOWT_TEST_SHOTS"
           # shellcheck disable=SC2086
           go test -count=1 -p 1 -timeout 25m $pkgs
           go test -count=1 -tags gowtqa -run 'TestQATreeFocus' .
           go test -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$' ./look
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: gui-artifacts-${{ matrix.os }}
+          path: gui-artifacts
+          if-no-files-found: ignore
 
   checks:
     name: xcheck, api-check, licence-check and docs-counts

@@ -84,7 +84,9 @@ func TestGlassTextTransparent(t *testing.T) {
 					singleAlpha = single.Unwrap().GetBackground().GetAlpha()
 					tv := multi.Unwrap().View
 					sv := cocoa.NewNSViewOverload1(cocoa.Msg(tv.Id, "enclosingScrollView"))
-					multiPix = alphaAt(sv, sv.Bounds().Width-4, sv.Bounds().Height-4)
+					// Inside the clip view: a legacy scroller (a mouse, no trackpad) draws its track at the edge.
+					clip := cocoa.NewNSScrollViewOverload1(sv.Id).ContentView().Frame()
+					multiPix = alphaAt(sv, clip.X+clip.Width-4, clip.Y+clip.Height-4)
 					w.Close()
 				})
 			})

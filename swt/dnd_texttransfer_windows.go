@@ -114,8 +114,8 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 		return nil
 	}
 	var hMem int64 = stgmedium.UnionField
-	var tret1166 any
-	tretd1167 := false
+	var tret1165 any
+	tretd1166 := false
 	func() {
 		defer func() {
 			win32.OSGlobalFree(hMem)
@@ -125,19 +125,19 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 			{
 				var size int32 = win32.OSGlobalSize(hMem) / 2 * 2
 				if size == 0 {
-					tret1166 = nil
-					tretd1167 = true
+					tret1165 = nil
+					tretd1166 = true
 					return
 				}
 				var chars []uint16 = make([]uint16, size/2)
 				var ptr int64 = win32.OSGlobalLock(hMem)
 				if ptr == 0 {
-					tret1166 = nil
-					tretd1167 = true
+					tret1165 = nil
+					tretd1166 = true
 					return
 				}
-				var tret1168 any
-				tretd1169 := false
+				var tret1167 any
+				tretd1168 := false
 				func() {
 					defer func() {
 						win32.OSGlobalUnlock(hMem)
@@ -150,13 +150,13 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 							break
 						}
 					}
-					tret1168 = jrt.FromChars(chars[0 : 0+length])
-					tretd1169 = true
+					tret1167 = jrt.FromChars(chars[0 : 0+length])
+					tretd1168 = true
 					return
 				}()
-				if tretd1169 {
-					tret1166 = tret1168
-					tretd1167 = true
+				if tretd1168 {
+					tret1165 = tret1167
+					tretd1166 = true
 					return
 				}
 			}
@@ -165,12 +165,12 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 			{
 				var lpMultiByteStr int64 = win32.OSGlobalLock(hMem)
 				if lpMultiByteStr == 0 {
-					tret1166 = nil
-					tretd1167 = true
+					tret1165 = nil
+					tretd1166 = true
 					return
 				}
-				var tret1170 any
-				tretd1171 := false
+				var tret1169 any
+				tretd1170 := false
 				func() {
 					defer func() {
 						win32.OSGlobalUnlock(hMem)
@@ -178,26 +178,26 @@ func (this *TextTransfer) nativeToJava_(transferData *TransferData) any {
 					var codePage int32 = win32.OSGetACP()
 					var cchWideChar int32 = win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, nil, 0)
 					if cchWideChar == 0 {
-						tret1170 = nil
-						tretd1171 = true
+						tret1169 = nil
+						tretd1170 = true
 						return
 					}
 					var lpWideCharStr []uint16 = make([]uint16, cchWideChar-1)
 					win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(codePage, win32.OSMB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, int32(len(lpWideCharStr)))
-					tret1170 = jrt.FromChars(lpWideCharStr)
-					tretd1171 = true
+					tret1169 = jrt.FromChars(lpWideCharStr)
+					tretd1170 = true
 					return
 				}()
-				if tretd1171 {
-					tret1166 = tret1170
-					tretd1167 = true
+				if tretd1170 {
+					tret1165 = tret1169
+					tretd1166 = true
 					return
 				}
 			}
 		}
 	}()
-	if tretd1167 {
-		return tret1166
+	if tretd1166 {
+		return tret1165
 	}
 	return nil
 }
@@ -211,8 +211,8 @@ func (this *TextTransfer) getTypeNames_() []string {
 }
 
 func (this *TextTransfer) CheckText(object any) bool {
-	_, ok1173 := object.(string)
-	return (ok1173 && jrt.StringLength((jrt.Cast[string](object))) > 0)
+	_, ok1172 := object.(string)
+	return (ok1172 && jrt.StringLength((jrt.Cast[string](object))) > 0)
 }
 
 func (this *TextTransfer) validate_(object any) bool {

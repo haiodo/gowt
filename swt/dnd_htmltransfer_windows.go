@@ -142,16 +142,16 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 		if lpMultiByteStr == 0 {
 			return nil
 		}
-		var tret1149 any
-		tretd1150 := false
+		var tret1148 any
+		tretd1149 := false
 		func() {
 			defer func() {
 				win32.OSGlobalUnlock(hMem)
 			}()
 			var cchWideChar int32 = win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(win32.OSCP_UTF8, 0, lpMultiByteStr, -1, nil, 0)
 			if cchWideChar == 0 {
-				tret1149 = nil
-				tretd1150 = true
+				tret1148 = nil
+				tretd1149 = true
 				return
 			}
 			var lpWideCharStr []uint16 = make([]uint16, cchWideChar-1)
@@ -161,6 +161,39 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 			var fragmentEnd int32 = 0
 			var start int32 = jrt.IndexFrom(string_, HTMLTransferStartFragment, 0) + jrt.StringLength(HTMLTransferStartFragment)
 			var end int32 = start + 1
+			for end < jrt.StringLength(string_) {
+				var s string = jrt.Substring(string_, start, end)
+				tbrk1150 := false
+				func() {
+					defer func() {
+						r := recover()
+						if r == nil {
+							return
+						}
+						if func() bool {
+							switch r.(type) {
+							case *jrt.NumberFormatException:
+								return true
+							}
+							return false
+						}() {
+							e := r.(*jrt.NumberFormatException)
+							_ = e
+							tbrk1150 = true
+							return
+						} else {
+							panic(r)
+						}
+					}()
+					fragmentStart = jrt.ParseInt(s)
+					end++
+				}()
+				if tbrk1150 {
+					break
+				}
+			}
+			start = jrt.IndexFrom(string_, HTMLTransferEndFragment, 0) + jrt.StringLength(HTMLTransferEndFragment)
+			end = start + 1
 			for end < jrt.StringLength(string_) {
 				var s string = jrt.Substring(string_, start, end)
 				tbrk1151 := false
@@ -185,55 +218,22 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 							panic(r)
 						}
 					}()
-					fragmentStart = jrt.ParseInt(s)
+					fragmentEnd = jrt.ParseInt(s)
 					end++
 				}()
 				if tbrk1151 {
 					break
 				}
 			}
-			start = jrt.IndexFrom(string_, HTMLTransferEndFragment, 0) + jrt.StringLength(HTMLTransferEndFragment)
-			end = start + 1
-			for end < jrt.StringLength(string_) {
-				var s string = jrt.Substring(string_, start, end)
-				tbrk1152 := false
-				func() {
-					defer func() {
-						r := recover()
-						if r == nil {
-							return
-						}
-						if func() bool {
-							switch r.(type) {
-							case *jrt.NumberFormatException:
-								return true
-							}
-							return false
-						}() {
-							e := r.(*jrt.NumberFormatException)
-							_ = e
-							tbrk1152 = true
-							return
-						} else {
-							panic(r)
-						}
-					}()
-					fragmentEnd = jrt.ParseInt(s)
-					end++
-				}()
-				if tbrk1152 {
-					break
-				}
-			}
 			if fragmentEnd <= fragmentStart || fragmentEnd > win32.CStrlen(lpMultiByteStr) {
-				tret1149 = nil
-				tretd1150 = true
+				tret1148 = nil
+				tretd1149 = true
 				return
 			}
 			cchWideChar = win32.OSMultiByteToWideCharCodePageDwFlagsLpMultiByteStrCchMultiByteLpWideCharStrCchWideChar(win32.OSCP_UTF8, 0, lpMultiByteStr+int64(fragmentStart), fragmentEnd-fragmentStart, lpWideCharStr, int32(len(lpWideCharStr)))
 			if cchWideChar == 0 {
-				tret1149 = nil
-				tretd1150 = true
+				tret1148 = nil
+				tretd1149 = true
 				return
 			}
 			var s string = jrt.FromChars(lpWideCharStr[0 : 0+cchWideChar])
@@ -243,12 +243,12 @@ func (this *HTMLTransfer) nativeToJava_(transferData *TransferData) any {
 				prefix += jrt.StringLength(foxStart)
 				s = jrt.Substring(s, prefix, -1)
 			}
-			tret1149 = s
-			tretd1150 = true
+			tret1148 = s
+			tretd1149 = true
 			return
 		}()
-		_ = tretd1150
-		return tret1149
+		_ = tretd1149
+		return tret1148
 	}
 }
 
@@ -261,8 +261,8 @@ func (this *HTMLTransfer) getTypeNames_() []string {
 }
 
 func (this *HTMLTransfer) CheckHTML(object any) bool {
-	_, ok1154 := object.(string)
-	return (ok1154 && jrt.StringLength((jrt.Cast[string](object))) > 0)
+	_, ok1153 := object.(string)
+	return (ok1153 && jrt.StringLength((jrt.Cast[string](object))) > 0)
 }
 
 func (this *HTMLTransfer) validate_(object any) bool {

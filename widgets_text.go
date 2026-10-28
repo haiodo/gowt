@@ -44,6 +44,7 @@ type StyleSpan struct {
 func StyledText(opts ...Option) Option {
 	return leaf("StyledText", sScrollbars|sWrap|sReadOnly|sBorder|sNoBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewStyledText(p, resolve(swt.NONE, opts))
+		fluentStyledText(t)
 		return &StyledTextView{base: base{&t.Control}, t: t, fonts: newUsedFonts(&t.Control)}
 	})
 }

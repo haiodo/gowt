@@ -23,6 +23,9 @@ func TestMaterialShowsThrough(t *testing.T) {
 	if !cocoa.GlassAvailable() {
 		t.Skip("macOS 26 glass only; the older material blends the desktop behind the window")
 	}
+	if cocoa.Msg(cocoa.NSWorkspaceSharedWorkspace().Id, "accessibilityDisplayShouldReduceTransparency")&0xff != 0 {
+		t.Skip("Reduce transparency is on: the glass is opaque by design")
+	}
 	t.Setenv("GOWT_SNAP_SCREEN", "1")
 	dir := os.Getenv("GOWT_TEST_SHOTS")
 	if dir == "" {

@@ -5,6 +5,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -16,7 +17,21 @@ type dndFixture struct {
 	w        *Window
 	src, dst *TreeView
 	cv       *CanvasView
+	mu       sync.Mutex // the pointer goroutine reads log while a drag loop holds the UI thread
 	log      []string
+}
+
+// seen reports whether a line from index from on starts with prefix.
+func (f *dndFixture) seen(from int, prefix string) bool {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return slices.ContainsFunc(f.log[min(from, len(f.log)):], func(l string) bool { return strings.HasPrefix(l, prefix) })
+}
+
+func (f *dndFixture) lines() int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return len(f.log)
 }
 
 func newDndFixture(app *App) *dndFixture {
@@ -26,7 +41,11 @@ func newDndFixture(app *App) *dndFixture {
 			Tree(Ref(&f.src), Size(200, 120), Init(func(t *TreeView) { t.Node("apple"); t.Node("pear") })),
 			Tree(Ref(&f.dst), Size(200, 120), Init(func(t *TreeView) { t.Node("basket"); t.Node("crate") })),
 			Canvas(func(g *GC) {}, Ref(&f.cv), Size(200, 120))))
-	note := func(format string, a ...any) { f.log = append(f.log, fmt.Sprintf(format, a...)) }
+	note := func(format string, a ...any) {
+		f.mu.Lock()
+		f.log = append(f.log, fmt.Sprintf(format, a...))
+		f.mu.Unlock()
+	}
 	DragFrom(f.src, Drag{
 		Ops: OpCopy | OpMove,
 		Text: func() string {
@@ -64,22 +83,38 @@ func row(tv *TreeView, i int32) swt.Point {
 	return swt.Point{X: p.X, Y: p.Y}
 }
 
-// dragPointer presses at from, moves in steps to to, hovers there and releases.
-func dragPointer(app *App, from, to swt.Point) bool {
+// dragPointer presses at from, moves in steps to to, hovers there and releases. It waits, 3 s at most
+// each, for the drag to start before it leaves the source, for over at the target and for the end: on a
+// slow machine the first drag session of a process started late, and the pointer had reached the target
+// before it, so no DragOver ran.
+func dragPointer(app *App, f *dndFixture, from, to swt.Point, over string) bool {
+	n := f.lines()
+	at := func(i int32) (int32, int32) { return from.X + (to.X-from.X)*i/12, from.Y + (to.Y-from.Y)*i/12 }
 	ok := postMouse(app, swt.MouseMove, from.X, from.Y)
 	time.Sleep(150 * time.Millisecond)
 	ok = ok && postMouse(app, swt.MouseDown, from.X, from.Y)
 	time.Sleep(150 * time.Millisecond)
 	for i := int32(1); i <= 12; i++ {
-		ok = ok && postMouse(app, swt.MouseMove, from.X+(to.X-from.X)*i/12, from.Y+(to.Y-from.Y)*i/12)
+		x, y := at(i)
+		ok = ok && postMouse(app, swt.MouseMove, x, y)
 		time.Sleep(30 * time.Millisecond)
+		if i != 2 {
+			continue
+		}
+		for j, wait := int32(0), time.Now().Add(3*time.Second); ok && !f.seen(n, "start") && time.Now().Before(wait); j++ {
+			ok = postMouse(app, swt.MouseMove, x, y+j%2)
+			time.Sleep(60 * time.Millisecond)
+		}
 	}
-	for i := int32(0); i < 4; i++ {
-		ok = ok && postMouse(app, swt.MouseMove, to.X+i%2, to.Y)
+	wait := time.Now().Add(3 * time.Second)
+	for i := int32(0); ok && (i < 4 || !f.seen(n, over) && time.Now().Before(wait)); i++ {
+		ok = postMouse(app, swt.MouseMove, to.X+i%2, to.Y)
 		time.Sleep(60 * time.Millisecond)
 	}
 	ok = ok && postMouse(app, swt.MouseUp, to.X, to.Y)
-	time.Sleep(600 * time.Millisecond)
+	for wait := time.Now().Add(3 * time.Second); ok && !f.seen(n, "done ") && time.Now().Before(wait); {
+		time.Sleep(50 * time.Millisecond)
+	}
 	return ok
 }
 
@@ -108,9 +143,9 @@ func TestDndRealMouse(t *testing.T) {
 				b1, b2 := pointer(app, row(f.src, 1)), pointer(app, swt.Point{X: c.X, Y: c.Y})
 				go func() {
 					defer app.Async(func() { f.w.Close() })
-					ok := dragPointer(app, a1, a2)
+					ok := dragPointer(app, f, a1, a2, "over crate")
 					app.Sync(func() { cut = len(f.log) })
-					ok = ok && dragPointer(app, b1, b2)
+					ok = ok && dragPointer(app, f, b1, b2, "canvas over")
 					if !ok {
 						app.Sync(func() { skip = "the mouse events could not be posted" })
 					}

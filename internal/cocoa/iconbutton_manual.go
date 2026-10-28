@@ -10,14 +10,61 @@ import (
 )
 
 const (
-	bezelStyleCircular = 7
-	borderShapeCircle  = 3 // NSControlBorderShapeCircle, macOS 26
+	bezelStyleCircular   = 7
+	bezelStyleDisclosure = 5
+	borderShapeCircle    = 3 // NSControlBorderShapeCircle, macOS 26
 )
 
 // SetButtonBorderless removes the bezel. AppKit still dims the image while the button is pressed.
 func SetButtonBorderless(view *NSView) {
 	msg(uintptr(view.Id), "setBordered:", 0)
 }
+
+// SyncButtonTint gives a button the accent colour as contentTintColor while it is on and the default
+// colour while off. AppKit draws a borderless toggle the same on and off, so its symbol shows the state.
+func SyncButtonTint(view *NSView) {
+	v := uintptr(view.Id)
+	if !respondsTo(v, "setContentTintColor:") {
+		return
+	}
+	c := uintptr(0)
+	if msg(v, "state") != 0 {
+		c = msg(class("NSColor"), "controlAccentColor")
+	}
+	msg(v, "setContentTintColor:", c)
+}
+
+// ButtonTinted reports whether the button has a contentTintColor.
+func ButtonTinted(view *NSView) bool {
+	v := uintptr(view.Id)
+	return respondsTo(v, "contentTintColor") && msg(v, "contentTintColor") != 0
+}
+
+// SetButtonDisclosure gives a toggle button the disclosure bezel, the chevron of an outline row, with
+// no title.
+func SetButtonDisclosure(view *NSView) {
+	v := uintptr(view.Id)
+	msg(v, "setBezelStyle:", bezelStyleDisclosure)
+	msg(v, "setTitle:", nsString(""))
+}
+
+// AccessibilityRole returns the role VoiceOver reads for a view, such as "AXDisclosureTriangle": that
+// of its cell when the view is no accessibility element itself, as an NSButton leaves it to its cell.
+func AccessibilityRole(view *NSView) string {
+	v := uintptr(view.Id)
+	if msg(v, "isAccessibilityElement")&0xff == 0 && respondsTo(v, "cell") {
+		if c := msg(v, "cell"); c != 0 {
+			v = c
+		}
+	}
+	return goString(msg(v, "accessibilityRole"))
+}
+
+// SetControlSmall gives a control NSControlSizeSmall and the system font of that size.
+func SetControlSmall(view *NSView) { setSmall(uintptr(view.Id)) }
+
+// ControlSize returns the NSControlSize of a control.
+func ControlSize(view *NSView) int { return int(msg(uintptr(view.Id), "controlSize")) }
 
 // ButtonBordered reports whether the button draws a bezel.
 func ButtonBordered(view *NSView) bool {

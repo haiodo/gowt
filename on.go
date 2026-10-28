@@ -32,8 +32,9 @@ func OnClick[F func() | func(string)](f F) Option {
 }
 
 // OnChange runs f with the new value after the user changed it: the text of a Text, Combo or
-// StyledText (func(string)), the state of a Switch or a Check button (func(bool)), the value of a
-// Scale, Slider or Spinner (func(int)), the value of a DateTime (func(time.Time)).
+// StyledText (func(string)), the state of a Switch, a Check or Toggle button or a Disclosure
+// (func(bool)), the value of a Scale, Slider or Spinner (func(int)), the value of a DateTime
+// (func(time.Time)).
 func OnChange[F func(string) | func(bool) | func(int) | func(time.Time)](f F) Option {
 	return hook(func(w Widget) error {
 		switch g := any(f).(type) {
@@ -67,7 +68,8 @@ func OnChange[F func(string) | func(bool) | func(int) | func(time.Time)](f F) Op
 }
 
 // OnSelect runs f when the selection changes: with the index of the selected item of a Combo,
-// List, Table, Tabs or CTabs (func(int)), with the selected node of a Tree (func(*Node)).
+// List, Table, Tabs or CTabs or of the segment of a Segmented (func(int)), with the selected node of
+// a Tree (func(*Node)).
 func OnSelect[F func(int) | func(*Node)](f F) Option {
 	return hook(func(w Widget) error {
 		switch g := any(f).(type) {
@@ -124,7 +126,7 @@ func Hint(s string) Option {
 	})
 }
 
-// Checked sets the state of a Switch or of a Check or Radio button.
+// Checked sets the state of a Switch or of a Check, Radio or Toggle button.
 func Checked(on bool) Option {
 	return hook(func(w Widget) error {
 		if w, ok := w.(interface{ SetChecked(bool) }); ok {
@@ -135,7 +137,7 @@ func Checked(on bool) Option {
 	})
 }
 
-// Selected selects item i of a Combo, List or Table, or tab i of a Tabs or CTabs.
+// Selected selects item i of a Combo, List or Table, tab i of a Tabs or CTabs, or segment i of a Segmented.
 func Selected(i int) Option {
 	return hook(func(w Widget) error {
 		switch w := w.(type) {
@@ -146,7 +148,7 @@ func Selected(i int) Option {
 		case interface{ Select(int) }:
 			w.Select(i)
 		default:
-			return fmt.Errorf("gowt: Selected applies to Combo, List, Table, Tabs and CTabs, not to %s", nameOf(w.control()))
+			return fmt.Errorf("gowt: Selected applies to Combo, List, Table, Tabs, CTabs and Segmented, not to %s", nameOf(w.control()))
 		}
 		return nil
 	})

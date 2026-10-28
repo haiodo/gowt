@@ -1,14 +1,17 @@
 // Command materialpanel puts a code panel under a diagram canvas as the bottom panel of a sidebar
 // window (look.SetBottomPanel): on macOS 26 its glass and the canvas colour run on under the floating
 // sidebar, and its StyledText paints no background of its own. The sidebar is a Split of a list and
-// an outline with a hairline between them (gowt.Divider).
+// an outline with a hairline between them (gowt.Divider). The inspector has the small controls of an
+// inspector: a collapsible section with borderless icon buttons, segmented controls and toggles.
 package main
 
 import (
 	"log"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/icons"
 	"github.com/haiodo/gowt/look"
+	"github.com/haiodo/gowt/rx"
 )
 
 const source = `node "Client" at (40, 40)
@@ -41,7 +44,8 @@ func main() {
 					gowt.Init(func(t *gowt.StyledTextView) { t.SetFont(gowt.Type.Mono); t.SetText(source) }))),
 			gowt.VBox(gowt.Ref(&insp), gowt.Padding(gowt.Spacing.MD),
 				gowt.Label("Server", gowt.Typeface(gowt.Type.BodyStrong)),
-				gowt.Label("2 edges", gowt.Foreground(gowt.SecondaryText))))
+				gowt.Label("2 edges", gowt.Foreground(gowt.SecondaryText)),
+				inspectorControls(app)))
 		look.SetToolbar(w,
 			look.ToolbarItem{Title: "Hide Sidebar", Symbol: "sidebar.left", Sidebar: true, OnClick: func() {
 				look.SetSidebarVisible(w, !look.SidebarVisible(w))
@@ -52,12 +56,50 @@ func main() {
 			}})
 		look.SetSidebar(w, sidebar, content, gowt.Scaled(200))
 		look.SetBottomPanel(w, content, codePane, gowt.Scaled(200))
-		look.SetInspector(w, content, insp, gowt.Scaled(220))
+		look.SetInspector(w, content, insp, gowt.Scaled(260))
 		w.Show()
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// inspectorControls is a collapsible "Layout" section whose header has an eye toggle and + and -
+// buttons, over a Fixed/Hug/Fill choice, an alignment choice, momentary segments and Wrap/Clip toggles.
+func inspectorControls(app *gowt.App) gowt.Option {
+	sizing := rx.New(1)
+	shown := rx.New(true)
+	img := func(name string) *gowt.Image { return icons.Get(app, name, icons.Size(13)) }
+	icon := func(name string) gowt.Option {
+		return gowt.Init(func(b *gowt.ButtonView) { b.SetImage(img(name)) })
+	}
+	eye := gowt.Init(func(b *gowt.ButtonView) {
+		gowt.Watch(b, shown, func(on bool) {
+			if on {
+				b.SetImage(img("eye"))
+			} else {
+				b.SetImage(img("eye-off"))
+			}
+		})
+	})
+	return gowt.Disclosure("Layout", gowt.GrowX(), gowt.Gap(gowt.Spacing.SM),
+		gowt.Trailing(
+			gowt.Button("", gowt.Toggle(), gowt.Borderless(), gowt.Small(), gowt.Tooltip("Show on canvas"), gowt.Bind(shown), eye),
+			gowt.Button("", gowt.Borderless(), gowt.Small(), gowt.Tooltip("Add"), icon("add")),
+			gowt.Button("", gowt.Borderless(), gowt.Small(), gowt.Tooltip("Remove"), icon("remove"))),
+		gowt.Segmented([]gowt.Segment{{Text: "Fixed"}, {Text: "Hug"}, {Text: "Fill"}}, gowt.Small(), gowt.GrowX(), gowt.Bind(sizing)),
+		gowt.Segmented([]gowt.Segment{
+			{Image: img("back"), Tooltip: "Align left"},
+			{Image: img("menu"), Tooltip: "Align center"},
+			{Image: img("forward"), Tooltip: "Align right"},
+		}, gowt.Small(), gowt.GrowX(), gowt.Selected(0)),
+		gowt.HBox(gowt.GrowX(), gowt.Gap(gowt.Spacing.SM),
+			gowt.Label("Points", gowt.Place(gowt.AlignStart, gowt.AlignCenter)),
+			gowt.Spacer(),
+			gowt.Segmented([]gowt.Segment{{Image: img("add"), Tooltip: "Add a point"}, {Image: img("remove"), Tooltip: "Remove the point"}}, gowt.Momentary(), gowt.Small())),
+		gowt.HBox(gowt.GrowX(), gowt.Gap(gowt.Spacing.SM),
+			gowt.Button("Wrap", gowt.Toggle(), gowt.Small(), gowt.Checked(true), icon("menu")),
+			gowt.Button("Clip", gowt.Toggle(), gowt.Small(), icon("cut"))))
 }
 
 func diagram(g *gowt.GC) {

@@ -427,6 +427,12 @@ func Check() Option { return style{id: sCheck, set: swt.CHECK} }
 // Radio makes a Button a radio button.
 func Radio() Option { return style{id: sRadio, set: swt.RADIO} }
 
+// Toggle makes a Button a toggle button, which stays pressed until it is clicked again (Wrap, Clip):
+// Checked, Bind (bool) and OnChange (bool) read and set its state. macOS: a push-on-push-off NSButton,
+// with Borderless a symbol in the accent colour while on; GTK: GtkToggleButton; Windows: the WinUI
+// ToggleButton, with the accent fill while it is on.
+func Toggle() Option { return style{id: sToggle, set: swt.TOGGLE} }
+
 // Multiline makes a Text multi-line and wrapped. macOS and GTK scroll with an overlay bar that shows on overflow;
 // Windows has no scroll bar unless Scrollbars() asks for one.
 func Multiline() Option { return style{id: sMultiline, set: swt.MULTI | swt.WRAP | multilineScroll} }
@@ -610,13 +616,16 @@ func Separator(opts ...Option) Option {
 	}}
 }
 
-// Button creates a push button (Check or Radio for other kinds); OnClick gives it an action.
-// Options: Check, Radio, OnClick, OnChange and Checked (Check, Radio), Bind (bool), BindText.
+// Button creates a push button (Check, Radio or Toggle for other kinds); OnClick gives it an action.
+// Options: Check, Radio, Toggle, Small, OnClick, OnChange and Checked (Check, Radio, Toggle), Bind (bool), BindText.
 func Button(text string, opts ...Option) Option {
 	opts = controlHeight(opts)
-	return leaf("Button", sCheck|sRadio, opts, func(p *swt.Composite) Widget {
+	return leaf("Button", sCheck|sRadio|sToggle, opts, func(p *swt.Composite) Widget {
 		b := swt.NewButton(p, resolve(swt.NONE, opts))
 		b.SetText(text)
+		if b.GetStyle()&swt.TOGGLE != 0 {
+			styleToggle(b)
+		}
 		return &ButtonView{base{&b.Control}, b}
 	})
 }
@@ -835,7 +844,7 @@ func (l *LabelView) SetText(s string) { sizing(&l.l.Control, func() { l.l.SetTex
 // Unwrap returns the underlying swt.Label for the full API.
 func (l *LabelView) Unwrap() *swt.Label { return l.l }
 
-// ButtonView is a push, check or radio button.
+// ButtonView is a push, check, radio or toggle button.
 type ButtonView struct {
 	base
 	b *swt.Button
@@ -844,11 +853,14 @@ type ButtonView struct {
 // SetText replaces the button text. Lays the parents out when the size changes.
 func (b *ButtonView) SetText(s string) { sizing(&b.b.Control, func() { b.b.SetText(s) }) }
 
-// Checked reports the state of a Check or Radio button.
+// Checked reports the state of a Check, Radio or Toggle button.
 func (b *ButtonView) Checked() bool { return b.b.GetSelection() }
 
-// SetChecked sets the state of a Check or Radio button.
-func (b *ButtonView) SetChecked(v bool) { b.b.SetSelection(v) }
+// SetChecked sets the state of a Check, Radio or Toggle button.
+func (b *ButtonView) SetChecked(v bool) {
+	b.b.SetSelection(v)
+	syncToggle(b.b)
+}
 
 // Unwrap returns the underlying swt.Button for the full API.
 func (b *ButtonView) Unwrap() *swt.Button { return b.b }

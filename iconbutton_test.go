@@ -19,10 +19,10 @@ func TestIconButtonOptions(t *testing.T) {
 		put[*LabelView](w, Label("l", Circle()))
 		put[*SwitchView](w, Switch("s", Borderless()))
 		want := []string{
-			"gowt: Borderless applies to a push Button, not to Button",
+			"gowt: Borderless applies to a push or Toggle Button, not to Button",
 			"gowt: Circle applies to a push Button, not to Button",
 			"gowt: Circle applies to a push Button, not to Label",
-			"gowt: Borderless applies to a push Button, not to Button",
+			"gowt: Borderless applies to a push or Toggle Button, not to Button",
 		}
 		if got := strings.Join(*errs, "\n"); got != strings.Join(want, "\n") {
 			t.Errorf("errors:\n%s\nwant:\n%s", got, strings.Join(want, "\n"))

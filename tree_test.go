@@ -26,6 +26,7 @@ func TestStyleNames(t *testing.T) {
 		"Smooth": Smooth(), "Indeterminate": Indeterminate(), "Flat": Flat(), "Wrap": Wrap(),
 		"Bottom": Bottom(), "Closable": Closable(), "DropDown": DropDown(), "Right": Right(),
 		"Center": Center(), "AsTime": AsTime(), "AsCalendar": AsCalendar(), "Scrollbars": Scrollbars(),
+		"Toggle": Toggle(),
 	} {
 		if got := o.(style).id.String(); got != want {
 			t.Errorf("%s reports itself as %s", want, got)

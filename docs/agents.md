@@ -54,6 +54,7 @@ if err != nil {
 | a scrolled column | `gowt.Scroll(children...)` |
 | panes with draggable sashes | `gowt.Split(children...)`, `split.SetWeights(1, 3)`; `gowt.Divider()` draws a separator hairline on each sash |
 | settings rows on a card | `gowt.Section(rows...)` |
+| a collapsible inspector section | `gowt.Disclosure("Layout", gowt.Trailing(buttons...), children...)` |
 | a part whose failure shows in place | `gowt.Boundary(children...)`, `Failed(func(err, reset) Option)`; see [events.md](events.md#boundary-errors-shown-in-place) |
 
 `Gap(points)` is the space between children (default `Spacing.SM`), `Padding(points)` the space from the container's edge (default `Spacing.PageMargin` for a Window and a Tab page, `Spacing.SM` for a Group, 0 elsewhere).
@@ -139,6 +140,8 @@ A container has `Add(children...)` (create more children at its end, also after 
 ```go
 gowt.Button("Save", gowt.Primary())                // default button, system accent look
 gowt.Button("Delete", gowt.Destructive())          // red on GTK, standard on Windows, hasDestructiveAction on macOS
+gowt.Segmented([]gowt.Segment{{Text: "Fixed"}, {Text: "Hug"}, {Text: "Fill"}}, gowt.Small(), gowt.Bind(mode)) // one of a few; Momentary() for +/-
+gowt.Button("Wrap", gowt.Toggle(), gowt.Bind(wrap)) // stays pressed; with Borderless() an icon toggle in a section header
 t.Column("Subject", gowt.Scaled(200), gowt.Fit())  // Table or Tree column that follows its content
 gowt.StyledText(gowt.Scrollbars(), gowt.LineNumbers())
 gowt.Canvas(func(g *gowt.GC) { w, h := g.Size(); chart(g, w, h) }, gowt.Grow())
@@ -223,7 +226,12 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Wrap()` | Label, StyledText, ToolBar |
 | `Scrollbars()`, `LineNumbers()` | StyledText |
 | `Primary()`, `Destructive()` | push Button |
-| `Borderless()`, `Circle()` | push Button |
+| `Borderless()` | push or Toggle Button |
+| `Circle()` | push Button |
+| `Toggle()` | Button |
+| `Small()` | Segmented, Button |
+| `Momentary()` | Segmented |
+| `Collapsed()`, `Trailing(children...)` | Disclosure |
 | `Fit()` | Table.Column, Tree.Column |
 | `Field(label, control, opts...)`, `FieldTop()` | children of `Fields` |
 | `Bottom()` | Tabs, CTabs |
@@ -232,14 +240,14 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `AsTime()`, `AsCalendar()` | DateTime |
 | `Right()`, `Center()` | Table.Column, Tree.Column, Label |
 | `OnClick(f)` | Button `func()`, Link `func(href string)` |
-| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
-| `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)` |
+| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio/Toggle Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
+| `OnSelect(f)` | Combo, List, Table, Tabs, CTabs, Segmented `func(int)`; Tree `func(*Node)` |
 | `OnActivate(f)` | Text `func()`; List, Table `func(int)`; Tree `func(*Node)` |
 | `Hint(s)` | Text |
-| `Checked(b)` | Switch, Check/Radio Button |
-| `Selected(i)` | Combo, List, Table, Tabs, CTabs |
+| `Checked(b)` | Switch, Check/Radio/Toggle Button |
+| `Selected(i)` | Combo, List, Table, Tabs, CTabs, Segmented |
 | `Value(n)` | Scale, Slider, Spinner, Progress |
-| `Bind(state)` | Text, Combo (`string`); Switch, Check Button (`bool`); Scale, Slider, Spinner, Combo, List (`int`) |
+| `Bind(state)` | Text, Combo (`string`); Switch, Check or Toggle Button, Disclosure (`bool`); Scale, Slider, Spinner, Combo, List, Segmented (`int`) |
 | `BindText(r)` | Label, Button, Link |
 | `Rows(list, key, fill)` | Table |
 | `Nodes(list, key, children, fill)` | Tree |

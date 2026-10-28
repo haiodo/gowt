@@ -75,7 +75,7 @@ func fluentShell(s *swt.Shell) {
 // the inherited one on to its content.
 func fluentScroll(body *swt.Composite) { fluent.Background(body) }
 
-// controlHeight gives a push button, drop-down Combo, Spinner and date field the height of
+// controlHeight gives a push or toggle button, drop-down Combo, Spinner and date field the height of
 // Spacing.ControlHeight, like the Text; without App.SetDensity the heights stay the native ones.
 func controlHeight(opts []Option) []Option {
 	return append(opts[:len(opts):len(opts)], lateHook(func(w Widget) error {
@@ -96,7 +96,7 @@ func controlHeight(opts []Option) []Option {
 			}
 			return nil
 		case *ButtonView:
-			if v.b.GetStyle()&swt.PUSH == 0 {
+			if v.b.GetStyle()&(swt.PUSH|swt.TOGGLE) == 0 {
 				return nil
 			}
 		case *DateTimeView:

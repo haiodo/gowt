@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.13.4 (2026-10-28)
 
 Bottom panel and split dividers (Tenniarb)
 - New: `look.SetBottomPanel(w, content, panel, height)` puts a panel under the content of a `SetSidebar` or `SetInspector` window, in the same pane layout, with `SetBottomPanelVisible`, `BottomPanelVisible`, `SetBottomPanelHeight`, `BottomPanelHeight` and `OnBottomPanelChange` as for the inspector, and a drag of its top edge that stops at 60 points of panel and 100 points of content. macOS 26: the inspector's edge-to-edge glass with a separator line along its top; under a floating sidebar the glass runs on to the window's left edge, below the sidebar's glass, as AppKit extends a split item beneath the sidebar (`automaticallyAdjustsSafeAreaInsets`, WWDC25 session 310), while the panel's children start right of the sidebar. Older macOS: the flush material. Windows and Linux: the `SetMaterial` background, flush, with a hairline in the sash gap above it. The panel does not raise the window's minimum height.

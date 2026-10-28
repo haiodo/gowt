@@ -11,7 +11,6 @@ import (
 
 const (
 	bezelStyleCircular   = 7
-	bezelStyleRecessed   = 13 // NSBezelStyleAccessoryBar, the scope-bar button of Finder's search
 	bezelStyleDisclosure = 5
 	borderShapeCircle    = 3 // NSControlBorderShapeCircle, macOS 26
 )
@@ -21,12 +20,24 @@ func SetButtonBorderless(view *NSView) {
 	msg(uintptr(view.Id), "setBordered:", 0)
 }
 
-// SetButtonRecessed gives a toggle button the recessed bezel, drawn only under the pointer while the
-// button is off; on, it shows the pressed-in fill.
-func SetButtonRecessed(view *NSView) {
+// SyncButtonTint gives a button the accent colour as contentTintColor while it is on and the default
+// colour while off. AppKit draws a borderless toggle the same on and off, so its symbol shows the state.
+func SyncButtonTint(view *NSView) {
 	v := uintptr(view.Id)
-	msg(v, "setBezelStyle:", bezelStyleRecessed)
-	msg(v, "setShowsBorderOnlyWhileMouseInside:", 1)
+	if !respondsTo(v, "setContentTintColor:") {
+		return
+	}
+	c := uintptr(0)
+	if msg(v, "state") != 0 {
+		c = msg(class("NSColor"), "controlAccentColor")
+	}
+	msg(v, "setContentTintColor:", c)
+}
+
+// ButtonTinted reports whether the button has a contentTintColor.
+func ButtonTinted(view *NSView) bool {
+	v := uintptr(view.Id)
+	return respondsTo(v, "contentTintColor") && msg(v, "contentTintColor") != 0
 }
 
 // SetButtonDisclosure gives a toggle button the disclosure bezel, the chevron of an outline row, with
@@ -37,9 +48,16 @@ func SetButtonDisclosure(view *NSView) {
 	msg(v, "setTitle:", nsString(""))
 }
 
-// AccessibilityRole returns the accessibility role of a view, such as "AXDisclosureTriangle".
+// AccessibilityRole returns the role VoiceOver reads for a view, such as "AXDisclosureTriangle": that
+// of its cell when the view is no accessibility element itself, as an NSButton leaves it to its cell.
 func AccessibilityRole(view *NSView) string {
-	return goString(msg(uintptr(view.Id), "accessibilityRole"))
+	v := uintptr(view.Id)
+	if msg(v, "isAccessibilityElement")&0xff == 0 && respondsTo(v, "cell") {
+		if c := msg(v, "cell"); c != 0 {
+			v = c
+		}
+	}
+	return goString(msg(v, "accessibilityRole"))
 }
 
 // SetControlSmall gives a control NSControlSizeSmall and the system font of that size.

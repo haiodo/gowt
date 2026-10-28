@@ -5,13 +5,20 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// A borderless toggle is the scope-bar button: no border until the pointer is over it, a recessed fill when on.
+// A borderless toggle shows its state in the accent colour of its symbol and title.
 func setButtonBorderless(b *swt.Button) {
-	if b.GetStyle()&swt.TOGGLE != 0 {
-		cocoa.SetButtonRecessed(b.View)
-		return
-	}
 	cocoa.SetButtonBorderless(b.View)
+	if b.GetStyle()&swt.TOGGLE != 0 {
+		cocoa.SyncButtonTint(b.View)
+		onSelect(b, func(*swt.SelectionEvent) { cocoa.SyncButtonTint(b.View) })
+	}
+}
+
+// syncToggle follows a state set by the program on a borderless toggle.
+func syncToggle(b *swt.Button) {
+	if b.GetStyle()&swt.TOGGLE != 0 && !cocoa.ButtonBordered(b.View) {
+		cocoa.SyncButtonTint(b.View)
+	}
 }
 
 func setButtonSmall(b *swt.Button) { cocoa.SetControlSmall(b.View) }

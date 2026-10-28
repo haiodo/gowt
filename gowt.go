@@ -410,7 +410,7 @@ func Radio() Option { return style{id: sRadio, set: swt.RADIO} }
 
 // Toggle makes a Button a toggle button, which stays pressed until it is clicked again (Wrap, Clip):
 // Checked, Bind (bool) and OnChange (bool) read and set its state. macOS: a push-on-push-off NSButton,
-// with Borderless the recessed scope-bar button; GTK: GtkToggleButton; Windows: the WinUI
+// with Borderless a symbol in the accent colour while on; GTK: GtkToggleButton; Windows: the WinUI
 // ToggleButton, with the accent fill while it is on.
 func Toggle() Option { return style{id: sToggle, set: swt.TOGGLE} }
 
@@ -838,7 +838,10 @@ func (b *ButtonView) SetText(s string) { sizing(&b.b.Control, func() { b.b.SetTe
 func (b *ButtonView) Checked() bool { return b.b.GetSelection() }
 
 // SetChecked sets the state of a Check, Radio or Toggle button.
-func (b *ButtonView) SetChecked(v bool) { b.b.SetSelection(v) }
+func (b *ButtonView) SetChecked(v bool) {
+	b.b.SetSelection(v)
+	syncToggle(b.b)
+}
 
 // Unwrap returns the underlying swt.Button for the full API.
 func (b *ButtonView) Unwrap() *swt.Button { return b.b }

@@ -267,8 +267,8 @@ func Indeterminate() Option { return style{id: sIndeterminate, set: swt.INDETERM
 func Flat() Option { return style{id: sFlat, set: swt.FLAT} }
 
 // Borderless draws a push or Toggle Button without its frame, for an icon in a section header (+, -,
-// an eye): macOS no bezel, and for a toggle the recessed scope-bar bezel that shows a frame under the
-// pointer and a pressed-in fill while on; GTK "flat"; Windows the WinUI Subtle button.
+// an eye): macOS no bezel, a toggle with its symbol in the accent colour while on; GTK "flat";
+// Windows the WinUI Subtle button.
 func Borderless() Option {
 	return hook(func(w Widget) error {
 		b, ok := pushButton(w)

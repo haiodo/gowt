@@ -96,7 +96,7 @@ func inspectorControls(app *gowt.App) gowt.Option {
 		gowt.HBox(gowt.GrowX(), gowt.Gap(gowt.Spacing.SM),
 			gowt.Label("Points", gowt.Place(gowt.AlignStart, gowt.AlignCenter)),
 			gowt.Spacer(),
-			gowt.Segmented([]gowt.Segment{{Text: "+", Tooltip: "Add a point"}, {Text: "-", Tooltip: "Remove the point"}}, gowt.Momentary(), gowt.Small())),
+			gowt.Segmented([]gowt.Segment{{Image: img("add"), Tooltip: "Add a point"}, {Image: img("remove"), Tooltip: "Remove the point"}}, gowt.Momentary(), gowt.Small())),
 		gowt.HBox(gowt.GrowX(), gowt.Gap(gowt.Spacing.SM),
 			gowt.Button("Wrap", gowt.Toggle(), gowt.Small(), gowt.Checked(true), icon("menu")),
 			gowt.Button("Clip", gowt.Toggle(), gowt.Small(), icon("cut"))))

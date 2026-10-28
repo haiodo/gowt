@@ -27,6 +27,9 @@ func setChevron(b *swt.Button, expanded bool) {
 	}
 }
 
+// syncToggle has nothing to follow: the toolkit draws the state of a toggle by itself.
+func syncToggle(*swt.Button) {}
+
 // Small has set the font already.
 func setButtonSmall(*swt.Button) {}
 

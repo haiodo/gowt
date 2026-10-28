@@ -12,7 +12,7 @@ func pressSegment(s *SegmentedView, i int) { s.seg.v.Press(i) }
 func selectedSegment(s *SegmentedView) int { return s.seg.v.Selected() }
 
 // The segments carry their labels and tooltips, Small and Momentary reach the native control, and the
-// control fills the composite's width; a borderless toggle has the recessed bezel.
+// control fills the composite's width; a borderless toggle takes the accent tint while on.
 func TestSegmentedNative(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
 		s := put[*SegmentedView](w, Segmented([]Segment{{Text: "Fixed"}, {Text: "Hug", Tooltip: "Fit the content"}}, Small(), Size(240, 0)))
@@ -33,8 +33,16 @@ func TestSegmentedNative(t *testing.T) {
 		if f := v.Frame(); int(f.Width) != int(s.c.GetSize().X) || f.Height <= 0 {
 			t.Errorf("frame %+v in a composite of %v", f, s.c.GetSize())
 		}
-		if b := cocoa.ButtonBezelStyle(eye.b.View); b != 13 || cocoa.ControlSize(eye.b.View) != 1 {
-			t.Errorf("borderless small toggle: bezel %d, size %d; want 13 and 1", b, cocoa.ControlSize(eye.b.View))
+		if cocoa.ButtonBordered(eye.b.View) || cocoa.ControlSize(eye.b.View) != 1 || cocoa.ButtonTinted(eye.b.View) {
+			t.Errorf("borderless small toggle, off: bordered %v, size %d, tinted %v", cocoa.ButtonBordered(eye.b.View), cocoa.ControlSize(eye.b.View), cocoa.ButtonTinted(eye.b.View))
+		}
+		eye.SetChecked(true)
+		if !cocoa.ButtonTinted(eye.b.View) {
+			t.Error("a borderless toggle set on has no accent tint")
+		}
+		eye.SetChecked(false)
+		if cocoa.ButtonTinted(eye.b.View) {
+			t.Error("a borderless toggle set off keeps the accent tint")
 		}
 		if cocoa.ButtonBordered(plus.b.View) {
 			t.Error("a borderless push button draws its bezel")

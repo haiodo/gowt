@@ -32,9 +32,18 @@ func segmentedOffscreen(t *testing.T) {
 	if s.Selected() != -1 {
 		t.Errorf("Select(-1) left %d selected", s.Selected())
 	}
+	if r := s.SegmentRole(0); r != "AXRadioButton" {
+		t.Errorf("select-one segment role %q", r)
+	}
 	s.SetMomentary(true)
-	if s.TrackingMode() != trackingMomentary || s.SegmentToolTip(1) != "tip Hug" {
-		t.Errorf("tracking %d, tooltip %q", s.TrackingMode(), s.SegmentToolTip(1))
+	if s.TrackingMode() != trackingMomentary || s.SegmentToolTip(1) != "tip Hug" || s.SegmentRole(0) != "AXButton" {
+		t.Errorf("tracking %d, tooltip %q, role %q", s.TrackingMode(), s.SegmentToolTip(1), s.SegmentRole(0))
+	}
+	got = nil
+	s.Press(1)
+	s.Press(1)
+	if len(got) != 2 || got[0] != 1 || got[1] != 1 || s.Selected() != -1 {
+		t.Errorf("momentary presses of 1: clicked %v, selected %d", got, s.Selected())
 	}
 	s.SetSmall()
 	if small := s.Fit(); s.ControlSize() != controlSizeSmall || small.Height >= regular.Height {

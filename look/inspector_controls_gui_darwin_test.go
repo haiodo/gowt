@@ -2,6 +2,7 @@ package look_test
 
 import (
 	"image"
+	"math"
 	"os"
 	"path/filepath"
 	"testing"
@@ -42,12 +43,16 @@ func TestInspectorControlsOnGlass(t *testing.T) {
 					t.Errorf("segmented %s: luma %0.f..%0.f, nothing drawn", name, lo, hi)
 				}
 			}
-			for _, pair := range [][2]string{{"wrap on", "clip off"}, {"eye on", "eye off"}} {
-				on, off := meanLuma(img, rects[pair[0]], scale), meanLuma(img, rects[pair[1]], scale)
-				t.Logf("%s %.0f, %s %.0f", pair[0], on, pair[1], off)
-				if d := on - off; d < 6 && d > -6 {
-					t.Errorf("%s (%.0f) looks like %s (%.0f)", pair[0], on, pair[1], off)
-				}
+			on, off := meanLuma(img, rects["wrap on"], scale), meanLuma(img, rects["clip off"], scale)
+			t.Logf("wrap on %.0f, clip off %.0f", on, off)
+			if d := on - off; d < 6 && d > -6 {
+				t.Errorf("wrap on (%.0f) looks like clip off (%.0f)", on, off)
+			}
+			// The borderless eye has no fill: only its symbol takes the accent colour when on.
+			eyeOn, eyeOff := meanRGB(img, rects["eye on"], scale), meanRGB(img, rects["eye off"], scale)
+			t.Logf("eye on %.0f, eye off %.0f", eyeOn, eyeOff)
+			if d := max(math.Abs(eyeOn[0]-eyeOff[0]), math.Abs(eyeOn[1]-eyeOff[1]), math.Abs(eyeOn[2]-eyeOff[2])); d < 5 {
+				t.Errorf("eye on %.0f looks like eye off %.0f", eyeOn, eyeOff)
 			}
 		})
 	}
@@ -86,7 +91,7 @@ func captureInspectorControls(t *testing.T, mode gowt.Appearance, path string) (
 						gowt.Segmented([]gowt.Segment{{Text: "Fixed"}, {Text: "Hug"}, {Text: "Fill"}}, gowt.Small(), gowt.GrowX(), gowt.Selected(1), probe("sizing"))),
 					gowt.Segmented([]gowt.Segment{{Image: img("back"), Tooltip: "Left"}, {Image: img("menu"), Tooltip: "Center"}, {Image: img("forward"), Tooltip: "Right"}},
 						gowt.GrowX(), gowt.Selected(0), probe("align")),
-					gowt.Segmented([]gowt.Segment{{Text: "+"}, {Text: "-"}}, gowt.Momentary(), gowt.Small(), probe("points")),
+					gowt.Segmented([]gowt.Segment{{Image: img("add"), Tooltip: "Add"}, {Image: img("remove"), Tooltip: "Remove"}}, gowt.Momentary(), gowt.Small(), probe("points")),
 					gowt.HBox(gowt.GrowX(),
 						gowt.Button("Wrap", gowt.Toggle(), gowt.Small(), gowt.Checked(true), icon("menu"), probe("wrap on")),
 						gowt.Button("Clip", gowt.Toggle(), gowt.Small(), icon("cut"), probe("clip off")))))

@@ -97,10 +97,23 @@ func (s *Segmented) Fit() NSSize { return segmentedSize(s.View, sel("fittingSize
 // SetFrame places the control in its parent's coordinates.
 func (s *Segmented) SetFrame(r NSRect) { msgRectOnly(s.View, sel("setFrame:"), r) }
 
-// Press selects segment i, unless the control is momentary, and sends the action as a click does.
+// Press presses segment i as VoiceOver does, through the accessibility element of the segment: a
+// momentary control ignores setSelectedSegment:, so a selection followed by the action reports -1.
 func (s *Segmented) Press(i int) {
-	msg(s.View, "setSelectedSegment:", uintptr(i))
-	msg(s.View, "sendAction:to:", msg(s.View, "action"), msg(s.View, "target"))
+	kids := msg(msg(s.View, "cell"), "accessibilityChildren")
+	if kids == 0 || i < 0 || i >= int(msg(kids, "count")) {
+		return
+	}
+	msg(msg(kids, "objectAtIndex:", uintptr(i)), "accessibilityPerformPress")
+}
+
+// SegmentRole is the accessibility role of segment i: AXRadioButton, or AXButton when momentary.
+func (s *Segmented) SegmentRole(i int) string {
+	kids := msg(msg(s.View, "cell"), "accessibilityChildren")
+	if kids == 0 || i < 0 || i >= int(msg(kids, "count")) {
+		return ""
+	}
+	return goString(msg(msg(kids, "objectAtIndex:", uintptr(i)), "accessibilityRole"))
 }
 
 // SegmentCount, SegmentLabel, TrackingMode and ControlSize read the control back for tests.

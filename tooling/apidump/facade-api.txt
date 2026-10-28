@@ -986,6 +986,7 @@ gowt func DateTime(opts ...Option) Option
 gowt func DensityFactor(f float64) Density
 gowt func Destructive() Option
 gowt func Disabled() Option
+gowt func Divider() Option
 gowt func DragFrom(w Widget, d Drag) *DragHandle
 gowt func DropDown() Option
 gowt func DropOn(w Widget, d Drop) *DropHandle
@@ -1178,17 +1179,22 @@ gowt/look Container.AsComposite() *github.com/haiodo/gowt/swt.Composite
 gowt/look ToolbarItem.Enabled field github.com/haiodo/gowt/rx.Reader[bool]
 gowt/look ToolbarItem.Group field []ToolbarItem
 gowt/look ToolbarItem.ID field string
+gowt/look ToolbarItem.Inspector field bool
 gowt/look ToolbarItem.Nav field bool
 gowt/look ToolbarItem.OnClick field func()
 gowt/look ToolbarItem.OnSearch field func(text string)
 gowt/look ToolbarItem.Sidebar field bool
+gowt/look ToolbarItem.Small field bool
 gowt/look ToolbarItem.Space field bool
 gowt/look ToolbarItem.Symbol field string
+gowt/look ToolbarItem.Text field github.com/haiodo/gowt/rx.Reader[string]
 gowt/look ToolbarItem.Title field string
 gowt/look const BackdropGlass Backdrop = 2
 gowt/look const BackdropNone Backdrop = 0
 gowt/look const BackdropTranslucent Backdrop = 1
 gowt/look const Capsule untyped int = -1
+gowt/look func BottomPanelHeight(w *github.com/haiodo/gowt.Window) int
+gowt/look func BottomPanelVisible(w *github.com/haiodo/gowt.Window) bool
 gowt/look func Classic()
 gowt/look func DragsWindow(c Container)
 gowt/look func FocusSearch(w *github.com/haiodo/gowt.Window) bool
@@ -1196,9 +1202,13 @@ gowt/look func GlassBorder() github.com/haiodo/gowt.Option
 gowt/look func GlassButton() github.com/haiodo/gowt.Option
 gowt/look func InspectorVisible(w *github.com/haiodo/gowt.Window) bool
 gowt/look func InspectorWidth(w *github.com/haiodo/gowt.Window) int
+gowt/look func OnBottomPanelChange(w *github.com/haiodo/gowt.Window, f func(visible bool, height int))
 gowt/look func OnInspectorChange(w *github.com/haiodo/gowt.Window, f func(visible bool, width int))
 gowt/look func OnSidebarChange(w *github.com/haiodo/gowt.Window, f func(visible bool, width int))
 gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
+gowt/look func SetBottomPanel(w *github.com/haiodo/gowt.Window, content Container, panel Container, height int)
+gowt/look func SetBottomPanelHeight(w *github.com/haiodo/gowt.Window, height int)
+gowt/look func SetBottomPanelVisible(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)
 gowt/look func SetFullSizeContent(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetGlass(c Container, on bool)

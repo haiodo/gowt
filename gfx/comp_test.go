@@ -162,8 +162,12 @@ func (g *rig) addBox(id int, x, y, w, h float64) *Node {
 	return add(g.s, nil, id, x, y, w, h)
 }
 
+// addBackground covers the 800x600 view and its ring of tiles, so that no tile there is blank.
+func (g *rig) addBackground() { g.addBox(99, -300, -300, 1700, 1400) }
+
 func TestFirstFrameFillsViewAndMargin(t *testing.T) {
 	g := newRig(t, Options{})
+	g.addBackground()
 	g.addBox(1, 100, 100, 50, 50)
 	g.c.SetCamera(Camera{Zoom: 1})
 	g.settle()
@@ -184,6 +188,7 @@ func TestFirstFrameFillsViewAndMargin(t *testing.T) {
 
 func TestDamageRedrawsOnlyTouchedTiles(t *testing.T) {
 	g := newRig(t, Options{})
+	g.addBackground()
 	n := g.addBox(1, 100, 100, 50, 50)
 	g.settle()
 	before := len(g.r.tileDraws())
@@ -206,8 +211,31 @@ func TestDamageRedrawsOnlyTouchedTiles(t *testing.T) {
 	}
 }
 
+func TestBlankTilesHaveNoLayer(t *testing.T) {
+	g := newRig(t, Options{})
+	n := g.addBox(1, 100, 100, 50, 50)
+	g.settle()
+	tiles := g.h.live(GroupTiles)
+	if len(tiles) != 1 || tiles[0].frame.Min != (Point{0, 0}) {
+		t.Fatalf("%d tile layers for one box in one tile", len(tiles))
+	}
+	for _, d := range g.r.tileDraws() {
+		if d.items == 0 {
+			t.Fatal("a blank tile was drawn")
+		}
+	}
+	// the box leaves tile 0 for tile 2: the layer of the tile it left goes
+	g.s.Update(func(tx *Tx) { tx.Move(n, 600, 100) })
+	g.settle()
+	tiles = g.h.live(GroupTiles)
+	if len(tiles) != 1 || tiles[0].frame.Min != (Point{512, 0}) {
+		t.Fatalf("after the move: %d tile layers", len(tiles))
+	}
+}
+
 func TestPanIsWholePixelsAndEvicts(t *testing.T) {
 	g := newRig(t, Options{})
+	g.addBackground()
 	g.addBox(1, 100, 100, 50, 50)
 	g.settle()
 	for i, ox := range []float64{13.3, 100.77, 255.5} {
@@ -272,6 +300,7 @@ func TestZoomGestureScalesThenRedraws(t *testing.T) {
 func TestVisibleTilesFirst(t *testing.T) {
 	g := newRig(t, Options{Workers: 1})
 	g.r.delay = 2 * time.Millisecond
+	g.addBackground()
 	g.addBox(1, 100, 100, 50, 50)
 	g.c.SetCamera(Camera{Zoom: 1})
 	g.settle()

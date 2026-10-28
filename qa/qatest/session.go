@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"sync"
@@ -199,9 +200,14 @@ func (s *session) commandLog() string {
 	return strings.Join(s.cmdLog, "\n") + "\n"
 }
 
+// crashStart finds the line a crash begins with; the goroutine dumps after it fill any tail.
+var crashStart = regexp.MustCompile(`(?m)^(\*\*\* Terminating app|panic: |fatal error: |SIG[A-Z]+: )`)
+
 func (s *session) logTail() string {
 	b, _ := os.ReadFile(filepath.Join(s.dir, "app.log"))
-	if len(b) > 4096 {
+	if loc := crashStart.FindIndex(b); loc != nil {
+		b = b[loc[0]:min(len(b), loc[0]+4096)]
+	} else if len(b) > 4096 {
 		b = b[len(b)-4096:]
 	}
 	return string(b)

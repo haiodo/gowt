@@ -44,7 +44,9 @@ func QADrag(src *Control, sx, sy int32, dst *Control, dx, dy int32) (QADragResul
 
 	start := newDNDEvent()
 	start.Widget, start.X, start.Y, start.Time, start.Doit = upcastDragSourceToWidget(ds), sx, sy, now, true
+	restore := qaNoDragImage(ds)
 	ds.NotifyListeners(DNDDragStart, upcastDNDEventToEvent(start))
+	restore()
 	if !start.Doit || !ds.CanBeginDrag() {
 		return r, nil
 	}

@@ -9,3 +9,6 @@ func qaWire(ds *DragSource, td *TransferData) (func(), bool) {
 		ds.ReleaseCOMInterfaces()
 	}, true
 }
+
+// qaNoDragImage: the effects here build no image from a mouse event, see the darwin file.
+func qaNoDragImage(*DragSource) func() { return func() {} }

@@ -88,6 +88,13 @@ func PanelGlassClip(view *NSView) (radius float64, masks, ok bool) {
 	return msgToF64(l, sel("cornerRadius")), msg(l, "masksToBounds")&0xff != 0, true
 }
 
+// BackdropDark reports whether the material behind view resolves its appearance to Dark Aqua; for tests.
+func BackdropDark(view *NSView) bool {
+	initAssociated()
+	bd := getAssociated(uintptr(view.Id), backdropKey())
+	return bd != 0 && appearanceDark(msg(bd, "effectiveAppearance"))
+}
+
 // BackdropOf names the class of the material InstallBackdrop or InstallPanelBackdrop put behind view,
 // "" without one, and for an NSVisualEffectView its material and blending mode.
 func BackdropOf(view *NSView) (name string, material, blending int) {

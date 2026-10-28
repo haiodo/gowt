@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+GUI tests on the hosted runners, round 2
+- Fixed: on Windows a process that shaped text with a fallback font (emoji) a few thousand times died with `fatal error: too many callback functions`. `TextLayout` took a new `syscall.NewCallback` slot for the metafile enumeration of each such run, and Go never frees one (a pool of 2000). The slot is now reused, as is the one of `Tree` sorting with a comparator.
+- Fixed: a QA drag (`qatest` `DragDropTo`) from a `Tree` or `Table` on macOS asked AppKit for a drag image of the selected rows with a nil event (`NSApp.currentEvent` outside an event). The QA app on the macOS 26 runner died (SIGABRT) in every such drag, and this call is the likely cause; macOS 27 survives it. A QA drag now skips that image; the listeners still get `DragStart`.
+- QA: the artifacts of a failed `qatest` test keep the whole `app.log` instead of its last 4 KiB, and a lost connection quotes the log from the panic or exception line on.
+- Tests: `TestInspectorTextOnGlass` logs the class and appearance of the inspector material and the glass luma of a second capture a second later when it fails. CI keeps the macOS crash reports.
+
 ## v0.13.4 (2026-10-28)
 
 Bottom panel and split dividers (Tenniarb)

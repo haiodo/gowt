@@ -14,3 +14,6 @@ func qaWire(ds *DragSource, td *TransferData) (func(), bool) {
 		}
 	}, true
 }
+
+// qaNoDragImage: the effects here build no image from a mouse event, see the darwin file.
+func qaNoDragImage(*DragSource) func() { return func() {} }

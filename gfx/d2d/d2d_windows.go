@@ -10,6 +10,7 @@ import (
 	"unsafe"
 
 	"github.com/haiodo/gowt/gfx"
+	"github.com/haiodo/gowt/gfx/internal/cache"
 )
 
 // Direct2D vtable slots (IUnknown takes 0..2).
@@ -117,11 +118,18 @@ type Renderer struct {
 	warp    bool
 	text    *textEngine
 
-	sprites sync.Map // spriteKey -> *shadowSprite
-	wholes  sync.Map // wholeKey -> *Image
-	images  sync.Map // *gfx.Raster -> *Image
+	sprites cache.Gen[spriteKey, *shadowSprite]
+	wholes  cache.Gen[wholeKey, *Image]
+	images  cache.Weak[gfx.Raster, *Image]
 	strokes sync.Map // strokeKey -> uintptr
 }
+
+// Generation sizes of the caches, far above what one frame of a dense scene uses.
+const (
+	maxSprites = 256
+	maxWholes  = 256
+	maxLayouts = 4096
+)
 
 var _ gfx.Renderer = (*Renderer)(nil)
 
@@ -137,6 +145,7 @@ func NewRenderer(o Options) (*Renderer, error) {
 		return nil, fmt.Errorf("gfx/d2d: %w", err)
 	}
 	r := &Renderer{opts: o}
+	r.sprites.Max, r.wholes.Max = maxSprites, maxWholes
 	var opt struct{ typ uint32 } // D2D1_FACTORY_OPTIONS: debug level none
 	hr, _, _ := procD2D1F.Call(1, uintptr(unsafe.Pointer(iidD2DFactory1)), uintptr(unsafe.Pointer(&opt)), uintptr(unsafe.Pointer(&r.factory)))
 	if failed(hr) {
@@ -191,9 +200,9 @@ func (r *Renderer) Close() {
 	if r.text != nil {
 		r.text.close()
 	}
-	r.images.Range(func(_, v any) bool { v.(*Image).Release(); return true })
-	r.wholes.Range(func(_, v any) bool { v.(*Image).Release(); return true })
-	r.sprites.Range(func(_, v any) bool { v.(*shadowSprite).release(); return true })
+	r.images.Drain((*Image).Release)
+	r.wholes.Clear() // their cleanups release the bitmaps
+	r.sprites.Clear()
 	r.strokes.Range(func(_, v any) bool { release(v.(uintptr)); return true })
 	release(r.dev)
 	release(r.dxgi)
@@ -356,6 +365,8 @@ func (t *Target) Draw(items []gfx.Item) {
 	vcall(t.dc, d2DCBeginDraw)
 	t.rp.draw(items)
 	t.endDraw()
+	clear(t.rp.hold)
+	t.rp.hold = t.rp.hold[:0]
 	t.pixOK = false
 }
 

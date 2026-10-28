@@ -10,7 +10,10 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strconv"
 	"testing"
+	"time"
 
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/sfnt"
@@ -648,5 +651,59 @@ func BenchmarkGallery(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		tg.Begin(2, gfx.Point{}, white)
 		tg.Draw(items)
+	}
+}
+
+// TestCachesBounded: the bitmap of a Raster goes once the Raster is unreachable, and the layout
+// and shadow caches stay bounded however many strings and box sizes are drawn.
+func TestCachesBounded(t *testing.T) {
+	r, err := NewRenderer(Options{TextCache: true, ShadowSprite: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	tg := r.NewTarget(32, 32)
+	defer tg.Close()
+	draw := func(rec func(*gfx.Recorder)) {
+		rc := gfx.NewRecorderWith(r)
+		rec(rc)
+		tg.Begin(1, gfx.Point{}, gfx.Color{})
+		tg.Draw([]gfx.Item{{Pic: rc.Finish(), M: gfx.Identity(), Alpha: 1}})
+	}
+	keep := gfx.NewRaster(16, 16)
+	for i := 0; i <= 200; i++ {
+		draw(func(rc *gfx.Recorder) {
+			if i < 200 { // the last picture, which the Target's iterator still holds, has only keep
+				rc.DrawImage(gfx.NewRaster(16, 16), 0, 0, 16, 16)
+			}
+			rc.DrawImage(keep, 0, 0, 16, 16)
+		})
+	}
+	deadline := time.Now().Add(5 * time.Second)
+	for r.images.Len() > 1 && time.Now().Before(deadline) {
+		runtime.GC()
+		time.Sleep(time.Millisecond)
+	}
+	if n := r.images.Len(); n != 1 {
+		t.Fatalf("%d bitmaps left for 1 live Raster", n)
+	}
+	if _, ok := r.images.Load(keep); !ok {
+		t.Fatal("the bitmap of the live Raster was released")
+	}
+	f := gfx.Font{Family: "Segoe UI", Size: 12}
+	sh := gfx.Shadow{Blur: 4, Color: gfx.Color{A: 0.3}}
+	for i := 0; i < 3*maxLayouts; i++ {
+		draw(func(rc *gfx.Recorder) {
+			rc.Text(strconv.Itoa(i), 2, 12, f, black)
+			if i < 3*maxWholes {
+				rc.FillShadowRRect(4, 4, 4+float64(i%64)/8, 4+float64(i/64)/8, 2, white, sh)
+			}
+		})
+	}
+	if n := r.text.layouts.Len(); n > 2*maxLayouts {
+		t.Fatalf("%d layouts cached, want at most %d", n, 2*maxLayouts)
+	}
+	if n := r.wholes.Len(); n > 2*maxWholes {
+		t.Fatalf("%d shadow bitmaps cached, want at most %d", n, 2*maxWholes)
 	}
 }

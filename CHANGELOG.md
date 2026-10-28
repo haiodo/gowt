@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+gfx caches no longer grow without end (Tenniarb)
+- Fixed: every backend kept the native copy of a `gfx.Raster` (macOS `CGImage`, Windows `ID2D1Bitmap`, Linux cairo surface) in a map keyed by the `*Raster` and never removed it, so the map also kept the Raster and its pixels alive. A scene that makes a new Raster on each edit grew by the Go pixels plus the native copy every time: Tenniarb measured 804 MB RSS after 10 edits of an element with an image. The map now holds the Raster weakly, and the native copy is released once the Raster is collected. A headless loop of 50 new 1600x1000 Rasters on macOS: Go heap 306 MB before, 7 MB after; RSS 597 MB before, 59 MB after.
+- Fixed: the per-string and per-shadow caches were unbounded as well: macOS laid-out lines, text metrics and shadow sprites; Windows text layouts and shadow bitmaps; Linux text metrics. Each now keeps two generations of a fixed size: 4096 lines or layouts, 16384 metrics, 256 shadows. A dropped native object is released when no draw holds it any more. A pan over the 10k-node synthetic document lays out as many lines as with an unbounded cache (1047 at the mid zoom), and the draw benchmarks are unchanged. Font caches stay unbounded: they grow only with the number of distinct fonts.
+- Tests: `TestRasterImagesReleased`, `TestTextCachesBounded`, `TestTextCacheHitRate` (gfx/cg), `TestCachesBounded` (gfx/cairo, gfx/d2d) and the unit tests of `gfx/internal/cache`. `GFX_CACHE_MEASURE=1` runs `TestRasterChurnMemory`, the loop above.
+
 ## v0.13.5 (2026-10-28)
 
 Split divider on glass (Tenniarb)

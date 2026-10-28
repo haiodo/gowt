@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"unsafe"
 
 	"github.com/haiodo/gowt/gfx"
+	"github.com/haiodo/gowt/gfx/internal/cache"
 )
 
 // DirectWrite vtable slots (IUnknown takes 0..2).
@@ -57,7 +59,7 @@ type textEngine struct {
 
 	resolved sync.Map // fmtKey -> Resolved (per gen, cleared on change)
 	formats  sync.Map // fmtKey -> uintptr
-	layouts  sync.Map // layKey -> *textLayout
+	layouts  cache.Gen[layKey, *textLayout]
 }
 
 type fmtKey struct {
@@ -87,6 +89,7 @@ func newTextEngine() (*textEngine, error) {
 		}
 	}
 	te := &textEngine{factory: fac}
+	te.layouts.Max = maxLayouts
 	if hr := vcall(fac, dwFactoryGetSystemFontCollection, ref(&te.sys), ui(0)); failed(hr) {
 		return nil, hrErr("GetSystemFontCollection", hr)
 	}
@@ -95,7 +98,7 @@ func newTextEngine() (*textEngine, error) {
 
 func (te *textEngine) close() {
 	te.formats.Range(func(_, v any) bool { release(v.(uintptr)); return true })
-	te.layouts.Range(func(_, v any) bool { release(v.(*textLayout).ptr); return true })
+	te.layouts.Clear() // their cleanups release them
 	release(te.custom)
 	release(te.sys)
 	release(te.factory)
@@ -223,7 +226,7 @@ func (te *textEngine) rebuild(files map[string]bool) error {
 	te.custom = coll
 	te.resolved.Clear()
 	te.formats.Range(func(k, v any) bool { release(v.(uintptr)); te.formats.Delete(k); return true })
-	te.layouts.Range(func(k, v any) bool { release(v.(*textLayout).ptr); te.layouts.Delete(k); return true })
+	te.layouts.Clear()
 	return nil
 }
 
@@ -328,18 +331,16 @@ func (te *textEngine) layout(s string, f gfx.Font, cache bool) *textLayout {
 		return te.newLayout(s, f)
 	}
 	k := layKey{f, s}
-	if v, ok := te.layouts.Load(k); ok {
-		return v.(*textLayout)
+	if t, ok := te.layouts.Load(k); ok {
+		return t
 	}
 	t := te.newLayout(s, f)
 	if t == nil {
 		return nil
 	}
-	actual, loaded := te.layouts.LoadOrStore(k, t)
-	if loaded {
-		release(t.ptr)
-	}
-	return actual.(*textLayout)
+	runtime.AddCleanup(t, release, t.ptr) // the cache may drop it while a Target still draws it
+	t, _ = te.layouts.LoadOrStore(k, t)
+	return t
 }
 
 // MeasureText returns the DirectWrite extents of s on one line, cached per font and string.

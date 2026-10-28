@@ -4,6 +4,7 @@ package cg
 
 import (
 	"math"
+	"runtime"
 	"unsafe"
 
 	"github.com/haiodo/gowt/gfx"
@@ -111,6 +112,15 @@ func (r *Renderer) newLine(s string, font uintptr, spacing float64) uintptr {
 	return line
 }
 
+// ctLine owns a cached CTLine: the cache may drop it while another Surface still draws it.
+type ctLine struct{ ref uintptr }
+
+func newCTLine(ref uintptr) *ctLine {
+	l := &ctLine{ref}
+	runtime.AddCleanup(l, cfRelease, ref)
+	return l
+}
+
 // Layout creates an uncached line for s; Release frees it. Used by benchmarks and measuring.
 type Layout struct{ line uintptr }
 
@@ -163,16 +173,12 @@ func (s *Surface) text(str string, op *gfx.Op) {
 	var line uintptr
 	if r.opts.TextCache {
 		k := lineKey{font, str, op.Font.Spacing}
-		if v, ok := r.lines.Load(k); ok {
-			line = v.(uintptr)
-		} else {
-			l := r.newLine(str, font, op.Font.Spacing)
-			v, loaded := r.lines.LoadOrStore(k, l)
-			if loaded {
-				cfRelease(l)
-			}
-			line = v.(uintptr)
+		l, ok := r.lines.Load(k)
+		if !ok {
+			l, _ = r.lines.LoadOrStore(k, newCTLine(r.newLine(str, font, op.Font.Spacing)))
 		}
+		line = l.ref
+		defer runtime.KeepAlive(l)
 	} else {
 		line = r.newLine(str, font, op.Font.Spacing)
 		defer cfRelease(line)

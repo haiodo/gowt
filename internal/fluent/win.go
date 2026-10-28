@@ -43,6 +43,13 @@ var (
 	pDefSubclassProc      = comctl32.NewProc("DefSubclassProc")
 	pRemoveWindowSubclass = comctl32.NewProc("RemoveWindowSubclass")
 	pRegGetValue          = advapi32.NewProc("RegGetValueW")
+	pGetTextExtentPoint32 = gdi32.NewProc("GetTextExtentPoint32W")
+	pSetCapture           = user32.NewProc("SetCapture")
+	pReleaseCapture       = user32.NewProc("ReleaseCapture")
+	pSetCursor            = user32.NewProc("SetCursor")
+	pLoadCursor           = user32.NewProc("LoadCursorW")
+	pGetCursorPos         = user32.NewProc("GetCursorPos")
+	pScreenToClient       = user32.NewProc("ScreenToClient")
 )
 
 const (
@@ -60,6 +67,13 @@ const (
 	wmSize           = 0x5
 	wmEraseBkgnd     = 0x14
 	wmCtlColorStatic = 0x138
+	wmNCHitTest      = 0x84
+	wmSetCursor      = 0x20
+	wmNCLButtonDown  = 0xA1
+
+	htBorder  = 18
+	idcSizeWE = 32644
+	mkShift   = 0x4
 
 	wsBorder  = 0x800000
 	wsVScroll = 0x200000

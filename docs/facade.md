@@ -31,7 +31,7 @@ Window, Panel, base widgets, options), `layout.go`, `widgets_common.go`, `widget
 |---|---|
 | Lists | `Combo`, `List`, `Table` (+`Column`, `TableRow`), `Tree` (+`Node`). Index-based `OnSelect(func(index int))`, `OnActivate`; tree callbacks get `*Node`. |
 | Containers | `Group`, `Tabs` (TabFolder) and `CTabs` (CTabFolder, `OnClose` veto) with `Tab(title, ...)` children (`Closable()` on a CTabs tab), `Pages` (a composite with a StackLayout, children are pages: `Show(i)`, `Current()`), `Split` (SashForm), `Scroll` (ScrolledComposite: children in its content, fitted), `Sash` (bare), `ToolBar`+`ToolItem`, `CoolBar` (children are bands), `Section` (children are rows) |
-| Ranges | `Scale`, `Slider`, `Spinner`, `Progress`, `DateTime` (`time.Time`), `Link` (`OnClick(func(href string))`) |
+| Ranges | `Scale`, `Slider`, `Spinner`, `Number` (`float64`, see "Inspector fields"), `Progress`, `DateTime` (`time.Time`), `Link` (`OnClick(func(href string))`) |
 | Graphics | `Canvas(onPaint func(*GC))`, `GC` (colors, line width, font, Line/Rect/Oval/Fill*, Text, TextSize, Image), `Image`, `RGB` |
 | Menus | `Window.MenuBar()`, `PopupMenu(widget)`, `Menu.Item/Submenu/Separator/Show/OnShow`, `MenuItem`, `Shortcut(keys)` (accelerator plus the "\t" hint), `Window.OnKey(keys, f)` (a display filter for the window); `App.Tray` (nil without a system tray), `App.SetBadge` (count on the app icon) |
 | Dialogs | `Window.MessageBox(Message)`, `Confirm`, `FileDialog(FileDialog)`, `DirDialog`, `ColorDialog`, `FontDialog`: value-type descriptions in, plain values out |
@@ -303,6 +303,28 @@ gowt.Boundary(gowt.GrowX(),
 | No implicit boundary per Window | One broken label would blank the whole window, where today the rest keeps working and the error goes to `OnError`; code without a boundary behaves as before. A boundary around the window's content is one line. |
 
 Ceilings: `rx.Effect` made by a callback (not while the children are made) under a boundary is not owned by it, as before. A panic in the first run of an effect made by `Add` from an event handler is caught, since `Add` is; one made by `rx.Effect` directly in that handler is not.
+
+## Inspector fields (Tenniarb)
+
+A single-line field with a label, an icon or a unit inside its frame, as in the inspectors of Xcode and pen.dev, and a numeric field whose label scrubs the value as in Figma. Example: the inspector of `examples/materialpanel`.
+
+```go
+gowt.Number(0, 2000, gowt.Prefix("W"), gowt.Suffix("px"), gowt.Small(), gowt.Bind(width))   // *rx.State[int] or [float64]
+gowt.Number(0, 100, gowt.PrefixImage(icon), gowt.Suffix("%"), gowt.Step(0.5), gowt.Small(), gowt.OnChange(setOpacity))
+gowt.Text(gowt.Prefix("Name"), gowt.Small(), gowt.Border(), gowt.Bind(name))
+```
+
+| Choice | Reason |
+|---|---|
+| `Prefix`, `PrefixImage`, `Suffix` and the shared `Small` (also Segmented and Button) are options of `Text` and `Number`, not a new field widget | The value is still a native text field: caret, selection, undo, input methods and accessibility stay the platform's. A single-line `Text` without `Search` or `Password` takes them (those cells draw their own icons); elsewhere they go to `OnError`. |
+| `Number(min, max, opts...)` holds a `float64`; `Step` (1 by default) rounds the value and sets the decimals shown; `Value`, `OnChange` and `Bind` take `float64` or `int` (rounded) | Positions and sizes in an inspector are whole numbers, opacity or a scale are not; one widget covers both. `Value(12)` and `Bind(*rx.State[int])` work without conversions at the call site. |
+| A typed number takes effect on Return and on focus loss; Escape and text that is no number put the shown value back; Up and Down step, Shift times ten; a typed suffix and a decimal comma are accepted | Applying on each keystroke would move the diagram through `1`, `12`, `120`. This is how Xcode, Figma and pen.dev fields behave. |
+| Scrub: a horizontal drag on the prefix changes the value by one step per point, ten with Shift; a click without a move starts editing with the text selected; the pointer is the left-right resize cursor there | Figma's behaviour. The value is set on each move, so `OnChange` and `Bind` follow the drag. |
+| macOS: the field's `NSTextFieldCell` moves (object_setClass) to `GowtAffixFieldCell`, a runtime subclass of `NSTextFieldCell` whose `drawingRectForBounds:` leaves out the affixes, `cellSizeForBounds:` adds them and `drawInteriorWithFrame:inView:` draws them in `secondaryLabelColor` (`tertiaryLabelColor` disabled) on the value's baseline; a template image is tinted the same way. A `GowtScrubHandle` view over the field takes the prefix points (`hitTest:`), sets the cursor and runs the scrub | The bezel, focus ring, caret and field editor stay AppKit's, on glass and in both appearances; the field editor is placed from `drawingRectForBounds:`, so typed text never runs under the prefix. A composite of a label and a borderless field would need its own frame and focus ring. The cell class is a sibling of SWT's `SWTTextFieldCell`, not a subclass: SWT calls super through `[self superclass]`, which in a subclass of its class finds its own method again. SWT's cell methods only draw background images and search fields, which these fields do not have. `Small` is `NSControlSizeSmall` with the 11-point font of a small `Segmented` or `Button`. |
+| Windows: the affixes go into the non-client area of the WinUI frame `internal/fluent` paints (`fluent.SetAffix`), in the edit's font and `TextFillColorSecondary`; the scrub captures the mouse from `WM_NCLBUTTONDOWN` there | The edit control keeps the client area for the value. SWT's preferred width leaves the frame out, so the affixes' width becomes the width hint of a field without one. `Small` is 24 dips high, the compact TextBox. |
+| Linux: per-widget CSS widens the `GtkEntry` padding by the affixes; a `draw` handler after GTK's draws them in the text colour at `.dim-label` opacity; the scrub is SWT mouse listeners that keep the press on the prefix from GTK | Frame, focus ring and caret stay the theme's. GTK applies the CSS on the next frame and reports the old padding until then: a width hint covers the affixes until `style-updated`, then the parents are laid out again. `Small` is `min-height: 24px`. |
+
+Ceilings: the affixes are set at creation only (no setters yet). On Windows and Linux a `PrefixImage` keeps the colour it was made with across a theme switch, as every `icons.Get` image there. Windows is built and vetted, not yet checked on screen.
 
 ## Open points
 

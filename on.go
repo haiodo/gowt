@@ -2,6 +2,7 @@ package gowt
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/haiodo/gowt/swt"
@@ -33,9 +34,9 @@ func OnClick[F func() | func(string)](f F) Option {
 
 // OnChange runs f with the new value after the user changed it: the text of a Text, Combo or
 // StyledText (func(string)), the state of a Switch, a Check or Toggle button or a Disclosure
-// (func(bool)), the value of a Scale, Slider or Spinner (func(int)), the value of a DateTime
-// (func(time.Time)).
-func OnChange[F func(string) | func(bool) | func(int) | func(time.Time)](f F) Option {
+// (func(bool)), the value of a Scale, Slider or Spinner (func(int)), the value of a Number
+// (func(float64), or func(int) rounded), the value of a DateTime (func(time.Time)).
+func OnChange[F func(string) | func(bool) | func(int) | func(float64) | func(time.Time)](f F) Option {
 	return hook(func(w Widget) error {
 		switch g := any(f).(type) {
 		case func(string):
@@ -55,6 +56,15 @@ func OnChange[F func(string) | func(bool) | func(int) | func(time.Time)](f F) Op
 		case func(int):
 			if w, ok := w.(interface{ OnChange(func(int)) }); ok {
 				w.OnChange(g)
+				return nil
+			}
+			if n, ok := w.(*NumberView); ok {
+				n.OnChange(func(v float64) { g(int(math.Round(v))) })
+				return nil
+			}
+		case func(float64):
+			if n, ok := w.(*NumberView); ok {
+				n.OnChange(g)
 				return nil
 			}
 		case func(time.Time):
@@ -155,9 +165,16 @@ func Selected(i int) Option {
 }
 
 // Value sets the starting value: the text of a Text, Combo or StyledText (string), the value of a
-// Scale, Slider, Spinner or Progress (int; without it the minimum), the date or time of a DateTime.
-func Value[T string | int | time.Time](v T) Option {
+// Scale, Slider, Spinner or Progress (int; without it the minimum), of a Number (float64 or int), the
+// date or time of a DateTime.
+func Value[T string | int | float64 | time.Time](v T) Option {
 	return hook(func(w Widget) error {
+		if n, ok := w.(*NumberView); ok {
+			if i, ok := any(v).(int); ok {
+				n.SetValue(float64(i))
+				return nil
+			}
+		}
 		if w, ok := w.(interface{ SetValue(T) }); ok {
 			w.SetValue(v)
 			return nil

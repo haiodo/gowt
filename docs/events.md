@@ -22,12 +22,12 @@ gowt.Tree(gowt.OnSelect(func(n *gowt.Node) { show(n.Text()) }))
 | Option | Widgets |
 |---|---|
 | `OnClick(func())` | Button; `OnClick(func(href string))` Link |
-| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
+| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; Number `func(float64)` or `func(int)`; DateTime `func(time.Time)` |
 | `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)` |
 | `OnFocus(func(bool))` | any widget: true on gaining keyboard focus, false on losing it; a container reports its own focus only |
 | `OnActivate(f)` | Text `func()` (Enter); List, Table `func(int)`; Tree `func(*Node)` |
 
-The initial state goes in options too: `Hint(s)` for Text, `Checked(b)` for Switch and Check/Radio Button, `Selected(i)` for Combo, List, Table, Tabs and CTabs, `Value(v)` for Scale, Slider, Spinner and Progress (int), for Text, Combo and StyledText (string) and for DateTime (`time.Time`).
+The initial state goes in options too: `Hint(s)` for Text, `Checked(b)` for Switch and Check/Radio Button, `Selected(i)` for Combo, List, Table, Tabs and CTabs, `Value(v)` for Scale, Slider, Spinner and Progress (int), Number (float64 or int), for Text, Combo and StyledText (string) and for DateTime (`time.Time`).
 
 The `OnX` methods of the same names (`text.OnChange(f)`, `table.OnSelect(f)`) add a handler to a widget that exists already, through `Ref`. Calling `OnX` again adds another listener; nothing is replaced. Menu and tool items take their callback as an argument: `menu.Item("Quit", app.Quit)`; `nil` means none.
 
@@ -208,7 +208,7 @@ go func() { for v := range updates { count.Post(v) } }()    // from any goroutin
 | `rx.Untrack(fn)` | reads in `fn` do not subscribe |
 | `rx.Batch(fn)`, `rx.Flush()` | run the pending effects now instead of after the current event handler |
 | `app.Flush()` | `rx.Flush()`, then the layouts the bindings put off (a longer `BindText` text) instead of on the next event-loop turn: for timing one update or measuring a widget right after a change |
-| `gowt.Bind(state)` | option, two-way: `*rx.State[string]` Text and Combo text, `[bool]` Switch and Check Button, `[int]` Scale, Slider, Spinner value or Combo and List index (Progress one way) |
+| `gowt.Bind(state)` | option, two-way: `*rx.State[string]` Text and Combo text, `[bool]` Switch and Check Button, `[int]` Scale, Slider, Spinner value or Combo and List index (Progress one way), `[float64]` or `[int]` Number |
 | `gowt.BindText(r)` | option: the text of a Label, Button or Link follows an `rx.Reader[string]` (a `State` or a `Derived`) |
 | `gowt.BindEnabled(r)`, `gowt.BindVisible(r)` | options on any widget, `rx.Reader[bool]` |
 | `gowt.Rows(list, key, fill)`, `gowt.Nodes(list, key, children, fill)`, `gowt.Items(list)` | options: one Table row, Tree node or List/Combo entry per element of an `rx.Reader[[]T]`, matched by key, see below |

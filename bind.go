@@ -2,6 +2,7 @@ package gowt
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
@@ -22,8 +23,9 @@ func Watch[T any](w Widget, r rx.Reader[T], apply func(T)) {
 // Bind keeps the widget's value and s in step both ways, as Svelte's bind:value: a user's edit sets
 // s, a Set of s changes the widget. The value is the text of a Text or Combo (string), the state of
 // a Switch or a Check or Toggle button or whether a Disclosure is expanded (bool), the value of a Scale, Slider, Spinner or Progress (one
-// way), or the selected index of a Combo, List or Segmented (int). A Text is rewritten only when s differs from it, so typing keeps the caret.
-func Bind[T string | bool | int](s *rx.State[T]) Option {
+// way), the selected index of a Combo, List or Segmented (int), or the value of a Number (float64, or int rounded). A Text is
+// rewritten only when s differs from it, so typing keeps the caret.
+func Bind[T string | bool | int | float64](s *rx.State[T]) Option {
 	return hook(func(w Widget) error {
 		switch s := any(s).(type) {
 		case *rx.State[string]:
@@ -32,6 +34,12 @@ func Bind[T string | bool | int](s *rx.State[T]) Option {
 			return bindBool(w, s)
 		case *rx.State[int]:
 			return bindInt(w, s)
+		case *rx.State[float64]:
+			n, ok := w.(*NumberView)
+			if !ok {
+				return fmt.Errorf("gowt: Bind(*rx.State[float64]) applies to Number, not to %s", nameOf(w.control()))
+			}
+			twoWay(n, s, n.Value, n.SetValue, n.onUser)
 		}
 		return nil
 	})
@@ -79,8 +87,10 @@ func bindInt(w Widget, s *rx.State[int]) error {
 		twoWay(w, s, w.Index, w.Select, w.listen)
 	case *ProgressView:
 		twoWay(w, s, w.Value, w.SetValue, func(func()) func() { return func() {} }) // the user does not move a progress bar
+	case *NumberView:
+		twoWay(w, s, func() int { return int(math.Round(w.Value())) }, func(v int) { w.SetValue(float64(v)) }, w.onUser)
 	default:
-		return fmt.Errorf("gowt: Bind(*rx.State[int]) applies to Scale, Slider, Spinner, Progress, Combo, List and Segmented, not to %s", nameOf(w.control()))
+		return fmt.Errorf("gowt: Bind(*rx.State[int]) applies to Scale, Slider, Spinner, Progress, Number, Combo, List and Segmented, not to %s", nameOf(w.control()))
 	}
 	return nil
 }

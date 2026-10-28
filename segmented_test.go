@@ -100,7 +100,7 @@ func TestToggleButton(t *testing.T) {
 		want := []string{
 			"gowt: Toggle does not apply to Label",
 			"gowt: Momentary applies to Segmented, not to Button",
-			"gowt: Small applies to Segmented and Button, not to Label",
+			"gowt: Small applies to Segmented, Button, a single-line Text and Number, not to Label",
 			"gowt: Borderless applies to a push or Toggle Button, not to Button",
 		}
 		if got := strings.Join(*errs, "\n"); got != strings.Join(want, "\n") {

@@ -3,6 +3,7 @@
 package fluent
 
 import (
+	"syscall"
 	"unsafe"
 
 	"github.com/haiodo/gowt/swt"
@@ -16,6 +17,54 @@ type textFrame struct {
 	off   bool
 	surf  *surface // the surface that frames a Text with off set
 	in    [4]int32 // left, top, right, bottom padding of the last NCCALCSIZE
+	affix *Affix
+	drag  *int32 // the last client x of a scrub of the prefix, nil while none runs
+	moved bool   // the scrub has moved
+}
+
+// Affix is what SetAffix shows inside the frame of a single-line Text around its value.
+type Affix struct {
+	Prefix, Suffix string
+	Image          *swt.Image // drawn instead of Prefix
+	// Drag makes the prefix a scrub handle: a drag reports each horizontal move in points, a click
+	// without a move focuses the Text with its text selected.
+	Drag func(dx float64, shift bool)
+}
+
+// affixGap is the space in dips between an affix and the value.
+const affixGap = 6
+
+// SetAffix shows a in the non-client area of a Text framed by Text, in its font and the WinUI
+// secondary text colour; the client area, where the edit draws the value, keeps clear of it. It
+// returns the dips the affixes take, which SWT's preferred width of the edit leaves out.
+func SetAffix(t *swt.Text, a Affix) (width int) {
+	h := uintptr(t.Handle)
+	f := frames[h]
+	if f == nil || f.multi {
+		return 0
+	}
+	f.affix = &a
+	frameChanged(h)
+	lead, trail := f.affixWidths(h)
+	return int(swt.DPIUtilPixelToPoint(lead+trail, int32(dpiOf(h)*100/96)))
+}
+
+// affixWidths returns the pixels the prefix and the suffix take, each with its gap.
+func (f *textFrame) affixWidths(hwnd uintptr) (lead, trail int32) {
+	a := f.affix
+	if a == nil {
+		return 0, 0
+	}
+	dpi := dpiOf(hwnd)
+	if a.Image != nil {
+		lead = px(float64(a.Image.GetBounds().Width), dpi) + px(affixGap, dpi)
+	} else if a.Prefix != "" {
+		lead = textWidth(hwnd, a.Prefix) + px(affixGap, dpi)
+	}
+	if a.Suffix != "" {
+		trail = textWidth(hwnd, a.Suffix) + px(affixGap, dpi)
+	}
+	return lead, trail
 }
 
 var frames = map[uintptr]*textFrame{}
@@ -89,6 +138,12 @@ func (f *textFrame) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr
 		rc := (*rect)(ptr(lp))
 		dpi := dpiOf(hwnd)
 		left, right := px(10, dpi), px(6, dpi)
+		if lead, trail := f.affixWidths(hwnd); lead+trail > 0 {
+			left += lead
+			if trail > 0 {
+				right = px(10, dpi) + trail
+			}
+		}
 		if f.off {
 			left = max(f.surf.radiusPx()*45/100, px(8, dpi))
 			right = left
@@ -122,6 +177,8 @@ func (f *textFrame) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr
 		r := def()
 		redrawFrame(hwnd)
 		return r, true
+	case wmNCHitTest, wmSetCursor, wmNCLButtonDown, wmMouseMove, wmLButtonUp, wmCaptureChanged:
+		return f.scrub(hwnd, msg, wp, lp, def)
 	case wmMouseWheel:
 		// Without a scroll bar the edit ignores the wheel.
 		if style(hwnd)&wsVScroll == 0 && f.multi {
@@ -133,11 +190,14 @@ func (f *textFrame) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr
 	return 0, false
 }
 
-func (f *textFrame) paint(hwnd uintptr) { paintInput(hwnd, &f.t.Control) }
+func (f *textFrame) paint(hwnd uintptr) { paintInputAffix(hwnd, &f.t.Control, f) }
 
 // paintInput paints the frame of the single-line edit hwnd, which belongs to the control c, in its
 // non-client area.
-func paintInput(hwnd uintptr, c *swt.Control) {
+func paintInput(hwnd uintptr, c *swt.Control) { paintInputAffix(hwnd, c, nil) }
+
+// paintInputAffix is paintInput with the affixes of f, if f has any.
+func paintInputAffix(hwnd uintptr, c *swt.Control, f *textFrame) {
 	var wr, cr rect
 	call(pGetWindowRect, hwnd, uintptr(unsafe.Pointer(&wr)))
 	call(pGetClientRect, hwnd, uintptr(unsafe.Pointer(&cr)))
@@ -169,7 +229,11 @@ func paintInput(hwnd uintptr, c *swt.Control) {
 		fill = pal.Black.over(0.04, bg)
 	}
 	r := px(4, dpi)
-	drawBuffered(d, hdc, w, h, func(p *painter) {
+	var font uintptr
+	if f != nil && f.affix != nil {
+		font = call(pSendMessage, hwnd, wmGetFont, 0, 0)
+	}
+	drawBuffered(d, hdc, w, h, font, func(p *painter) {
 		p.fillRect(bg, 0, 0, w, h)
 		p.fillRound(fill, 0, 0, w, h, r)
 		p.strokeRound(pal.Stroke(bg), 0, 0, w, h, r, 1)
@@ -179,7 +243,119 @@ func paintInput(hwnd uintptr, c *swt.Control) {
 		case enabled:
 			p.line(pal.StrongStroke(bg), r, h-1, w-1-r, h-1, 1)
 		}
+		if font != 0 {
+			// TextFillColorSecondary: black at 61% on light, white at 79% on dark.
+			ink := pal.Black.over(0.61, fill)
+			if pal.Dark {
+				ink = pal.Black.over(0.79, fill)
+			}
+			if !enabled {
+				ink = pal.Disabled
+			}
+			f.drawAffix(p, hwnd, w, ink)
+		}
 	})
+}
+
+// drawAffix draws the prefix where the value would start without it and the suffix where it would
+// end, in the line of the value: the client area holds one line of the font from its top.
+func (f *textFrame) drawAffix(p *painter, hwnd uintptr, w int32, ink RGB) {
+	a := f.affix
+	dpi := dpiOf(hwnd)
+	x, top := px(10, dpi), f.in[1]
+	th := textHeight(hwnd)
+	z := p.gc.GetZoom()
+	p.gc.SetForeground(p.color(ink))
+	switch {
+	case a.Image != nil:
+		b := a.Image.GetBounds()
+		ih := swt.DPIUtilPointToPixel(b.Height, z)
+		p.gc.DrawImage(a.Image, swt.DPIUtilPixelToPoint(x, z), swt.DPIUtilPixelToPoint(top+(th-ih)/2, z))
+	case a.Prefix != "":
+		p.gc.DrawStringInPixels(a.Prefix, x, top, true)
+	}
+	if a.Suffix != "" {
+		sw := p.gc.TextExtentInPixels(a.Suffix, swt.DRAW_TRANSPARENT).X
+		p.gc.DrawStringInPixels(a.Suffix, w-px(10, dpi)-sw, top, true)
+	}
+}
+
+// scrub runs a drag of the prefix: the press in the non-client area captures the mouse, each move
+// reports its x distance in dips, a release without a move focuses the field with its text selected.
+func (f *textFrame) scrub(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, bool) {
+	if f.affix == nil || f.affix.Drag == nil || !f.t.IsEnabled() {
+		return 0, false
+	}
+	switch msg {
+	case wmNCHitTest:
+		// The default hit test of a borderless child gives no code to the non-client area.
+		if f.overPrefix(hwnd, int32(int16(lp)), int32(int16(lp>>16))) {
+			return htBorder, true
+		}
+	case wmSetCursor:
+		var pt point
+		call(pGetCursorPos, uintptr(unsafe.Pointer(&pt)))
+		if f.overPrefix(hwnd, pt.x, pt.y) {
+			call(pSetCursor, call(pLoadCursor, 0, idcSizeWE))
+			return 1, true
+		}
+	case wmNCLButtonDown:
+		var pt = point{int32(int16(lp)), int32(int16(lp >> 16))}
+		if !f.overPrefix(hwnd, pt.x, pt.y) {
+			return 0, false
+		}
+		call(pScreenToClient, hwnd, uintptr(unsafe.Pointer(&pt)))
+		f.drag, f.moved = &pt.x, false
+		call(pSetCapture, hwnd)
+		return 0, true
+	case wmMouseMove:
+		if f.drag == nil {
+			return 0, false
+		}
+		x := int32(int16(lp))
+		if dx := x - *f.drag; dx != 0 {
+			*f.drag = x
+			f.moved = true
+			f.affix.Drag(float64(dx)*96/float64(dpiOf(hwnd)), wp&mkShift != 0)
+		}
+		return 0, true
+	case wmLButtonUp:
+		if f.drag == nil {
+			return 0, false
+		}
+		f.drag = nil
+		call(pReleaseCapture)
+		if !f.moved {
+			f.t.SetFocus()
+			f.t.SelectAll()
+		}
+		return 0, true
+	case wmCaptureChanged:
+		f.drag = nil
+	}
+	return 0, false
+}
+
+// overPrefix reports whether the screen point x, y is on the frame left of the client area.
+func (f *textFrame) overPrefix(hwnd uintptr, x, y int32) bool {
+	var wr rect
+	call(pGetWindowRect, hwnd, uintptr(unsafe.Pointer(&wr)))
+	return y >= wr.top && y < wr.bottom && x >= wr.left && x < wr.left+f.in[0]
+}
+
+// textWidth is the width in pixels of s in the font of the window.
+func textWidth(hwnd uintptr, s string) int32 {
+	hdc := call(pGetDC, hwnd)
+	if hdc == 0 {
+		return 0
+	}
+	defer call(pReleaseDC, hwnd, hdc)
+	old := call(pSelectObject, hdc, call(pSendMessage, hwnd, wmGetFont, 0, 0))
+	defer call(pSelectObject, hdc, old)
+	u, _ := syscall.UTF16FromString(s)
+	var size point
+	call(pGetTextExtentPoint32, hdc, uintptr(unsafe.Pointer(&u[0])), uintptr(len(u)-1), uintptr(unsafe.Pointer(&size)))
+	return size.x
 }
 
 // paintInSurface fills the non-client area of a Text in a surface with the slice of the surface under it.

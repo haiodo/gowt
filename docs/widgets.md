@@ -22,7 +22,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `MultiSelect()` | List, Table, Tree |
 | `Borderless()`, `Circle()` | push Button: no frame (an icon beside a field, + and - in a section header); round. A `Toggle` Button takes `Borderless` too: macOS no bezel, the symbol in the accent colour while on, GTK `flat`, Windows Subtle. `Circle()` with `look.GlassButton()` is a glass circle on macOS 26, the paperclip of the iPad composer. Give a round button a square `Size`. Windows keeps the rectangle |
 | `Primary()`, `Destructive()` | push Button: the main action of the window (also its default button, Enter presses it), and an action that deletes or discards. macOS: the accent default button and `hasDestructiveAction`; GTK: `suggested-action` and `destructive-action`; Windows: the WinUI accent fill for Primary, a standard button for Destructive. Together they are a red default button |
-| `Small()` | Segmented and Button: the small control size of an inspector, macOS `NSControlSizeSmall` with its 11-point font, Windows and Linux the font smaller by the same ratio |
+| `Small()` | Segmented, Button, a single-line Text and Number: the small control size of an inspector, macOS `NSControlSizeSmall` with its 11-point font, Windows and Linux the font smaller by the same ratio and a field 24 points high |
 | `Momentary()` | Segmented: the segments are buttons that run `OnSelect` and do not stay selected |
 | `Collapsed()`, `Trailing(children...)` | Disclosure: start folded; widgets at the right end of the header |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |

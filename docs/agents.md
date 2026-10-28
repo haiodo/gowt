@@ -87,6 +87,7 @@ gowt.Tree(gowt.OnSelect(func(n *gowt.Node) { show(n.Text()) }))
 gowt.Table(gowt.Init(func(t *gowt.TableView) { t.ShowHeader(false); t.ShowLines(false); t.Row(name).SetImageAt(0, img) }))
 gowt.Switch("Wi-Fi", gowt.Checked(true), gowt.OnChange(func(on bool) { wifi(on) }))
 gowt.Scale(0, 100, gowt.Value(30), gowt.OnChange(func(v int) { volume(v) }))
+gowt.Number(0, 2000, gowt.Prefix("W"), gowt.Suffix("px"), gowt.Small(), gowt.Bind(width)) // inspector field; drag "W" to scrub
 
 on := rx.New(true)                                 // Svelte-style state
 gowt.Switch("Enable", gowt.Bind(on))               // two-way: a click sets on, on.Set(false) unchecks
@@ -109,7 +110,7 @@ gowt.Boundary(gowt.Failed(func(err error, reset func()) gowt.Option { // errors 
 }), gowt.Label("", gowt.BindText(summary)))
 ```
 
-One event name per concept: the handler's parameter is what the widget reports (`OnChange(func(string))` for a Text, `OnChange(func(int))` for a Scale). `Bind` takes `*rx.State[string]` (Text, Combo text), `[bool]` (Switch, Check button) or `[int]` (Scale, Slider, Spinner, Combo or List index). A binding lives as long as its widget. `gowt.Watch(w, reader, apply)` binds anything else. The methods of the same names (`text.OnChange(f)`, `table.OnSelect(f)`) add handlers after creation; menu and tool items take their callback as an argument.
+One event name per concept: the handler's parameter is what the widget reports (`OnChange(func(string))` for a Text, `OnChange(func(int))` for a Scale). `Bind` takes `*rx.State[string]` (Text, Combo text), `[bool]` (Switch, Check button) or `[int]` (Scale, Slider, Spinner, Combo or List index), `[float64]` (Number). A binding lives as long as its widget. `gowt.Watch(w, reader, apply)` binds anything else. The methods of the same names (`text.OnChange(f)`, `table.OnSelect(f)`) add handlers after creation; menu and tool items take their callback as an argument.
 
 Widgets belong to the UI thread: touch them only in the setup function and in callbacks. `Async`, `Sync`, `Quit` and `State.Post` are the calls safe from any goroutine.
 
@@ -214,7 +215,9 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Multiline()`, `Password()`, `Search()` | Text |
 | `ReadOnly()` | Text, Combo, Spinner, StyledText |
 | `Border()` | VBox, HBox, Grid, Flow, Fill, Form, Pages, Boundary, Label, Text, Canvas, Scroll, CTabs, Spinner, StyledText |
-| `NoBorder()` | List, Table, Tree, Text, StyledText |
+| `NoBorder()` | List, Table, Tree, Text, Number, StyledText |
+| `Prefix(s)`, `PrefixImage(img)`, `Suffix(s)` | single-line Text, Number |
+| `Step(x)` | Number |
 | `MultiSelect()` | List, Table, Tree |
 | `NoBackground()` | StyledText |
 | `CellSelect()` | Tree |
@@ -229,7 +232,7 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Borderless()` | push or Toggle Button |
 | `Circle()` | push Button |
 | `Toggle()` | Button |
-| `Small()` | Segmented, Button |
+| `Small()` | Segmented, Button, single-line Text, Number |
 | `Momentary()` | Segmented |
 | `Collapsed()`, `Trailing(children...)` | Disclosure |
 | `Fit()` | Table.Column, Tree.Column |
@@ -240,14 +243,14 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `AsTime()`, `AsCalendar()` | DateTime |
 | `Right()`, `Center()` | Table.Column, Tree.Column, Label |
 | `OnClick(f)` | Button `func()`, Link `func(href string)` |
-| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio/Toggle Button `func(bool)`; Scale, Slider, Spinner `func(int)`; DateTime `func(time.Time)` |
+| `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio/Toggle Button `func(bool)`; Scale, Slider, Spinner `func(int)`; Number `func(float64)` or `func(int)`; DateTime `func(time.Time)` |
 | `OnSelect(f)` | Combo, List, Table, Tabs, CTabs, Segmented `func(int)`; Tree `func(*Node)` |
 | `OnActivate(f)` | Text `func()`; List, Table `func(int)`; Tree `func(*Node)` |
 | `Hint(s)` | Text |
 | `Checked(b)` | Switch, Check/Radio/Toggle Button |
 | `Selected(i)` | Combo, List, Table, Tabs, CTabs, Segmented |
-| `Value(n)` | Scale, Slider, Spinner, Progress |
-| `Bind(state)` | Text, Combo (`string`); Switch, Check or Toggle Button, Disclosure (`bool`); Scale, Slider, Spinner, Combo, List, Segmented (`int`) |
+| `Value(n)` | Scale, Slider, Spinner, Progress, Number |
+| `Bind(state)` | Text, Combo (`string`); Switch, Check or Toggle Button, Disclosure (`bool`); Scale, Slider, Spinner, Combo, List, Segmented (`int`); Number (`float64` or `int`) |
 | `BindText(r)` | Label, Button, Link |
 | `Rows(list, key, fill)` | Table |
 | `Nodes(list, key, children, fill)` | Tree |

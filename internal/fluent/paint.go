@@ -66,7 +66,8 @@ func (p *painter) line(c RGB, x1, y1, x2, y2, lw int32) {
 
 // drawBuffered paints a w by h image off screen and copies it to dst. GDI+ ignores the clip region of a
 // device context, so a non-client paint that must leave the client area alone goes through BitBlt.
-func drawBuffered(d *swt.Display, dst uintptr, w, h int32, fn func(p *painter)) {
+// A font other than 0 is the one the painter's text is drawn in.
+func drawBuffered(d *swt.Display, dst uintptr, w, h int32, font uintptr, fn func(p *painter)) {
 	mem := call(pCreateCompatDC, dst)
 	bmp := call(pCreateCompatBmp, dst, uintptr(w), uintptr(h))
 	if mem == 0 || bmp == 0 {
@@ -75,6 +76,9 @@ func drawBuffered(d *swt.Display, dst uintptr, w, h int32, fn func(p *painter)) 
 	defer call(pDeleteDC, mem)
 	defer call(pDeleteObject, bmp)
 	call(pSelectObject, mem, bmp)
+	if font != 0 {
+		call(pSelectObject, mem, font)
+	}
 	p := newPainter(d, mem)
 	fn(p)
 	p.done()

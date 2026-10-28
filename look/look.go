@@ -282,7 +282,7 @@ func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	if l.side != nil {
 		l.side.sash.Dispose()
 	}
-	l.side = l.newPane(sb, width, false)
+	l.side = l.newPane(sb, width, sidebarPane)
 	setSidebarChrome(w.Unwrap(), sb, &l.side.sash.Control)
 	padSidebar(sb)
 	b := barOf(w)
@@ -321,9 +321,36 @@ func SetInspector(w *gowt.Window, content, inspector Container, width int) {
 	if l.insp != nil {
 		l.insp.sash.Dispose()
 	}
-	l.insp = l.newPane(ib, width, true)
+	l.insp = l.newPane(ib, width, inspectorPane)
 	setInspectorChrome(w.Unwrap(), ib, &l.insp.sash.Control)
 	barOf(w).build()
+}
+
+// SetBottomPanel puts a panel under the content of w, height points high, for a console or a code
+// pane below a canvas. It shares the layout of SetSidebar and SetInspector: content is the same
+// content, and the panel spans its width, between a sidebar and an inspector, down to the bottom
+// window edge, with a hairline in the system separator colour along its top. On macOS 26 the panel
+// is the inspector's edge-to-edge glass, and under a floating sidebar the glass runs on to the
+// window's left edge, as AppKit extends a split item beneath the sidebar; the panel's children stay
+// right of the sidebar. The panel gets the SetMaterial material, so a SetMaterial on it is turned
+// off. Older macOS shows the flush material; Windows and Linux the SetMaterial background, flush with
+// the content, with the hairline in the sash gap above it.
+//
+// The user resizes the panel by dragging its top edge, which stops at 60 points and leaves the
+// content at least 100. Read and change that with BottomPanelVisible, SetBottomPanelVisible,
+// BottomPanelHeight and SetBottomPanelHeight, and keep it between runs with OnBottomPanelChange.
+func SetBottomPanel(w *gowt.Window, content, panel Container, height int) {
+	l := panesOf(w, content)
+	pb := panel.AsComposite()
+	if l.bottom != nil {
+		l.bottom.sash.Dispose()
+	}
+	if on, _ := pb.GetDataKey(materialOnKey).(bool); on {
+		SetMaterial(panel, false)
+	}
+	l.bottom = l.newPane(pb, height, bottomPane)
+	setBottomChrome(w.Unwrap(), pb, &l.bottom.sash.Control)
+	w.Unwrap().Layout()
 }
 
 // panesOf returns the layout of a SetSidebar or SetInspector window, making it the layout of w with
@@ -348,6 +375,7 @@ func panesOf(w *gowt.Window, content Container) *paneLayout {
 		l.fitMinSize()
 	})
 	s.SetLayout(l)
+	s.AddPaintListener(painter(l.paintUnder))
 	// Without gowt.Focused the window opens with the focus on its first list, as Finder does, not on a
 	// button of the sidebar.
 	s.SetDataKeyValue(focusDefaultKey, func() *swt.Control {
@@ -439,12 +467,35 @@ func InspectorWidth(w *gowt.Window) int { return inspectorOf(w).widthOrZero() }
 // resized: by SetInspectorVisible, SetInspectorWidth and arrow keys on its edge, and once at the end of a drag.
 func OnInspectorChange(w *gowt.Window, f func(visible bool, width int)) { inspectorOf(w).addChange(f) }
 
+// SetBottomPanelVisible shows or hides the panel of a SetBottomPanel window; hidden, the content takes
+// its height.
+func SetBottomPanelVisible(w *gowt.Window, on bool) { bottomOf(w).setVisible(on) }
+
+// BottomPanelVisible reports whether the panel of a SetBottomPanel window is shown; false without one.
+func BottomPanelVisible(w *gowt.Window) bool { return bottomOf(w).visible() }
+
+// SetBottomPanelHeight sets the panel height in points, at least 60; a hidden panel comes back at it.
+func SetBottomPanelHeight(w *gowt.Window, height int) { bottomOf(w).setWidth(height) }
+
+// BottomPanelHeight is the panel height in points, also while it is hidden; 0 without SetBottomPanel.
+func BottomPanelHeight(w *gowt.Window) int { return bottomOf(w).widthOrZero() }
+
+// OnBottomPanelChange runs f after the panel of a SetBottomPanel window was shown, hidden or resized:
+// by SetBottomPanelVisible, SetBottomPanelHeight and arrow keys on its edge, and once at the end of a
+// drag.
+func OnBottomPanelChange(w *gowt.Window, f func(visible bool, height int)) { bottomOf(w).addChange(f) }
+
 // minSidebarWidth is where a drag of the sidebar edge stops without Sidebar toolbar items,
 // minInspectorWidth where a drag of the inspector edge stops; minContentWidth is the content such a
 // drag leaves at least. They are the points of the doc comments scaled by the density, see gowt.Scaled.
 func minSidebarWidth() int32   { return int32(gowt.Scaled(120)) }
 func minInspectorWidth() int32 { return int32(gowt.Scaled(160)) }
 func minContentWidth() int32   { return int32(gowt.Scaled(200)) }
+
+// minBottomHeight is where a drag of the bottom panel edge stops, minContentHeight the content such a
+// drag leaves at least.
+func minBottomHeight() int32  { return int32(gowt.Scaled(60)) }
+func minContentHeight() int32 { return int32(gowt.Scaled(100)) }
 
 func layoutOf(w *gowt.Window) *paneLayout {
 	if lo := w.Unwrap().GetLayout(); lo != nil {
@@ -468,35 +519,58 @@ func inspectorOf(w *gowt.Window) *pane {
 	return nil
 }
 
-// paneLayout lays out a SetSidebar or SetInspector window: sidebar, content, inspector.
+func bottomOf(w *gowt.Window) *pane {
+	if l := layoutOf(w); l != nil {
+		return l.bottom
+	}
+	return nil
+}
+
+// paneLayout lays out a SetSidebar, SetInspector or SetBottomPanel window: sidebar, content over the
+// bottom panel, inspector.
 type paneLayout struct {
 	*swt.Layout
-	w          *gowt.Window
-	side, insp *pane // nil without SetSidebar, SetInspector
-	content    *swt.Control
-	itemsMin   int32 // the width the Sidebar items of the macOS toolbar need, from its last layout
+	w                  *gowt.Window
+	side, insp, bottom *pane // nil without SetSidebar, SetInspector, SetBottomPanel
+	content            *swt.Control
+	// column is the frame of the content and the bottom panel at the last layout, under the area behind
+	// a floating sidebar beside the content.
+	column, under [4]int32
+	itemsMin      int32 // the width the Sidebar items of the macOS toolbar need, from its last layout
 	// appMin is the minimum size the app set, lastMin the one fitMinSize set last, once minSet
 	appMin, lastMin [2]int32
 	minSet          bool
 }
 
-// pane is the sidebar or the inspector: its composite, the sash on its inner edge and its state. The
-// methods take a nil pane, which a window without that pane has.
+type paneKind int
+
+const (
+	sidebarPane paneKind = iota
+	inspectorPane
+	bottomPane
+)
+
+// pane is the sidebar, the inspector or the bottom panel: its composite, the sash on its inner edge and
+// its state. The methods take a nil pane, which a window without that pane has.
 type pane struct {
 	l        *paneLayout
 	c        *swt.Composite
 	sash     *swt.Sash // the draggable edge between the pane and the content
-	trailing bool      // the inspector
-	width    int32
+	kind     paneKind
+	width    int32 // the height of the bottom panel
 	hidden   bool
 	dragging bool
 	from     int32 // the width when the drag began
 	onChange []func(visible bool, width int)
 }
 
-func (l *paneLayout) newPane(c *swt.Composite, width int, trailing bool) *pane {
-	p := &pane{l: l, c: c, width: int32(width), trailing: trailing}
-	p.sash = swt.NewSash(l.w.Unwrap(), swt.VERTICAL|swt.SMOOTH)
+func (l *paneLayout) newPane(c *swt.Composite, width int, kind paneKind) *pane {
+	p := &pane{l: l, c: c, width: int32(width), kind: kind}
+	dir := int32(swt.VERTICAL)
+	if kind == bottomPane {
+		dir = swt.HORIZONTAL
+	}
+	p.sash = swt.NewSash(l.w.Unwrap(), dir|swt.SMOOTH)
 	p.sash.MoveAbove(nil)
 	for _, t := range []int32{swt.Selection, swt.MouseDown, swt.MouseUp} {
 		p.sash.AddListener(t, p)
@@ -537,11 +611,17 @@ func (p *pane) addChange(f func(visible bool, width int)) {
 
 // inset is the gap between the pane and the window edges.
 func (p *pane) inset() int32 {
-	if p.trailing {
+	switch p.kind {
+	case inspectorPane:
 		return inspectorInset()
+	case bottomPane:
+		return 0
 	}
 	return sidebarInset()
 }
+
+// floats is true for a shown sidebar inset from the window edges, which the content runs under.
+func (p *pane) floats() bool { return p.visible() && p.inset() > 0 }
 
 // room is the width the pane takes from the content: 0 for none or a hidden one.
 func (p *pane) room() int32 {
@@ -568,7 +648,7 @@ func (p *pane) apply() {
 		focusIn = focusIn || c == &p.c.Control
 	}
 	p.c.SetVisible(!p.hidden)
-	if b := bars[s]; b != nil && !p.trailing {
+	if b := bars[s]; b != nil && p.kind == sidebarPane {
 		b.sidebarShown(!p.hidden)
 	}
 	s.Layout()
@@ -600,8 +680,11 @@ func (p *pane) notify() {
 // Windows and Linux row); for the inspector minInspectorWidth, or the Windows and Linux strip of its
 // Inspector items.
 func (p *pane) minWidth() int32 {
+	if p.kind == bottomPane {
+		return minBottomHeight()
+	}
 	b := bars[p.l.w.Unwrap()]
-	if p.trailing {
+	if p.kind == inspectorPane {
 		m := minInspectorWidth()
 		if b != nil && b.strip != nil {
 			m = max(m, b.strip.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X)
@@ -632,10 +715,15 @@ func (p *pane) HandleEvent(e *swt.Event) {
 		r := p.l.w.Unwrap().GetClientArea()
 		div := sidebarDivider()
 		var want, most int32
-		if p.trailing {
+		switch p.kind {
+		case bottomPane:
+			col := p.l.column
+			want = bottomHeightAt(e.Y, col[1]+col[3], div)
+			most = col[3] - div - minContentHeight()
+		case inspectorPane:
 			want = inspectorWidthAt(e.X, r.X+r.Width, p.inset(), div)
 			most = r.Width - p.l.side.room() - p.inset() - div - minContentWidth()
-		} else {
+		default:
 			want = sidebarWidthAt(e.X-r.X, p.inset(), div)
 			most = r.Width - p.inset() - div - minContentWidth() - p.l.insp.room()
 		}
@@ -657,6 +745,9 @@ func (l *paneLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) 
 	top := int32(topInset(c.GetShell()))
 	ct := l.content.ComputeSize(swt.DEFAULT, swt.DEFAULT)
 	h := ct.Y + barHeight(c.GetShell())
+	if p := l.bottom; p.visible() {
+		h += p.width + sidebarDivider()
+	}
 	for _, p := range []*pane{l.side, l.insp} {
 		if p != nil && !p.hidden {
 			h = max(h, p.c.ComputeSize(swt.DEFAULT, swt.DEFAULT).Y+p.inset())
@@ -701,8 +792,46 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	if p := l.insp; p != nil {
 		p.c.SetBounds(ib[0], ib[1], ib[2], ib[3])
 	}
+	l.column = ct
+	if p := l.bottom; p != nil {
+		var pb, sh [4]int32
+		ct, pb, sh = bottomFrames(ct[0], ct[1], ct[2], ct[3], p.shown(), sidebarDivider())
+		p.c.SetBounds(pb[0], pb[1], pb[2], pb[3])
+		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
+		p.sash.SetVisible(!p.hidden)
+		// The panel's material runs on under a floating sidebar, to the window's left edge.
+		var sb *swt.Composite
+		if l.side.floats() {
+			pb[2] += pb[0] - r.X
+			pb[0] = r.X
+			sb = l.side.c
+		}
+		syncBottom(p.c, pb, sb)
+	}
 	l.content.SetBounds(ct[0], ct[1], ct[2], ct[3])
+	under := [4]int32{}
+	if l.side.floats() {
+		under = [4]int32{r.X, ct[1], ct[0] - r.X, ct[3]}
+	}
+	if under != l.under {
+		l.under = under
+		s.Redraw()
+	}
 	l.fitMinSize()
+}
+
+// paintUnder fills the area behind a floating sidebar beside the content with the content's
+// background, as AppKit extends the content split item beneath the sidebar: without it the window
+// colour showed in the inset around the sidebar. A theme switch repaints the window; a later
+// SetBackground of the content shows there at the next repaint of the window.
+func (l *paneLayout) paintUnder(e *swt.PaintEvent) {
+	u := l.under
+	bg := l.content.GetBackground()
+	if u[2] <= 0 || u[3] <= 0 || bg.GetAlpha() != 255 {
+		return
+	}
+	e.Gc.SetBackground(bg)
+	e.Gc.FillRectangle(u[0], u[1], u[2], u[3])
 }
 
 // fitMinSize keeps the window as wide as its panes and minContentWidth, and never below the minimum
@@ -734,7 +863,7 @@ func (l *paneLayout) measure() bool {
 // the change callbacks hear of it after the layout pass, not inside it.
 func (l *paneLayout) fitMin() bool {
 	raised := false
-	for _, p := range []*pane{l.side, l.insp} {
+	for _, p := range []*pane{l.side, l.insp, l.bottom} {
 		if p == nil || p.width >= p.minWidth() {
 			continue
 		}
@@ -808,6 +937,29 @@ func inspectorFrames(x, y, w, h, width, in, top, div int32) (bg, ib, ct, sh [4]i
 // inspectorWidthAt is the inspector width that puts the sash at x, the inverse of inspectorFrames,
 // with right the right edge of the span (x+w there) in the same coordinates as x.
 func inspectorWidthAt(x, right, in, div int32) int32 { return right - in - div - x }
+
+// bottomFrames splits the content column (x, y, w, h) into the content above, the bottom panel height
+// points high at its foot and the sash in the gap of div points between them, or just inside the
+// panel's top edge for div 0, clear of the content's horizontal scroll bar. Height 0 is a hidden panel:
+// the content keeps the column.
+func bottomFrames(x, y, w, h, height, div int32) (ct, pb, sh [4]int32) {
+	py := y + h - height
+	pb = [4]int32{x, py, w, height}
+	ct = [4]int32{x, y, w, h}
+	if height > 0 {
+		ct[3] = max(h-height-div, 0)
+	}
+	sw := div
+	if div == 0 {
+		sw = sashGrip
+	}
+	sh = [4]int32{x, max(py-div, y), w, sw}
+	return ct, pb, sh
+}
+
+// bottomHeightAt is the panel height that puts the sash at y, the inverse of bottomFrames, with bottom
+// the foot of the column in the same coordinates as y.
+func bottomHeightAt(y, bottom, div int32) int32 { return bottom - div - y }
 
 // dragWidth is the width a drag to want gives, kept from least to most (or least, if most is smaller).
 func dragWidth(want, least, most int32) int32 { return max(min(want, most), least) }

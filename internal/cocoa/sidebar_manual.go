@@ -80,7 +80,13 @@ func ClipBackdrop(view *NSView) {
 // divider of a full-height NSSplitViewController inspector runs through the title bar too (Apple developer
 // forums thread 818282). The line lies between the glass and view, so it takes no clicks; it hides while
 // the backdrop is 0 wide.
-func SetEdgeLine(view *NSView) {
+func SetEdgeLine(view *NSView) { edgeLine(view, false) }
+
+// SetTopLine is SetEdgeLine along the top edge of the backdrop of view, its full width, for a bottom
+// panel; it hides while the backdrop is 0 high.
+func SetTopLine(view *NSView) { edgeLine(view, true) }
+
+func edgeLine(view *NSView, top bool) {
 	initAssociated()
 	v := uintptr(view.Id)
 	bd := getAssociated(v, backdropKey())
@@ -98,8 +104,63 @@ func SetEdgeLine(view *NSView) {
 		msg(line, "release")
 	}
 	r := NewNSViewOverload1(int64(bd)).Frame()
+	if top {
+		// the superview is flipped (an SWT view): the top edge is the smallest y
+		msgRectOnly(line, sel("setFrame:"), NSRect{X: r.X, Y: r.Y, Width: r.Width, Height: 1})
+		msg(line, "setHidden:", boolArg(r.Height == 0))
+		return
+	}
 	msgRectOnly(line, sel("setFrame:"), NSRect{X: r.X, Y: r.Y, Width: 1, Height: r.Height})
 	msg(line, "setHidden:", boolArg(r.Width == 0))
+}
+
+// BackdropFrame is the frame of the material InstallBackdrop put behind view, in its superview, and
+// whether it lies below the material of other there; for tests. ok is false without a material.
+func BackdropFrame(view, other *NSView) (f NSRect, below, ok bool) {
+	initAssociated()
+	bd := getAssociated(uintptr(view.Id), backdropKey())
+	if bd == 0 {
+		return f, false, false
+	}
+	f = NewNSViewOverload1(int64(bd)).Frame()
+	if other == nil {
+		return f, false, true
+	}
+	target := getAssociated(uintptr(other.Id), backdropKey())
+	host := msg(bd, "superview")
+	if target != 0 && host != 0 && msg(target, "superview") == host {
+		subs := msg(host, "subviews")
+		below = msg(subs, "indexOfObject:", bd) < msg(subs, "indexOfObject:", target)
+	}
+	return f, below, true
+}
+
+// KeepBackdropBelow puts the backdrop of view and its edge line below the backdrop of other, when
+// both share a superview: a bottom panel's glass runs under the floating sidebar's glass.
+func KeepBackdropBelow(view, other *NSView) {
+	initAssociated()
+	v := uintptr(view.Id)
+	bd := getAssociated(v, backdropKey())
+	target := getAssociated(uintptr(other.Id), backdropKey())
+	host := msg(bd, "superview")
+	if bd == 0 || target == 0 || host == 0 || msg(target, "superview") != host {
+		return
+	}
+	subs := msg(host, "subviews")
+	line := getAssociated(v, sel("gowtEdgeLine"))
+	at := func(x uintptr) uintptr { return msg(subs, "indexOfObject:", x) }
+	if at(bd) < at(target) && (line == 0 || at(line) < at(target)) {
+		return
+	}
+	for _, x := range []uintptr{bd, line} {
+		if x == 0 {
+			continue
+		}
+		msg(x, "retain")
+		msg(x, "removeFromSuperview")
+		msg(host, "addSubview:positioned:relativeTo:", x, windowBelowArg, target)
+		msg(x, "release")
+	}
 }
 
 // ClearFirstResponder makes the window of view its own first responder, so no control has the focus.

@@ -188,7 +188,7 @@ type SplitView struct {
 // Split creates a sash form: its children side by side, or stacked with Vertical(), with draggable
 // sashes between them. Every pane fills its part, sized by SetWeights; Grow on a pane is accepted
 // and changes nothing, Size, Span and the other placement options are reported to App.OnError.
-// Options: Vertical, children.
+// Options: Vertical, Divider, children.
 func Split(opts ...Option) Option {
 	return &node{"Split", func(h host) Widget {
 		s := swt.NewSashForm(h.into(), resolve(swt.NONE, opts))
@@ -196,6 +196,77 @@ func Split(opts ...Option) Option {
 		finish(w, sVertical, opts)
 		return w
 	}}
+}
+
+// Divider makes every sash of a Split draw a hairline down its middle in the system separator colour,
+// the thin divider of an NSSplitView, on every system. The panes of a Split on one background, a tree
+// above an outline in a sidebar, otherwise run together.
+func Divider() Option {
+	return hook(func(w Widget) error {
+		s, ok := w.(*SplitView)
+		if !ok {
+			return fmt.Errorf("gowt: Divider applies to Split, not to %s", nameOf(w.control()))
+		}
+		s.hookDividers()
+		return nil
+	})
+}
+
+const dividerKey = "gowt.divider"
+
+// hookDividers gives each sash the hairline painter, once; SashForm makes its sashes in its layout, so
+// they are looked for again after each resize.
+func (s *SplitView) hookDividers() {
+	f := s.s
+	hook := func() {
+		if f.IsDisposed() {
+			return
+		}
+		for _, ch := range f.GetChildren() {
+			if _, ok := ch.Impl().(*swt.Sash); !ok || ch.GetDataKey(dividerKey) != nil {
+				continue
+			}
+			sash := ch
+			sash.SetDataKeyValue(dividerKey, true)
+			sash.AddPaintListener(painter(func(e *swt.PaintEvent) { paintDivider(e.Gc, sash) }))
+			sash.Redraw()
+		}
+	}
+	hook()
+	later := func() { f.GetDisplay().AsyncExec(jrt.NewRunnable(hook)) }
+	later()
+	f.AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { later() }))
+}
+
+// paintDivider draws the separator line along the long side of sash, over the first opaque
+// background behind it: on glass the sash and its parents have an alpha-0 one.
+func paintDivider(gc *swt.GC, sash *swt.Control) {
+	bg := sash.GetDisplay().GetSystemColor(swt.COLOR_WIDGET_BACKGROUND).GetRGB()
+	for c := sash; c != nil; {
+		if col := c.GetBackground(); col.GetAlpha() == 255 {
+			bg = col.GetRGB()
+			break
+		}
+		p := c.GetParent()
+		if p == nil {
+			break
+		}
+		c = &p.Control
+	}
+	dark := systemDark()
+	if a := appOf(sash); a != nil {
+		dark = a.Dark()
+	}
+	fg := sash.GetDisplay().GetSystemColor(swt.COLOR_WIDGET_FOREGROUND).GetRGB()
+	line := tabSeparator(sash.GetDisplay(), rgbOf(bg), rgbOf(fg), dark).color()
+	defer line.Dispose()
+	gc.SetForeground(line)
+	s := sash.GetSize()
+	if s.X > s.Y {
+		gc.DrawLine(0, s.Y/2, s.X, s.Y/2)
+	} else {
+		gc.DrawLine(s.X/2, 0, s.X/2, s.Y)
+	}
 }
 
 // SetWeights sets the relative size of each child, one weight per child.

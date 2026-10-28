@@ -351,6 +351,27 @@ func setInspectorChrome(s *swt.Shell, ib *swt.Composite, sash *swt.Control) {
 	hookPanes(s)
 }
 
+// setBottomChrome puts the inspector's edge-to-edge glass behind the bottom panel, in a view of its
+// own: syncBottom runs it on under a floating sidebar, past the panel's frame.
+func setBottomChrome(s *swt.Shell, pb *swt.Composite, sash *swt.Control) {
+	cocoa.InstallBackdrop(pb.View, cocoa.BackdropGlass, false)
+	cocoa.SetGlassCornerRadius(pb.View, 0)
+	cocoa.ClipBackdrop(pb.View)
+	clearTree(pb)
+	clearAdded(pb)
+	clearControl(sash)
+	hookPanes(s)
+}
+
+// syncBottom gets bg 0 high for a hidden panel, and sb, the sidebar, when bg runs under it.
+func syncBottom(pb *swt.Composite, bg [4]int32, sb *swt.Composite) {
+	cocoa.SetBackdropFrame(pb.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
+	cocoa.SetTopLine(pb.View)
+	if sb != nil {
+		cocoa.KeepBackdropBelow(pb.View, sb.View)
+	}
+}
+
 // inspectorInset is 0: the inspector is flush with the window edges, see setInspectorChrome.
 func inspectorInset() int32 { return 0 }
 

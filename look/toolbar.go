@@ -108,6 +108,9 @@ func (b *toolbarBar) HandleEvent(e *swt.Event) {
 	s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
 		if !s.IsDisposed() {
 			b.restyle(true)
+			if l := layoutOf(b.w); l != nil && l.under[2] > 0 {
+				s.Redraw() // paintUnder takes the content's new colour
+			}
 		}
 	}))
 }

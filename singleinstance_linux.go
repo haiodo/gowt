@@ -23,6 +23,10 @@ func singleInstance(id string, args []string) (bool, error) {
 	defer c.Close()
 	uris := make([]string, len(args))
 	for i, p := range args {
+		if openURL(p) {
+			uris[i] = p
+			continue
+		}
 		uris[i] = (&url.URL{Scheme: "file", Path: p}).String()
 	}
 	if err := c.Open(id, uris); err != nil {

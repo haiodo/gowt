@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+Opening URLs (Tenniarb)
+- Fixed: on macOS a link to the app's own scheme (`CFBundleURLTypes`) never reached the `swt.OpenUrl` listener. SWT fires `OpenUrl` from the custom delegate selector `application:openUrls:`, which only the Eclipse launcher calls, from its own `kAEGetURL` Apple event handler; AppKit never calls it (its own `application:openURLs:` differs in case and gives `NSURL`s). `Display` now installs a `kAEGetURL` handler in `applicationWillFinishLaunching` (`tooling/port.sh` patch, `swt/widgets_display_url_manual_darwin.go`) that sends `OpenUrl` with the URL in `Event.Text`, at launch and while running. AppKit's `application:openURLs:` is not implemented: with it AppKit stops calling `application:openFiles:`, which `OpenDocument` relies on.
+- New: `App.OnOpenURLs(func(urls []string))` runs on the UI thread with the URLs of any scheme but `file:`: macOS links, command-line arguments of the form `scheme:...` on every OS (a Linux `.desktop` file with `Exec=app %U` and `MimeType=x-scheme-handler/myapp`, a Windows registry scheme starting `app.exe "%1"`), and, with `SingleInstance`, the URLs of a second launch forwarded to the running app (D-Bus `Open` on Linux, the socket on Windows), which used to drop them. URLs are de-duplicated per call and kept until the first handler is set, as `OnOpenFiles` does. docs/events.md "Opening URLs".
+- Tests: `TestHandleGetURL` (package internal/cocoa, macOS, no window) dispatches a `GURL` Apple event through `NSAppleEventManager` and gets the URL; `TestOpenURL`, `TestArgOpen` and `TestOpenFlushSplits` split files from URLs and queue each; `TestSocketForward` and `TestSingleInstanceForwards` forward a URL with the files, the latter with `GOWT_GUI_TEST=1` sets `OnOpenURLs` late and gets the URL from the queue. Not run: a real link click on a macOS bundle, a `.desktop` `%U` start on a Linux desktop.
+
 ## v0.13.5 (2026-10-28)
 
 Split divider on glass (Tenniarb)

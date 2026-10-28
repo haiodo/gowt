@@ -70,7 +70,7 @@ Example: [`examples/quit`](../examples/quit).
 
 ## Opening files
 
-`app.OnOpenFiles(func(paths []string))` runs on the UI thread with the files the system or another process asks the app to open. Paths are absolute and without duplicates within one call; files that arrive in the same turn of the event loop come in one call. Several calls add several handlers. Files that arrive before the first handler (a launch by double click) are kept and given to it once it is set. A `file:` URL becomes a path; other URL schemes are ignored.
+`app.OnOpenFiles(func(paths []string))` runs on the UI thread with the files the system or another process asks the app to open. Paths are absolute and without duplicates within one call; files that arrive in the same turn of the event loop come in one call. Several calls add several handlers. Files that arrive before the first handler (a launch by double click) are kept and given to it once it is set. A `file:` URL becomes a path; other URL schemes go to `OnOpenURLs` (see below).
 
 | Source | OS |
 |---|---|
@@ -79,7 +79,7 @@ Example: [`examples/quit`](../examples/quit).
 | A second launch that forwards its arguments to the running app, see `gowt.SingleInstance` | Windows, Linux |
 | Another program calling `org.freedesktop.Application.Open` on the app's name, such as a file manager or `gio open` with `DBusActivatable=true` | Linux |
 
-`gowt.SingleInstance(id)` is opt-in. Call it before `Run` with a reverse-DNS id; false means another instance got this process's files and this one should return:
+`gowt.SingleInstance(id)` is opt-in. Call it before `Run` with a reverse-DNS id; false means another instance got this process's files and URLs and this one should return:
 
 ```go
 func main() {
@@ -98,6 +98,26 @@ func main() {
 The running instance also raises its first window when a second launch arrives, with or without files. Linux uses the session bus (the id is the D-Bus name, a small client written from the D-Bus specification, no libgio call); Windows uses a Unix socket in the user's temp folder; macOS leaves it to Launch Services and the call does nothing. A missing session bus, or a malformed id, is returned as the error and the program runs without the feature (command-line files still work). Ceilings: on Windows two first launches in the same instant may both win, and a crashed instance leaves a file that the next launch replaces; on Linux the name is lost if the bus connection drops. `app.Unwrap().AddListener(swt.OpenDocument, ...)` still fires on macOS for code that uses `Unwrap`; on Linux and Windows it does not, the facade is the only path.
 
 Associating a file type with the program and giving it a document icon is in [packaging.md](packaging.md#file-association-and-document-icon). Example: [`examples/openfiles`](../examples/openfiles).
+
+## Opening URLs
+
+`app.OnOpenURLs(func(urls []string))` runs on the UI thread with the URLs of any scheme but `file:` that the system or another process asks the app to open, typically links to the app's own scheme (`myapp://open?id=1`). URLs come as given, without duplicates within one call; the ones that arrive in the same turn of the event loop come in one call. URLs that arrive before the first handler (a launch by a link) are kept and given to it once it is set. Several calls add several handlers. `file:` URLs go to `OnOpenFiles`.
+
+| Source | OS |
+|---|---|
+| A link to a scheme in the bundle's `CFBundleURLTypes`, at launch and while running (a `kAEGetURL` Apple event into the SWT `OpenUrl` event) | macOS |
+| Command-line arguments of the form `scheme:...`, delivered once after setup | all |
+| A second launch that forwards its arguments to the running app, see `gowt.SingleInstance` | Windows, Linux |
+| `org.freedesktop.Application.Open` with such a URL on the app's name (`DBusActivatable=true`) | Linux |
+
+On Linux the desktop starts the program with the URL as argument when its `.desktop` file has `%U` and claims the scheme:
+
+```
+Exec=/opt/myapp/myapp %U
+MimeType=x-scheme-handler/myapp;
+```
+
+`xdg-mime default myapp.desktop x-scheme-handler/myapp` makes it the handler. With `gowt.SingleInstance` a second start forwards the URL to the running app. On Windows a scheme registered in the registry (`HKEY_CURRENT_USER\Software\Classes\myapp`, out of gowt's scope) starts `app.exe "%1"`, which reaches `OnOpenURLs` the same way. On macOS `app.Unwrap().AddListener(swt.OpenUrl, ...)` gets one event per URL in `Event.Text`. SWT leaves that Apple event to the Eclipse launcher, which calls the custom `application:openUrls:` delegate selector; gowt installs the handler itself in `applicationWillFinishLaunching`. It does not implement AppKit's `application:openURLs:`, which would take file opens away from `application:openFiles:`.
 
 ## The UI thread rule
 

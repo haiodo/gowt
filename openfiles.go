@@ -15,7 +15,7 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// openBox holds the OnOpenFiles handlers and the paths that came before the first one.
+// openBox holds the OnOpenFiles or OnOpenURLs handlers and what came before the first one.
 type openBox struct {
 	handlers []func([]string)
 	queue    []string
@@ -34,13 +34,13 @@ func (b *openBox) deliver(paths []string) {
 	}
 }
 
-// openListener adapts swt.OpenDocument, whose Text is one path per event.
+// openListener adapts swt.OpenDocument and swt.OpenUrl, whose Text is one path or URL per event.
 type openListener func(raw ...string)
 
 func (l openListener) HandleEvent(e *swt.Event) { l(e.Text) }
 
-// openIn takes raw paths or file URLs on the UI thread; the ones that arrive in the same turn of
-// the event loop are delivered in one call.
+// openIn takes raw paths and URLs on the UI thread; the ones that arrive in the same turn of
+// the event loop are delivered in one call, files to OnOpenFiles and other URLs to OnOpenURLs.
 func (a *App) openIn(raw ...string) {
 	if len(a.openPend) == 0 {
 		a.display.AsyncExec(jrt.NewRunnable(a.live(a.openFlush)))
@@ -52,6 +52,7 @@ func (a *App) openFlush() {
 	raw := a.openPend
 	a.openPend = nil
 	a.open.deliver(openPaths(raw))
+	a.urls.deliver(openURLs(raw))
 }
 
 var urlScheme = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9+.-]+:`)
@@ -67,7 +68,7 @@ func openPath(s string) (string, bool) {
 		if runtime.GOOS == "windows" && len(s) > 2 && s[0] == '/' && s[2] == ':' {
 			s = s[1:]
 		}
-	} else if urlScheme.MatchString(s) && !strings.HasPrefix(s[strings.IndexByte(s, ':'):], ":\\") {
+	} else if openURL(s) {
 		return "", false
 	}
 	if s == "" {
@@ -75,6 +76,21 @@ func openPath(s string) (string, bool) {
 	}
 	p, err := filepath.Abs(filepath.FromSlash(s))
 	return p, err == nil
+}
+
+// openURL reports whether s is a URL of a scheme other than file:, such as the app's own scheme.
+func openURL(s string) bool {
+	return urlScheme.MatchString(s) && !strings.HasPrefix(s, "file:") && !strings.HasPrefix(s[strings.IndexByte(s, ':'):], ":\\")
+}
+
+func openURLs(raw []string) []string {
+	var out []string
+	for _, s := range raw {
+		if openURL(s) {
+			out = append(out, s)
+		}
+	}
+	return dedupe(out)
 }
 
 func openPaths(raw []string) []string {
@@ -99,18 +115,23 @@ func dedupe(paths []string) []string {
 	return out
 }
 
-// argFiles returns the arguments that name an existing file or directory, as absolute paths.
-func argFiles(args []string) []string {
+// argOpen returns the arguments that name an existing file or directory, as absolute paths, and
+// the URLs of other schemes than file:, as given.
+func argOpen(args []string) []string {
 	var out []string
-	for _, s := range openPaths(args) {
-		if _, err := os.Stat(s); err == nil {
+	for _, s := range args {
+		if openURL(s) {
 			out = append(out, s)
+		} else if p, ok := openPath(s); ok {
+			if _, err := os.Stat(p); err == nil {
+				out = append(out, p)
+			}
 		}
 	}
-	return out
+	return dedupe(out)
 }
 
-// inbox takes the files that other processes send, from any goroutine; before Run they wait here.
+// inbox takes the files and URLs that other processes send, from any goroutine; before Run they wait here.
 var inbox struct {
 	sync.Mutex
 	app     *App
@@ -129,7 +150,7 @@ func inboxPush(raw []string) {
 	inbox.app.takeForwarded(raw)
 }
 
-// takeForwarded delivers files that another process sent and raises a window; any goroutine.
+// takeForwarded delivers the files and URLs that another process sent and raises a window; any goroutine.
 func (a *App) takeForwarded(raw []string) {
 	a.Async(func() {
 		a.openIn(raw...)
@@ -166,11 +187,12 @@ var appIDPart = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_-]*$`)
 // SingleInstance makes the program a single instance per user under id, a reverse-DNS name such as
 // "org.example.MyApp" (at least two dot-separated parts of letters, digits, "_" and "-"). Call it
 // once, before Run. It returns true when this process is the running instance, and false when
-// another one already holds id: this process then sent it the file arguments (see OnOpenFiles) or,
-// with none, asked it to raise its window, and should exit without calling Run.
+// another one already holds id: this process then sent it the file and URL arguments (see OnOpenFiles
+// and OnOpenURLs) or, with none, asked it to raise its window, and should exit without calling Run.
 //
 // If the check cannot be done, it returns true and the error: a malformed id, or on Linux no
-// session bus. The program then runs as an ordinary extra instance, getting command-line files only.
+// session bus. The program then runs as an ordinary extra instance, getting command-line files and
+// URLs only.
 //
 // Linux: the id is the D-Bus name of the freedesktop Application interface; with
 // DBusActivatable=true in the .desktop file the desktop calls Open on it. Windows: a Unix socket
@@ -190,5 +212,5 @@ func SingleInstance(id string) (bool, error) {
 	if singleCalled.Swap(true) {
 		return true, errors.New("gowt: SingleInstance is already called")
 	}
-	return singleInstance(id, argFiles(os.Args[1:]))
+	return singleInstance(id, argOpen(os.Args[1:]))
 }

@@ -504,6 +504,14 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'qaNoActivate()' "$DS_GO")" = 1 ] || { echo "port.sh: Display qaNoActivate rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa SWT.OpenUrl comes from the custom application:openUrls: selector that the Eclipse launcher calls on a kAEGetURL
+# Apple event. A gowt program has no launcher: applicationWillFinishLaunching installs that Apple event handler itself
+# (swt/widgets_display_url_manual_darwin.go), where AppKit wants it so the link of a launch is not missed.
+if [ "$PLATFORM" = cocoa ]; then
+	perl -0pi -e 's/(func \(this \*Display\) ApplicationWillFinishLaunching\(id int64, sel int64, notification int64\)\s*\{\n)/$1\tthis.hookGetURL()\n/' "$DS_GO"
+	[ "$(grep -c 'this.hookGetURL()' "$DS_GO")" = 1 ] || { echo "port.sh: Display hookGetURL rewrite did not apply" >&2; exit 1; }
+fi
+
 # GetFocusControl reads the first responder of the key window, and an inactive QA app has none (see qa_manual_on_darwin.go).
 if [ "$PLATFORM" = cocoa ]; then
 	perl -0pi -e 's/(func \(this \*Display\) GetFocusControl\(\) \*Control \{.*?\t\twindow = )this\.application\.KeyWindow\(\)/$1this.keyWindowQA()/s' "$DS_GO"

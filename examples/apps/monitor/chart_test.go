@@ -268,3 +268,21 @@ func TestNiceCeil(t *testing.T) {
 		}
 	}
 }
+
+// Samples that arrive before the first size have no curves yet; the hover must wait for them.
+func TestPlaceHoverBeforeFirstSize(t *testing.T) {
+	spec := cpuSpec()
+	spec.stacked = true
+	c := newChart(spec, testPalette(false), time.Minute)
+	feed(c, 5, cpuWave)
+	if len(c.ts) == 0 || len(c.curves) != 0 {
+		t.Fatalf("setup: want samples without curves, got %d samples, %d curves", len(c.ts), len(c.curves))
+	}
+	c.w, c.h = 760, 200 // the size is known, the tape is not recorded yet
+	c.margin = 40
+	c.hover = &gfx.Point{X: c.w - rightPad, Y: 50}
+	c.placeHover()
+	if c.hoverShown {
+		t.Fatal("hover shown before the curves exist")
+	}
+}

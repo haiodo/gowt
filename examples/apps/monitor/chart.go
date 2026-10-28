@@ -391,7 +391,8 @@ func (c *chart) setHover(p *gfx.Point) {
 // placeHover moves the crosshair to the sample nearest the pointer. The data scrolls under a
 // standing pointer, so this runs on every frame while the pointer is over the chart.
 func (c *chart) placeHover() {
-	if c.hover == nil || len(c.ts) == 0 {
+	// the curves are built by rerecord, which waits for the first size; samples can arrive before it
+	if c.hover == nil || len(c.ts) == 0 || len(c.curves) != len(c.vals) || len(c.curves[0].ys) != len(c.ts) {
 		return
 	}
 	pps := c.pps()

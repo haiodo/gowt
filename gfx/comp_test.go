@@ -24,10 +24,16 @@ type fakeRenderer struct {
 	mu    sync.Mutex
 	draws []drawRec
 	delay time.Duration
+	open  int // targets made and not closed
 }
 
 func (r *fakeRenderer) MeasureText(s string, f Font) TextMetrics { return TextMetrics{} }
-func (r *fakeRenderer) NewTarget(w, h int) Target                { return &fakeTarget{r: r, w: w, h: h} }
+func (r *fakeRenderer) NewTarget(w, h int) Target {
+	r.mu.Lock()
+	r.open++
+	r.mu.Unlock()
+	return &fakeTarget{r: r, w: w, h: h}
+}
 
 func (r *fakeRenderer) tileDraws() []drawRec {
 	r.mu.Lock()
@@ -56,7 +62,11 @@ func (t *fakeTarget) Draw(items []Item) {
 func (t *fakeTarget) Size() (int, int)            { return t.w, t.h }
 func (t *fakeTarget) Pixels() []byte              { return nil }
 func (t *fakeTarget) Snapshot(w, h float64) Image { return &fakeImg{w, h, t.cur.items} }
-func (t *fakeTarget) Close()                      {}
+func (t *fakeTarget) Close() {
+	t.r.mu.Lock()
+	t.r.open--
+	t.r.mu.Unlock()
+}
 
 type fakeLayer struct {
 	h       *fakeHost
@@ -230,6 +240,18 @@ func TestBlankTilesHaveNoLayer(t *testing.T) {
 	tiles = g.h.live(GroupTiles)
 	if len(tiles) != 1 || tiles[0].frame.Min != (Point{512, 0}) {
 		t.Fatalf("after the move: %d tile layers", len(tiles))
+	}
+}
+
+func TestIdleWorkersHoldNoTarget(t *testing.T) {
+	g := newRig(t, Options{Workers: 4})
+	g.addBackground()
+	g.settle()
+	g.r.mu.Lock()
+	open := g.r.open
+	g.r.mu.Unlock()
+	if open != 0 {
+		t.Errorf("%d tile targets kept by idle workers", open)
 	}
 }
 

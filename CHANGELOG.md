@@ -4,7 +4,8 @@
 
 gfx memory: blank tiles
 - Fixed: the gfx compositor drew every tile of the view and its ring of margin tiles into a full 512x512 image and put it on a layer, also a tile with nothing in it. A clear image costs as much memory as a drawn one: on macOS the `CGImage` and Core Animation's copy of it, 1 MiB each. A tile with no node in it now gets no image and no layer, and a tile that becomes blank loses its layer. In a headless run of the five gfx views of `examples/apps/monitor` (bare `CALayer` drawn by `CARenderer`, Retina) the tile layers went from 69 to 27-29, `CoreAnimation` from 70 to 28-30 MB and `CG Raster Data` from 71 to 28-30 MB.
-- Tests: `TestBlankTilesHaveNoLayer` (package gfx); the compositor tests that count tile layers or draws cover their view with a background node.
+- Fixed: every tile worker of a compositor (up to 6 per gfx view) kept its 512x512 target for the life of the view. A worker now closes its target when the queue runs dry, and the next burst makes a new one. On macOS the tile image then keeps the bitmap of the closed context instead of a copy made on the next tile. In the monitor run above `CG Image` went from 28.7 to 0.3 MB and the live tile targets from 31 to none; `TestCompositorHeadless` frame times did not change.
+- Tests: `TestBlankTilesHaveNoLayer` and `TestIdleWorkersHoldNoTarget` (package gfx); the compositor tests that count tile layers or draws cover their view with a background node.
 
 ## v0.13.5 (2026-10-28)
 

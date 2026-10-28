@@ -570,7 +570,13 @@ func (c *Compositor) worker() {
 		c.pending.Add(-1)
 		c.mu.Lock()
 		c.pushLocked(result{j.t, gen, img})
+		idle := len(c.queue) == 0
 		c.mu.Unlock()
+		// a target is a whole tile of memory per worker; between bursts of work it would only sit there
+		if idle && t != nil {
+			t.Close()
+			t = nil
+		}
 	}
 }
 

@@ -103,6 +103,10 @@ func BackdropOf(view *NSView) (name string, material, blending int) {
 	if bd == 0 {
 		return "", 0, 0
 	}
+	// The container of ClipBackdrop stands for the material; name the material inside it.
+	if className(bd) == "NSView" && msg(msg(bd, "subviews"), "count") == 1 {
+		bd = msg(msg(bd, "subviews"), "objectAtIndex:", 0)
+	}
 	if c := class("NSVisualEffectView"); c != 0 && msg(bd, "isKindOfClass:", c) != 0 {
 		return className(bd), int(msg(bd, "material")), int(msg(bd, "blendingMode"))
 	}

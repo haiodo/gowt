@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.13.5 (2026-10-28)
 
 Split divider on glass (Tenniarb)
 - Fixed: a `gowt.Divider()` `Split` in a macOS 26 sidebar showed no line where the glass took on a shade near the line's. The hairline was one opaque colour, `separatorColor` over the window colour, while the glass beneath the alpha-0 sash shows what lies behind it: over a light grey content the glass and the line differed by 3 levels. On an alpha-0 sash the line is now drawn translucent, `separatorColor` with its own alpha (Windows and Linux: the text colour at 15%), so it darkens the glass in light mode and lightens it in dark. A sash with an opaque background keeps the opaque line.

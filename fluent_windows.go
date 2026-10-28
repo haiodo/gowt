@@ -25,7 +25,11 @@ func fluentText(t *TextView, noBorder bool) {
 		return
 	}
 	if _, h, ok := sizeHints(&t.t.Control); ok && *h == swt.DEFAULT {
-		*h = max(textHeightDips, preferred(&t.t.Control).Y)
+		height := int32(textHeightDips)
+		if t.aff != nil && t.aff.small {
+			height = smallTextHeightDips
+		}
+		*h = max(height, preferred(&t.t.Control).Y)
 	}
 }
 

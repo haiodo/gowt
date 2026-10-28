@@ -644,17 +644,12 @@ func Switch(text string, opts ...Option) Option {
 }
 
 // Text creates an edit field.
-// Options: Multiline, Password, ReadOnly, Search, Border, NoBorder, Scrollbars, Hint, Value, OnChange, OnActivate, Bind (string).
+// Options: Multiline, Password, ReadOnly, Search, Border, NoBorder, Scrollbars, Hint, Prefix, PrefixImage, Suffix, Small, Value, OnChange, OnActivate, Bind (string).
 // Windows 11: a Text has the WinUI 3 text box frame (4 px radius, hairline, accent line on focus) unless NoBorder.
 func Text(opts ...Option) Option {
-	noBorder := false
-	for _, o := range opts {
-		if s, ok := o.(style); ok && s.id == sNoBorder {
-			noBorder = true
-		}
-	}
+	noBorder := hasStyle(opts, sNoBorder)
 	opts = append(opts[:len(opts):len(opts)], lateHook(func(w Widget) error {
-		fluentText(w.(*TextView), noBorder)
+		fieldLook(w.(*TextView), noBorder)
 		return nil
 	}))
 	return leaf("Text", sMultiline|sPassword|sReadOnly|sSearch|sBorder|sNoBorder|sScrollbars, opts, func(p *swt.Composite) Widget {
@@ -899,6 +894,7 @@ type TextView struct {
 	t     *swt.Text
 	inset [2]int
 	grow  *autoGrow
+	aff   *affix // Prefix, Suffix, Small; nil without them
 }
 
 // Text returns the current content; line breaks are \n on every system (Windows stores \r\n).

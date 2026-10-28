@@ -105,18 +105,21 @@ func Momentary() Option {
 	})
 }
 
-// Small gives a Segmented or a Button the small control size, as in Xcode's inspector: macOS
-// NSControlSizeSmall with its 11-point font; Windows and Linux the font smaller by the same ratio.
+// Small gives a Segmented, a Button, a single-line Text or a Number the small control size, as in
+// Xcode's inspector: macOS NSControlSizeSmall with its 11-point font; Windows and Linux the font
+// smaller by the same ratio, and a field the compact height (24 dips on Windows, 24 px on Linux).
 func Small() Option {
 	return hook(func(w Widget) error {
-		switch w := w.(type) {
+		switch v := w.(type) {
 		case *SegmentedView:
-			w.seg.setSmall()
+			v.seg.setSmall()
 		case *ButtonView:
-			w.SetFont(smallFont)
-			setButtonSmall(w.b)
+			v.SetFont(smallFont)
+			setButtonSmall(v.b)
+		case *TextView, *NumberView:
+			return withAffix(w, "Small", func(a *affix) { a.small = true })
 		default:
-			return fmt.Errorf("gowt: Small applies to Segmented and Button, not to %s", nameOf(w.control()))
+			return fmt.Errorf("gowt: Small applies to Segmented, Button, a single-line Text and Number, not to %s", nameOf(w.control()))
 		}
 		return nil
 	})

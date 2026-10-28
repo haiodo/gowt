@@ -154,7 +154,7 @@ func (s *surface) adoptLabel(l *swt.Control) {
 		if cr.right <= 0 || cr.bottom <= 0 {
 			return 1, true
 		}
-		drawBuffered(s.c.GetDisplay(), wp, cr.right, cr.bottom, func(p *painter) { s.paintSlice(p, hwnd, cr.right, cr.bottom) })
+		drawBuffered(s.c.GetDisplay(), wp, cr.right, cr.bottom, 0, func(p *painter) { s.paintSlice(p, hwnd, cr.right, cr.bottom) })
 		return 1, true
 	})
 	l.Redraw()
@@ -221,7 +221,7 @@ func (s *surface) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr, 
 // draw paints the surface of size cw by ch into a w by h buffer on dst, the buffer's origin at (ox, oy)
 // of the surface: a Text inside it paints its non-client area from the same shape.
 func (s *surface) draw(dst uintptr, w, h, ox, oy, cw, ch int32) {
-	drawBuffered(s.c.GetDisplay(), dst, w, h, func(p *painter) { s.paint(p, w, h, ox, oy, cw, ch) })
+	drawBuffered(s.c.GetDisplay(), dst, w, h, 0, func(p *painter) { s.paint(p, w, h, ox, oy, cw, ch) })
 }
 
 func (s *surface) paint(p *painter, w, h, ox, oy, cw, ch int32) {

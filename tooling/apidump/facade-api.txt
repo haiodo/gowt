@@ -398,6 +398,24 @@ gowt Node.SetTextAt(col int, s string)
 gowt Node.Text() string
 gowt Node.TextAt(col int) string
 gowt Node.Unwrap() *github.com/haiodo/gowt/swt.TreeItem
+gowt NumberView.Dispose()
+gowt NumberView.Enabled() bool
+gowt NumberView.Focus() bool
+gowt NumberView.OnChange(f func(value float64))
+gowt NumberView.OnDispose(f func())
+gowt NumberView.SetBackground(c Paint)
+gowt NumberView.SetEnabled(v bool)
+gowt NumberView.SetFont(f Font)
+gowt NumberView.SetForeground(c Paint)
+gowt NumberView.SetHeight(h int)
+gowt NumberView.SetMaxHeight(h int)
+gowt NumberView.SetSize(width int, height int)
+gowt NumberView.SetTooltip(s string)
+gowt NumberView.SetValue(v float64)
+gowt NumberView.SetVisible(v bool)
+gowt NumberView.Unwrap() *github.com/haiodo/gowt/swt.Text
+gowt NumberView.Value() float64
+gowt NumberView.Visible() bool
 gowt PagesView.Add(pages ...Option)
 gowt PagesView.AsComposite() *github.com/haiodo/gowt/swt.Composite
 gowt PagesView.Current() int
@@ -1005,7 +1023,7 @@ gowt func Beside[T Widget](w *T, gap int) Edge
 gowt func BindEnabled(r github.com/haiodo/gowt/rx.Reader[bool]) Option
 gowt func BindText(r github.com/haiodo/gowt/rx.Reader[string]) Option
 gowt func BindVisible(r github.com/haiodo/gowt/rx.Reader[bool]) Option
-gowt func Bind[T string | bool | int](s *github.com/haiodo/gowt/rx.State[T]) Option
+gowt func Bind[T string | bool | int | float64](s *github.com/haiodo/gowt/rx.State[T]) Option
 gowt func Border() Option
 gowt func Borderless() Option
 gowt func Bottom() Option
@@ -1071,8 +1089,9 @@ gowt func Multiline() Option
 gowt func NoBackground() Option
 gowt func NoBorder() Option
 gowt func Nodes[T, K comparable](list github.com/haiodo/gowt/rx.Reader[[]T], key func(T) K, children func(T) []T, fill func(n *Node, item T, created bool)) Option
+gowt func Number(min float64, max float64, opts ...Option) Option
 gowt func OnActivate[F func() | func(int) | func(*Node)](f F) Option
-gowt func OnChange[F func(string) | func(bool) | func(int) | func(time.Time)](f F) Option
+gowt func OnChange[F func(string) | func(bool) | func(int) | func(float64) | func(time.Time)](f F) Option
 gowt func OnClick[F func() | func(string)](f F) Option
 gowt func OnFocus(f func(focused bool)) Option
 gowt func OnSelect[F func(int) | func(*Node)](f F) Option
@@ -1082,6 +1101,8 @@ gowt func Password() Option
 gowt func Percent(pct int, offset int) Edge
 gowt func Place(h Align, v Align) Option
 gowt func PopupMenu(w Widget) *Menu
+gowt func Prefix(s string) Option
+gowt func PrefixImage(img *Image) Option
 gowt func Primary() Option
 gowt func PrintToPDF(path string, o PrintOptions) (*PrintJob, error)
 gowt func Progress(max int, opts ...Option) Option
@@ -1114,7 +1135,9 @@ gowt func Spacer(opts ...Option) Option
 gowt func Span(cols int) Option
 gowt func Spinner(min int, max int, opts ...Option) Option
 gowt func Split(opts ...Option) Option
+gowt func Step(step float64) Option
 gowt func StyledText(opts ...Option) Option
+gowt func Suffix(s string) Option
 gowt func Switch(text string, opts ...Option) Option
 gowt func Tab(title string, opts ...Option) Option
 gowt func Table(opts ...Option) Option
@@ -1127,7 +1150,7 @@ gowt func Trailing(children ...Option) Option
 gowt func Tree(opts ...Option) Option
 gowt func Typeface(f Font) Option
 gowt func VBox(opts ...Option) Option
-gowt func Value[T string | int | time.Time](v T) Option
+gowt func Value[T string | int | float64 | time.Time](v T) Option
 gowt func Vertical() Option
 gowt func Watch[T any](w Widget, r github.com/haiodo/gowt/rx.Reader[T], apply func(T))
 gowt func Wrap() Option
@@ -1175,6 +1198,7 @@ gowt type Mods struct
 gowt type Mouse struct
 gowt type NativeContext struct
 gowt type Node struct
+gowt type NumberView struct
 gowt type Op int
 gowt type Option
 gowt type PagesView struct

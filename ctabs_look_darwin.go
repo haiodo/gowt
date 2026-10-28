@@ -15,6 +15,13 @@ func tabSeparator(_ *swt.Display, bg, _ RGB, dark bool) RGB {
 	return overRGB(cocoa.SeparatorRGBA(dark), bg)
 }
 
+// glassSeparator is NSColor.separatorColor with its own alpha, for drawing over glass.
+func glassSeparator(_ RGB, dark bool) (RGB, int32) {
+	c := cocoa.SeparatorRGBA(dark)
+	b := func(f float64) uint8 { return uint8(255*f + 0.5) }
+	return RGB{b(c[0]), b(c[1]), b(c[2])}, int32(b(c[3]))
+}
+
 func tabAccent(_ *swt.Display, dark bool) RGB {
 	return overRGB(cocoa.AccentRGBA(dark), RGB{})
 }

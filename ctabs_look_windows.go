@@ -8,6 +8,9 @@ import (
 // tabSeparator is the WinUI divider: the text colour at 15% over the background.
 func tabSeparator(_ *swt.Display, bg, fg RGB, _ bool) RGB { return mixRGB(bg, fg, 0.15) }
 
+// glassSeparator is tabSeparator as a colour and alpha, for drawing over a background not known here.
+func glassSeparator(fg RGB, _ bool) (RGB, int32) { return fg, 38 }
+
 func tabAccent(d *swt.Display, _ bool) RGB {
 	a := fluent.Current(d).Accent
 	return RGB{a.R, a.G, a.B}

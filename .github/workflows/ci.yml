@@ -103,7 +103,7 @@ jobs:
           export GOWT_QA_ARTIFACTS="$art/qa" GOWT_PIXELS_DIR="$art/pixels" GOWT_TEST_SHOTS="$art/shots"
           mkdir -p "$GOWT_QA_ARTIFACTS" "$GOWT_PIXELS_DIR" "$GOWT_TEST_SHOTS"
           # shellcheck disable=SC2086
-          go test -count=1 -p 1 -timeout 25m $pkgs
+          go test -count=1 -p 1 -v -timeout 25m $pkgs
           go test -count=1 -tags gowtqa -run 'TestQATreeFocus' .
           go test -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$' ./look
       # The crash reports of macOS name an uncaught Objective-C exception and its reason.

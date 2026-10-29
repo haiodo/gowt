@@ -164,12 +164,14 @@ func TestSplitDivider(t *testing.T) {
 		t.Run(mode.name, func(t *testing.T) {
 			plain := captureSplit(t, mode.look, false, filepath.Join(dir, "divider-"+mode.name+"-off.png"))
 			lined := captureSplit(t, mode.look, true, filepath.Join(dir, "divider-"+mode.name+"-on.png"))
-			scale := float64(lined.img.Bounds().Dx()) / 400
-			// The capture of Windows starts above the client area: the title bar row changes with the
-			// focus, so only the rows of the sash can hold the hairline.
-			off := int(float64(lined.img.Bounds().Dy())/scale - float64(lined.client[3]))
-			from := off + int(float64(lined.sash[1])*scale) - 2
-			to := off + int(float64(lined.sash[1]+lined.sash[3])*scale) + 2
+			// Pixels per point: Windows captures the DWM frame, 7 px narrower than the window, so the
+			// image width over 400 is no scale; the client area is as wide as the window inside it.
+			scale := float64(lined.img.Bounds().Dx()) / float64(lined.client[2])
+			// The capture starts above the client area: the title bar row changes with the focus, so
+			// only the rows of the sash can hold the hairline.
+			top := float64(lined.img.Bounds().Dy()) - float64(lined.client[3])*scale
+			from := int(top+float64(lined.sash[1])*scale) - 2
+			to := int(top+float64(lined.sash[1]+lined.sash[3])*scale) + 2
 			var rows []int
 			for _, y := range lineRows(plain.img, lined.img, 8, int(float64(lined.sash[2])*scale*0.9)) {
 				if y >= from && y <= to {

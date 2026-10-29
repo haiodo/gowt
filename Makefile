@@ -14,25 +14,39 @@ EXPECTED ?= tests/expected$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS)).txt
 CMDS := $(notdir $(wildcard cmd/*))
 BIN  := bin
 
-.PHONY: shot-sizes check-gui check-gui-list docs-counts docs-shots docs-shots-apps vm-docs-shots-windows vm-docs-shots-linux win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% $(CMDS)
+.DEFAULT_GOAL := help
 
-all: check build
+.PHONY: shot-sizes check-gui check-gui-list docs-counts docs-shots docs-shots-apps vm-docs-shots-windows vm-docs-shots-linux win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% app-monitor help $(CMDS)
+
+# Plain make lists the targets; a rule with "## text" gets that text in the list.
+help:
+	@awk 'BEGIN{FS=":.*## "} /^[A-Za-z0-9_.%-]+:.*## /{printf "  %-22s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo
+	@echo "All targets:"
+	@{ awk -F: '/^[A-Za-z0-9_.%-]+:/{print $$1}' $(MAKEFILE_LIST); echo $(CMDS); } | sort -u | tr '\n' ' ' | fold -s -w 96
+	@echo
+
+all: check build ## everything: check and build
 
 # Rebuilds the translator and regenerates swt/, internal/<PLATFORM>/, examples/ and tests/swttests/ from the SWT sources.
-gen:
+gen: ## regenerate the SWT port from the pinned sources
 	bash tooling/port.sh
 
 # The committed generated code must equal what make gen produces for cocoa, gtk and win32 (needs SWT_REPO and UI_REPO at tooling/source-pins.env).
-gen-check:
+gen-check: ## verify the generated code matches the generator
 	bash tooling/gen-check.sh
 
-build: $(CMDS)
+build: $(CMDS) app-monitor ## build cmd tools and bin/app-monitor
 
 $(CMDS):
 	go build -o $(BIN)/$@ ./cmd/$@
 
+# The monitor example is the one app run by hand from bin/.
+app-monitor: ## build bin/app-monitor from examples/apps/monitor
+	go build -o $(BIN)/app-monitor ./examples/apps/monitor
+
 # Stripped builds into bin/release/ with a size per binary (warns over +5% vs tooling/sizes.txt) (pclntab stays: stack traces).
-release:
+release: ## stripped cmd builds into bin/release with sizes
 	@mkdir -p $(BIN)/release
 	@for c in $(CMDS); do \
 		go build -trimpath -ldflags='-s -w' -o $(BIN)/release/$$c ./cmd/$$c || exit 1; \
@@ -41,23 +55,23 @@ release:
 
 # macOS app bundles of the release binaries, e.g. make app APPS="minibrowser webviewdemo".
 APPS ?= minibrowser webviewdemo jfacedemo controlexample
-app: release
+app: release ## macOS app bundles, APPS="minibrowser ..."
 	@for c in $(APPS); do bash tooling/darwin/mkapp.sh $(BIN)/release/$$c $(BIN)/release || exit 1; done
 
 # Records the current bin/release sizes as the reference for the 5% growth warning.
 release-sizes-update: release
 	@bash tooling/release-sizes.sh -update
 
-vet:
+vet: ## go vet ./...
 	go vet ./...
 
-test:
+test: ## go test ./...
 	go test ./...
 
-check: vet test xcheck examples-check api-check qa-check licence-check docs-counts
+check: vet test xcheck examples-check api-check qa-check licence-check docs-counts ## all local gates
 
 # README.md and docs/platforms.md test tables must equal the counts in tests/expected*.txt (prints the expected row).
-docs-counts:
+docs-counts: ## check the test tables in README and docs
 	go run ./tooling/doccounts
 
 # Every catalog sample and every app shot has the same image size on macOS, Windows and Linux (also part of go test with macOS left out).
@@ -71,7 +85,7 @@ GUI_PKGS = $$(git ls-files '*_test.go' | xargs grep -l GOWT_GUI_TEST | xargs -n1
 check-gui-list:
 	@echo $(GUI_PKGS)
 
-check-gui:
+check-gui: ## GUI test packages, needs a desktop
 	GOWT_GUI_TEST=1 go test -count=1 -p 1 $(GUI_PKGS)
 	GOWT_GUI_TEST=1 go test -count=1 -tags gowtqa -run 'TestQATreeFocus' .
 	GOWT_GUI_TEST=1 go test -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$$' ./look
@@ -79,7 +93,7 @@ check-gui:
 # Platform-neutral code must build for every OS and must not import a platform's PI package; the
 # platform-specific rest (swt, cmd, ...) builds only where that platform's port exists. jface is one source for every OS: it builds on all three.
 XCHECK_PKGS := ./gfx ./gfx/cg ./gfx/cairo ./gfx/d2d ./gfx/offscreen ./gfx/pdf ./gfx/printing ./gfx/pen ./gfx/layout ./gfx/synth ./gfx/view ./internal/dbus ./internal/jrt ./internal/pdfcheck ./internal/junit ./internal/snapcmp ./cmd/snapcheck ./tooling/apidump ./tooling/assoc ./tooling/mksyso ./tooling/fieldreport ./examples/controlexample/res ./qa/qatest
-xcheck:
+xcheck: ## build and vet every GOOS/GOARCH
 	@for os in windows linux; do GOOS=$$os go build $(XCHECK_PKGS) || exit 1; done
 	@for os in darwin windows linux; do GOOS=$$os go build ./jface ./browser ./webview ./look ./icons ./rx || exit 1; done
 	@bad=$$(grep -lE '"github.com/haiodo/gowt/internal/(cocoa|win32|gtk)"' $$(ls swt/*.go look/*.go icons/*.go jface/*.go browser/*.go examples/*/*.go tests/swttests/*.go cmd/*/*.go | grep -vE '_(darwin|windows|linux)(_test)?\.go$$') || true); \
@@ -88,22 +102,22 @@ xcheck:
 # The documented examples (docs/*.md) and the look-check apps (examples/apps, docs/look-check.md) build and vet for every OS; controlexample is the translated SWT one and is not a doc example.
 EXAMPLES := $(filter-out controlexample apps,$(notdir $(wildcard examples/*)))
 APPS := $(filter-out internal,$(notdir $(wildcard examples/apps/*)))
-examples-check:
+examples-check: ## vet every example for darwin, windows and linux
 	@for os in darwin windows linux; do for e in $(EXAMPLES); do GOOS=$$os go vet ./examples/$$e || exit 1; done; for a in $(APPS); do GOOS=$$os go vet ./examples/apps/$$a || exit 1; done; done
 
 # The gowt facade API must not lose or change a symbol against tooling/apidump/facade-api.txt (-facade -update to accept).
 # Exported swt API of the platforms in tooling/apidump/platforms.txt must agree (platform-only.txt lists the exceptions).
-api-check:
+api-check: ## exported API against the golden files
 	go run ./tooling/apidump -check
 	go run ./tooling/apidump -facade
 
 # The QA server is in a -tags gowtqa build and in no other; qa/qatest links no toolkit (tooling/qa-check.sh).
-qa-check:
+qa-check: ## the QA server only in -tags gowtqa builds
 	bash tooling/qa-check.sh
 
 # Translated SWT JUnit tests on the main thread (cmd/swttest), gated by tests/expected.txt: fails on a
 # regression or an undescribed failure. SWTTEST_FLAGS e.g. -run GC (the gate then checks only those).
-test-swt: swttest
+test-swt: swttest ## run the SWT test suite
 	./$(BIN)/swttest -expected $(EXPECTED) $(SWTTEST_FLAGS)
 
 # JFace's translated JUnit tests (tests/jfacetests): the same runner built with -tags jface, gated by tests/expected_jface[_os].txt.
@@ -127,7 +141,7 @@ SNAPDIR ?= tests/snapshots$(if $(filter-out darwin,$(HOSTOS)),_$(HOSTOS))
 # ControlExample tab snapshots against $(SNAPDIR) (cmd/snapcheck: per-pixel threshold + allowed
 # fraction). Skips with a message when the environment (meta.txt: scale, OS and GTK version, ...) differs from the references.
 # Failures leave diff images in bin/snap/diff.
-snap-check: controlexample snapcheck
+snap-check: controlexample snapcheck ## compare the control example snapshots
 	@rm -rf $(BIN)/snap && mkdir -p $(BIN)/snap
 	./$(BIN)/controlexample -snap $(BIN)/snap/got > $(BIN)/snap/run.log
 	./$(BIN)/snapcheck -ref $(SNAPDIR) -got $(BIN)/snap/got -diff $(BIN)/snap/diff
@@ -141,7 +155,7 @@ snap-update: controlexample snapcheck
 run-%: %
 	./$(BIN)/$*
 
-clean:
+clean: ## remove bin/ and the translator build
 	rm -rf $(BIN) tooling/j2go/target
 
 # Windows port (CrossOver bottle "gowt"): cross-build the exes, run them under Wine. win-probe opens no window;
@@ -208,11 +222,11 @@ win-snap-update: win-build snapcheck
 # Screenshots for docs/ (GOWT_SNAP, docs/screenshots.md): docs/img/<widget>-<os>.png from examples/catalog and
 # docs/img/example-<name>-<os>.png from the other examples. macOS opens real windows; the Windows run needs the
 # CrossOver bottle; the Linux run needs the stand (LINUX_CTR and LINUX_PORT can be overridden).
-docs-shots:
+docs-shots: ## regenerate the docs screenshots
 	tooling/docs-shots.sh macos
 
 # Only docs/img/app-<name>-macos.png of the seven apps; opens a window per app.
-docs-shots-apps:
+docs-shots-apps: ## regenerate the docs app screenshots
 	ONLY=apps tooling/docs-shots.sh macos
 
 # The pictures of docs/img come from these two: real Windows 11 and Ubuntu GNOME VMs (tooling/docs-shots-vm.sh), not Wine or Xvfb.
@@ -261,5 +275,5 @@ linux-run: linux-vnc
 	docker exec $(LINUX_CTR) sh -c '$(CMD)'
 
 # Translated files keep the original Copyright and licence lines (tooling/licence-check.sh).
-licence-check:
+licence-check: ## licence and notice checks
 	bash tooling/licence-check.sh

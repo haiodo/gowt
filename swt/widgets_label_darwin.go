@@ -180,6 +180,7 @@ func (this *Label) createHandle_() {
 		widget.SetBoxType(int64(cocoa.OSNSBoxCustom))
 		var offsetSize cocoa.NSSize = cocoa.NSSize{}
 		widget.SetContentViewMargins(offsetSize)
+		cocoa.LayerBacked(widget.Id)
 		var imageWidget *cocoa.NSImageView = castcocoaNSObjectTococoaNSImageView(cocoa.NewSWTImageView().Alloc())
 		imageWidget.Init()
 		imageWidget.SetImageScaling(int64(cocoa.OSNSImageScaleNone))

@@ -445,6 +445,14 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.remeasureLabel()' "$TI_GO")" = 2 ] || { echo "port.sh: TabItem remeasureLabel rewrite did not apply" >&2; exit 1; }
 fi
 
+# cocoa Label is an NSBox, and AppKit gives it no backing layer. Every text change then made the window
+# server keep 28 x 8 MiB of graphics buffers; wantsLayer: stops the footprint swing (monitor memory).
+if [ "$PLATFORM" = cocoa ]; then
+	LB_GO=swt/widgets_label_darwin.go
+	perl -0pi -e 's/(\t\twidget.SetContentViewMargins\(offsetSize\)\n)(?!\t\tcocoa.LayerBacked)/$1\t\tcocoa.LayerBacked(widget.Id)\n/' "$LB_GO"
+	grep -q 'cocoa.LayerBacked(widget.Id)' "$LB_GO" || { echo "port.sh: Label wantsLayer rewrite did not apply" >&2; exit 1; }
+fi
+
 # cocoa Button.drawBezelWithFrame draws its own bezel, a rectangle filled with the background colour at full opacity,
 # whenever the button has a background, check boxes included. An alpha-0 background (package look gives one to the
 # controls on a sidebar or inspector glass) came out as a black bar over the box and its text; it now leaves the bezel to AppKit.

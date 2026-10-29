@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.13.6 (2026-10-29)
 
 Reduce transparency on macOS, CRLF in a Windows test
 - Fixed: with Reduce transparency on (the macOS 26 CI runner), the inspector glass in forced dark mode was white, luma 255, the Aqua `windowBackgroundColor`, and stayed white a second later. A Glass backdrop (`InstallBackdrop`, `InstallPanelBackdrop`) is now the `NSVisualEffectView` material when `accessibilityDisplayShouldReduceTransparency` is set, as before macOS 26. The setting is read at install; turning it on or off while the app runs takes effect at the next install. Under it the sidebar glass has square corners: `SetGlassCornerRadius` only rounds `NSGlassEffectView`.
@@ -13,7 +13,7 @@ The GUI tests on the macOS 26 runner
 - Tests: `TestGlassBorderLayer`, `TestGlassCapsuleClipInSidebarContent` and `TestGlassFocusRing` (package look) skip under Reduce transparency: they check the layer of an `NSGlassEffectView`, and under the setting there is none. `TestMaterialPane` expects the `NSVisualEffectView` material then, and `TestPanelBackdropIsLowestChild`, `TestGlassBorder` and `TestGlassFocusRing` (package internal/cocoa) skip, since the panel backdrop is a sibling material, not a glass child.
 - Tests: `TestInspectorTextOnGlass` allows the native dark fill of a field with `Border` (luma 30 on the 56 glass) and keeps the rule for a borderless one, which must show the glass; no field may be black.
 - Tests: `TestQATreeFocus` focuses a `Text`, not a `Button`: with Keyboard navigation off, the macOS default of the runner, a button takes no focus, so the focus action reported "did not take the focus". `qa/qatest` `TestFocus` and `TestKeys` use a list or a field for the same reason.
-- Tests: `TestSplitDivider` looks for the hairline only in the rows of the sash: the Windows capture has the title bar above the client area, and its row changed between the two windows.
+- Tests: `TestSplitDivider` looks for the hairline only in the rows of the sash: the Windows capture has the title bar above the client area, and its row changed between the two windows; the scale comes from the client width, as that capture is the DWM frame, narrower than the window, not from the image width over 400.
 - Tests: `TestToolbarInspectorItems` checks what hiding the inspector does, the content taking its room back, not that the item moved right: the strip is right-aligned, and with an inspector about as wide as the strip the items stay put.
 - Tests: `TestScrollOnScroll` asks for fewer than five calls from five 4 ms moves only when every move reached the loop within half a frame of the previous one; a runner whose timers spread them out gives each move a frame of its own, which is not a coalescing bug.
 

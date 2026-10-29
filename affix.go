@@ -12,6 +12,7 @@ import (
 // affix is what Prefix, PrefixImage, Suffix and Small give a single-line field.
 type affix struct {
 	prefix, suffix string
+	hint           string
 	image          *Image
 	small          bool
 	drag           func(dx float64, shift bool) // a Number's scrub; nil leaves the prefix inert
@@ -71,8 +72,36 @@ func fieldLook(t *TextView, noBorder bool) {
 	if t.aff != nil && t.aff.prefix == "" && t.aff.image == nil {
 		t.aff.drag = nil // nothing to scrub on
 	}
-	if t.aff != nil && t.aff.shown() {
+	styled := t.fill != nil || t.stroke != nil || t.padX > 0
+	if styled {
+		if m := t.t.GetMessage(); m != "" {
+			if t.aff == nil {
+				t.aff = &affix{}
+			}
+			t.aff.hint = m
+			t.t.SetMessage("") // drawn in the cell, which puts it on the line of the value
+		}
+	}
+	if t.aff != nil && (t.aff.shown() || t.aff.hint != "") {
 		setFieldAffix(t.t, t.aff)
+	}
+	if t.fill != nil {
+		setPaint(&t.t.Control, t.fill, false)
+		setFieldFill(t.t, t.radius)
+	}
+	if t.stroke != nil {
+		dark := systemDark()
+		if a := appOf(&t.t.Control); a != nil {
+			dark = a.dark
+		}
+		c := paintRGBA(t.stroke, dark)
+		setFieldStroke(t.t, c[0], c[1], c[2], c[3])
+	}
+	if t.padX > 0 {
+		setFieldInset(t.t, t.padX)
+	}
+	if styled {
+		t.t.AddListener(swt.FocusIn, listenerFunc(func(*swt.Event) { placeFieldEditor(t.t) }))
 	}
 }
 
@@ -255,3 +284,12 @@ func (n *NumberView) decimals() int {
 }
 
 func (n *NumberView) format(v float64) string { return strconv.FormatFloat(v, 'f', -1, 64) }
+
+// paintRGBA resolves a paint, with its alpha when it has one.
+func paintRGBA(p Paint, dark bool) [4]uint8 {
+	if a, ok := p.(interface{ rgba(bool) [4]uint8 }); ok {
+		return a.rgba(dark)
+	}
+	c := p.in(dark)
+	return [4]uint8{c.R, c.G, c.B, 255}
+}

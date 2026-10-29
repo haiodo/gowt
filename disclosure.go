@@ -55,6 +55,17 @@ func Disclosure(title string, opts ...Option) Option {
 	}}
 }
 
+// SetTitle replaces the title of the header and the name of the chevron for VoiceOver, without
+// folding or unfolding the body.
+func (d *DisclosureView) SetTitle(s string) {
+	d.title.SetText(s)
+	setAccessibleLabel(&d.chevron.Control, s)
+	if !d.c.IsDisposed() {
+		flushUp(&d.title.Control)
+		d.c.Layout()
+	}
+}
+
 // Expanded reports whether the body shows.
 func (d *DisclosureView) Expanded() bool { return d.expanded }
 

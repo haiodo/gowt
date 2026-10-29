@@ -12,14 +12,18 @@ import (
 // textFrame is the state of a framed Text; off leaves the control without any frame or padding,
 // for a Text inside a glass surface that draws the frame itself.
 type textFrame struct {
-	t     *swt.Text
-	multi bool
-	off   bool
-	surf  *surface // the surface that frames a Text with off set
-	in    [4]int32 // left, top, right, bottom padding of the last NCCALCSIZE
-	affix *Affix
-	drag  *int32 // the last client x of a scrub of the prefix, nil while none runs
-	moved bool   // the scrub has moved
+	t      *swt.Text
+	multi  bool
+	off    bool
+	surf   *surface // the surface that frames a Text with off set
+	in     [4]int32 // left, top, right, bottom padding of the last NCCALCSIZE
+	affix  *Affix
+	drag   *int32 // the last client x of a scrub of the prefix, nil while none runs
+	moved  bool   // the scrub has moved
+	fill   *RGB   // FieldFill: the frame is this fill, without the hairline
+	stroke *RGB   // FieldStroke: the border colour, already blended over the fill
+	radius int    // its corner radius, dips
+	padX   int    // extra text padding, dips
 }
 
 // Affix is what SetAffix shows inside the frame of a single-line Text around its value.
@@ -99,6 +103,43 @@ func Unframe(c *swt.Control, s *surface) {
 	frameChanged(uintptr(c.Handle))
 }
 
+// SetFieldFill makes the frame of a single-line Text the rounded fill of the control's background
+// colour, without the hairline; radius is in dips. The caret, the focus accent and the affixes stay.
+func SetFieldFill(t *swt.Text, radius int) {
+	f := frames[uintptr(t.Handle)]
+	if f == nil || f.multi {
+		return
+	}
+	c := t.GetBackground()
+	f.fill = &RGB{uint8(c.GetRed()), uint8(c.GetGreen()), uint8(c.GetBlue())}
+	f.radius = radius
+	redrawFrame(uintptr(t.Handle))
+}
+
+// SetFieldStroke draws a border of the RGBA colour around the frame of a single-line Text; the
+// colour is blended over the fill, as the frame paints in plain RGB.
+func SetFieldStroke(t *swt.Text, r, g, b, a uint8) {
+	f := frames[uintptr(t.Handle)]
+	if f == nil || f.multi {
+		return
+	}
+	c := t.GetBackground()
+	base := RGB{uint8(c.GetRed()), uint8(c.GetGreen()), uint8(c.GetBlue())}
+	col := RGB{r, g, b}.over(float64(a)/255, base)
+	f.stroke = &col
+	redrawFrame(uintptr(t.Handle))
+}
+
+// SetFieldInset widens the padding between the frame of a Text and its text by x dips.
+func SetFieldInset(t *swt.Text, x int) {
+	f := frames[uintptr(t.Handle)]
+	if f == nil || f.multi {
+		return
+	}
+	f.padX = x
+	frameChanged(uintptr(t.Handle))
+}
+
 // ExtraHeight is the height in points the frame takes from the client area of a multi-line Text.
 func ExtraHeight(t *swt.Text) int {
 	f := frames[uintptr(t.Handle)]
@@ -137,7 +178,7 @@ func (f *textFrame) proc(hwnd, msg, wp, lp uintptr, def func() uintptr) (uintptr
 		r := def()
 		rc := (*rect)(ptr(lp))
 		dpi := dpiOf(hwnd)
-		left, right := px(10, dpi), px(6, dpi)
+		left, right := px(10+float64(f.padX), dpi), px(6+float64(f.padX), dpi)
 		if lead, trail := f.affixWidths(hwnd); lead+trail > 0 {
 			left += lead
 			if trail > 0 {
@@ -229,6 +270,10 @@ func paintInputAffix(hwnd uintptr, c *swt.Control, f *textFrame) {
 		fill = pal.Black.over(0.04, bg)
 	}
 	r := px(4, dpi)
+	custom := f != nil && f.fill != nil
+	if custom {
+		fill, r = *f.fill, px(float64(f.radius), dpi)
+	}
 	var font uintptr
 	if f != nil && f.affix != nil {
 		font = call(pSendMessage, hwnd, wmGetFont, 0, 0)
@@ -236,11 +281,16 @@ func paintInputAffix(hwnd uintptr, c *swt.Control, f *textFrame) {
 	drawBuffered(d, hdc, w, h, font, func(p *painter) {
 		p.fillRect(bg, 0, 0, w, h)
 		p.fillRound(fill, 0, 0, w, h, r)
-		p.strokeRound(pal.Stroke(bg), 0, 0, w, h, r, 1)
+		switch {
+		case f != nil && f.stroke != nil:
+			p.strokeRound(*f.stroke, 0, 0, w, h, r, px(1, dpi))
+		case !custom:
+			p.strokeRound(pal.Stroke(bg), 0, 0, w, h, r, 1)
+		}
 		switch {
 		case enabled && focused(hwnd):
 			p.line(pal.Accent, r, h-1, w-1-r, h-1, 2)
-		case enabled:
+		case enabled && !custom && (f == nil || f.stroke == nil):
 			p.line(pal.StrongStroke(bg), r, h-1, w-1-r, h-1, 1)
 		}
 		if font != 0 {

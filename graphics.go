@@ -14,6 +14,15 @@ type RGB struct{ R, G, B uint8 }
 // SecondaryText. Only this package implements it.
 type Paint interface{ in(dark bool) RGB }
 
+// RGBA is an RGB with alpha, 0 transparent and 255 opaque, for a border such as FieldStroke.
+type RGBA struct{ R, G, B, A uint8 }
+
+func (c RGBA) in(bool) RGB        { return RGB{c.R, c.G, c.B} }
+func (c RGBA) rgba(bool) [4]uint8 { return [4]uint8{c.R, c.G, c.B, c.A} }
+
+// Alpha returns c with alpha a.
+func (c RGB) Alpha(a uint8) RGBA { return RGBA{c.R, c.G, c.B, a} }
+
 // Adaptive is a colour for each system theme. A widget given one through Foreground, Background or
 // their setters takes the other colour when the system switches between light and dark.
 type Adaptive struct{ Light, Dark RGB }

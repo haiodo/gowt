@@ -69,5 +69,15 @@ func TestDisclosureNative(t *testing.T) {
 		if d.chevron.GetSelection() {
 			t.Error("a folded Disclosure has its chevron on")
 		}
+		d.SetTitle("Fill")
+		if got := d.title.GetText(); got != "Fill" {
+			t.Errorf("title after SetTitle %q, want Fill", got)
+		}
+		if name := cocoa.AccessibilityLabel(v); name != "Fill" {
+			t.Errorf("chevron label after SetTitle %q, want Fill", name)
+		}
+		if d.Expanded() {
+			t.Error("SetTitle unfolded the body")
+		}
 	})
 }

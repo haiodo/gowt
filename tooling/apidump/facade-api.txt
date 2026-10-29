@@ -192,6 +192,7 @@ gowt DisclosureView.SetForeground(c Paint)
 gowt DisclosureView.SetHeight(h int)
 gowt DisclosureView.SetMaxHeight(h int)
 gowt DisclosureView.SetSize(width int, height int)
+gowt DisclosureView.SetTitle(s string)
 gowt DisclosureView.SetTooltip(s string)
 gowt DisclosureView.SetVisible(v bool)
 gowt DisclosureView.Unwrap() *github.com/haiodo/gowt/swt.Composite
@@ -511,9 +512,14 @@ gowt ProgressView.SetVisible(v bool)
 gowt ProgressView.Unwrap() *github.com/haiodo/gowt/swt.ProgressBar
 gowt ProgressView.Value() int
 gowt ProgressView.Visible() bool
+gowt RGB.Alpha(a uint8) RGBA
 gowt RGB.B field uint8
 gowt RGB.G field uint8
 gowt RGB.R field uint8
+gowt RGBA.A field uint8
+gowt RGBA.B field uint8
+gowt RGBA.G field uint8
+gowt RGBA.R field uint8
 gowt SashView.Dispose()
 gowt SashView.Enabled() bool
 gowt SashView.Focus() bool
@@ -1054,6 +1060,8 @@ gowt func DropDown() Option
 gowt func DropOn(w Widget, d Drop) *DropHandle
 gowt func Failed(f func(err error, reset func()) Option) Option
 gowt func Field(label string, control Option, opts ...Option) Option
+gowt func FieldFill(c Paint) Option
+gowt func FieldStroke(c Paint) Option
 gowt func FieldTop() Option
 gowt func Fields(opts ...Option) Option
 gowt func Fill(opts ...Option) Option
@@ -1107,6 +1115,7 @@ gowt func Primary() Option
 gowt func PrintToPDF(path string, o PrintOptions) (*PrintJob, error)
 gowt func Progress(max int, opts ...Option) Option
 gowt func Radio() Option
+gowt func Radius(points int) Option
 gowt func ReadOnly() Option
 gowt func Ref[T Widget](p *T) Option
 gowt func Right() Option
@@ -1212,6 +1221,7 @@ gowt type PrintOptions struct
 gowt type PrintPage struct
 gowt type ProgressView struct
 gowt type RGB struct
+gowt type RGBA struct
 gowt type SashView struct
 gowt type ScaleView struct
 gowt type ScrollView struct

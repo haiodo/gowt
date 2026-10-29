@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+Inspector fields (Tenniarb)
+- New: `FieldFill`, `FieldStroke` and `Radius` give a single-line `Text` or `Number` a rounded fill and border without the native bezel; `RGB.Alpha` makes a translucent border. macOS paints them on the field's layer and keeps the native field editor, caret and focus ring; Windows in the WinUI frame; Linux in the entry's CSS. `Inset` now takes a single-line field too (x only), and `Hint` is drawn on the line of the value instead of at the top of a borderless field.
+- New: `DisclosureView.SetTitle` replaces the title and the chevron's accessibility name without folding the body.
+- Tests: `TestFieldFillAndInset` (package internal/cocoa, no window); `TestDisclosure` and `TestDisclosureNative` cover `SetTitle`.
+
 ## v0.13.7 (2026-10-29)
 
 Label memory on macOS (Tenniarb)

@@ -18,17 +18,23 @@ const affixGap = 6
 const dimLabel = 0.55
 
 type entryLook struct {
-	provider int64
-	pad      GtkBorder // the theme's padding, before the affixes widened it
-	small    bool
-	affix    *EntryAffix
-	lead     int32 // pixels the prefix takes, with its gap
-	trail    int32
-	draw     int64 // the draw callback, 0 before SetEntryAffix
-	handler  int64
-	styled   int64 // the style-updated callback
-	styledID int64
-	changed  func()
+	provider                    int64
+	pad                         GtkBorder // the theme's padding, before the affixes widened it
+	small                       bool
+	affix                       *EntryAffix
+	lead                        int32 // pixels the prefix takes, with its gap
+	trail                       int32
+	draw                        int64 // the draw callback, 0 before SetEntryAffix
+	handler                     int64
+	styled                      int64 // the style-updated callback
+	styledID                    int64
+	changed                     func()
+	fill                        bool
+	red, green, blue            int32
+	stroke                      bool
+	sred, sgreen, sblue, salpha int32
+	radius                      int
+	padX                        int
 }
 
 var entryLooks = map[int64]*entryLook{}
@@ -53,6 +59,35 @@ func lookOf(entry int64, changed func()) *entryLook {
 		l.styledID = int64(gSignalConnectData.get()(uintptr(entry), sp(cs("style-updated")), uintptr(l.styled), 0, 0, gConnectAfter))
 	}
 	return l
+}
+
+// look returns the state of entry without replacing its changed callback.
+func look(entry int64) *entryLook {
+	if l := entryLooks[entry]; l != nil {
+		return l
+	}
+	return lookOf(entry, nil)
+}
+
+// SetEntryFill gives the entry the fill and corner radius of a FieldFill, without the theme's frame.
+func SetEntryFill(entry int64, red, green, blue int32, radius int) {
+	l := look(entry)
+	l.fill, l.red, l.green, l.blue, l.radius = true, red, green, blue, radius
+	l.css(entry)
+}
+
+// SetEntryStroke draws a border of the RGBA colour around the entry fill.
+func SetEntryStroke(entry int64, red, green, blue, alpha int32) {
+	l := look(entry)
+	l.stroke, l.sred, l.sgreen, l.sblue, l.salpha = true, red, green, blue, alpha
+	l.css(entry)
+}
+
+// SetEntryInset widens the padding between the entry and its text by x pixels on each side.
+func SetEntryInset(entry int64, x int) {
+	l := look(entry)
+	l.padX = x
+	l.css(entry)
 }
 
 // SetEntrySmall gives the entry the compact height of an inspector field; changed runs once the
@@ -119,9 +154,15 @@ func ReleaseEntryLook(entry int64) {
 }
 
 func (l *entryLook) css(entry int64) {
-	css := fmt.Sprintf("entry { padding-left: %dpx; padding-right: %dpx; }", l.pad.Left+l.lead, l.pad.Right+l.trail)
+	css := fmt.Sprintf("entry { padding-left: %dpx; padding-right: %dpx; }", l.pad.Left+l.lead+int32(l.padX), l.pad.Right+l.trail+int32(l.padX))
 	if l.small {
 		css += " entry { min-height: 24px; padding-top: 0; padding-bottom: 0; }"
+	}
+	if l.fill {
+		css += fmt.Sprintf(" entry { background-color: rgb(%d,%d,%d); border: none; box-shadow: none; border-radius: %dpx; }", l.red, l.green, l.blue, l.radius)
+	}
+	if l.stroke {
+		css += fmt.Sprintf(" entry { border: 1px solid rgba(%d,%d,%d,%.3f); border-radius: %dpx; }", l.sred, l.sgreen, l.sblue, float64(l.salpha)/255, l.radius)
 	}
 	l.provider = SetWidgetCSS(entry, css, l.provider)
 

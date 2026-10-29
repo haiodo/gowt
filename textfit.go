@@ -154,15 +154,19 @@ func (t *TextView) fit() {
 	}
 }
 
-// Inset puts x points between the text and the left and right edge of a multi-line Text and y points
-// above and below it, as SetInset does.
+// Inset puts x points between the text and the left and right edge of a Text and, for a multi-line
+// one, y points above and below it. A single-line Text takes x only, with FieldFill.
 func Inset(x, y int) Option {
 	return hook(func(w Widget) error {
-		if t, ok := w.(*TextView); ok && t.multi() {
-			t.SetInset(x, y)
+		if t, ok := w.(*TextView); ok {
+			if t.multi() {
+				t.SetInset(x, y)
+			} else {
+				t.padX = x
+			}
 			return nil
 		}
-		return fmt.Errorf("gowt: Inset applies to a multi-line Text, not to %s", nameOf(w.control()))
+		return fmt.Errorf("gowt: Inset applies to a Text, not to %s", nameOf(w.control()))
 	})
 }
 

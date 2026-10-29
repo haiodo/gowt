@@ -44,6 +44,10 @@ func TestDisclosure(t *testing.T) {
 		if d.Expanded() {
 			t.Error("a click on the title did not fold the body")
 		}
+		d.SetTitle("Layout and spacing")
+		if d.title.GetText() != "Layout and spacing" || d.Expanded() {
+			t.Errorf("SetTitle: title %q, expanded %v", d.title.GetText(), d.Expanded())
+		}
 
 		put[*LabelView](w, Label("l", Collapsed()))
 		put[*LabelView](w, Label("l", Trailing(Label("x"))))

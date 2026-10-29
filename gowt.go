@@ -459,6 +459,56 @@ func Search() Option {
 	return style{id: sSearch, set: swt.SEARCH | swt.ICON_SEARCH | swt.ICON_CANCEL}
 }
 
+// FieldFill gives a single-line Text or Number a rounded fill instead of the native bezel: the text,
+// caret, focus ring and Prefix stay native, and Radius rounds the fill. Pair it with Inset for the
+// padding of the text.
+func FieldFill(c Paint) Option {
+	return hook(func(w Widget) error {
+		t, err := fieldOf(w, "FieldFill")
+		if err != nil {
+			return err
+		}
+		t.fill = c
+		return nil
+	})
+}
+
+// FieldStroke draws a border of paint around the FieldFill of a single-line field; RGB.Alpha sets a
+// translucent border such as the 25% black of an inspector field.
+func FieldStroke(c Paint) Option {
+	return hook(func(w Widget) error {
+		t, err := fieldOf(w, "FieldStroke")
+		if err != nil {
+			return err
+		}
+		t.stroke = c
+		return nil
+	})
+}
+
+// Radius is the corner radius in points of the fill FieldFill gives a field.
+func Radius(points int) Option {
+	return hook(func(w Widget) error {
+		t, err := fieldOf(w, "Radius")
+		if err != nil {
+			return err
+		}
+		t.radius = points
+		return nil
+	})
+}
+
+// fieldOf is the single-line field of a Text or Number.
+func fieldOf(w Widget, name string) (*TextView, error) {
+	switch v := w.(type) {
+	case *TextView:
+		return v, nil
+	case *NumberView:
+		return v.f, nil
+	}
+	return nil, fmt.Errorf("gowt: %s applies to Text or Number, not to %s", name, nameOf(w.control()))
+}
+
 // Background sets the background colour of a widget, as SetBackground does.
 func Background(c Paint) Option { return apply(func(w *swt.Control) { setPaint(w, c, false) }) }
 
@@ -891,10 +941,14 @@ func (s *SwitchView) OnChange(f func(on bool)) {
 // TextView is an edit field.
 type TextView struct {
 	base
-	t     *swt.Text
-	inset [2]int
-	grow  *autoGrow
-	aff   *affix // Prefix, Suffix, Small; nil without them
+	t      *swt.Text
+	inset  [2]int
+	grow   *autoGrow
+	aff    *affix // Prefix, Suffix, Small; nil without them
+	fill   Paint  // FieldFill; nil for the native background
+	stroke Paint  // FieldStroke; nil for no border
+	radius int    // FieldFill corner radius, points
+	padX   int    // Inset of a single-line field, points
 }
 
 // Text returns the current content; line breaks are \n on every system (Windows stores \r\n).

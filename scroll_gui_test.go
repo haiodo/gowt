@@ -47,10 +47,11 @@ func TestScrollOnScroll(t *testing.T) {
 					t.Errorf("SetOrigin: got %d,%d, want 30,120", calls[0].x, calls[0].y)
 				}
 				s.SetOrigin(30, 120) // no move, no call
-				// A move every 4 ms, faster than a frame: at most one call per frame. Chained:
-				// Windows runs timers that expire in one tick in any order, so five Afters could end
-				// at 130. burstMoved records when the moves reached the loop, so a runner too slow for
-				// 4 ms does not fail a coalescing it never had to do.
+				// A move every 4 ms, well inside a frame: several must coalesce into one call.
+				// Chained: Windows runs timers that expire in one tick in any order, so five Afters
+				// could end at 130. burstMoved records when the moves reached the loop: on a runner
+				// whose timers spread them to half a frame or more each move waits out a frame of
+				// its own and there is nothing to coalesce, so the check asks for the moves first.
 				var move func(i int)
 				move = func(i int) {
 					s.SetOrigin(30, 120+10*i)
@@ -66,8 +67,12 @@ func TestScrollOnScroll(t *testing.T) {
 				if len(burst) == 0 {
 					t.Errorf("five moves 4 ms apart: no call")
 				} else if len(burstMoved) > 1 {
-					if span := burstMoved[len(burstMoved)-1].Sub(burstMoved[0]); len(burst) >= 5 && span < 4*scrollFrame {
-						t.Errorf("five moves %v apart: %d calls %v, want fewer than 5", span, len(burst), burst)
+					var worst time.Duration
+					for i := 1; i < len(burstMoved); i++ {
+						worst = max(worst, burstMoved[i].Sub(burstMoved[i-1]))
+					}
+					if len(burst) >= 5 && worst < scrollFrame/2 {
+						t.Errorf("five moves at most %v apart: %d calls %v, want fewer than 5", worst, len(burst), burst)
 					}
 				}
 				for i := 1; i < len(calls); i++ {

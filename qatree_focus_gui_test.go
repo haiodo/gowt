@@ -20,7 +20,9 @@ func TestQATreeFocus(t *testing.T) {
 	onMain(func() {
 		err = Run(func(app *App) {
 			w := app.Window("qa focus")
-			w.Add(VBox(Button("go", ID("go")), Button("other", ID("other"))))
+			// A Text, not a Button: with Keyboard navigation off, the macOS default of the CI
+			// runner, a button takes no focus (same as qa/qatest TestFocus).
+			w.Add(VBox(Text(ID("go")), Button("other", ID("other"))))
 			w.OnKey("Cmd+K", func() { keys++ })
 			w.Show()
 			t.Setenv("GOWT_QA_SOCKET", "unused") // set after Run started, so no QA server listens

@@ -117,14 +117,30 @@ func TestToolbarInspectorItems(t *testing.T) {
 					if n := node("dragged", "zoom"); n.Text != "125%" || clicks != 1 {
 						fail("text item shows %q after 125%%, clicked %d times", n.Text, clicks)
 					}
+					// The strip is right-aligned, so with an inspector about as wide as the strip the
+					// items stay put: hiding it shows in the content taking the room back.
+					draggedWidth := content.Unwrap().GetBounds().Width
 					look.SetInspectorVisible(w, false)
-					app.After(500*time.Millisecond, func() {
-						defer w.Close()
-						hidden := check("hidden")
-						if hidden.Bounds[0] <= dragged.Bounds[0] {
-							fail("hidden: info at %v, not right of where it was over the inspector %v", hidden.Bounds, dragged.Bounds)
+					var poll func(tries int)
+					poll = func(tries int) {
+						cw := content.Unwrap().GetBounds().Width
+						if !look.InspectorVisible(w) && cw > draggedWidth || tries == 0 {
+							defer w.Close()
+							hidden := check("hidden")
+							if look.InspectorVisible(w) {
+								fail("hidden: the inspector is still visible")
+							}
+							if cw <= draggedWidth {
+								fail("hidden: content %d wide, not wider than the %d it had beside the inspector", cw, draggedWidth)
+							}
+							if hidden.Bounds[0] < dragged.Bounds[0] {
+								fail("hidden: info at %v, left of where it was over the inspector %v", hidden.Bounds, dragged.Bounds)
+							}
+							return
 						}
-					})
+						app.After(50*time.Millisecond, func() { poll(tries - 1) })
+					}
+					poll(40)
 				})
 			})
 		})

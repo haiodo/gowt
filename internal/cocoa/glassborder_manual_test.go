@@ -13,6 +13,11 @@ func TestGlassBorder(t *testing.T) {
 	if !GlassAvailable() {
 		t.Skip("no NSGlassEffectView")
 	}
+	var reduce bool
+	onMain(func() { reduce = ReduceTransparency() })
+	if reduce {
+		t.Skip("Reduce transparency: the panel backdrop is the NSVisualEffectView material, no glass")
+	}
 	onMain(func() {
 		setAppearance := func(v uintptr, dark bool) {
 			name := "NSAppearanceNameAqua"
@@ -73,6 +78,11 @@ func TestGlassBorder(t *testing.T) {
 func TestGlassFocusRing(t *testing.T) {
 	if !GlassAvailable() {
 		t.Skip("no NSGlassEffectView")
+	}
+	var reduce bool
+	onMain(func() { reduce = ReduceTransparency() })
+	if reduce {
+		t.Skip("Reduce transparency: the panel backdrop is the NSVisualEffectView material, no glass")
 	}
 	onMain(func() {
 		v := msg(msg(class("NSView"), "alloc"), "init")

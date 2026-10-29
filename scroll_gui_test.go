@@ -18,6 +18,7 @@ func TestScrollOnScroll(t *testing.T) {
 	var calls []scrollCall
 	var wheelSent bool
 	var wheelFrom int
+	var burstMoved []time.Time
 	check := func(phase string, want int) {
 		if len(calls) != want {
 			t.Errorf("%s: %d calls %v, want %d", phase, len(calls), calls, want)
@@ -35,20 +36,23 @@ func TestScrollOnScroll(t *testing.T) {
 			step := 150 * time.Millisecond
 			app.After(step, func() {
 				check("before any scroll", 0)
-				s.SetOrigin(0, 50) // two moves in one turn: one call, with the last origin
+				s.SetOrigin(0, 50) // four moves in one turn: one call, with the last origin
+				s.SetOrigin(10, 80)
+				s.SetOrigin(20, 100)
 				s.SetOrigin(30, 120)
 			})
 			app.After(2*step, func() {
-				check("SetOrigin twice", 1)
+				check("SetOrigin four times", 1)
 				if len(calls) == 1 && (calls[0].x != 30 || calls[0].y != 120) {
 					t.Errorf("SetOrigin: got %d,%d, want 30,120", calls[0].x, calls[0].y)
 				}
 				s.SetOrigin(30, 120) // no move, no call
-				// A move every 4 ms, faster than a frame: at most one call per frame.
-				// Chained: Windows runs timers that expire in one tick in any order, so five Afters could end at 130.
+				// A move every 4 ms, well inside a frame: several must coalesce into one call. Chained,
+				// as Windows runs timers expiring in one tick; burstMoved tells if the runner kept up.
 				var move func(i int)
 				move = func(i int) {
 					s.SetOrigin(30, 120+10*i)
+					burstMoved = append(burstMoved, time.Now())
 					if i < 5 {
 						app.After(4*time.Millisecond, func() { move(i + 1) })
 					}
@@ -57,8 +61,16 @@ func TestScrollOnScroll(t *testing.T) {
 			})
 			app.After(3*step, func() {
 				burst := calls[1:]
-				if len(burst) == 0 || len(burst) >= 5 {
-					t.Errorf("five moves 4 ms apart: %d calls %v, want fewer than 5", len(burst), burst)
+				if len(burst) == 0 {
+					t.Errorf("five moves 4 ms apart: no call")
+				} else if len(burstMoved) > 1 {
+					var worst time.Duration
+					for i := 1; i < len(burstMoved); i++ {
+						worst = max(worst, burstMoved[i].Sub(burstMoved[i-1]))
+					}
+					if len(burst) >= 5 && worst < scrollFrame/2 {
+						t.Errorf("five moves at most %v apart: %d calls %v, want fewer than 5", worst, len(burst), burst)
+					}
 				}
 				for i := 1; i < len(calls); i++ {
 					if gap := calls[i].at.Sub(calls[i-1].at); gap < scrollFrame-2*time.Millisecond {

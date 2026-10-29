@@ -59,6 +59,10 @@ var reduceTransparency = func() bool {
 	return msg(msg(class("NSWorkspace"), "sharedWorkspace"), "accessibilityDisplayShouldReduceTransparency")&0xff != 0
 }
 
+// ReduceTransparency reports the setting that makes a Glass backdrop the NSVisualEffectView material
+// instead. The GUI tests read it where they check for glass: there is none under the setting.
+func ReduceTransparency() bool { return reduceTransparency() }
+
 // InstallBackdrop puts a material view directly behind view and returns whether it replaced or
 // removed an earlier one. kind is BackdropNone, BackdropTranslucent or BackdropGlass; Glass falls
 // back to Translucent before macOS 26 and under Reduce transparency.

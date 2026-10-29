@@ -1,11 +1,14 @@
 # Changelog
 
-## Unreleased
+## v0.14.0 (2026-10-30)
 
 Inspector fields (Tenniarb)
 - New: `FieldFill`, `FieldStroke` and `Radius` give a single-line `Text` or `Number` a rounded fill and border without the native bezel; `RGB.Alpha` makes a translucent border. macOS paints them on the field's layer and keeps the native field editor, caret and focus ring; Windows in the WinUI frame; Linux in the entry's CSS. `Inset` now takes a single-line field too (x only), and `Hint` is drawn on the line of the value instead of at the top of a borderless field.
 - New: `DisclosureView.SetTitle` replaces the title and the chevron's accessibility name without folding the body.
 - Tests: `TestFieldFillAndInset` (package internal/cocoa, no window); `TestDisclosure` and `TestDisclosureNative` cover `SetTitle`.
+- Fixed: styled fields keep their placeholders on Windows and Linux, and `SetHint` updates the drawn placeholder on macOS without losing its inset. The placeholder and value use the same inset. Field fills and strokes follow appearance changes. Focusing the first styled field on macOS initializes the field editor bindings, and Linux releases field styling resources when the field is disposed.
+- Fixed: reading a placeholder field's value during editing no longer causes continuous redraws that starve `Async` callbacks. Number fields use the native drawing rectangle without re-entering the custom cell's geometry callback.
+- Tests: macOS GUI regressions cover hints, insets, appearance changes, Number and Disclosure; Cocoa tests cover editor initialization and placeholder coordinates. Linux GUI regressions cover hints, stroke repaint and disposal registration.
 
 ## v0.13.7 (2026-10-29)
 

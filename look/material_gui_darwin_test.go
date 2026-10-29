@@ -15,7 +15,8 @@ func materialProblem(_ *gowt.Window, pane *gowt.Panel, _ gowt.RGB) string {
 	if a := pane.AsComposite().GetBackground().GetAlpha(); a != 0 {
 		return fmt.Sprintf("pane background alpha %d, want 0", a)
 	}
-	if !cocoa.GlassAvailable() {
+	if !cocoa.GlassAvailable() || cocoa.ReduceTransparency() {
+		// Under Reduce transparency the pane is the same material as before macOS 26.
 		if name != "NSVisualEffectView" || material != 21 || blending != 0 {
 			return fmt.Sprintf("pane backdrop %s material %d blending %d, want NSVisualEffectView 21 0", name, material, blending)
 		}

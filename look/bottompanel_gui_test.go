@@ -162,11 +162,21 @@ func TestSplitDivider(t *testing.T) {
 		look gowt.Appearance
 	}{{"light", gowt.AppearanceLight}, {"dark", gowt.AppearanceDark}} {
 		t.Run(mode.name, func(t *testing.T) {
-			plain, _ := captureSplit(t, mode.look, false, filepath.Join(dir, "divider-"+mode.name+"-off.png"))
-			lined, sashWidth := captureSplit(t, mode.look, true, filepath.Join(dir, "divider-"+mode.name+"-on.png"))
-			scale := float64(lined.Bounds().Dx()) / 400
-			rows := lineRows(plain, lined, 8, int(float64(sashWidth)*scale*0.9))
-			t.Logf("rows changed across the sash width: %v; sash %d points wide", rows, sashWidth)
+			plain := captureSplit(t, mode.look, false, filepath.Join(dir, "divider-"+mode.name+"-off.png"))
+			lined := captureSplit(t, mode.look, true, filepath.Join(dir, "divider-"+mode.name+"-on.png"))
+			scale := float64(lined.img.Bounds().Dx()) / 400
+			// The capture of Windows starts above the client area: the title bar row changes with the
+			// focus, so only the rows of the sash can hold the hairline.
+			off := int(float64(lined.img.Bounds().Dy())/scale - float64(lined.client[3]))
+			from := off + int(float64(lined.sash[1])*scale) - 2
+			to := off + int(float64(lined.sash[1]+lined.sash[3])*scale) + 2
+			var rows []int
+			for _, y := range lineRows(plain.img, lined.img, 8, int(float64(lined.sash[2])*scale*0.9)) {
+				if y >= from && y <= to {
+					rows = append(rows, y)
+				}
+			}
+			t.Logf("rows changed across the sash width: %v; sash %v, client %v", rows, lined.sash, lined.client)
 			if len(rows) == 0 || len(rows) > int(2*scale)+1 || rows[len(rows)-1]-rows[0] >= len(rows) {
 				t.Errorf("Divider changed rows %v across the sash; want one hairline of adjacent rows", rows)
 			}
@@ -174,16 +184,24 @@ func TestSplitDivider(t *testing.T) {
 	}
 }
 
+// splitShot is the capture of a Split window: the picture, the sash and the client area, both in
+// window points.
+type splitShot struct {
+	img    image.Image
+	sash   [4]int32
+	client [4]int32
+}
+
 // captureSplit captures a 400 by 300 point window holding a vertical Split of two empty panes, with
-// or without Divider, and returns the picture and the sash width in points.
-func captureSplit(t *testing.T, mode gowt.Appearance, divider bool, path string) (image.Image, int32) {
+// or without Divider.
+func captureSplit(t *testing.T, mode gowt.Appearance, divider bool, path string) splitShot {
 	t.Helper()
 	opts := []gowt.Option{gowt.Vertical(), gowt.Grow(), gowt.VBox(), gowt.VBox()}
 	if divider {
 		opts = append(opts, gowt.Divider())
 	}
 	var split *gowt.SplitView
-	var sashWidth int32
+	var sash, client [4]int32
 	var errs []error
 	var shotErr, err error
 	onMain(func() {
@@ -199,9 +217,12 @@ func captureSplit(t *testing.T, mode gowt.Appearance, divider bool, path string)
 				defer app.SetAppearance(gowt.AppearanceSystem) // later tests run in the system appearance
 				for _, ch := range split.Unwrap().GetChildren() {
 					if s, ok := ch.Impl().(*swt.Sash); ok {
-						sashWidth = s.GetBounds().Width
+						b := s.GetBounds()
+						sash = [4]int32{b.X, b.Y, b.Width, b.Height}
 					}
 				}
+				r := w.Unwrap().GetClientArea()
+				client = [4]int32{r.X, r.Y, r.Width, r.Height}
 				shotErr = shot.WindowPNG(shotHandle(w), path)
 			})
 		})
@@ -211,7 +232,7 @@ func captureSplit(t *testing.T, mode gowt.Appearance, divider bool, path string)
 			t.Fatal(e)
 		}
 	}
-	return decodePNG(t, path), sashWidth
+	return splitShot{decodePNG(t, path), sash, client}
 }
 
 // lineRows returns the rows where at least min pixels differ by more than levels in a channel. The

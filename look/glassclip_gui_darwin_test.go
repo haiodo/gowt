@@ -19,6 +19,11 @@ func TestGlassCapsuleClipInSidebarContent(t *testing.T) {
 	if !cocoa.GlassAvailable() {
 		t.Skip("needs macOS 26")
 	}
+	var reduce bool
+	onMain(func() { reduce = cocoa.ReduceTransparency() })
+	if reduce {
+		t.Skip("Reduce transparency: the panel backdrop is the NSVisualEffectView sibling")
+	}
 	for _, glassFirst := range []bool{true, false} {
 		var radius float64
 		var masks, ok bool

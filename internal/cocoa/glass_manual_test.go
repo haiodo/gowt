@@ -59,6 +59,13 @@ func TestPanelBackdropIsLowestChild(t *testing.T) {
 	if !GlassAvailable() {
 		t.Skip("no NSGlassEffectView")
 	}
+	var reduce bool
+	onMain(func() { reduce = ReduceTransparency() })
+	if reduce {
+		// Under the setting the panel backdrop is the NSVisualEffectView sibling of
+		// TestGlassBackdropReduceTransparency, not a child of the panel.
+		t.Skip("Reduce transparency: no panel glass")
+	}
 	onMain(func() {
 		v := msg(msg(class("NSView"), "alloc"), "init")
 		host := msg(msg(class("NSView"), "alloc"), "init")
@@ -68,7 +75,11 @@ func TestPanelBackdropIsLowestChild(t *testing.T) {
 		if n := msg(msg(host, "subviews"), "count"); n != 1 {
 			t.Errorf("the glass must not be a sibling, host has %d subviews", n)
 		}
-		bd := msg(msg(v, "subviews"), "objectAtIndex:", 0)
+		subs := msg(v, "subviews")
+		if n := msg(subs, "count"); n == 0 {
+			t.Fatal("the panel has no glass child")
+		}
+		bd := msg(subs, "objectAtIndex:", 0)
 		child := msg(msg(class("NSView"), "alloc"), "init")
 		msg(v, "addSubview:positioned:relativeTo:", child, windowBelowArg, 0)
 		KeepPanelBackdropBelow(view)

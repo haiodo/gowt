@@ -100,8 +100,8 @@ func TestPanesNoBlackFill(t *testing.T) {
 	}
 }
 
-// A Text on the inspector glass is not darker than the glass above it, in forced dark and in light.
-// A borderless single-line field drew textBackgroundColor, opaque (30,30,30) in dark: a black bar.
+// A Text on the inspector glass: a borderless one shows the glass behind it, not the opaque
+// textBackgroundColor bar it drew in dark (30,30,30); a field with a border keeps the native fill.
 func TestInspectorTextOnGlass(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
@@ -112,10 +112,14 @@ func TestInspectorTextOnGlass(t *testing.T) {
 	}{{"dark", gowt.AppearanceDark}, {"light", gowt.AppearanceLight}} {
 		t.Run(mode.name, func(t *testing.T) {
 			fields := map[string][4]int32{}
+			bordered := map[string]bool{}
 			var ctl []*swt.Control
 			var names []string
-			probe := func(name string) gowt.Option {
-				return gowt.Custom(func(c *swt.Control) { ctl, names = append(ctl, c), append(names, name) })
+			probe := func(name string, border bool) gowt.Option {
+				return gowt.Custom(func(c *swt.Control) {
+					ctl, names = append(ctl, c), append(names, name)
+					bordered[name] = border
+				})
 			}
 			path := filepath.Join(t.TempDir(), "fields.png")
 			if dir := os.Getenv("GOWT_PIXELS_DIR"); dir != "" {
@@ -134,9 +138,9 @@ func TestInspectorTextOnGlass(t *testing.T) {
 					w.Add(
 						gowt.VBox(gowt.Ref(&content), gowt.Label("content")),
 						gowt.VBox(gowt.Ref(&insp), gowt.Padding(16), gowt.Gap(16),
-							gowt.Text(gowt.GrowX(), gowt.Value("Root"), probe("single-line")),
-							gowt.Text(gowt.GrowX(), gowt.Border(), gowt.Value("Root"), probe("single-line Border")),
-							gowt.Text(gowt.Multiline(), gowt.Border(), gowt.GrowX(), gowt.Size(0, 60), probe("multi-line Border"))))
+							gowt.Text(gowt.GrowX(), gowt.Value("Root"), probe("single-line", false)),
+							gowt.Text(gowt.GrowX(), gowt.Border(), gowt.Value("Root"), probe("single-line Border", true)),
+							gowt.Text(gowt.Multiline(), gowt.Border(), gowt.GrowX(), gowt.Size(0, 60), probe("multi-line Border", true))))
 					look.SetInspector(w, content, insp, 260)
 					w.SetSize(700, 400)
 					w.Show()
@@ -189,8 +193,14 @@ func TestInspectorTextOnGlass(t *testing.T) {
 				field := meanLuma(img, [4]int32{r[0] + r[2]/2, r[1] + 5, r[2]/2 - 6, r[3] - 10}, scale)
 				glass := meanLuma(img, [4]int32{r[0], r[1] - 10, r[2], 6}, scale)
 				t.Logf("%s at %v: field luma %.0f, glass %.0f", name, r, field, glass)
-				if field < glass-8 {
+				// A field without a border shows the glass: it must take no fill of its own. One with
+				// a border keeps the native NSTextField fill, which is darker than the glass in Dark
+				// Aqua by design; neither may be a black bar.
+				if !bordered[name] && field < glass-8 {
 					t.Errorf("%s at %v: field luma %.0f is darker than the glass above it, %.0f", name, r, field, glass)
+				}
+				if field < 8 {
+					t.Errorf("%s at %v: field luma %.0f is a black fill", name, r, field)
 				}
 			}
 			if t.Failed() {

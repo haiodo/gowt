@@ -22,6 +22,11 @@ func TestGlassFocusRing(t *testing.T) {
 	if !cocoa.GlassAvailable() {
 		t.Skip("needs macOS 26")
 	}
+	var reduce bool
+	onMain(func() { reduce = cocoa.ReduceTransparency() })
+	if reduce {
+		t.Skip("Reduce transparency: the glass is the NSVisualEffectView material, no glass layer")
+	}
 	var scale float64
 	var start, focused, resized, dark, blurred borderRead
 	var events []bool

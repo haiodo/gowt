@@ -47,11 +47,8 @@ func TestScrollOnScroll(t *testing.T) {
 					t.Errorf("SetOrigin: got %d,%d, want 30,120", calls[0].x, calls[0].y)
 				}
 				s.SetOrigin(30, 120) // no move, no call
-				// A move every 4 ms, well inside a frame: several must coalesce into one call.
-				// Chained: Windows runs timers that expire in one tick in any order, so five Afters
-				// could end at 130. burstMoved records when the moves reached the loop: on a runner
-				// whose timers spread them to half a frame or more each move waits out a frame of
-				// its own and there is nothing to coalesce, so the check asks for the moves first.
+				// A move every 4 ms, well inside a frame: several must coalesce into one call. Chained,
+				// as Windows runs timers expiring in one tick; burstMoved tells if the runner kept up.
 				var move func(i int)
 				move = func(i int) {
 					s.SetOrigin(30, 120+10*i)

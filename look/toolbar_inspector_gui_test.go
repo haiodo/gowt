@@ -118,8 +118,7 @@ func TestToolbarInspectorItems(t *testing.T) {
 						fail("text item shows %q after 125%%, clicked %d times", n.Text, clicks)
 					}
 					// The strip is right-aligned, so with an inspector about as wide as the strip the
-					// items need not move: the content taking the room back is what says the inspector
-					// is gone.
+					// items stay put: hiding it shows in the content taking the room back.
 					draggedWidth := content.Unwrap().GetBounds().Width
 					look.SetInspectorVisible(w, false)
 					var poll func(tries int)

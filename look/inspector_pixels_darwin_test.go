@@ -194,8 +194,7 @@ func TestInspectorTextOnGlass(t *testing.T) {
 				glass := meanLuma(img, [4]int32{r[0], r[1] - 10, r[2], 6}, scale)
 				t.Logf("%s at %v: field luma %.0f, glass %.0f", name, r, field, glass)
 				// A field without a border shows the glass: it must take no fill of its own. One with
-				// a border keeps the native NSTextField fill, which is darker than the glass in Dark
-				// Aqua by design; neither may be a black bar.
+				// a border keeps the native dark fill; neither may be a black bar.
 				if !bordered[name] && field < glass-8 {
 					t.Errorf("%s at %v: field luma %.0f is darker than the glass above it, %.0f", name, r, field, glass)
 				}

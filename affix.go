@@ -3,6 +3,7 @@ package gowt
 import (
 	"fmt"
 	"math"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -13,6 +14,7 @@ import (
 type affix struct {
 	prefix, suffix string
 	hint           string
+	nativeHint     bool
 	image          *Image
 	small          bool
 	drag           func(dx float64, shift bool) // a Number's scrub; nil leaves the prefix inert
@@ -73,35 +75,49 @@ func fieldLook(t *TextView, noBorder bool) {
 		t.aff.drag = nil // nothing to scrub on
 	}
 	styled := t.fill != nil || t.stroke != nil || t.padX > 0
-	if styled {
-		if m := t.t.GetMessage(); m != "" {
-			if t.aff == nil {
-				t.aff = &affix{}
-			}
-			t.aff.hint = m
-			t.t.SetMessage("") // drawn in the cell, which puts it on the line of the value
+	if styled && runtime.GOOS == "darwin" {
+		if t.aff == nil {
+			t.aff = &affix{}
 		}
+		t.aff.nativeHint = true
+		t.aff.hint = t.t.GetMessage()
+		t.t.SetMessage("") // drawn in the cell, which puts it on the line of the value
 	}
-	if t.aff != nil && (t.aff.shown() || t.aff.hint != "") {
+	if t.aff != nil && (t.aff.shown() || t.aff.nativeHint) {
 		setFieldAffix(t.t, t.aff)
 	}
 	if t.fill != nil {
 		setPaint(&t.t.Control, t.fill, false)
-		setFieldFill(t.t, t.radius)
 	}
-	if t.stroke != nil {
+	if t.fill != nil || t.stroke != nil {
 		dark := systemDark()
 		if a := appOf(&t.t.Control); a != nil {
 			dark = a.dark
+			p := a.paints[&t.t.Control]
+			if p == nil {
+				p = &painted{}
+				a.paints[&t.t.Control] = p
+				t.t.AddDisposeListener(disposeFunc(func() { delete(a.paints, &t.t.Control) }))
+			}
+			p.field = t
 		}
-		c := paintRGBA(t.stroke, dark)
-		setFieldStroke(t.t, c[0], c[1], c[2], c[3])
+		t.repaintField(dark)
 	}
 	if t.padX > 0 {
 		setFieldInset(t.t, t.padX)
 	}
 	if styled {
 		t.t.AddListener(swt.FocusIn, listenerFunc(func(*swt.Event) { placeFieldEditor(t.t) }))
+	}
+}
+
+func (t *TextView) repaintField(dark bool) {
+	if t.fill != nil {
+		setFieldFill(t.t, t.radius)
+	}
+	if t.stroke != nil {
+		c := paintRGBA(t.stroke, dark)
+		setFieldStroke(t.t, c[0], c[1], c[2], c[3])
 	}
 }
 

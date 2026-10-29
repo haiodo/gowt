@@ -4,12 +4,82 @@ package cocoa
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 	"unsafe"
 
 	"github.com/ebitengine/purego"
 )
+
+func TestPlaceFieldEditorWithoutAffixes(t *testing.T) {
+	if os.Getenv("GOWT_COCOA_EDITOR_CHILD") != "1" {
+		cmd := exec.Command(os.Args[0], "-test.run=^TestPlaceFieldEditorWithoutAffixes$")
+		cmd.Env = append(os.Environ(), "GOWT_COCOA_EDITOR_CHILD=1")
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("%v\n%s", err, out)
+		}
+		return
+	}
+	onMain(func() {
+		pool := msg(msg(class("NSAutoreleasePool"), "alloc"), "init")
+		defer msg(pool, "drain")
+		f := affixField(12, "120", false)
+		defer msg(f, "release")
+		view := NewNSViewOverload1(int64(f))
+		SetFieldFill(view, 6)
+		ed := msg(msg(class("NSView"), "alloc"), "init")
+		defer msg(ed, "release")
+		msg(f, "addSubview:", ed)
+		fieldClass := allocClass(class("NSTextField"), "GowtEditorTestField", 0)
+		addMethod(fieldClass, sel("currentEditor"), purego.NewCallback(func(self, cmd uintptr) uintptr { return ed }), "@@:")
+		registerClass(fieldClass)
+		originalClass := OSObject_setClass(int64(f), int64(fieldClass))
+		defer OSObject_setClass(int64(f), originalClass)
+		if affixBounds != nil {
+			t.Error("affix functions initialized before placing the editor")
+			return
+		}
+		PlaceFieldEditor(view)
+		got := affixBounds(ed, sel("frame"))
+		want := affixDrawingRect(msg(f, "cell"), affixBounds(f, sel("bounds")))
+		if got != want || got.Y <= 0 || got.Height >= 22 {
+			t.Errorf("editor frame %+v, want centred text rect %+v", got, want)
+		}
+	})
+}
+
+func TestFieldHintMatchesValueOrigin(t *testing.T) {
+	onMain(func() {
+		pool := msg(msg(class("NSAutoreleasePool"), "alloc"), "init")
+		defer msg(pool, "drain")
+		f := affixField(12, "", false)
+		defer msg(f, "release")
+		view := NewNSViewOverload1(int64(f))
+		defer ReleaseFieldAffix(view)
+		affixInit()
+		originalDraw := affixDrawInRect
+		defer func() { affixDrawInRect = originalDraw }()
+		var hintRect NSRect
+		affixDrawInRect = func(self, sel uintptr, r NSRect) { hintRect = r }
+		var drawingRect func(self, sel uintptr, r NSRect) NSRect
+		purego.RegisterFunc(&drawingRect, objcMsgSend)
+		for _, a := range []FieldAffix{
+			{Hint: "Hint"},
+			{Hint: "Hint", Inset: 6},
+			{Hint: "Hint", Inset: 6, Prefix: "X", Suffix: "px"},
+		} {
+			SetFieldAffix(view, a)
+			cell := msg(f, "cell")
+			bounds := affixBounds(f, sel("bounds"))
+			affixes[f].draw(cell, bounds)
+			want := drawingRect(cell, sel("drawingRectForBounds:"), bounds)
+			if hintRect.X != want.X || hintRect.Y != want.Y {
+				t.Errorf("affix %+v: hint origin (%v, %v), want (%v, %v)", a, hintRect.X, hintRect.Y, want.X, want.Y)
+			}
+		}
+	})
+}
 
 // affixField makes a field in no window with font size pt and text s.
 func affixField(pt float64, s string, bezeled bool) uintptr {

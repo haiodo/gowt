@@ -967,6 +967,11 @@ func (t *TextView) SetText(s string) { t.t.SetText(s) }
 
 // SetHint sets the placeholder shown while the field is empty.
 func (t *TextView) SetHint(s string) {
+	if t.aff != nil && t.aff.nativeHint {
+		t.aff.hint = s
+		setFieldAffix(t.t, t.aff)
+		return
+	}
 	t.t.SetMessage(s)
 	if t.t.GetStyle()&swt.MULTI != 0 {
 		multiHint(t.t)

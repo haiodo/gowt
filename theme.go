@@ -65,7 +65,10 @@ func (l themeListener) HandleEvent(*swt.Event) { l() }
 
 // painted is what a theme switch applies again to one control: the Paint last given for its text
 // and for its background, nil for one never set.
-type painted struct{ fg, bg Paint }
+type painted struct {
+	fg, bg Paint
+	field  *TextView
+}
 
 // followTheme makes a theme switch apply the Adaptive and system colours again. Run calls it before
 // setup, so the colours are switched before the OnThemeChange callbacks run.
@@ -87,6 +90,9 @@ func (a *App) repaint(dark bool) {
 		}
 		if p.bg != nil {
 			c.SetBackgroundWithColor(p.bg.in(dark).color())
+		}
+		if p.field != nil {
+			p.field.repaintField(dark)
 		}
 	}
 }

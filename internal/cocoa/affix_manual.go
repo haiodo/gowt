@@ -42,7 +42,6 @@ var (
 	affixCellClass, scrubClass uintptr
 	superDrawingRect           func(self, sel uintptr, r NSRect) NSRect
 	superCellSize              func(self, sel uintptr, r NSRect) NSSize
-	superTitleRect             func(self, sel uintptr, r NSRect) NSRect
 	superDrawInterior          func(self, sel uintptr, r NSRect, view uintptr)
 	affixDrawInRect            func(self, sel uintptr, r NSRect)
 	affixDrawImage             func(self, sel uintptr, r, from NSRect, op uintptr, fraction float64, flipped bool, hints uintptr)
@@ -67,7 +66,6 @@ func affixInit() {
 	tfc := class("NSTextFieldCell")
 	purego.RegisterFunc(&superDrawingRect, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("drawingRectForBounds:")))))
 	purego.RegisterFunc(&superCellSize, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("cellSizeForBounds:")))))
-	purego.RegisterFunc(&superTitleRect, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("titleRectForBounds:")))))
 	purego.RegisterFunc(&superDrawInterior, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("drawInteriorWithFrame:inView:")))))
 	for _, f := range []any{&affixDrawInRect, &affixDrawImage, &affixBounds, &affixAddCursorRect, &affixConvertPoint, &affixConvertRect, &affixDeltaX, &affixWithAlpha} {
 		purego.RegisterFunc(f, objcMsgSend)
@@ -240,12 +238,17 @@ func FieldValueStart(view *NSView) float64 {
 // fieldEmpty reports whether the field of the cell has no text.
 func fieldEmpty(cell uintptr) bool {
 	field := msg(cell, "controlView")
-	return field == 0 || msg(msg(field, "stringValue"), "length") == 0
+	// Reading the field or cell value during editing schedules another draw.
+	if editor := msg(field, "currentEditor"); editor != 0 {
+		return msg(msg(editor, "string"), "length") == 0
+	}
+	return field == 0 || msg(msg(cell, "stringValue"), "length") == 0
 }
 
 // PlaceFieldEditor puts the field editor of view on the line of its text: AppKit places it at the
 // top of a borderless field, its title rect notwithstanding.
 func PlaceFieldEditor(view *NSView) {
+	affixInit()
 	v := uintptr(view.Id)
 	ed := msg(v, "currentEditor")
 	if ed == 0 {
@@ -335,7 +338,8 @@ func affixString(cell uintptr, s string) *NSAttributedString {
 // pad is the line fragment padding before the first glyph of the value.
 // affixDrawingRect is the cell's drawing rect, centred on the line of a borderless field.
 func affixDrawingRect(cell uintptr, r NSRect) NSRect {
-	out := superTitleRect(cell, sel("titleRectForBounds:"), r)
+	// Native titleRectForBounds re-enters our drawingRectForBounds override on bezeled fields.
+	out := superDrawingRect(cell, sel("drawingRectForBounds:"), r)
 	// A borderless cell's title rect is the whole bounds, which puts the text and the editor at the top.
 	if h := lineHeightOf(cell); h > 0 && h < out.Height {
 		out.Y += (out.Height - h) / 2
@@ -383,7 +387,7 @@ func (st *affixState) draw(cell uintptr, frame NSRect) {
 	if st.Hint != "" && fieldEmpty(cell) {
 		lead, _ := st.widths(cell)
 		s := affixString(cell, st.Hint)
-		affixDrawInRect(uintptr(s.Id), sel("drawInRect:"), NSRect{X: r.X + lead, Y: r.Y, Width: s.Size().Width + 1, Height: r.Height})
+		affixDrawInRect(uintptr(s.Id), sel("drawInRect:"), NSRect{X: r.X + lead - st.Inset, Y: r.Y, Width: s.Size().Width + 1, Height: r.Height})
 	}
 }
 

@@ -1,6 +1,7 @@
 package gowt
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/haiodo/gowt/rx"
@@ -93,6 +94,51 @@ func TestAffixMisfit(t *testing.T) {
 		put[*TextView](w, Text(Prefix("X"), Suffix("%"), Small()))
 		if len(errs) != 3 {
 			t.Errorf("errors %v, want three", errs)
+		}
+	})
+}
+
+func TestStyledFieldHints(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		for _, style := range []Option{FieldFill(RGB{1, 2, 3}), FieldStroke(RGB{4, 5, 6}), Inset(6, 0)} {
+			for _, initial := range []string{"", "Initial hint"} {
+				v := put[*TextView](w, Text(style, Hint(initial)))
+				for i, hint := range []string{initial, "Changed hint", ""} {
+					if i > 0 {
+						v.SetHint(hint)
+					}
+					if runtime.GOOS == "darwin" {
+						if v.aff == nil || v.aff.hint != hint || v.t.GetMessage() != "" {
+							t.Errorf("custom hint: affix %+v, message %q, want %q", v.aff, v.t.GetMessage(), hint)
+						}
+					} else if got := v.t.GetMessage(); got != hint {
+						t.Errorf("native hint %q, want %q", got, hint)
+					}
+				}
+			}
+		}
+	})
+}
+
+type fieldStrokePaint struct{ calls *[]bool }
+
+func (p fieldStrokePaint) in(dark bool) RGB {
+	*p.calls = append(*p.calls, dark)
+	return RGB{1, 2, 3}
+}
+
+func TestFieldStrokeRepaint(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		var calls []bool
+		v := put[*TextView](w, Text(FieldStroke(fieldStrokePaint{&calls})))
+		calls = nil
+		app.repaint(!app.dark)
+		if len(calls) != 1 || calls[0] != app.dark {
+			t.Errorf("stroke paint calls %v, want [%v]", calls, app.dark)
+		}
+		v.Dispose()
+		if _, exists := app.paints[v.ctl]; exists {
+			t.Error("disposed field retained for repaint")
 		}
 	})
 }

@@ -9,12 +9,17 @@ import (
 func setFieldFill(t *swt.Text, radius int) {
 	c := t.GetBackground()
 	gtk.SetEntryFill(t.Handle, int32(c.GetRed()), int32(c.GetGreen()), int32(c.GetBlue()), radius)
+	releaseEntryLook(t)
 }
 
 // setFieldStroke draws the border of the entry fill.
 func setFieldStroke(t *swt.Text, r, g, b, a uint8) {
 	gtk.SetEntryStroke(t.Handle, int32(r), int32(g), int32(b), int32(a))
+	releaseEntryLook(t)
 }
 
 // setFieldInset widens the entry's padding by x points.
-func setFieldInset(t *swt.Text, x int) { gtk.SetEntryInset(t.Handle, x) }
+func setFieldInset(t *swt.Text, x int) {
+	gtk.SetEntryInset(t.Handle, x)
+	releaseEntryLook(t)
+}

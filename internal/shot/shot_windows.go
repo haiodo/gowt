@@ -68,12 +68,22 @@ func Capture(hwnd int64, path string) (Frame, error) {
 		sx, sy = 0, 0
 	}
 	dc, _, _ := user32.NewProc("GetWindowDC").Call(src)
+	if dc == 0 {
+		return Frame{}, fmt.Errorf("GetWindowDC failed")
+	}
 	defer user32.NewProc("ReleaseDC").Call(src, dc)
 	mem, _, _ := gdi32.NewProc("CreateCompatibleDC").Call(dc)
+	if mem == 0 {
+		return Frame{}, fmt.Errorf("CreateCompatibleDC failed")
+	}
 	defer gdi32.NewProc("DeleteDC").Call(mem)
 	bmp, _, _ := gdi32.NewProc("CreateCompatibleBitmap").Call(dc, uintptr(ww), uintptr(wh))
+	if bmp == 0 {
+		return Frame{}, fmt.Errorf("CreateCompatibleBitmap failed")
+	}
 	defer gdi32.NewProc("DeleteObject").Call(bmp)
-	gdi32.NewProc("SelectObject").Call(mem, bmp)
+	old, _, _ := gdi32.NewProc("SelectObject").Call(mem, bmp)
+	defer gdi32.NewProc("SelectObject").Call(mem, old)
 	if full {
 		if r, _, _ := user32.NewProc("PrintWindow").Call(uintptr(hwnd), mem, 2); r == 0 {
 			return Frame{}, fmt.Errorf("PrintWindow failed")
@@ -83,6 +93,8 @@ func Capture(hwnd int64, path string) (Frame, error) {
 	}
 	hdr := bmi{Size: uint32(unsafe.Sizeof(bmi{})), W: int32(ww), H: -int32(wh), Planes: 1, BitCount: 32}
 	buf := make([]byte, ww*wh*4)
+	// GetDIBits must not see the bitmap selected into a DC: some display drivers crash on it.
+	gdi32.NewProc("SelectObject").Call(mem, old)
 	if r, _, _ := gdi32.NewProc("GetDIBits").Call(mem, bmp, 0, uintptr(wh), uintptr(unsafe.Pointer(&buf[0])), uintptr(unsafe.Pointer(&hdr)), 0); r == 0 {
 		return Frame{}, fmt.Errorf("GetDIBits failed")
 	}

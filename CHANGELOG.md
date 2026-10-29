@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.13.7 (2026-10-29)
 
 Label memory on macOS (Tenniarb)
 - Fixed: an SWT `Label` on macOS is an `NSBox`, and AppKit gives it no backing layer. Every text change then made the window server keep 28 x 8 MiB (about 225 MB) of graphics buffers, whose purgeable state made the footprint swing by about 250 MB a second in any app with a value label, and the monitor example peak at 585 MB. The label's box now gets `wantsLayer:` (`cocoa.LayerBacked`, a `tooling/port.sh` patch on `Label.createWidget`): a label ticking every second stays at 46-49 MB, and the monitor settles at about 200 MB with no swing.

@@ -1,6 +1,9 @@
 package gowt
 
-import "github.com/haiodo/gowt/swt"
+import (
+	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/swt"
+)
 
 // ComboView is a drop-down (or Simple) list with an edit field; ReadOnly() makes it a pure chooser.
 type ComboView struct {
@@ -406,7 +409,8 @@ func (r *TableRow) Unwrap() *swt.TableItem { return r.it }
 // TreeView is a hierarchy of Nodes. Check makes nodes checkable, MultiSelect allows several selected.
 type TreeView struct {
 	base
-	t *swt.Tree
+	t          *swt.Tree
+	cancelEdit func() bool
 }
 
 // Tree creates a tree. Rows select as a whole (CellSelect() opts out) so that a click in any column finds its node. With
@@ -420,7 +424,7 @@ func Tree(opts ...Option) Option {
 		// The natural height follows the visible rows: lay out again after an expand or collapse.
 		t.AddTreeListener(swt.TreeListenerTreeExpandedAdapter(func(*swt.TreeEvent) { contentChanged(&t.Control) }))
 		t.AddTreeListener(swt.TreeListenerTreeCollapsedAdapter(func(*swt.TreeEvent) { contentChanged(&t.Control) }))
-		return &TreeView{base{&t.Control}, t}
+		return &TreeView{base: base{&t.Control}, t: t}
 	})
 }
 
@@ -543,6 +547,114 @@ func (t *TreeView) Select(n *Node) {
 	t.t.SetSelection(n.it)
 }
 
+// Edit opens a focused editor; callbacks own updating the node. Enter/focus loss commit, Esc cancels.
+// Another edit cancels the active editor, but waits for an already scheduled completion.
+func (t *TreeView) Edit(n *Node, onCommit func(string), onCancel func()) {
+	if n == nil || t.t.IsDisposed() || n.it.IsDisposed() || n.it.GetParent() != t.t {
+		return
+	}
+	if t.cancelEdit != nil {
+		if !t.cancelEdit() {
+			t.t.GetDisplay().AsyncExec(jrt.NewRunnable(func() { t.Edit(n, onCommit, onCancel) }))
+			return
+		}
+		if t.cancelEdit != nil || t.t.IsDisposed() || n.it.IsDisposed() {
+			return
+		}
+	}
+	t.t.ShowItem(n.it)
+	if t.cancelEdit != nil || t.t.IsDisposed() || n.it.IsDisposed() {
+		return
+	}
+	if t.t.GetColumnCount() > 0 {
+		t.t.ShowColumn(t.t.GetColumnIndex(0))
+	}
+	text := swt.NewText(t.t, swt.SINGLE)
+	text.SetText(n.Text())
+	text.SetFont(t.t.GetFont())
+	setAccessibleLabel(&text.Control, "Edit "+n.Text())
+	editor := swt.NewTreeEditor(t.t)
+	editor.HorizontalAlignment = swt.LEFT
+	editor.GrabHorizontal = true
+	finished := false
+	ending := false
+	disposingText := false
+	var disposed listenerFunc
+	finish := func(commit bool) {
+		if finished {
+			return
+		}
+		finished = true
+		t.cancelEdit = nil
+		if !t.t.IsDisposed() {
+			t.t.SetDataKeyValue("gowt.treeEditCollapse", nil)
+		}
+		value := ""
+		if commit && !text.IsDisposed() && !n.it.IsDisposed() && !t.t.IsDisposed() {
+			value = text.GetText()
+		} else {
+			commit = false
+		}
+		if !n.it.IsDisposed() {
+			n.it.RemoveListener(swt.Dispose, &disposed)
+		}
+		editor.Dispose()
+		if !disposingText && !text.IsDisposed() {
+			text.Dispose()
+		}
+		if commit && onCommit != nil {
+			onCommit(value)
+		} else if !commit && onCancel != nil {
+			onCancel()
+		}
+	}
+	t.cancelEdit = func() bool {
+		if ending {
+			return false
+		}
+		finish(false)
+		return true
+	}
+	t.t.SetDataKeyValue("gowt.treeEditCollapse", func(ancestor *swt.TreeItem) {
+		for parent := n.it.GetParentItem(); parent != nil; parent = parent.GetParentItem() {
+			if parent == ancestor {
+				finish(false)
+				return
+			}
+		}
+	})
+	disposed = func(*swt.Event) { finish(false) }
+	n.it.AddListener(swt.Dispose, &disposed)
+	text.AddListener(swt.Dispose, listenerFunc(func(*swt.Event) {
+		disposingText = true
+		finish(false)
+	}))
+	finishLater := func(commit bool) {
+		if ending || finished {
+			return
+		}
+		ending = true
+		// Native key and focus dispatch still use the control after its listeners return.
+		t.t.GetDisplay().AsyncExec(jrt.NewRunnable(func() { finish(commit) }))
+	}
+	text.AddListener(swt.FocusOut, listenerFunc(func(*swt.Event) { finishLater(true) }))
+	text.AddListener(swt.KeyDown, listenerFunc(func(e *swt.Event) {
+		if e.Character == swt.CR || e.Character == swt.ESC {
+			e.Doit = false
+			finishLater(e.Character == swt.CR)
+		}
+	}))
+	text.AddListener(swt.Traverse, listenerFunc(func(e *swt.Event) {
+		if e.Detail == swt.TRAVERSE_RETURN || e.Detail == swt.TRAVERSE_ESCAPE {
+			e.Doit = false
+			finishLater(e.Detail == swt.TRAVERSE_RETURN)
+		}
+	}))
+	editor.SetEditor(text, n.it, 0)
+	text.SelectAll()
+	text.SetFocus()
+}
+
 // Deselect clears the selection and calls no OnSelect, as SWT's deselectAll sends no Selection.
 func (t *TreeView) Deselect() { t.t.DeselectAll0() }
 
@@ -616,6 +728,11 @@ func (n *Node) Expanded() bool { return n.it.GetExpanded() }
 func (n *Node) SetExpanded(v bool) {
 	n.it.SetExpanded(v)
 	contentChanged(&n.it.GetParent().Control)
+	if !v {
+		if cancel, ok := n.it.GetParent().GetDataKey("gowt.treeEditCollapse").(func(*swt.TreeItem)); ok {
+			cancel(n.it)
+		}
+	}
 }
 
 // Checked reports the check box of a Check tree.

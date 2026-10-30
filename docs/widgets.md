@@ -153,6 +153,10 @@ Every widget (`Window` and containers included) has these methods, which are als
 
 `Table.OnCellClick` and `Tree.OnCellClick` run on every mouse press with the row (or node), the column index from the item's per-column bounds, `Button` (SWT numbering: 1 left, 2 middle, 3 right), `Count` (2 on a double click) and the modifier keys `Ctrl`, `Shift`, `Alt`, `Cmd` (a macOS Ctrl-click is Button 1 with Ctrl), so a handler ignores what it does not need. The cell comes from a hit test, not from the selection, which may not have moved yet. `CellAt(x, y)` does the same for any point, e.g. a context menu; the expander arrow maps to its cell, but a point right of the last column has `Col` -1 (empty space is never a cell). `Tree` selects whole rows so that a click in any column finds its node.
 
+## Tree editing
+
+`TreeView.Edit(node, onCommit, onCancel)` reveals the node and overlays its first-column text with a focused editor. The current text is selected. Enter and focus loss call `onCommit(text)` once; Esc calls `onCancel()` once. The callbacks may be nil. The editor never changes the node itself: validate the value and call `node.SetText(text)` in `onCommit`. Empty values are passed unchanged. Starting another edit cancels the active editor, but an already scheduled commit or cancellation completes before the next editor opens; programmatically collapsing an ancestor, removing the node, or disposing the editor cancels it. Key and focus completion runs on the next UI turn. The editor closes before callbacks run, so callbacks may start another edit.
+
 ## Logs in Text and StyledText
 
 `Append(s)` adds at the end without `SetText`; `Lines()` counts lines; `TrimHead(keep)` deletes the oldest lines (`TrimHead(0)` clears; it works on a read-only view) (Text rewrites its content, so trim when `Lines()` exceeds a cap by a margin; StyledText deletes just the head); `ScrollToEnd()` follows the tail.

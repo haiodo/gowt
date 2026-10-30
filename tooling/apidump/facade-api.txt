@@ -896,6 +896,7 @@ gowt TreeView.Clear()
 gowt TreeView.Column(title string, width int, opts ...Option) *Column
 gowt TreeView.Deselect()
 gowt TreeView.Dispose()
+gowt TreeView.Edit(n *Node, onCommit func(string), onCancel func())
 gowt TreeView.Enabled() bool
 gowt TreeView.FitColumns()
 gowt TreeView.Focus() bool

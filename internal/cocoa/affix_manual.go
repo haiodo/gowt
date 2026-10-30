@@ -44,7 +44,6 @@ var (
 	superCellSize              func(self, sel uintptr, r NSRect) NSSize
 	superDrawInterior          func(self, sel uintptr, r NSRect, view uintptr)
 	superSelect                func(self, sel uintptr, r NSRect, view, editor, delegate, start, length uintptr)
-	superEdit                  func(self, sel uintptr, r NSRect, view, editor, delegate, event uintptr)
 	affixDrawInRect            func(self, sel uintptr, r NSRect)
 	affixDrawImage             func(self, sel uintptr, r, from NSRect, op uintptr, fraction float64, flipped bool, hints uintptr)
 	affixBounds                func(self, sel uintptr) NSRect
@@ -70,7 +69,6 @@ func affixInit() {
 	purego.RegisterFunc(&superCellSize, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("cellSizeForBounds:")))))
 	purego.RegisterFunc(&superDrawInterior, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("drawInteriorWithFrame:inView:")))))
 	purego.RegisterFunc(&superSelect, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("selectWithFrame:inView:editor:delegate:start:length:")))))
-	purego.RegisterFunc(&superEdit, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("editWithFrame:inView:editor:delegate:event:")))))
 	for _, f := range []any{&affixDrawInRect, &affixDrawImage, &affixBounds, &affixAddCursorRect, &affixConvertPoint, &affixConvertRect, &affixDeltaX, &affixWithAlpha} {
 		purego.RegisterFunc(f, objcMsgSend)
 	}
@@ -106,8 +104,12 @@ func affixInit() {
 		placeFieldEditor(view, editor)
 	})
 	editText := NewCallback(func(self, cmd uintptr, r NSRect, view, editor, delegate, event uintptr) {
-		superEdit(self, cmd, r, view, editor, delegate, event)
+		// Native editing tracks the mouse before returning, so place the editor before that loop starts.
+		superSelect(self, sel("selectWithFrame:inView:editor:delegate:start:length:"), r, view, editor, delegate, 0, 0)
 		placeFieldEditor(view, editor)
+		if event != 0 {
+			msg(editor, "mouseDown:", event)
+		}
 	})
 	affixCellClass = allocClass(tfc, "GowtAffixFieldCell", 0)
 	addMethod(affixCellClass, sel("drawingRectForBounds:"), drawingRect, "{CGRect={CGPoint=dd}{CGSize=dd}}@:{CGRect={CGPoint=dd}{CGSize=dd}}")
@@ -282,6 +284,8 @@ func placeFieldEditor(v, ed uintptr) {
 	if super := msg(ed, "superview"); super != v && msg(super, "superview") == v && msg(super, "isKindOfClass:", class("NSClipView")) != 0 {
 		// AppKit scrolls the clip bounds with the editor; moving the editor leaves its text at the field's edge.
 		msgRectOnly(super, sel("setFrame:"), r)
+		// AppKit retains the vertical scroll offset of the original full-height editor.
+		OSObjc_msgSendOverload2(int64(super), int64(sel("setBoundsOrigin:")), NSPoint{X: affixBounds(super, sel("bounds")).X})
 		return
 	} else if super != v {
 		r = affixConvertRect(v, sel("convertRect:toView:"), r, super)

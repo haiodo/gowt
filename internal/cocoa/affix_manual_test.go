@@ -114,6 +114,56 @@ func TestFieldEditorFocusLifecycle(t *testing.T) {
 	})
 }
 
+func TestFieldEditorEmptyCaret(t *testing.T) {
+	onMain(func() {
+		pool := msg(msg(class("NSAutoreleasePool"), "alloc"), "init")
+		defer msg(pool, "drain")
+		var caretRect func(self, sel uintptr, r NSRange, actual uintptr) NSRect
+		var edit func(self, sel uintptr, r NSRect, view, editor, delegate, event uintptr)
+		purego.RegisterFunc(&caretRect, objcMsgSend)
+		purego.RegisterFunc(&edit, objcMsgSend)
+		for _, prefix := range []string{"", "X"} {
+			w := NewNSWindowOverload1(int64(msg(class("NSWindow"), "alloc"))).InitWithContentRect(NSRect{Width: 200, Height: 50}, 0, 2, false)
+			f := affixField(11, "", false)
+			msgRectOnly(f, sel("setFrame:"), NSRect{Width: 48, Height: 22})
+			view := NewNSViewOverload1(int64(f))
+			SetFieldAffix(view, FieldAffix{Inset: 6, Prefix: prefix})
+			msg(msg(uintptr(w.Id), "contentView"), "addSubview:", f)
+			msg(f, "selectText:", 0)
+			ed := msg(f, "currentEditor")
+			if ed == 0 {
+				fatalf(t, "no editor in hidden window")
+			}
+			for phase, value := range []string{"", "1", ""} {
+				if phase > 0 {
+					msg(ed, "setString:", nsString(value))
+					NewNSTextOverload1(int64(ed)).SetSelectedRange(NSRange{Location: int64(len(value))})
+				}
+				r := caretRect(ed, sel("firstRectForCharacterRange:actualRange:"), NSRange{Location: int64(len(value))}, 0)
+				r = affixConvertRect(uintptr(w.Id), sel("convertRectFromScreen:"), r, 0)
+				r = affixConvertRect(f, sel("convertRect:fromView:"), r, 0)
+				want := 8.0
+				if prefix != "" {
+					want += math.Ceil(affixString(msg(f, "cell"), prefix).Size().Width) + affixGap
+				}
+				if value != "" {
+					want += affixString(msg(f, "cell"), value).Size().Width
+				}
+				if math.Abs(r.X-want) > 0.5 {
+					t.Errorf("prefix %q, phase %d: caret x %.1f, want %.1f", prefix, phase, r.X, want)
+				}
+			}
+			edit(msg(f, "cell"), sel("editWithFrame:inView:editor:delegate:event:"), affixBounds(f, sel("bounds")), f, ed, f, 0)
+			if msg(f, "currentEditor") == 0 {
+				t.Error("nil-event editing lost the field editor")
+			}
+			ReleaseFieldAffix(view)
+			msg(f, "release")
+			w.Release()
+		}
+	})
+}
+
 func TestFieldHintMatchesValueOrigin(t *testing.T) {
 	onMain(func() {
 		pool := msg(msg(class("NSAutoreleasePool"), "alloc"), "init")

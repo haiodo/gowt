@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.14.3 (2026-10-30)
+
+- Fixed: styled fields on macOS position the text and caret before native mouse tracking starts, so they stay aligned while the mouse button is held. Focusing the field resets the editor clip view's stale vertical scroll offset without losing horizontal scrolling.
+- New: `TreeView.Edit(node, onCommit, onCancel)` edits the first column in place. It reveals the row and column, selects the current text and focuses the editor. Enter and focus loss call `onCommit(text)`; Esc calls `onCancel()`. Callbacks own validating and updating the node. Key and focus completion runs on the next UI turn; another edit requested during that completion opens afterwards. Removing the node, disposing the editor or programmatically collapsing an ancestor cancels editing, and callbacks may open another editor safely.
+- Tests: macOS GUI checks cover field text and caret placement during native mouse tracking, native tree typing with Enter and Esc, focus loss, horizontal scrolling, disposal and reentrant callbacks. Hidden-window Cocoa checks cover initial caret placement, text insertion and clearing. `go vet` and Windows/Linux test-binary cross-compilation pass. Windows/Linux GUI and VoiceOver have not been checked; the existing Windows accessible-label helper remains a no-op.
+
 ## v0.14.2 (2026-10-30)
 
 - New: `look.SetPanesOverlay(w, on)` opts into content beneath floating sidebars and inspectors on macOS 26. Call it before or after installing the panes. The live content keeps its full width when panes resize, hide or show; the inspector gets rounded glass and an inset. Bottom panels stay separate below the content, and both side panes stop above them. Existing layouts, older macOS, Windows and Linux remain unchanged.

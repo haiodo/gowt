@@ -43,6 +43,8 @@ var (
 	superDrawingRect           func(self, sel uintptr, r NSRect) NSRect
 	superCellSize              func(self, sel uintptr, r NSRect) NSSize
 	superDrawInterior          func(self, sel uintptr, r NSRect, view uintptr)
+	superSelect                func(self, sel uintptr, r NSRect, view, editor, delegate, start, length uintptr)
+	superEdit                  func(self, sel uintptr, r NSRect, view, editor, delegate, event uintptr)
 	affixDrawInRect            func(self, sel uintptr, r NSRect)
 	affixDrawImage             func(self, sel uintptr, r, from NSRect, op uintptr, fraction float64, flipped bool, hints uintptr)
 	affixBounds                func(self, sel uintptr) NSRect
@@ -67,6 +69,8 @@ func affixInit() {
 	purego.RegisterFunc(&superDrawingRect, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("drawingRectForBounds:")))))
 	purego.RegisterFunc(&superCellSize, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("cellSizeForBounds:")))))
 	purego.RegisterFunc(&superDrawInterior, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("drawInteriorWithFrame:inView:")))))
+	purego.RegisterFunc(&superSelect, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("selectWithFrame:inView:editor:delegate:start:length:")))))
+	purego.RegisterFunc(&superEdit, uintptr(OSClass_getMethodImplementation(int64(tfc), int64(sel("editWithFrame:inView:editor:delegate:event:")))))
 	for _, f := range []any{&affixDrawInRect, &affixDrawImage, &affixBounds, &affixAddCursorRect, &affixConvertPoint, &affixConvertRect, &affixDeltaX, &affixWithAlpha} {
 		purego.RegisterFunc(f, objcMsgSend)
 	}
@@ -97,11 +101,21 @@ func affixInit() {
 			st.draw(self, r)
 		}
 	})
+	selectText := NewCallback(func(self, cmd uintptr, r NSRect, view, editor, delegate, start, length uintptr) {
+		superSelect(self, cmd, r, view, editor, delegate, start, length)
+		placeFieldEditor(view, editor)
+	})
+	editText := NewCallback(func(self, cmd uintptr, r NSRect, view, editor, delegate, event uintptr) {
+		superEdit(self, cmd, r, view, editor, delegate, event)
+		placeFieldEditor(view, editor)
+	})
 	affixCellClass = allocClass(tfc, "GowtAffixFieldCell", 0)
 	addMethod(affixCellClass, sel("drawingRectForBounds:"), drawingRect, "{CGRect={CGPoint=dd}{CGSize=dd}}@:{CGRect={CGPoint=dd}{CGSize=dd}}")
 	addMethod(affixCellClass, sel("titleRectForBounds:"), drawingRect, "{CGRect={CGPoint=dd}{CGSize=dd}}@:{CGRect={CGPoint=dd}{CGSize=dd}}")
 	addMethod(affixCellClass, sel("cellSizeForBounds:"), cellSize, "{CGSize=dd}@:{CGRect={CGPoint=dd}{CGSize=dd}}")
 	addMethod(affixCellClass, sel("drawInteriorWithFrame:inView:"), drawInterior, "v@:{CGRect={CGPoint=dd}{CGSize=dd}}@")
+	addMethod(affixCellClass, sel("selectWithFrame:inView:editor:delegate:start:length:"), selectText, "v@:{CGRect={CGPoint=dd}{CGSize=dd}}@@@QQ")
+	addMethod(affixCellClass, sel("editWithFrame:inView:editor:delegate:event:"), editText, "v@:{CGRect={CGPoint=dd}{CGSize=dd}}@@@@")
 	registerClass(affixCellClass)
 
 	// The handle fills the field and takes only the points over the prefix (hitTest:), so a later font
@@ -254,6 +268,10 @@ func PlaceFieldEditor(view *NSView) {
 	if ed == 0 {
 		return
 	}
+	placeFieldEditor(v, ed)
+}
+
+func placeFieldEditor(v, ed uintptr) {
 	cell := msg(v, "cell")
 	r := affixDrawingRect(cell, affixBounds(v, sel("bounds")))
 	if st := affixes[v]; st != nil {
@@ -261,7 +279,11 @@ func PlaceFieldEditor(view *NSView) {
 		r.X += lead
 		r.Width = math.Max(r.Width-lead-trail, 0)
 	}
-	if super := msg(ed, "superview"); super != v {
+	if super := msg(ed, "superview"); super != v && msg(super, "superview") == v && msg(super, "isKindOfClass:", class("NSClipView")) != 0 {
+		// AppKit scrolls the clip bounds with the editor; moving the editor leaves its text at the field's edge.
+		msgRectOnly(super, sel("setFrame:"), r)
+		return
+	} else if super != v {
 		r = affixConvertRect(v, sel("convertRect:toView:"), r, super)
 	}
 	msgRectOnly(ed, sel("setFrame:"), r)

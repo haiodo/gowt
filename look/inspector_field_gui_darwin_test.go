@@ -66,7 +66,7 @@ func captureInspectorFields(t *testing.T, mode gowt.Appearance, path string) (r 
 				gowt.VBox(gowt.Ref(&insp), gowt.Padding(16), gowt.Gap(10),
 					gowt.Label("Layout", gowt.Typeface(gowt.Type.BodyStrong)),
 					gowt.Grid(2, gowt.GrowX(),
-						field(0, gowt.Prefix("X"), gowt.Value(260), gowt.Focused()),
+						field(0, gowt.Prefix("X"), gowt.FieldFill(gowt.RGB{240, 240, 240}), gowt.Value(260), gowt.Focused()),
 						field(1, gowt.Prefix("Y"), gowt.Value(-40)),
 						field(2, gowt.Prefix("W"), gowt.Suffix("px"), gowt.Value(120)),
 						gowt.Number(0, 100, gowt.Prefix("Gap"), gowt.Small(), gowt.GrowX(), gowt.Value(8))),

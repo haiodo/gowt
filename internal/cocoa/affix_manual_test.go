@@ -3,6 +3,7 @@
 package cocoa
 
 import (
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -45,6 +46,70 @@ func TestPlaceFieldEditorWithoutAffixes(t *testing.T) {
 		want := affixDrawingRect(msg(f, "cell"), affixBounds(f, sel("bounds")))
 		if got != want || got.Y <= 0 || got.Height >= 22 {
 			t.Errorf("editor frame %+v, want centred text rect %+v", got, want)
+		}
+	})
+}
+
+func TestFieldEditorFocusLifecycle(t *testing.T) {
+	onMain(func() {
+		pool := msg(msg(class("NSAutoreleasePool"), "alloc"), "init")
+		defer msg(pool, "drain")
+		var point func(self, sel uintptr) NSPoint
+		var glyphPoint func(self, sel, index uintptr) NSPoint
+		var floating func(self, sel uintptr) float64
+		purego.RegisterFunc(&point, objcMsgSend)
+		purego.RegisterFunc(&glyphPoint, objcMsgSend)
+		purego.RegisterFunc(&floating, objcMsgSend)
+		for _, prefix := range []string{"", "X"} {
+			w := NewNSWindowOverload1(int64(msg(class("NSWindow"), "alloc"))).InitWithContentRect(NSRect{Width: 200, Height: 50}, 0, 2, false)
+			f := affixField(11, "1", false)
+			msgRectOnly(f, sel("setFrame:"), NSRect{Width: 48, Height: 22})
+			view := NewNSViewOverload1(int64(f))
+			SetFieldAffix(view, FieldAffix{Inset: 6, Prefix: prefix})
+			msg(msg(uintptr(w.Id), "contentView"), "addSubview:", f)
+			msg(f, "selectText:", 0)
+			ed := msg(f, "currentEditor")
+			if ed == 0 {
+				t.Fatalf("prefix %q: no editor after selectText in hidden window", prefix)
+			}
+			clip := msg(ed, "superview")
+			cell := msg(f, "cell")
+			want := affixDrawingRect(cell, affixBounds(f, sel("bounds")))
+			lead, trail := affixes[f].widths(cell)
+			want.X += lead
+			want.Width -= lead + trail
+			for _, phase := range []string{"native selection", "explicit placement"} {
+				if phase == "explicit placement" {
+					PlaceFieldEditor(view)
+				}
+				got := affixBounds(clip, sel("frame"))
+				if math.Abs(got.X-want.X) > 0.5 || math.Abs(got.Y-want.Y) > 0.5 || math.Abs(got.Width-want.Width) > 0.5 {
+					t.Errorf("prefix %q, %s: editor clip %+v, want %+v", prefix, phase, got, want)
+				}
+				if font := floating(msg(ed, "font"), sel("pointSize")); font != 11 {
+					t.Errorf("prefix %q, %s: editor font %.1f pt, want 11 pt", prefix, phase, font)
+				}
+				origin := point(ed, sel("textContainerOrigin"))
+				glyph := glyphPoint(msg(ed, "layoutManager"), sel("locationForGlyphAtIndex:"), 0)
+				glyph.X += origin.X
+				glyph.Y += origin.Y
+				glyph = affixConvertPoint(f, sel("convertPoint:fromView:"), glyph, ed)
+				if math.Abs(glyph.X-(want.X+2)) > 0.5 {
+					t.Errorf("prefix %q, %s: glyph x %.1f, want %.1f", prefix, phase, glyph.X, want.X+2)
+				}
+				baseline := want.Y + floating(msg(cell, "font"), sel("ascender"))
+				if math.Abs(glyph.Y-baseline) > 1 {
+					t.Errorf("prefix %q, %s: glyph baseline %.1f, want %.1f", prefix, phase, glyph.Y, baseline)
+				}
+			}
+			msg(ed, "setString:", nsString("-141.0"))
+			msg(ed, "selectAll:", 0)
+			if got := affixBounds(clip, sel("frame")); math.Abs(got.X-want.X) > 0.5 {
+				t.Errorf("prefix %q: editor clip after long selection %+v, want x %.1f", prefix, got, want.X)
+			}
+			ReleaseFieldAffix(view)
+			msg(f, "release")
+			w.Release()
 		}
 	})
 }

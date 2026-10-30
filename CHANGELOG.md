@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.14.1 (2026-10-30)
+
+- Fixed: editing styled fields on macOS preserves the value's inset and baseline without overlapping the prefix. The native editor's clip view is positioned when editing starts, including selection initiated outside the focus handler.
+- Tests: a hidden-window regression checks the editor's font, glyph position and baseline in a 48 x 22 field with and without a prefix. The inspector GUI test also covers an explicit inset.
+
 ## v0.14.0 (2026-10-30)
 
 Inspector fields (Tenniarb)

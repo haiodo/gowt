@@ -147,7 +147,7 @@ func syncSidebar(*swt.Shell, *swt.Composite, [4]int32, bool) {}
 
 func inspectorInset() int32 { return 0 }
 
-func syncInspector(*swt.Composite, [4]int32) {}
+func syncInspector(*swt.Composite, [4]int32, bool) {}
 
 // sidebarDivider leaves a gap for the sash: an SWT sash here paints its own background and would cover
 // the content edge.

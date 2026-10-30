@@ -263,6 +263,17 @@ func FocusSearch(w *gowt.Window) bool {
 // before the children get their glass. macOS 26 only; elsewhere it does nothing.
 func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite(), spacing) }
 
+// SetPanesOverlay opts into floating panes over content on macOS 26; other systems keep their layout.
+// Call before or after SetSidebar and SetInspector. Bottom panels stay below content.
+func SetPanesOverlay(w *gowt.Window, on bool) {
+	on = on && sidebarInset() > 0
+	w.Unwrap().SetDataKeyValue("look.panesOverlay", on)
+	if l := layoutOf(w); l != nil {
+		l.overlay = on
+		w.Unwrap().Layout()
+	}
+}
+
 // SetSidebar lays w out the way Finder and System Settings are: sidebar on the left, width points wide,
 // content filling the rest. It replaces the window layout, so w must hold just these two, or these and
 // the inspector of SetInspector, called before or after with the same content. On macOS 26
@@ -364,7 +375,8 @@ func panesOf(w *gowt.Window, content Container) *paneLayout {
 		return l
 	}
 	SetFullSizeContent(w, true)
-	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct}
+	overlay, _ := s.GetDataKey("look.panesOverlay").(bool)
+	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct, overlay: overlay}
 	l.SetImpl_(l)
 	// The shell minimum is read once: on macOS 26 it read back 20 points taller than it was set, so a
 	// value read after each set grew.
@@ -533,6 +545,7 @@ type paneLayout struct {
 	w                  *gowt.Window
 	side, insp, bottom *pane // nil without SetSidebar, SetInspector, SetBottomPanel
 	content            *swt.Control
+	overlay            bool
 	// column is the frame of the content and the bottom panel at the last layout, under the area behind
 	// a floating sidebar beside the content.
 	column, under [4]int32
@@ -613,6 +626,9 @@ func (p *pane) addChange(f func(visible bool, width int)) {
 func (p *pane) inset() int32 {
 	switch p.kind {
 	case inspectorPane:
+		if p.l != nil && p.l.overlay {
+			return sidebarInset()
+		}
 		return inspectorInset()
 	case bottomPane:
 		return 0
@@ -722,10 +738,10 @@ func (p *pane) HandleEvent(e *swt.Event) {
 			most = col[3] - div - minContentHeight()
 		case inspectorPane:
 			want = inspectorWidthAt(e.X, r.X+r.Width, p.inset(), div)
-			most = r.Width - p.l.side.room() - p.inset() - div - minContentWidth()
+			most = p.l.paneLimit(p, r.Width)
 		default:
 			want = sidebarWidthAt(e.X-r.X, p.inset(), div)
-			most = r.Width - p.inset() - div - minContentWidth() - p.l.insp.room()
+			most = p.l.paneLimit(p, r.Width)
 		}
 		width := dragWidth(want, p.minWidth(), most)
 		if width != p.width && !p.hidden {
@@ -741,6 +757,35 @@ func (p *pane) HandleEvent(e *swt.Event) {
 	}
 }
 
+func (l *paneLayout) paneLimit(p *pane, width int32) int32 {
+	other := l.insp
+	if p.kind == inspectorPane {
+		other = l.side
+	}
+	most := width - other.room() - p.inset() - sidebarDivider()
+	if !l.overlay {
+		most -= minContentWidth()
+	}
+	return most
+}
+
+func (l *paneLayout) requiredWidth(content int32) int32 {
+	room := l.side.room() + l.insp.room()
+	if l.overlay {
+		return max(content, room)
+	}
+	return content + room
+}
+
+func (l *paneLayout) overlayFrames(client [4]int32, top int32) (content [4]int32, paneHeight int32) {
+	content = [4]int32{client[0], client[1] + top, client[2], max(client[3]-top, 0)}
+	paneHeight = client[3]
+	if l.bottom.visible() {
+		paneHeight = max(top, paneHeight-l.bottom.shown()-sidebarDivider())
+	}
+	return
+}
+
 func (l *paneLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) *swt.Point {
 	top := int32(topInset(c.GetShell()))
 	ct := l.content.ComputeSize(swt.DEFAULT, swt.DEFAULT)
@@ -754,7 +799,7 @@ func (l *paneLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) 
 		}
 	}
 	// A packed window starts at least as wide as fitMinSize lets it get.
-	pt := swt.NewPoint(l.side.room()+max(ct.X, minContentWidth())+l.insp.room(), top+h)
+	pt := swt.NewPoint(l.requiredWidth(max(ct.X, minContentWidth())), top+h)
 	if wHint != swt.DEFAULT {
 		pt.X = wHint
 	}
@@ -770,9 +815,13 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	l.measure()
 	l.fitMin()
 	top := int32(topInset(s))
+	paneHeight := r.Height
+	if l.overlay {
+		_, paneHeight = l.overlayFrames([4]int32{r.X, r.Y, r.Width, r.Height}, top)
+	}
 	ct := [4]int32{r.X, r.Y + top, r.Width, max(r.Height-top, 0)}
 	if p := l.side; p != nil {
-		bg, sb, rest, sh := sidebarFrames(r.X, r.Y, r.Width, r.Height, p.shown(), p.inset(), top, sidebarDivider())
+		bg, sb, rest, sh := sidebarFrames(r.X, r.Y, r.Width, paneHeight, p.shown(), p.inset(), top, sidebarDivider())
 		p.c.SetBounds(sb[0], sb[1], sb[2], sb[3])
 		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
 		p.sash.SetVisible(!p.hidden)
@@ -782,11 +831,15 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	var ib [4]int32
 	if p := l.insp; p != nil {
 		var bg, rest, sh [4]int32
-		bg, ib, rest, sh = inspectorFrames(ct[0], r.Y, ct[2], r.Height, p.shown(), p.inset(), top, sidebarDivider())
+		bg, ib, rest, sh = inspectorFrames(ct[0], r.Y, ct[2], paneHeight, p.shown(), p.inset(), top, sidebarDivider())
 		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
 		p.sash.SetVisible(!p.hidden)
-		syncInspector(p.c, bg)
+		syncInspector(p.c, bg, l.overlay)
 		ct = rest
+	}
+	if l.overlay {
+		ct, _ = l.overlayFrames([4]int32{r.X, r.Y, r.Width, r.Height}, top)
+		l.content.MoveBelow(nil)
 	}
 	ct, ib = barTop(s, ct, ib)
 	if p := l.insp; p != nil {
@@ -801,7 +854,7 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 		p.sash.SetVisible(!p.hidden)
 		// The panel's material runs on under a floating sidebar, to the window's left edge.
 		var sb *swt.Composite
-		if l.side.floats() {
+		if l.side.floats() && !l.overlay {
 			pb[2] += pb[0] - r.X
 			pb[0] = r.X
 			sb = l.side.c
@@ -810,7 +863,7 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	}
 	l.content.SetBounds(ct[0], ct[1], ct[2], ct[3])
 	under := [4]int32{}
-	if l.side.floats() {
+	if l.side.floats() && !l.overlay {
 		under = [4]int32{r.X, ct[1], ct[0] - r.X, ct[3]}
 	}
 	if under != l.under {
@@ -838,7 +891,7 @@ func (l *paneLayout) paintUnder(e *swt.PaintEvent) {
 // the app gave Window.SetMinSize, height included.
 func (l *paneLayout) fitMinSize() {
 	s := l.w.Unwrap()
-	cw := l.side.room() + minContentWidth() + l.insp.room()
+	cw := l.requiredWidth(minContentWidth())
 	trim := s.GetSize().X - s.GetClientArea().Width
 	want := [2]int32{max(cw+trim, l.appMin[0]), l.appMin[1]}
 	if l.minSet && want == l.lastMin {

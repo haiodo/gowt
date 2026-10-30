@@ -5,6 +5,8 @@ package cocoa
 import (
 	"math"
 	"testing"
+
+	"github.com/ebitengine/purego"
 )
 
 // The stroke is 1/scale points wide and takes separatorColor under the appearance of the view, set
@@ -112,5 +114,50 @@ func TestGlassFocusRing(t *testing.T) {
 		SetGlassFocused(view, true)
 		SetGlassFocusRing(view, false)
 		check("ring off", 1/backingScale(v), SeparatorRGBA(false))
+	})
+}
+
+func TestClippedInspectorGlass(t *testing.T) {
+	if !GlassAvailable() {
+		t.Skip("no NSGlassEffectView")
+	}
+	var reduce bool
+	onMain(func() { reduce = ReduceTransparency() })
+	if reduce {
+		t.Skip("Reduce transparency")
+	}
+	onMain(func() {
+		v := msg(msg(class("NSView"), "alloc"), "init")
+		host := msg(msg(class("NSView"), "alloc"), "init")
+		defer msg(host, "release")
+		defer msg(v, "release")
+		msg(host, "addSubview:", v)
+		view := NewNSViewOverload1(int64(v))
+		InstallBackdrop(view, BackdropGlass, false)
+		ClipBackdrop(view)
+		SetBackdropFrame(view, 0, 0, 260, 500)
+		SetGlassCornerRadius(view, 18)
+		bd := getAssociated(v, backdropKey())
+		glass := msg(msg(bd, "subviews"), "objectAtIndex:", 0)
+		if msgToF64 == nil {
+			purego.RegisterFunc(&msgToF64, objcMsgSend)
+		}
+		if radius := msgToF64(glass, sel("cornerRadius")); radius != 18 {
+			t.Errorf("radius %v", radius)
+		}
+		SetGlassCornerRadius(view, 0)
+		if radius := msgToF64(glass, sel("cornerRadius")); radius != 0 {
+			t.Errorf("flush radius %v", radius)
+		}
+		SetEdgeLine(view)
+		SetEdgeLineHidden(view, true)
+		line := getAssociated(v, sel("gowtEdgeLine"))
+		if msg(line, "isHidden") == 0 {
+			t.Error("floating inspector separator visible")
+		}
+		SetEdgeLineHidden(view, false)
+		if msg(line, "isHidden") != 0 {
+			t.Error("flush inspector separator hidden")
+		}
 	})
 }

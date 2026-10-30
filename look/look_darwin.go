@@ -377,9 +377,15 @@ func inspectorInset() int32 { return 0 }
 
 // syncInspector also moves the divider the Inspector toolbar items follow to the inspector edge, or
 // collapses it for a hidden inspector (bg 0 wide).
-func syncInspector(ib *swt.Composite, bg [4]int32) {
+func syncInspector(ib *swt.Composite, bg [4]int32, floating bool) {
 	cocoa.SetBackdropFrame(ib.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
+	radius := float64(0)
+	if floating {
+		radius = sidebarRadius
+	}
+	cocoa.SetGlassCornerRadius(ib.View, radius)
 	cocoa.SetEdgeLine(ib.View)
+	cocoa.SetEdgeLineHidden(ib.View, floating || bg[2] == 0)
 	cocoa.SetInspectorDivider(ib.View, float64(bg[0]), bg[2] == 0)
 }
 

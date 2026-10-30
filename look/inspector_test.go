@@ -111,3 +111,55 @@ func TestBottomHeightAt(t *testing.T) {
 		}
 	}
 }
+
+func TestPanesOverlayFrames(t *testing.T) {
+	l := &paneLayout{overlay: true}
+	l.side = &pane{l: l, kind: sidebarPane, width: 220}
+	l.insp = &pane{l: l, kind: inspectorPane, width: 260}
+	client := [4]int32{10, 20, 900, 600}
+	for _, hidden := range []bool{false, true} {
+		l.side.hidden, l.insp.hidden = hidden, hidden
+		ct, height := l.overlayFrames(client, 52)
+		if ct != [4]int32{10, 72, 900, 548} || height != 600 {
+			t.Fatalf("hidden %v: content %v, pane height %d", hidden, ct, height)
+		}
+		if got := l.requiredWidth(900); got != 900 {
+			t.Errorf("hidden %v: width %d", hidden, got)
+		}
+	}
+	l.side.hidden, l.insp.hidden = false, false
+	l.bottom = &pane{kind: bottomPane, width: 160}
+	ct, height := l.overlayFrames(client, 52)
+	ct, pb, _ := bottomFrames(ct[0], ct[1], ct[2], ct[3], l.bottom.shown(), sidebarDivider())
+	for _, frame := range []func(int32, int32, int32, int32, int32, int32, int32, int32) ([4]int32, [4]int32, [4]int32, [4]int32){sidebarFrames, inspectorFrames} {
+		bg, _, _, _ := frame(client[0], client[1], client[2], height, 220, 7, 52, sidebarDivider())
+		if bg[1]+bg[3] > pb[1] {
+			t.Errorf("glass %v overlaps bottom %v", bg, pb)
+		}
+	}
+	if ct[2] != 900 || ct[1]+ct[3] != pb[1]-sidebarDivider() {
+		t.Errorf("content %v, bottom %v", ct, pb)
+	}
+	l.overlay = false
+	if got := l.requiredWidth(900); got != 900+l.side.room()+l.insp.room() {
+		t.Errorf("legacy width %d", got)
+	}
+}
+
+func TestPanesOverlayDragLimits(t *testing.T) {
+	l := &paneLayout{overlay: true}
+	l.side = &pane{l: l, kind: sidebarPane, width: 220}
+	l.insp = &pane{l: l, kind: inspectorPane, width: 260}
+	for _, p := range []*pane{l.side, l.insp} {
+		overlay := l.paneLimit(p, 900)
+		if got := dragWidth(1000, 160, overlay); got != overlay {
+			t.Errorf("drag %d, limit %d", got, overlay)
+		}
+		l.overlay = false
+		want := p.width + 900 - l.side.room() - l.insp.room() - minContentWidth()
+		if legacy := l.paneLimit(p, 900); legacy != want {
+			t.Errorf("legacy limit %d, overlay %d", legacy, overlay)
+		}
+		l.overlay = true
+	}
+}

@@ -82,6 +82,14 @@ func ClipBackdrop(view *NSView) {
 // the backdrop is 0 wide.
 func SetEdgeLine(view *NSView) { edgeLine(view, false) }
 
+// SetEdgeLineHidden hides the separator when an inspector floats away from the content edge.
+func SetEdgeLineHidden(view *NSView, hidden bool) {
+	initAssociated()
+	if line := getAssociated(uintptr(view.Id), sel("gowtEdgeLine")); line != 0 {
+		msg(line, "setHidden:", boolArg(hidden))
+	}
+}
+
 // SetTopLine is SetEdgeLine along the top edge of the backdrop of view, its full width, for a bottom
 // panel; it hides while the backdrop is 0 high.
 func SetTopLine(view *NSView) { edgeLine(view, true) }

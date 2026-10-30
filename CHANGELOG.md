@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.14.2 (2026-10-30)
+
+- New: `look.SetPanesOverlay(w, on)` opts into content beneath floating sidebars and inspectors on macOS 26. Call it before or after installing the panes. The live content keeps its full width when panes resize, hide or show; the inspector gets rounded glass and an inset. Bottom panels stay separate below the content, and both side panes stop above them. Existing layouts, older macOS, Windows and Linux remain unchanged.
+- Tests: windowless layout checks cover content bounds, hidden panes, bottom panel separation and resize limits. Cocoa checks cover the clipped inspector's corner radius and separator when switching between floating and flush modes. `go test ./look ./internal/cocoa` and `go vet ./look ./internal/cocoa` pass; `look` test binaries cross-compile for Windows and Linux. GUI rendering has not been checked.
+
 ## v0.14.1 (2026-10-30)
 
 - Fixed: editing styled fields on macOS preserves the value's inset and baseline without overlapping the prefix. The native editor's clip view is positioned when editing starts, including selection initiated outside the focus handler.

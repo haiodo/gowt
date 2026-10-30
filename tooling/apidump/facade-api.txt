@@ -1306,6 +1306,7 @@ gowt/look func SetInspector(w *github.com/haiodo/gowt.Window, content Container,
 gowt/look func SetInspectorVisible(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetInspectorWidth(w *github.com/haiodo/gowt.Window, width int)
 gowt/look func SetMaterial(c Container, on bool)
+gowt/look func SetPanesOverlay(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetRoundedCorners(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetSidebar(w *github.com/haiodo/gowt.Window, sidebar Container, content Container, width int)
 gowt/look func SetSidebarVisible(w *github.com/haiodo/gowt.Window, on bool)

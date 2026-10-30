@@ -238,7 +238,11 @@ func SetGlassCornerRadius(view *NSView, r float64) {
 	if msgF64 == nil {
 		purego.RegisterFunc(&msgF64, objcMsgSend)
 	}
-	if bd := getAssociated(uintptr(view.Id), backdropKey()); respondsTo(bd, "setCornerRadius:") {
+	bd := getAssociated(uintptr(view.Id), backdropKey())
+	if className(bd) == "NSView" && msg(msg(bd, "subviews"), "count") == 1 {
+		bd = msg(msg(bd, "subviews"), "objectAtIndex:", 0)
+	}
+	if respondsTo(bd, "setCornerRadius:") {
 		msgF64(bd, sel("setCornerRadius:"), r)
 		if panelGlassInside(uintptr(view.Id), bd) {
 			clipPanelGlass(bd, r)

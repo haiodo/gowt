@@ -281,7 +281,7 @@ jobs:
           mkdir -p test-logs
           mkdir -p ~/.cache/gowt-gocache ~/.cache/gowt-gomod
           docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
-            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS=-exec=/tmp/testexec GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && ${{ matrix.cmd }}' 2>&1 | tee test-logs/gate.log
+            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS="$GOFLAGS -exec=/tmp/testexec" GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && ${{ matrix.cmd }}' 2>&1 | tee test-logs/gate.log
       - uses: actions/upload-artifact@v6
         if: always()
         with:

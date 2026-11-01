@@ -1,6 +1,7 @@
 package shot
 
 import (
+	"fmt"
 	"image"
 	"image/draw"
 	"image/png"
@@ -21,6 +22,9 @@ var Fast bool
 // WindowPNG is Capture without the frame.
 func WindowPNG(handle int64, path string) error {
 	_, err := Capture(handle, path)
+	if os.Getenv("GOWT_SHOT_TRACE") == "1" {
+		fmt.Fprintf(os.Stderr, "[shot hwnd=%#x] WindowPNG Capture returned path=%q error=%v\n", handle, path, err)
+	}
 	return err
 }
 

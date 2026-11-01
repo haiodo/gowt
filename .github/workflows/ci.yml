@@ -109,13 +109,29 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           $dumpFolder = Join-Path $env:GITHUB_WORKSPACE 'gui-artifacts/crash'
           New-Item -ItemType Directory -Path $dumpFolder -Force | Out-Null
+          $procdumpFolder = Join-Path $env:RUNNER_TEMP 'procdump'
+          New-Item -ItemType Directory -Path $procdumpFolder -Force | Out-Null
+          $archive = Join-Path $procdumpFolder 'Procdump.zip'
+          Invoke-WebRequest -Uri 'https://download.sysinternals.com/files/Procdump.zip' -OutFile $archive
+          Expand-Archive -Path $archive -DestinationPath $procdumpFolder -Force
+          $procdump = (Get-Item (Join-Path $procdumpFolder 'procdump64.exe')).FullName
+          "GOWT_PROCDUMP=$procdump" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "GOWT_CRASH_DIR=$dumpFolder" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           $key = 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps'
           New-Item -Path $key -Force | Out-Null
           New-ItemProperty -Path $key -Name DumpFolder -PropertyType ExpandString -Value $dumpFolder -Force | Out-Null
           New-ItemProperty -Path $key -Name DumpCount -PropertyType DWord -Value 5 -Force | Out-Null
           New-ItemProperty -Path $key -Name DumpType -PropertyType DWord -Value 1 -Force | Out-Null
+          & {
+            Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version, BuildNumber, OSArchitecture | Format-List
+            Get-CimInstance Win32_VideoController | Select-Object Name, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution, CurrentRefreshRate | Format-List
+            Add-Type -AssemblyName System.Windows.Forms
+            [System.Windows.Forms.Screen]::AllScreens | Format-List DeviceName, Bounds, WorkingArea, Primary, BitsPerPixel
+            Get-ItemProperty 'HKCU:\Control Panel\Desktop' | Select-Object LogPixels, Win8DpiScaling | Format-List
+          } | Out-File -FilePath (Join-Path $dumpFolder 'runner-settings.txt') -Encoding utf8
       - name: Runner settings the GUI tests depend on
         if: runner.os == 'macOS'
         shell: bash
@@ -166,7 +182,12 @@ jobs:
         run: |
           $crashFolder = Join-Path $env:GITHUB_WORKSPACE 'gui-artifacts/crash'
           New-Item -ItemType Directory -Path $crashFolder -Force | Out-Null
+          Get-ChildItem -Path $crashFolder -Recurse -File | Select-Object FullName, Length, LastWriteTimeUtc |
+            Format-Table -AutoSize | Out-String -Width 4096 | Tee-Object -FilePath "$crashFolder/dump-summary.txt"
           wevtutil epl Application "$crashFolder/application-errors.evtx" /q:"*[System[Provider[@Name='Application Error'] or Provider[@Name='Windows Error Reporting']]]" /ow:true
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          wevtutil qe Application /q:"*[System[Provider[@Name='Application Error'] or Provider[@Name='Windows Error Reporting']]]" /f:xml |
+            Out-File -FilePath "$crashFolder/application-errors.xml" -Encoding utf8
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       # The crash reports of macOS name an uncaught Objective-C exception and its reason.
       - name: Crash reports

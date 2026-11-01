@@ -153,8 +153,14 @@ func Capture(hwnd int64, path string) (Frame, error) {
 	selectResult, _, callErr := gdi32.NewProc("SelectObject").Call(mem, old)
 	logCall("SelectObject", "after", selectResult, callErr)
 	logCall("GetDIBits", "before", 0, nil)
+	if trace {
+		fmt.Fprintf(os.Stderr, "[shot hwnd=%#x] GetDIBits input header=%+v address=%p buffer=%p bytes=%d frame=%+v window=%+v\n", hwnd, hdr, &hdr, &buf[0], len(buf), fr, wr)
+	}
 	r, _, callErr = gdi32.NewProc("GetDIBits").Call(mem, bmp, 0, uintptr(wh), uintptr(unsafe.Pointer(&buf[0])), uintptr(unsafe.Pointer(&hdr)), 0)
 	logCall("GetDIBits", "after", r, callErr)
+	if trace {
+		fmt.Fprintf(os.Stderr, "[shot hwnd=%#x] GetDIBits output header=%+v\n", hwnd, hdr)
+	}
 	if r == 0 {
 		return Frame{}, fmt.Errorf("GetDIBits failed")
 	}

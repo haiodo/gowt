@@ -29,6 +29,11 @@ func TestMaterialCaret(t *testing.T) {
 		dir = t.TempDir()
 	}
 	const shown = 12
+	trace := func(stage string) {
+		if os.Getenv("GOWT_TRACE_LIFECYCLE") == "1" {
+			fmt.Fprintf(os.Stderr, "[%s] %s\n", t.Name(), stage)
+		}
+	}
 	var errs []error
 	var typed string
 	var focused bool
@@ -51,9 +56,11 @@ func TestMaterialCaret(t *testing.T) {
 			look.SetMaterial(pane, true)
 			w.Show()
 			capture := func(name string) {
+				trace("capture " + name + " before")
 				if e := shot.WindowPNG(shotHandle(w), filepath.Join(dir, name+".png")); e != nil {
 					errs = append(errs, e)
 				}
+				trace("capture " + name + " returned")
 			}
 			app.After(500*time.Millisecond, func() {
 				st := text.Unwrap()
@@ -66,18 +73,25 @@ func TestMaterialCaret(t *testing.T) {
 				caret := st.GetCaret()
 				caret.SetVisible(false)
 				app.After(300*time.Millisecond, func() {
+					trace("hidden caret callback entered")
 					capture("caret-off")
+					trace("caret.SetVisible(true) before")
 					caret.SetVisible(true)
+					trace("caret.SetVisible(true) after")
 					var next func(i int)
 					next = func(i int) {
 						capture(fmt.Sprintf("caret-on%d", i))
 						if i == shown-1 {
+							trace("final capture complete; close before")
 							w.Close()
+							trace("close after")
 							return
 						}
 						app.After(100*time.Millisecond, func() { next(i + 1) })
+						trace("next capture scheduled")
 					}
 					app.After(50*time.Millisecond, func() { next(0) })
+					trace("first visible capture scheduled; callback returning")
 				})
 			})
 		})

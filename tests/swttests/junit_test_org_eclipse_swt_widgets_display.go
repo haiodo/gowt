@@ -1576,7 +1576,7 @@ func init() {
 			{Name: "test_close", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_close() }},
 			{Name: "test_disposeExecLjava_lang_Runnable", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_disposeExecLjava_lang_Runnable() }},
 			{Name: "test_findDisplayLjava_lang_Thread", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_findDisplayLjava_lang_Thread() }},
-			{Name: "test_getActiveShell", Skip: "@DisabledOnOs: Test fails on Mac: Bug 536564"},
+			{Name: "test_getActiveShell", Skip: junit.SkipOnOS(false, "@DisabledOnOs: Test fails on Mac: Bug 536564", "darwin"), Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_getActiveShell() }},
 			{Name: "test_getBounds", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_getBounds() }},
 			{Name: "test_getClientArea", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_getClientArea() }},
 			{Name: "test_getCurrent", Run: func(t any) { t.(*Test_org_eclipse_swt_widgets_Display).Test_getCurrent() }},

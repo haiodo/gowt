@@ -8,7 +8,7 @@ import org.eclipse.jdt.core.dom.*;
 import java.util.*;
 
 /** JUnit 5 -> internal/junit: Assertions calls and a per-class junit.Register(...) registry, with
- * annotations evaluated at translation time for macOS (README "Round 12 tests"). */
+ * platform and environment conditions evaluated by the generated test registry. */
 final class TestEmitter {
 
 	private static final String JUNIT_IMPORT = dev.gowt.j2go.Manual.JUNIT_IMPORT;
@@ -182,7 +182,7 @@ final class TestEmitter {
 		long timeout = timeoutNanos(mb.getAnnotations());
 		if (timeout > 0) common.append(", Timeout: ").append(timeout);
 		String skip = skipReason(cls, mb, anns);
-		// junit.SkipIfEnv is decided at run time: the test still needs its Run.
+		// Runtime conditions keep Run so the test can execute on another platform or environment.
 		if (skip != null && !skip.startsWith("junit.")) return List.of("{Name: " + EmitUtil.goStringLiteral(name) + common + ", Skip: " + skip + "}");
 		if (skip != null) common.append(", Skip: ").append(skip);
 		int params = mb.getParameterTypes().length;
@@ -251,7 +251,7 @@ final class TestEmitter {
 		return String.join(" ", s);
 	}
 
-	/** Go string expression for why the test is skipped on macOS, or null to run it. */
+	/** Go string expression for why the test is skipped, or null to run it. */
 	private String skipReason(ITypeBinding cls, IMethodBinding mb, Set<String> anns) {
 		for (String a : anns) {
 			if (a.startsWith("org.junit.") && !KNOWN.contains(a)) return EmitUtil.goStringLiteral("unsupported annotation @" + a);
@@ -260,11 +260,15 @@ final class TestEmitter {
 		if (notRun != null) return EmitUtil.goStringLiteral(notRun);
 		List<IAnnotationBinding> all = new ArrayList<>(List.of(mb.getAnnotations()));
 		for (ITypeBinding t = cls; t != null; t = t.getSuperclass()) all.addAll(List.of(t.getAnnotations()));
+		List<String> conditions = new ArrayList<>();
 		for (IAnnotationBinding a : all) {
 			String reason = condition(a);
-			if (reason != null) return reason;
+			if (reason == null) continue;
+			if (!reason.startsWith("junit.")) return reason;
+			conditions.add(reason);
 		}
-		return null;
+		if (conditions.isEmpty()) return null;
+		return conditions.size() == 1 ? conditions.getFirst() : "junit.FirstSkip(" + String.join(", ", conditions) + ")";
 	}
 
 	private String condition(IAnnotationBinding a) {
@@ -275,9 +279,14 @@ final class TestEmitter {
 			case API + "Disabled":
 				return reason;
 			case COND + "DisabledOnOs", COND + "EnabledOnOs": {
-				boolean onMac = false;
-				for (Object os : asArray(member(a, "value"))) onMac |= ((IVariableBinding) os).getName().equals("MAC");
-				return onMac == q.equals(COND + "DisabledOnOs") ? reason : null;
+				emitter.fileImports.add(JUNIT_IMPORT);
+				List<String> systems = new ArrayList<>();
+				for (Object os : asArray(member(a, "value"))) {
+					String name = ((IVariableBinding) os).getName();
+					systems.add(EmitUtil.goStringLiteral(name.equals("MAC") ? "darwin" : name.toLowerCase(Locale.ROOT)));
+				}
+				return "junit.SkipOnOS(" + q.equals(COND + "EnabledOnOs") + ", " + reason
+						+ (systems.isEmpty() ? "" : ", " + String.join(", ", systems)) + ")";
 			}
 			case COND + "DisabledIfEnvironmentVariable":
 				emitter.fileImports.add(JUNIT_IMPORT);

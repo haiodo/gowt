@@ -83,8 +83,8 @@ func gate(path string, full bool) int {
 		}
 	}
 	if full {
-		for name, e := range want {
-			if !ran[name] && e.status != "flaky" {
+		for name := range want {
+			if !ran[name] {
 				fmt.Printf("GATE missing: %s is in %s but was not run\n", name, path)
 				problems++
 			}

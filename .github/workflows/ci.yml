@@ -16,9 +16,8 @@ env:
   CGO_ENABLED: "0"
 
 # On the Linux runner the GUI gates run in the Docker stand under Xvfb. On the hosted Windows and macOS runners
-# the native jobs build, vet and run the non-GUI tests; their GUI job is separate and may fail without failing
-# the workflow (continue-on-error): whether a hosted runner gives AppKit a window server and Win32 an
-# interactive desktop is not verified. The swt and jface gates (make test-swt, cmd/swttest) stay local.
+# the native jobs build, vet and run the non-GUI tests; their required GUI job runs separately.
+# The translated SWT and JFace gates run in the Linux stand below.
 jobs:
   build-vet:
     name: build and vet ${{ matrix.goos }}/${{ matrix.goarch }}
@@ -68,7 +67,6 @@ jobs:
     name: ${{ matrix.os }} gui tests
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -92,20 +90,31 @@ jobs:
             echo "$k: $(defaults read $k 2>&1)"
           done
           system_profiler SPDisplaysDataType | grep -E 'Chipset|Metal|Resolution' || true
+      - name: GUI artifact directories
+        shell: bash
+        run: |
+          art="$(pwd -W 2>/dev/null || pwd)/gui-artifacts"
+          echo "GOWT_QA_ARTIFACTS=$art/qa" >> "$GITHUB_ENV"
+          echo "GOWT_PIXELS_DIR=$art/pixels" >> "$GITHUB_ENV"
+          echo "GOWT_TEST_SHOTS=$art/shots" >> "$GITHUB_ENV"
+          mkdir -p "$art/qa" "$art/pixels" "$art/shots"
       - name: Packages with GOWT_GUI_TEST tests
+        if: ${{ !cancelled() }}
         shell: bash
         run: |
           pkgs=$(git ls-files '*_test.go' | xargs grep -l GOWT_GUI_TEST | xargs -n1 dirname | sort -u | sed 's|^|./|' |
             xargs go list -e -f '{{if or .GoFiles .CgoFiles .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}')
           echo "$pkgs"
-          # Shots, dumps and app logs of failed tests, uploaded below; pwd -W gives Go a Windows path.
-          art="$(pwd -W 2>/dev/null || pwd)/gui-artifacts"
-          export GOWT_QA_ARTIFACTS="$art/qa" GOWT_PIXELS_DIR="$art/pixels" GOWT_TEST_SHOTS="$art/shots"
-          mkdir -p "$GOWT_QA_ARTIFACTS" "$GOWT_PIXELS_DIR" "$GOWT_TEST_SHOTS"
           # shellcheck disable=SC2086
           go test -count=1 -p 1 -v -timeout 25m $pkgs
-          go test -count=1 -tags gowtqa -run 'TestQATreeFocus' .
-          go test -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$' ./look
+      - name: QA tree focus
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: go test -count=1 -tags gowtqa -run 'TestQATreeFocus' .
+      - name: QA sidebar and inspector focus
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: go test -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$' ./look
       # The crash reports of macOS name an uncaught Objective-C exception and its reason.
       - name: Crash reports
         if: always() && runner.os == 'macOS'
@@ -188,7 +197,11 @@ jobs:
             cmd: go test -count=1 ./...
           # Every package with GOWT_GUI_TEST tests (facade, look, icons, qa/qatest e2e, examples/qa, webview), one package at a time.
           - gate: gui tests
-            cmd: make check-gui
+            cmd: GOWT_GUI_TEST=1 go test -count=1 -p 1 $(make -s check-gui-list)
+          - gate: qa tree focus
+            cmd: GOWT_GUI_TEST=1 go test -count=1 -tags gowtqa -run TestQATreeFocus .
+          - gate: qa sidebar and inspector focus
+            cmd: GOWT_GUI_TEST=1 go test -count=1 -tags gowtqa -run "^(TestSidebarFocus|TestInspectorFocus)$" ./look
     steps:
       - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v4

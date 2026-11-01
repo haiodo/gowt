@@ -2597,9 +2597,10 @@ passed, 55 failed, 5 skipped (`tests/RESULTS.md`). `internal/cocoa` byte-identic
   most-derived declaration along the superclass chain, so inherited tests run on the subclass and an
   override without `@Test` is not a test (JUnit 5 rules). A call goes through the impl cascade like any
   call (`Emitter.instanceCall`), so an overridden `newTypedEvent` dispatches to the subclass.
-- Annotations, evaluated at translation time for macOS: `@Test`; `@ParameterizedTest` +
+- Annotations: `@Test`; `@ParameterizedTest` +
   `@ValueSource` expanded into one test per value (`name[1]`, ...); `@Tag`/`@Tags` (class tags inherited);
-  `@Disabled`, `@DisabledOnOs`/`@EnabledOnOs` (`OS.MAC`), `@DisabledIfEnvironmentVariable` (checked at
+  `@Disabled`, `@DisabledOnOs`/`@EnabledOnOs` (checked at init against `runtime.GOOS` by
+  `junit.SkipOnOS`), `@DisabledIfEnvironmentVariable` (checked at
   init by `junit.SkipIfEnv`), `@DisabledIfSystemProperty` (never: Go has no system properties),
   `@Timeout` (per-test watchdog), `@TestMethodOrder` with `OrderAnnotation`/`MethodName`. A test with
   another `org.junit` annotation, another parameter source (`@MethodSource`) or injected parameters

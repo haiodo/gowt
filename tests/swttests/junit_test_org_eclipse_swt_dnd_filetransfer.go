@@ -167,7 +167,7 @@ func init() {
 			{Name: "test_Validate", Tags: []string{"clipboard"}, Run: func(t any) { t.(*Test_org_eclipse_swt_dnd_FileTransfer).Test_Validate() }},
 			{Name: "test_internalClone", Tags: []string{"clipboard"}, Run: func(t any) { t.(*Test_org_eclipse_swt_dnd_FileTransfer).Test_internalClone() }},
 			{Name: "test_isSupportedType", Tags: []string{"clipboard"}, Run: func(t any) { t.(*Test_org_eclipse_swt_dnd_FileTransfer).Test_isSupportedType() }},
-			{Name: "test_nativeToJava", Tags: []string{"clipboard"}, Skip: "@DisabledOnOs: AWT's DataFlavor.javaFileListFlavor used to test this method is not quite\ncompatible with FileTransfer on Windows or macOS.\n\nOr the implementation of remote.setFileListContents is incorrect.\n\nOn Windows DataFlavor.javaFileListFlavor does manipulate the contents of the\nstrings by replacing long versions of folder names with 8.3 versions, so\na different test method is needed to make this test stable"},
+			{Name: "test_nativeToJava", Tags: []string{"clipboard"}, Skip: junit.SkipOnOS(false, "@DisabledOnOs: AWT's DataFlavor.javaFileListFlavor used to test this method is not quite\ncompatible with FileTransfer on Windows or macOS.\n\nOr the implementation of remote.setFileListContents is incorrect.\n\nOn Windows DataFlavor.javaFileListFlavor does manipulate the contents of the\nstrings by replacing long versions of folder names with 8.3 versions, so\na different test method is needed to make this test stable", "windows", "darwin"), Run: func(t any) { t.(*Test_org_eclipse_swt_dnd_FileTransfer).Test_nativeToJava() }},
 		},
 	})
 }

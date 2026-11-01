@@ -51,7 +51,7 @@ class GoldenTest {
 				"-cp", System.getProperty("java.class.path"), "dev.gowt.j2go.Main", "--swt", src.toString(), "--out", out.toString()));
 		// An optional args file holds extra j2go flags for the rule, one per line.
 		// ${rule} is the rule's absolute directory.
-		if (Files.exists(rule.resolve("args"))) Files.readAllLines(rule.resolve("args")).forEach(l -> cmd.add(l.replace("${rule}", rule.toAbsolutePath().toString())));
+		if (Files.exists(rule.resolve("args"))) Files.readAllLines(rule.resolve("args")).forEach(l -> cmd.add(l.replace("${rule}", rule.toAbsolutePath().toString()).replace("${classpath}", System.getProperty("java.class.path"))));
 		if (external && Files.readString(rule.resolve("external")).contains("src")) cmd.addAll(List.of("--src", work.resolve("ext").toString()));
 		for (String n : names) cmd.add(external ? inputs.resolve(n).toString() : "fixture/" + n);
 		Process p = new ProcessBuilder(cmd).directory(cwd.toFile()).redirectErrorStream(true).start();

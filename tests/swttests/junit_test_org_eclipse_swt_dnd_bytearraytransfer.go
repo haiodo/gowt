@@ -175,7 +175,7 @@ func init() {
 			func(t any) { t.(*Test_org_eclipse_swt_dnd_ByteArrayTransfer).TearDown() },
 		},
 		Tests: []junit.Test{
-			{Name: "test_javaToNative", Tags: []string{"clipboard", "gtk3-wayland-todo", "gtk4-todo"}, Skip: "@DisabledOnOs: remote.getMyTypeContents doesn't work properly on macOS, this is\nprobably a test only issue on macOS"},
+			{Name: "test_javaToNative", Tags: []string{"clipboard", "gtk3-wayland-todo", "gtk4-todo"}, Skip: junit.SkipOnOS(false, "@DisabledOnOs: remote.getMyTypeContents doesn't work properly on macOS, this is\nprobably a test only issue on macOS", "darwin"), Run: func(t any) { t.(*Test_org_eclipse_swt_dnd_ByteArrayTransfer).Test_javaToNative() }},
 			{Name: "test_Validate", Tags: []string{"clipboard", "gtk3-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_dnd_ByteArrayTransfer).Test_Validate() }},
 			{Name: "test_internalClone", Tags: []string{"clipboard", "gtk3-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_dnd_ByteArrayTransfer).Test_internalClone() }},
 			{Name: "test_isSupportedType", Tags: []string{"clipboard", "gtk3-wayland-todo"}, Run: func(t any) { t.(*Test_org_eclipse_swt_dnd_ByteArrayTransfer).Test_isSupportedType() }},

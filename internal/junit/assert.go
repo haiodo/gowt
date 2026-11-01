@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"regexp"
 	"runtime"
+	"slices"
 	"strings"
 	"unsafe"
 
@@ -256,6 +257,24 @@ func AssumeTrue(cond bool, msg ...any) {
 }
 
 func AssumeFalse(cond bool, msg ...any) { AssumeTrue(!cond, msg...) }
+
+// FirstSkip combines independent annotation conditions without losing later skip reasons.
+func FirstSkip(reasons ...string) string {
+	for _, reason := range reasons {
+		if reason != "" {
+			return reason
+		}
+	}
+	return ""
+}
+
+// SkipOnOS evaluates @EnabledOnOs or @DisabledOnOs against the running Go platform.
+func SkipOnOS(enabled bool, reason string, systems ...string) string {
+	if slices.Contains(systems, runtime.GOOS) != enabled {
+		return reason
+	}
+	return ""
+}
 
 // SkipIfEnv is @DisabledIfEnvironmentVariable(named, matches, disabledReason): reason when the
 // variable is set and fully matches, else "".

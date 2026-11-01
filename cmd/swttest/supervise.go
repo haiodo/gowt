@@ -15,7 +15,7 @@ import (
 // supervise runs the tests in a child process. AppKit aborts the process on an uncaught NSException
 // (purego cannot catch it), so a crash is reported as a failure of the running test and the run
 // resumes with the next one in a fresh child.
-func supervise() {
+func supervise() int {
 	start := time.Now()
 	var passed, failed, skipped, seen int
 	for {
@@ -32,11 +32,11 @@ func supervise() {
 		out, err := cmd.StdoutPipe()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "swttest:", err)
-			os.Exit(1)
+			return 1
 		}
 		if err := cmd.Start(); err != nil {
 			fmt.Fprintln(os.Stderr, "swttest:", err)
-			os.Exit(1)
+			return 1
 		}
 		running, message := "", ""
 		before := seen
@@ -68,6 +68,12 @@ func supervise() {
 				}
 			}
 		}
+		if err := sc.Err(); err != nil {
+			_ = cmd.Process.Kill()
+			_ = cmd.Wait()
+			fmt.Fprintln(os.Stderr, "swttest: reading child output:", err)
+			return 1
+		}
 		werr := cmd.Wait()
 		if running != "" {
 			failed++
@@ -83,7 +89,7 @@ func supervise() {
 		// test started would restart into the same crash forever.
 		if exitCode(werr) != exitTimeout || seen == before {
 			fmt.Fprintln(os.Stderr, "swttest: child failed outside a test:", crashReason(stderr.String(), werr))
-			os.Exit(1)
+			return 1
 		}
 	}
 	summarize(passed, failed, skipped, start)
@@ -91,16 +97,21 @@ func supervise() {
 	if *updateFlag != "" {
 		if !full {
 			fmt.Fprintln(os.Stderr, "swttest: -update needs a full run (no -run/-tag)")
-			os.Exit(1)
+			return 1
 		}
 		if err := update(*updateFlag); err != nil {
 			fmt.Fprintln(os.Stderr, "swttest:", err)
-			os.Exit(1)
+			return 1
 		}
 	}
-	if *expectedFlag != "" && gate(*expectedFlag, full) > 0 {
-		os.Exit(1)
+	if *expectedFlag != "" {
+		if gate(*expectedFlag, full) > 0 {
+			return 1
+		}
+	} else if failed > 0 {
+		return 1
 	}
+	return 0
 }
 
 func exitCode(err error) int {

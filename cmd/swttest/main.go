@@ -52,8 +52,7 @@ func main() {
 		os.Exit(compareLog(*compareFlag, *expectedFlag))
 	}
 	if !*childFlag && !*listFlag {
-		supervise()
-		return
+		os.Exit(supervise())
 	}
 	var runRe *regexp.Regexp
 	if *runFlag != "" {

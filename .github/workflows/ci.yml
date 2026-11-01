@@ -59,7 +59,18 @@ jobs:
       - run: go build ./...
       - run: go vet ./...
       # No GOWT_GUI_TEST: the tests that open windows skip themselves.
-      - run: go test -count=1 -timeout 20m ./...
+      - name: Tests
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p test-logs
+          go test -v -count=1 -timeout 20m ./... 2>&1 | tee test-logs/native.log
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: test-logs-${{ matrix.os }}
+          path: test-logs
+          if-no-files-found: ignore
 
   # Real windows. Packages with GOWT_GUI_TEST tests run one after another (-p 1), as make check-gui does; bash so
   # that one package list works on both runners (make is not assumed on Windows).
@@ -73,6 +84,7 @@ jobs:
         os: [windows-latest, macos-latest]
     env:
       GOWT_GUI_TEST: "1"
+      GOWT_SHOT_TRACE: "1"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
@@ -102,19 +114,27 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
         run: |
+          set -o pipefail
+          mkdir -p gui-artifacts/logs
           pkgs=$(git ls-files '*_test.go' | xargs grep -l GOWT_GUI_TEST | xargs -n1 dirname | sort -u | sed 's|^|./|' |
             xargs go list -e -f '{{if or .GoFiles .CgoFiles .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}')
           echo "$pkgs"
           # shellcheck disable=SC2086
-          go test -count=1 -p 1 -v -timeout 25m $pkgs
+          go test -count=1 -p 1 -v -timeout 25m $pkgs 2>&1 | tee gui-artifacts/logs/packages.log
       - name: QA tree focus
         if: ${{ !cancelled() }}
         shell: bash
-        run: go test -count=1 -tags gowtqa -run 'TestQATreeFocus' .
+        run: |
+          set -o pipefail
+          mkdir -p gui-artifacts/logs
+          go test -v -count=1 -tags gowtqa -run 'TestQATreeFocus' . 2>&1 | tee gui-artifacts/logs/tree-focus.log
       - name: QA sidebar and inspector focus
         if: ${{ !cancelled() }}
         shell: bash
-        run: go test -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$' ./look
+        run: |
+          set -o pipefail
+          mkdir -p gui-artifacts/logs
+          go test -v -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$' ./look 2>&1 | tee gui-artifacts/logs/sidebar-inspector-focus.log
       # The crash reports of macOS name an uncaught Objective-C exception and its reason.
       - name: Crash reports
         if: always() && runner.os == 'macOS'
@@ -194,14 +214,14 @@ jobs:
               /tmp/jfacetest -expected tests/expected_jface_linux.txt
           # Unit tests (the one that needs a display, swt TestApplyAccent, runs against Xvfb).
           - gate: unit tests
-            cmd: go test -count=1 ./...
+            cmd: go test -v -count=1 ./...
           # Every package with GOWT_GUI_TEST tests (facade, look, icons, qa/qatest e2e, examples/qa, webview), one package at a time.
           - gate: gui tests
-            cmd: GOWT_GUI_TEST=1 go test -count=1 -p 1 $(make -s check-gui-list)
+            cmd: GOWT_GUI_TEST=1 go test -v -count=1 -p 1 $(make -s check-gui-list)
           - gate: qa tree focus
-            cmd: GOWT_GUI_TEST=1 go test -count=1 -tags gowtqa -run TestQATreeFocus .
+            cmd: GOWT_GUI_TEST=1 go test -v -count=1 -tags gowtqa -run TestQATreeFocus .
           - gate: qa sidebar and inspector focus
-            cmd: GOWT_GUI_TEST=1 go test -count=1 -tags gowtqa -run "^(TestSidebarFocus|TestInspectorFocus)$" ./look
+            cmd: GOWT_GUI_TEST=1 go test -v -count=1 -tags gowtqa -run "^(TestSidebarFocus|TestInspectorFocus)$" ./look
     steps:
       - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v4
@@ -222,10 +242,19 @@ jobs:
             linux-go-${{ hashFiles('go.sum') }}-
       - name: Run the gate in the image
         # stand.sh starts Xvfb :99 first; the container runs as root, so the cache dirs are handed back afterwards.
+        shell: bash
         run: |
+          set -o pipefail
+          mkdir -p test-logs
           mkdir -p ~/.cache/gowt-gocache ~/.cache/gowt-gomod
           docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
-            gowt-linux:ci stand.sh sh -c 'cd /src && ${{ matrix.cmd }}'
+            gowt-linux:ci stand.sh sh -c 'cd /src && ${{ matrix.cmd }}' 2>&1 | tee test-logs/gate.log
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: test-logs-linux-${{ matrix.gate }}
+          path: test-logs
+          if-no-files-found: ignore
       - name: Return cache ownership
         if: always()
         run: sudo chown -R "$(id -u):$(id -g)" ~/.cache/gowt-gocache ~/.cache/gowt-gomod

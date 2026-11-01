@@ -198,6 +198,10 @@ type splitShot struct {
 // or without Divider.
 func captureSplit(t *testing.T, mode gowt.Appearance, divider bool, path string) splitShot {
 	t.Helper()
+	trace := func(stage string) {
+		fmt.Fprintf(os.Stderr, "[%s divider=%t] %s\n", t.Name(), divider, stage)
+	}
+	trace("setup before")
 	opts := []gowt.Option{gowt.Vertical(), gowt.Grow(), gowt.VBox(), gowt.VBox()}
 	if divider {
 		opts = append(opts, gowt.Divider())
@@ -207,16 +211,31 @@ func captureSplit(t *testing.T, mode gowt.Appearance, divider bool, path string)
 	var errs []error
 	var shotErr, err error
 	onMain(func() {
+		trace("main entered; Run before")
 		err = gowt.Run(func(app *gowt.App) {
+			trace("Run callback entered")
+			trace("appearance setup before")
 			app.SetAppearance(mode)
+			trace("appearance setup after")
 			app.OnError(func(e error) { errs = append(errs, e) })
 			w := app.Window("divider", gowt.Padding(0))
 			w.Add(gowt.Split(append(opts, gowt.Ref(&split))...))
 			w.SetSize(400, 300)
+			trace("setup after; show before")
 			w.Show()
+			trace("show after")
 			app.After(500*time.Millisecond, func() {
-				defer w.Close()
-				defer app.SetAppearance(gowt.AppearanceSystem) // later tests run in the system appearance
+				trace("capture callback entered")
+				defer func() {
+					trace("window cleanup before")
+					w.Close()
+					trace("window cleanup after")
+				}()
+				defer func() {
+					trace("appearance cleanup before")
+					app.SetAppearance(gowt.AppearanceSystem) // later tests run in the system appearance
+					trace("appearance cleanup after")
+				}()
 				for _, ch := range split.Unwrap().GetChildren() {
 					if s, ok := ch.Impl().(*swt.Sash); ok {
 						b := s.GetBounds()
@@ -225,16 +244,23 @@ func captureSplit(t *testing.T, mode gowt.Appearance, divider bool, path string)
 				}
 				r := w.Unwrap().GetClientArea()
 				client = [4]int32{r.X, r.Y, r.Width, r.Height}
+				trace("capture before")
 				shotErr = shot.WindowPNG(shotHandle(w), path)
+				trace("capture after")
 			})
 		})
+		trace("Run after")
 	})
+	trace("main after")
 	for _, e := range append(errs, err, shotErr) {
 		if e != nil {
 			t.Fatal(e)
 		}
 	}
-	return splitShot{decodePNG(t, path), sash, client}
+	trace("decode before")
+	img := decodePNG(t, path)
+	trace("decode after")
+	return splitShot{img, sash, client}
 }
 
 // lineRows returns the rows where at least min pixels differ by more than levels in a channel. The

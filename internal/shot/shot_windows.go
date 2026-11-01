@@ -41,23 +41,46 @@ type bmi struct {
 // on screen; the screen copy also holds the WebView2 child windows. GOWT_SNAP_FULL=1 uses PrintWindow
 // (PW_RENDERFULLCONTENT) instead, which renders Mica and acrylic backdrops wrongly.
 func Capture(hwnd int64, path string) (Frame, error) {
+	trace := os.Getenv("GOWT_SHOT_TRACE") == "1"
+	logCall := func(name, stage string, result uintptr, err error) {
+		if trace {
+			fmt.Fprintf(os.Stderr, "[shot hwnd=%#x] %s %s result=%#x lastError=%#v\n", hwnd, name, stage, result, err)
+		}
+	}
+	if trace {
+		fmt.Fprintf(os.Stderr, "[shot hwnd=%#x] Capture before path=%q\n", hwnd, path)
+		defer fmt.Fprintf(os.Stderr, "[shot hwnd=%#x] Capture after\n", hwnd)
+	}
 	var wr, fr rect
-	getRect.Call(uintptr(hwnd), uintptr(unsafe.Pointer(&wr)))
+	logCall("GetWindowRect", "before", 0, nil)
+	rectResult, _, callErr := getRect.Call(uintptr(hwnd), uintptr(unsafe.Pointer(&wr)))
+	logCall("GetWindowRect", "after", rectResult, callErr)
 	// DWMWA_EXTENDED_FRAME_BOUNDS is 9; it fails without DWM, then the window rect is the frame.
-	if r, _, _ := dwmGetAttr.Call(uintptr(hwnd), 9, uintptr(unsafe.Pointer(&fr)), unsafe.Sizeof(fr)); r != 0 {
+	logCall("DwmGetWindowAttribute", "before", 0, nil)
+	r, _, callErr := dwmGetAttr.Call(uintptr(hwnd), 9, uintptr(unsafe.Pointer(&fr)), unsafe.Sizeof(fr))
+	logCall("DwmGetWindowAttribute", "after", r, callErr)
+	if r != 0 {
 		fr = wr
 	}
 	fw, fh := int(fr.R-fr.L), int(fr.B-fr.T)
 	if fw <= 0 || fh <= 0 {
 		return Frame{}, fmt.Errorf("empty window")
 	}
-	user32.NewProc("UpdateWindow").Call(uintptr(hwnd))
+	logCall("UpdateWindow", "before", 0, nil)
+	updateResult, _, callErr := user32.NewProc("UpdateWindow").Call(uintptr(hwnd))
+	logCall("UpdateWindow", "after", updateResult, callErr)
 	if Passive {
 		const hwndTop, noSizeMoveActivate = 0, 0x0001 | 0x0002 | 0x0010
-		user32.NewProc("SetWindowPos").Call(uintptr(hwnd), hwndTop, 0, 0, 0, 0, noSizeMoveActivate)
+		logCall("SetWindowPos", "before", 0, nil)
+		positionResult, _, callErr := user32.NewProc("SetWindowPos").Call(uintptr(hwnd), hwndTop, 0, 0, 0, 0, noSizeMoveActivate)
+		logCall("SetWindowPos", "after", positionResult, callErr)
 	} else {
-		user32.NewProc("BringWindowToTop").Call(uintptr(hwnd))
-		user32.NewProc("SetForegroundWindow").Call(uintptr(hwnd))
+		logCall("BringWindowToTop", "before", 0, nil)
+		topResult, _, callErr := user32.NewProc("BringWindowToTop").Call(uintptr(hwnd))
+		logCall("BringWindowToTop", "after", topResult, callErr)
+		logCall("SetForegroundWindow", "before", 0, nil)
+		foregroundResult, _, callErr := user32.NewProc("SetForegroundWindow").Call(uintptr(hwnd))
+		logCall("SetForegroundWindow", "after", foregroundResult, callErr)
 	}
 	full := os.Getenv("GOWT_SNAP_FULL") == "1"
 	ww, wh := fw, fh
@@ -67,42 +90,81 @@ func Capture(hwnd int64, path string) (Frame, error) {
 		src = uintptr(hwnd)
 		sx, sy = 0, 0
 	}
-	dc, _, _ := user32.NewProc("GetWindowDC").Call(src)
+	logCall("GetWindowDC", "before", 0, nil)
+	dc, _, callErr := user32.NewProc("GetWindowDC").Call(src)
+	logCall("GetWindowDC", "after", dc, callErr)
 	if dc == 0 {
 		return Frame{}, fmt.Errorf("GetWindowDC failed")
 	}
-	defer user32.NewProc("ReleaseDC").Call(src, dc)
-	mem, _, _ := gdi32.NewProc("CreateCompatibleDC").Call(dc)
+	defer func() {
+		logCall("ReleaseDC", "cleanup before", 0, nil)
+		r, _, err := user32.NewProc("ReleaseDC").Call(src, dc)
+		logCall("ReleaseDC", "cleanup after", r, err)
+	}()
+	logCall("CreateCompatibleDC", "before", 0, nil)
+	mem, _, callErr := gdi32.NewProc("CreateCompatibleDC").Call(dc)
+	logCall("CreateCompatibleDC", "after", mem, callErr)
 	if mem == 0 {
 		return Frame{}, fmt.Errorf("CreateCompatibleDC failed")
 	}
-	defer gdi32.NewProc("DeleteDC").Call(mem)
-	bmp, _, _ := gdi32.NewProc("CreateCompatibleBitmap").Call(dc, uintptr(ww), uintptr(wh))
+	defer func() {
+		logCall("DeleteDC", "cleanup before", 0, nil)
+		r, _, err := gdi32.NewProc("DeleteDC").Call(mem)
+		logCall("DeleteDC", "cleanup after", r, err)
+	}()
+	logCall("CreateCompatibleBitmap", "before", 0, nil)
+	bmp, _, callErr := gdi32.NewProc("CreateCompatibleBitmap").Call(dc, uintptr(ww), uintptr(wh))
+	logCall("CreateCompatibleBitmap", "after", bmp, callErr)
 	if bmp == 0 {
 		return Frame{}, fmt.Errorf("CreateCompatibleBitmap failed")
 	}
-	defer gdi32.NewProc("DeleteObject").Call(bmp)
-	old, _, _ := gdi32.NewProc("SelectObject").Call(mem, bmp)
-	defer gdi32.NewProc("SelectObject").Call(mem, old)
+	defer func() {
+		logCall("DeleteObject", "cleanup before", 0, nil)
+		r, _, err := gdi32.NewProc("DeleteObject").Call(bmp)
+		logCall("DeleteObject", "cleanup after", r, err)
+	}()
+	logCall("SelectObject", "before", 0, nil)
+	old, _, callErr := gdi32.NewProc("SelectObject").Call(mem, bmp)
+	logCall("SelectObject", "after", old, callErr)
+	defer func() {
+		logCall("SelectObject", "cleanup before", 0, nil)
+		r, _, err := gdi32.NewProc("SelectObject").Call(mem, old)
+		logCall("SelectObject", "cleanup after", r, err)
+	}()
 	if full {
-		if r, _, _ := user32.NewProc("PrintWindow").Call(uintptr(hwnd), mem, 2); r == 0 {
+		logCall("PrintWindow", "before", 0, nil)
+		r, _, callErr := user32.NewProc("PrintWindow").Call(uintptr(hwnd), mem, 2)
+		logCall("PrintWindow", "after", r, callErr)
+		if r == 0 {
 			return Frame{}, fmt.Errorf("PrintWindow failed")
 		}
-	} else if r, _, _ := gdi32.NewProc("BitBlt").Call(mem, 0, 0, uintptr(ww), uintptr(wh), dc, uintptr(sx), uintptr(sy), srccopy|captureblt); r == 0 {
-		return Frame{}, fmt.Errorf("BitBlt failed")
+	} else {
+		logCall("BitBlt", "before", 0, nil)
+		r, _, callErr := gdi32.NewProc("BitBlt").Call(mem, 0, 0, uintptr(ww), uintptr(wh), dc, uintptr(sx), uintptr(sy), srccopy|captureblt)
+		logCall("BitBlt", "after", r, callErr)
+		if r == 0 {
+			return Frame{}, fmt.Errorf("BitBlt failed")
+		}
 	}
 	hdr := bmi{Size: uint32(unsafe.Sizeof(bmi{})), W: int32(ww), H: -int32(wh), Planes: 1, BitCount: 32}
 	buf := make([]byte, ww*wh*4)
 	// GetDIBits must not see the bitmap selected into a DC: some display drivers crash on it.
-	gdi32.NewProc("SelectObject").Call(mem, old)
-	if r, _, _ := gdi32.NewProc("GetDIBits").Call(mem, bmp, 0, uintptr(wh), uintptr(unsafe.Pointer(&buf[0])), uintptr(unsafe.Pointer(&hdr)), 0); r == 0 {
+	logCall("SelectObject", "before", 0, nil)
+	selectResult, _, callErr := gdi32.NewProc("SelectObject").Call(mem, old)
+	logCall("SelectObject", "after", selectResult, callErr)
+	logCall("GetDIBits", "before", 0, nil)
+	r, _, callErr = gdi32.NewProc("GetDIBits").Call(mem, bmp, 0, uintptr(wh), uintptr(unsafe.Pointer(&buf[0])), uintptr(unsafe.Pointer(&hdr)), 0)
+	logCall("GetDIBits", "after", r, callErr)
+	if r == 0 {
 		return Frame{}, fmt.Errorf("GetDIBits failed")
 	}
 	ox, oy := 0, 0
 	if full {
 		ox, oy = int(fr.L-wr.L), int(fr.T-wr.T)
 	}
-	dpi, _, _ := user32.NewProc("GetDpiForWindow").Call(uintptr(hwnd))
+	logCall("GetDpiForWindow", "before", 0, nil)
+	dpi, _, callErr := user32.NewProc("GetDpiForWindow").Call(uintptr(hwnd))
+	logCall("GetDpiForWindow", "after", dpi, callErr)
 	radius := 8 * int(dpi) / 96 // Windows 11 rounds the window corners; the screen copy holds the desktop behind them
 	img := image.NewNRGBA(image.Rect(0, 0, fw, fh))
 	for y := 0; y < fh; y++ {
@@ -114,6 +176,9 @@ func Capture(hwnd int64, path string) (Frame, error) {
 			}
 		}
 	}
+	if trace {
+		fmt.Fprintf(os.Stderr, "[shot hwnd=%#x] PNG before path=%q\n", hwnd, path)
+	}
 	f, err := os.Create(path)
 	if err != nil {
 		return Frame{}, err
@@ -121,6 +186,9 @@ func Capture(hwnd int64, path string) (Frame, error) {
 	defer f.Close()
 	if err := png.Encode(f, img); err != nil {
 		return Frame{}, err
+	}
+	if trace {
+		fmt.Fprintf(os.Stderr, "[shot hwnd=%#x] PNG after\n", hwnd)
 	}
 	return Frame{float64(fr.L), float64(fr.T), float64(fw), float64(fh)}, nil
 }

@@ -65,8 +65,14 @@ func Run(setup func(*App)) (err error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	defer catch(&err)
+	traceLifecycle("NewDisplay before")
 	a := &App{display: swt.NewDisplay(), images: map[*Image]struct{}{}, fonts: map[Font]*sharedFont{}, pxFonts: map[*swt.Font]float64{}}
-	defer a.display.Dispose()
+	traceLifecycle("NewDisplay after")
+	defer func() {
+		traceLifecycle("Display.Dispose before")
+		a.display.Dispose()
+		traceLifecycle("Display.Dispose after")
+	}()
 	defer a.ended.Store(true)
 	a.jobs.init()
 	defer a.jobs.close()
@@ -92,7 +98,9 @@ func Run(setup func(*App)) (err error) {
 	a.followTheme()
 	densityChosen, densityFactor = Density{}, 1
 	Type, _, _, _ = resolveTokens(a.systemInfo(), DensityNative)
+	traceLifecycle("setup before")
 	setup(a)
+	traceLifecycle("setup after")
 	if args := argOpen(os.Args[1:]); len(args) > 0 {
 		a.openIn(args...)
 	}
@@ -108,7 +116,14 @@ func Run(setup func(*App)) (err error) {
 			a.display.Sleep()
 		}
 	}
+	traceLifecycle("event loop ended")
 	return err
+}
+
+func traceLifecycle(stage string) {
+	if os.Getenv("GOWT_TRACE_LIFECYCLE") == "1" {
+		fmt.Fprintln(os.Stderr, "[gowt lifecycle]", stage)
+	}
 }
 
 // apps lets a widget find its App from its display (drop callbacks create App-owned images).
@@ -847,7 +862,11 @@ func (w *Window) SetMinSize(width, height int) {
 const minSizeHookKey = "gowt.look.minSize"
 
 // Close closes the window as the user would, running OnClose.
-func (w *Window) Close() { w.shell.Close() }
+func (w *Window) Close() {
+	traceLifecycle("Window.Close before")
+	w.shell.Close()
+	traceLifecycle("Window.Close after")
+}
 
 // OnClose registers f; returning false keeps the window open. Several handlers are asked in order
 // and the first false stops the rest. Closing the last window then asks App.OnQuit.

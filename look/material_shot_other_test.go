@@ -20,7 +20,10 @@ func panePixel(w *gowt.Window) (gowt.RGB, error) {
 		dir = os.TempDir()
 	}
 	path := filepath.Join(dir, "material.png")
-	if err := shot.WindowPNG(w.Unwrap().Handle, path); err != nil {
+	traceMaterial("capture before")
+	err := shot.WindowPNG(w.Unwrap().Handle, path)
+	traceMaterial("capture returned")
+	if err != nil {
 		return gowt.RGB{}, err
 	}
 	f, err := os.Open(path)
@@ -28,7 +31,9 @@ func panePixel(w *gowt.Window) (gowt.RGB, error) {
 		return gowt.RGB{}, err
 	}
 	defer f.Close()
+	traceMaterial("decode before")
 	img, err := png.Decode(f)
+	traceMaterial("decode after")
 	if err != nil {
 		return gowt.RGB{}, err
 	}

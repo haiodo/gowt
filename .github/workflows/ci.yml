@@ -56,6 +56,12 @@ jobs:
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
+      - name: Test process diagnostics
+        shell: bash
+        run: |
+          exe="$(pwd -W 2>/dev/null || pwd)/testexec.exe"
+          go build -o "$exe" ./tooling/testexec
+          echo "GOFLAGS='-exec=\"$exe\"'" >> "$GITHUB_ENV"
       - run: go build ./...
       - run: go vet ./...
       # No GOWT_GUI_TEST: the tests that open windows skip themselves.
@@ -85,12 +91,31 @@ jobs:
     env:
       GOWT_GUI_TEST: "1"
       GOWT_SHOT_TRACE: "1"
+      GOWT_TRACE_LIFECYCLE: "1"
+      GOTRACEBACK: system
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
+      - name: Test process diagnostics
+        shell: bash
+        run: |
+          exe="$(pwd -W 2>/dev/null || pwd)/testexec.exe"
+          go build -o "$exe" ./tooling/testexec
+          echo "GOFLAGS='-exec=\"$exe\"'" >> "$GITHUB_ENV"
+      - name: Windows crash dumps
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $dumpFolder = Join-Path $env:GITHUB_WORKSPACE 'gui-artifacts/crash'
+          New-Item -ItemType Directory -Path $dumpFolder -Force | Out-Null
+          $key = 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps'
+          New-Item -Path $key -Force | Out-Null
+          New-ItemProperty -Path $key -Name DumpFolder -PropertyType ExpandString -Value $dumpFolder -Force | Out-Null
+          New-ItemProperty -Path $key -Name DumpCount -PropertyType DWord -Value 5 -Force | Out-Null
+          New-ItemProperty -Path $key -Name DumpType -PropertyType DWord -Value 1 -Force | Out-Null
       - name: Runner settings the GUI tests depend on
         if: runner.os == 'macOS'
         shell: bash
@@ -135,6 +160,14 @@ jobs:
           set -o pipefail
           mkdir -p gui-artifacts/logs
           go test -v -count=1 -tags gowtqa -run '^(TestSidebarFocus|TestInspectorFocus)$' ./look 2>&1 | tee gui-artifacts/logs/sidebar-inspector-focus.log
+      - name: Windows crash events
+        if: always() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $crashFolder = Join-Path $env:GITHUB_WORKSPACE 'gui-artifacts/crash'
+          New-Item -ItemType Directory -Path $crashFolder -Force | Out-Null
+          wevtutil epl Application "$crashFolder/application-errors.evtx" /q:"*[System[Provider[@Name='Application Error'] or Provider[@Name='Windows Error Reporting']]]" /ow:true
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       # The crash reports of macOS name an uncaught Objective-C exception and its reason.
       - name: Crash reports
         if: always() && runner.os == 'macOS'
@@ -248,7 +281,7 @@ jobs:
           mkdir -p test-logs
           mkdir -p ~/.cache/gowt-gocache ~/.cache/gowt-gomod
           docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
-            gowt-linux:ci stand.sh sh -c 'cd /src && ${{ matrix.cmd }}' 2>&1 | tee test-logs/gate.log
+            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS=-exec=/tmp/testexec GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && ${{ matrix.cmd }}' 2>&1 | tee test-logs/gate.log
       - uses: actions/upload-artifact@v6
         if: always()
         with:

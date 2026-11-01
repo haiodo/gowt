@@ -1,6 +1,7 @@
 package look_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -9,6 +10,12 @@ import (
 	"github.com/haiodo/gowt/look"
 	"github.com/haiodo/gowt/swt"
 )
+
+func traceMaterial(stage string) {
+	if os.Getenv("GOWT_TRACE_LIFECYCLE") == "1" {
+		fmt.Fprintln(os.Stderr, "[material]", stage)
+	}
+}
 
 // A SetMaterial pane under a canvas in a Split, on white content: the pane has the platform material
 // (materialProblem), and a StyledText in it with NoBackground and NoBorder has an alpha-0 background
@@ -43,7 +50,9 @@ func TestMaterialPane(t *testing.T) {
 				textAlpha = text.Unwrap().GetBackground().GetAlpha()
 				style = text.Unwrap().GetStyle()
 				border = text.Unwrap().GetBorderWidth()
+				traceMaterial("materialProblem before")
 				problem = materialProblem(w, pane, white)
+				traceMaterial("materialProblem after; enumerate before")
 				for _, ch := range split.Unwrap().GetChildren() {
 					if _, ok := ch.Impl().(*swt.Sash); ok {
 						sashes++
@@ -52,7 +61,9 @@ func TestMaterialPane(t *testing.T) {
 						}
 					}
 				}
+				traceMaterial("enumerate after; close before")
 				w.Close()
+				traceMaterial("close after")
 			})
 		})
 	})

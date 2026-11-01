@@ -18,7 +18,7 @@ func TestTreeEdit(t *testing.T) {
 			w := app.Window("Tree editing")
 			var tree *TreeView
 			var outside *TextView
-			w.Add(VBox(Tree(Ref(&tree), Grow()), Text(Ref(&outside))))
+			w.Add(VBox(Grow(), Tree(Ref(&tree), Grow()), Text(Ref(&outside))))
 			parent := tree.Node("parent")
 			node := parent.Node("original")
 			// Leave room for rows when the editing scenario adds a header and horizontal scrollbar.
@@ -26,6 +26,11 @@ func TestTreeEdit(t *testing.T) {
 			w.Show()
 			app.After(200*time.Millisecond, func() {
 				defer w.Close()
+				fixtureArea, windowArea := tree.t.GetClientArea(), w.shell.GetClientArea()
+				if fixtureArea.Height < windowArea.Height/2 {
+					t.Errorf("tree fixture did not grow: client=%v window=%v", fixtureArea, windowArea)
+					return
+				}
 				commits, cancels := 0, 0
 				commit := func(value string) { commits++; node.SetText(value) }
 				cancel := func() { cancels++ }

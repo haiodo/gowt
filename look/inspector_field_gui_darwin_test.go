@@ -142,7 +142,11 @@ func TestFieldEditorMouseTracking(t *testing.T) {
 								t.Error("no field editor during mouse tracking")
 								return cocoa.NSRect{}
 							}
-							r := caret(ed.Id, cocoa.OSSel_registerName("firstRectForCharacterRange:actualRange:"), ed.SelectedRange(), 0)
+							// Mouse-up can change selection; compare the same insertion index in both phases.
+							// Finish native text layout so document resizing cannot hide a tracking-time shift.
+							textView := cocoa.NewNSTextViewOverload1(ed.Id)
+							textView.LayoutManager().UsedRectForTextContainer(textView.TextContainer())
+							r := caret(ed.Id, cocoa.OSSel_registerName("firstRectForCharacterRange:actualRange:"), cocoa.NSRange{}, 0)
 							r = convert(win.Id, cocoa.OSSel_registerName("convertRectFromScreen:"), r)
 							return view.ConvertRect_fromView_(r, nil)
 						}

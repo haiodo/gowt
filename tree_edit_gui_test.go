@@ -21,6 +21,8 @@ func TestTreeEdit(t *testing.T) {
 			w.Add(VBox(Tree(Ref(&tree), Grow()), Text(Ref(&outside))))
 			parent := tree.Node("parent")
 			node := parent.Node("original")
+			// Leave room for rows when the editing scenario adds a header and horizontal scrollbar.
+			w.SetSize(400, 300)
 			w.Show()
 			app.After(200*time.Millisecond, func() {
 				defer w.Close()

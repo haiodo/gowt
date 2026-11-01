@@ -5,8 +5,9 @@
 - Fixed: translated JUnit `DisabledOnOs` and `EnabledOnOs` conditions use the running platform instead of assuming macOS. Conditional registrations retain their test bodies, and method and class conditions are combined. Eight SWT registrations can now execute on applicable platforms.
 - Fixed: the SWT test supervisor exits with an error when a run without an expected-results file contains failures. Errors reading child output and missing flaky tests in a full baseline comparison also fail the run.
 - Changed: native GUI jobs are required in CI. GUI and QA focus checks run independently, so an earlier failure no longer prevents later checks from running.
-- Fixed: styled fields on macOS discard a retained negative horizontal clip offset when placing the field editor. Mouse-tracking coverage still has a known failure in a narrow field with a prefix.
-- Tests: runner checks passed on Linux UTM; platform-condition checks passed on Linux and Windows UTM. The affected SWT classes passed on Windows; Linux retained its existing `Display.post` failure. Native GUI coverage still has open macOS failures, Linux Wayland popover and intermittent clipboard failures, and an intermittent Windows native crash. Expected-results files and existing exclusions were not changed.
+- Fixed: styled fields on macOS keep the field editor at least as wide as its clip view, preventing AppKit from shrinking and centering it after placement. A retained negative horizontal clip offset is also discarded when placing the editor.
+- Tests: the tree editing fixture leaves room for columns, their header and the horizontal scrollbar. Mouse tracking compares the same insertion index before and after mouse-up, which may change the native selection. Both target tests passed locally on macOS; field tracking passed three repeated runs with and without a prefix.
+- Tests: runner checks passed on Linux UTM; platform-condition checks passed on Linux and Windows UTM. The affected SWT classes passed on Windows; Linux retained its existing `Display.post` failure. Linux Wayland popover and intermittent clipboard failures, and an intermittent Windows native crash remain open. Expected-results files and existing exclusions were not changed.
 
 ## v0.14.3 (2026-10-30)
 

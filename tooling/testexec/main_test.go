@@ -63,7 +63,7 @@ func TestProcDump(t *testing.T) {
 			if err != nil || !bytes.Equal(copied, binary) {
 				t.Fatalf("failed executable copy: %v", err)
 			}
-			if !strings.Contains(string(out), logs[0]) {
+			if !strings.Contains(string(out), strconv.Quote(logs[0])) {
 				t.Fatalf("missing log path: %s", out)
 			}
 			if mode == "missing" {

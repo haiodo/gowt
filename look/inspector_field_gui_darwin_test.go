@@ -146,16 +146,18 @@ func TestFieldEditorMouseTracking(t *testing.T) {
 							r = convert(win.Id, cocoa.OSSel_registerName("convertRectFromScreen:"), r)
 							return view.ConvertRect_fromView_(r, nil)
 						}
-						inkRows := func() [2]int {
+						inkRows := func() [4]int {
 							rep := view.BitmapImageRepForCachingDisplayInRect(view.Bounds())
 							view.CacheDisplayInRect(view.Bounds(), rep)
-							rows := [2]int{int(rep.PixelsHigh()), -1}
+							rows := [4]int{int(rep.PixelsHigh()), -1, int(rep.PixelsWide()), -1}
 							for y := int64(0); y < rep.PixelsHigh(); y++ {
 								for x := int64(0); x < rep.PixelsWide(); x++ {
 									c := rep.ColorAtX(x, y)
 									if c.AlphaComponent() > 0.5 && c.RedComponent() < 0.3 && c.GreenComponent() < 0.3 && c.BlueComponent() < 0.3 {
 										rows[0] = min(rows[0], int(y))
 										rows[1] = max(rows[1], int(y))
+										rows[2] = min(rows[2], int(x))
+										rows[3] = max(rows[3], int(x))
 									}
 								}
 							}
@@ -164,7 +166,7 @@ func TestFieldEditorMouseTracking(t *testing.T) {
 						value := tc.value
 						win.MakeFirstResponder(nil)
 						idleRows := inkRows()
-						var heldRows [2]int
+						var heldRows [4]int
 						var held cocoa.NSRect
 						called := false
 						timerClass, err := objc.RegisterClass(fmt.Sprintf("GowtTrackingTimer%d", time.Now().UnixNano()), objc.GetClass("NSObject"), nil, nil, []objc.MethodDef{{Cmd: objc.RegisterName("fire:"), Fn: func(self objc.ID, cmd objc.SEL, timer objc.ID) {
@@ -195,6 +197,9 @@ func TestFieldEditorMouseTracking(t *testing.T) {
 						}
 						if value == "" && (held.Height <= 0 || math.Abs(held.Y+held.Height/2-view.Bounds().Height/2) > 0.5) {
 							t.Errorf("empty caret is not centered: %+v", held)
+						}
+						if value != "" && heldRows[2] != idleRows[2] {
+							t.Errorf("text moved horizontally: idle %v, editing %v", idleRows, heldRows)
 						}
 						if value != "" && (math.Abs(float64(heldRows[0]-idleRows[0])) > 1 || math.Abs(float64(heldRows[1]-idleRows[1])) > 1) {
 							t.Errorf("prefix %q: idle ink rows %v, editing %v", tc.prefix, idleRows, heldRows)

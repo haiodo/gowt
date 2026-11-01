@@ -80,6 +80,7 @@ func TestFieldEditorFocusLifecycle(t *testing.T) {
 			want.Width -= lead + trail
 			for _, phase := range []string{"native selection", "explicit placement"} {
 				if phase == "explicit placement" {
+					OSObjc_msgSendOverload2(int64(clip), int64(sel("setBoundsOrigin:")), NSPoint{X: -2.5})
 					PlaceFieldEditor(view)
 				}
 				got := affixBounds(clip, sel("frame"))

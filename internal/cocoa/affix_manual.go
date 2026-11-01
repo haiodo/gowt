@@ -284,8 +284,9 @@ func placeFieldEditor(v, ed uintptr) {
 	if super := msg(ed, "superview"); super != v && msg(super, "superview") == v && msg(super, "isKindOfClass:", class("NSClipView")) != 0 {
 		// AppKit scrolls the clip bounds with the editor; moving the editor leaves its text at the field's edge.
 		msgRectOnly(super, sel("setFrame:"), r)
+		msgRectOnly(ed, sel("setFrame:"), NSRect{Width: r.Width, Height: r.Height})
 		// AppKit retains the vertical scroll offset of the original full-height editor.
-		OSObjc_msgSendOverload2(int64(super), int64(sel("setBoundsOrigin:")), NSPoint{X: affixBounds(super, sel("bounds")).X})
+		OSObjc_msgSendOverload2(int64(super), int64(sel("setBoundsOrigin:")), NSPoint{X: math.Max(0, affixBounds(super, sel("bounds")).X)})
 		return
 	} else if super != v {
 		r = affixConvertRect(v, sel("convertRect:toView:"), r, super)

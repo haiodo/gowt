@@ -261,3 +261,9 @@ func (f *focusRing) holdsFocus(focus *swt.Control) bool {
 	}
 	return false
 }
+
+func sidebarFullHeightAvailable() bool { return false }
+
+func fullHeightSidebar(*swt.Shell, *swt.Composite, bool) {}
+
+func syncSidebarScrollUnderToolbar(*swt.Composite, bool) {}

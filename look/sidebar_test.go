@@ -68,3 +68,42 @@ func TestDragWidth(t *testing.T) {
 		}
 	}
 }
+
+func TestSidebarFullHeightFrames(t *testing.T) {
+	l := &paneLayout{sidebarFullHeight: true}
+	p := &pane{l: l, kind: sidebarPane, width: 220}
+	bg, sb, ct, sh := p.sidebarFrames(10, 20, 900, 600, 52)
+	if bg != [4]int32{10, 20, 220, 600} || sb != bg {
+		t.Fatalf("full-height background %v, sidebar %v", bg, sb)
+	}
+	if ct != [4]int32{230 + sidebarDivider(), 72, 680 - sidebarDivider(), 548} || sh[1] != 20 || sh[3] != 600 {
+		t.Fatalf("full-height content %v, sash %v", ct, sh)
+	}
+	if p.floats() || p.inset() != 0 {
+		t.Fatal("full-height sidebar floats")
+	}
+	l.overlay = true
+	if p.floats() || p.inset() != 0 {
+		t.Fatal("overlay made full-height sidebar float")
+	}
+	l.sidebarFullHeight = false
+	gotBG, gotSB, gotCT, gotSH := p.sidebarFrames(10, 20, 900, 600, 52)
+	wantBG, wantSB, wantCT, wantSH := sidebarFrames(10, 20, 900, 600, 220, sidebarInset(), 52, sidebarDivider())
+	if gotBG != wantBG || gotSB != wantSB || gotCT != wantCT || gotSH != wantSH {
+		t.Fatalf("disabled mode changed default frames: %v %v %v %v", gotBG, gotSB, gotCT, gotSH)
+	}
+}
+
+func TestSidebarFullHeightHiddenFrames(t *testing.T) {
+	l := &paneLayout{sidebarFullHeight: true}
+	p := &pane{l: l, kind: sidebarPane, width: 220, hidden: true}
+	bg, sb, ct, _ := p.sidebarFrames(10, 20, 900, 600, 52)
+	if bg[2] != 0 || sb[2] != 0 || ct != [4]int32{10, 72, 900, 548} {
+		t.Fatalf("hidden full-height frames: %v %v %v", bg, sb, ct)
+	}
+	p.hidden = false
+	_, sb, ct, _ = p.sidebarFrames(10, 20, 100, 10, 52)
+	if sb[3] != 10 || ct[2] != 0 || ct[3] != 0 {
+		t.Fatalf("small full-height window: sidebar %v content %v", sb, ct)
+	}
+}

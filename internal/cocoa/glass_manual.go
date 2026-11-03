@@ -232,6 +232,23 @@ func ContentTopInset(view *NSView) int {
 	return max(0, int(math.Ceil(cv.Height-(r.Y+r.Height))))
 }
 
+// SetBackdropClipped confines the backdrop to its frame; disabling restores its shadow.
+func SetBackdropClipped(view *NSView, on bool) {
+	initAssociated()
+	bd := getAssociated(uintptr(view.Id), backdropKey())
+	if bd == 0 {
+		return
+	}
+	wrapped := className(bd) == "NSView" && msg(msg(bd, "subviews"), "count") == 1
+	if !wrapped {
+		if on {
+			ClipBackdrop(view)
+		}
+		return
+	}
+	msg(msg(bd, "layer"), "setMasksToBounds:", boolArg(on))
+}
+
 // SetGlassCornerRadius rounds the glass view InstallBackdrop added for view; no-op without one.
 func SetGlassCornerRadius(view *NSView, r float64) {
 	initAssociated()

@@ -67,6 +67,7 @@ gowt.Label("Open a .cpuprofile, or drop one on this window", gowt.Foreground(gow
 | `look.SetDarkContent(app, true)` | Windows dark content, see above |
 | `look.SetToolbar(w, items...)` | native unified toolbar (NSToolbar) with SF Symbol items; Liquid Glass items on macOS 26. Returns false where it cannot exist (Windows, Linux). There a window laid out by `SetSidebar` gets the same items as a bar of gowt widgets at the top of the content column (see below); other windows get nothing, build a `gowt.ToolBar` instead |
 | `look.SetSidebar(w, sidebar, content, width)` | Finder / System Settings window: sidebar left, content right. macOS 26: floating Liquid Glass sidebar under the traffic lights, toolbar items and title past it. Windows, Linux: two plain panels. See below |
+| `look.SetSidebarFullHeight(w, on)` | opt into a flush full-height macOS sidebar whose native list, table or tree scrolls under the toolbar. Default off; Windows and Linux ignore it. See below |
 | `look.SetSidebarVisible(w, on)`, `SidebarVisible(w)`, `SetSidebarWidth(w, n)`, `SidebarWidth(w)`, `OnSidebarChange(w, f)` | hide, show and resize the sidebar of a `SetSidebar` window; the user resizes it by dragging its edge. See [Hiding and resizing the sidebar](#hiding-and-resizing-the-sidebar) |
 | `look.SetInspector(w, content, inspector, width)` | inspector pane on the right, alone or with a `SetSidebar` sidebar. macOS 26: edge-to-edge Liquid Glass alongside the content. Windows, Linux: a plain panel. `SetInspectorVisible`, `InspectorVisible`, `SetInspectorWidth`, `InspectorWidth`, `OnInspectorChange` as for the sidebar. See [Inspector](#inspector) |
 | `look.SetBottomPanel(w, content, panel, height)` | panel under the content, alone or with a sidebar and an inspector, for a console or a code pane. macOS 26: the inspector's edge-to-edge glass with a hairline along its top, running on under a floating sidebar to the window's left edge. Windows, Linux: the `SetMaterial` background. `SetBottomPanelVisible`, `BottomPanelVisible`, `SetBottomPanelHeight`, `BottomPanelHeight`, `OnBottomPanelChange` as for the inspector. See [Bottom panel](#bottom-panel) |
@@ -96,6 +97,16 @@ NSBackgroundExtensionView is not wrapped.
 ## Finder and System Settings look
 
 Demo: `go run ./cmd/finderdemo` (`GOWT_FINDERDEMO_SECS=n` quits after n seconds).
+
+Sidebar comparison: `go run ./examples/sidebartable` keeps the floating sidebar with a List and an icon Table.
+`go run ./examples/sidebartable -fullheight` uses a single scrolling Table in a full-height sidebar on macOS.
+Both examples include enough rows to scroll and a toolbar button to hide or show the sidebar.
+
+`look.SetSidebarFullHeight(w, true)` opts into the full-height layout; call it before or after `SetSidebar`.
+The sidebar's native List, Table or Tree viewport must start at its top edge, without a preceding header or padding.
+The viewport extends under the toolbar; native content insets keep the first row below it initially, and scrolling moves rows behind its blurred header.
+Pass `false` to restore the default floating sidebar. Windows and Linux keep their regular sidebar layout.
+In the full-height mode the window buttons move right by the 7-point glass inset the floating mode keeps at the window edge, so they keep their distance from the sidebar edge; `false` restores AppKit's layout.
 
 ```go
 var sidebar, content *gowt.Panel

@@ -233,8 +233,10 @@ func SetSourceList(view *NSView) {
 		msg(sv, "setDrawsBackground:", 0)
 		msg(msg(sv, "contentView"), "setDrawsBackground:", 0)
 		// The list sits below the title bar already; the automatic inset added the title bar height again.
-		msg(sv, "setAutomaticallyAdjustsContentInsets:", 0)
-		msgRectOnly(sv, sel("setContentInsets:"), NSRect{}) // NSEdgeInsets has the layout of four doubles
+		if _, underToolbar := sidebarScrolls[sv]; !underToolbar {
+			msg(sv, "setAutomaticallyAdjustsContentInsets:", 0)
+			msgRectOnly(sv, sel("setContentInsets:"), NSRect{}) // NSEdgeInsets has the layout of four doubles
+		}
 	}
 }
 
@@ -344,9 +346,15 @@ func SetSidebarEdge(view *NSView, x float64) {
 // when the window is disposed.
 func ReleaseSidebar(view *NSView) {
 	w := msg(uintptr(view.Id), "window")
+	for v, state := range sidebarScrolls {
+		if state.window == w {
+			restoreSidebarScroll(v, state)
+		}
+	}
 	delete(sidebarEdges, w)
 	delete(sidebarHidden, w)
 	delete(inspectorSplits, w)
+	delete(trafficLightShifts, w)
 }
 
 // inspectorSplits holds, per window, the split view of InstallInspectorTracker, owned by the window.

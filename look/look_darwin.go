@@ -266,6 +266,16 @@ func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
 		toolbarShells[s] = true
 		s.AddDisposeListener(&toolbarDisposer{s})
 	}
+	if ok {
+		// The toolbar rebuild re-lays the window buttons out at AppKit's positions: re-apply the
+		// full-height shift after the layout it schedules.
+		dx := trafficLightShift(s)
+		s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
+			if !s.IsDisposed() && s.IsVisible() {
+				cocoa.SetTrafficLightInset(s.View, dx)
+			}
+		}))
+	}
 	s.Layout()
 	return ok
 }
@@ -335,6 +345,34 @@ func setSidebarChrome(s *swt.Shell, sb *swt.Composite, sash *swt.Control) {
 	clearAdded(sb)
 	clearControl(sash)
 	hookPanes(s)
+}
+
+func sidebarFullHeightAvailable() bool { return true }
+
+// trafficLightShift is the full-height window button shift: the 7-point glass inset the floating
+// sidebar keeps at the window edge, so the traffic lights follow the sidebar edge; 0 without full-height.
+func trafficLightShift(s *swt.Shell) float64 {
+	fh, _ := s.GetDataKey("look.sidebarFullHeight").(bool)
+	if !fh {
+		return 0
+	}
+	return float64(sidebarInset())
+}
+
+func fullHeightSidebar(s *swt.Shell, sb *swt.Composite, on bool) {
+	radius := float64(sidebarRadius)
+	if on {
+		radius = 0
+	}
+	cocoa.SetBackdropClipped(sb.View, on)
+	cocoa.SetGlassCornerRadius(sb.View, radius)
+	if s.IsVisible() {
+		cocoa.SetTrafficLightInset(s.View, trafficLightShift(s))
+	}
+}
+
+func syncSidebarScrollUnderToolbar(sb *swt.Composite, on bool) {
+	cocoa.SetSidebarScrollUnderToolbar(sb.View, on)
 }
 
 // setInspectorChrome puts edge-to-edge glass behind the inspector, which AppKit 26 gives an
@@ -410,6 +448,7 @@ func refreshSidebar(s *swt.Shell) {
 		}
 		s.LayoutOverload2(true, true)
 		cocoa.NeedsDisplayTree(s.View.Window().ContentView())
+		cocoa.SetTrafficLightInset(s.View, trafficLightShift(s))
 		if os.Getenv("GOWT_SIDEBAR_DEBUG") == "1" {
 			debugSidebar(s)
 		}

@@ -279,6 +279,21 @@ func SetPanesOverlay(w *gowt.Window, on bool) {
 	}
 }
 
+// SetSidebarFullHeight opts into a flush macOS sidebar; a top-aligned native list, table or tree scrolls under the toolbar.
+// Call before or after SetSidebar; false restores the default. Other systems ignore it.
+func SetSidebarFullHeight(w *gowt.Window, on bool) {
+	on = on && sidebarFullHeightAvailable()
+	s := w.Unwrap()
+	s.SetDataKeyValue("look.sidebarFullHeight", on)
+	if l := layoutOf(w); l != nil {
+		l.sidebarFullHeight = on
+		if l.side != nil {
+			fullHeightSidebar(s, l.side.c, on)
+		}
+		s.Layout()
+	}
+}
+
 // SetSidebar lays w out the way Finder and System Settings are: sidebar on the left, width points wide,
 // content filling the rest. It replaces the window layout, so w must hold just these two, or these and
 // the inspector of SetInspector, called before or after with the same content. On macOS 26
@@ -296,10 +311,12 @@ func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	l := panesOf(w, content)
 	sb := sidebar.AsComposite()
 	if l.side != nil {
+		syncSidebarScrollUnderToolbar(l.side.c, false)
 		l.side.sash.Dispose()
 	}
 	l.side = l.newPane(sb, width, sidebarPane)
 	setSidebarChrome(w.Unwrap(), sb, &l.side.sash.Control)
+	fullHeightSidebar(w.Unwrap(), sb, l.sidebarFullHeight)
 	padSidebar(sb)
 	b := barOf(w)
 	b.sidebar = sidebar
@@ -381,7 +398,8 @@ func panesOf(w *gowt.Window, content Container) *paneLayout {
 	}
 	SetFullSizeContent(w, true)
 	overlay, _ := s.GetDataKey("look.panesOverlay").(bool)
-	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct, overlay: overlay}
+	fullHeight, _ := s.GetDataKey("look.sidebarFullHeight").(bool)
+	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct, overlay: overlay, sidebarFullHeight: fullHeight}
 	l.SetImpl_(l)
 	// The shell minimum is read once: on macOS 26 it read back 20 points taller than it was set, so a
 	// value read after each set grew.
@@ -551,6 +569,7 @@ type paneLayout struct {
 	side, insp, bottom *pane // nil without SetSidebar, SetInspector, SetBottomPanel
 	content            *swt.Control
 	overlay            bool
+	sidebarFullHeight  bool
 	// column is the frame of the content and the bottom panel at the last layout, under the area behind
 	// a floating sidebar beside the content.
 	column, under [4]int32
@@ -637,6 +656,10 @@ func (p *pane) inset() int32 {
 		return inspectorInset()
 	case bottomPane:
 		return 0
+	case sidebarPane:
+		if p.l != nil && p.l.sidebarFullHeight {
+			return 0
+		}
 	}
 	return sidebarInset()
 }
@@ -821,7 +844,7 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	}
 	ct := [4]int32{r.X, r.Y + top, r.Width, max(r.Height-top, 0)}
 	if p := l.side; p != nil {
-		bg, sb, rest, sh := sidebarFrames(r.X, r.Y, r.Width, paneHeight, p.shown(), p.inset(), top, sidebarDivider())
+		bg, sb, rest, sh := p.sidebarFrames(r.X, r.Y, r.Width, paneHeight, top)
 		p.c.SetBounds(sb[0], sb[1], sb[2], sb[3])
 		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
 		p.sash.SetVisible(!p.hidden)
@@ -870,6 +893,9 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 		l.under = under
 		s.Redraw()
 	}
+	if l.side != nil {
+		syncSidebarScrollUnderToolbar(l.side.c, l.sidebarFullHeight)
+	}
 	l.fitMinSize()
 }
 
@@ -907,7 +933,7 @@ func (l *paneLayout) measure() bool {
 	s := l.w.Unwrap()
 	e, ok := itemsMinEdge(s)
 	if ok && l.side != nil && !l.side.hidden {
-		l.itemsMin = e - s.GetClientArea().X - sidebarInset()
+		l.itemsMin = e - s.GetClientArea().X - l.side.inset()
 	}
 	return ok
 }
@@ -954,6 +980,15 @@ func sidebarFrames(x, y, w, h, width, in, top, div int32) (bg, sb, ct, sh [4]int
 	}
 	sh = [4]int32{max(cx-div/2-sw/2, x), y + top, sw, max(h-top, 0)}
 	return bg, sb, ct, sh
+}
+
+func (p *pane) sidebarFrames(x, y, w, h, top int32) (bg, sb, ct, sh [4]int32) {
+	bg, sb, ct, sh = sidebarFrames(x, y, w, h, p.shown(), p.inset(), top, sidebarDivider())
+	if p.l != nil && p.l.sidebarFullHeight {
+		sb[1], sb[3] = y, max(h, 0)
+		sh[1], sh[3] = y, max(h, 0)
+	}
+	return
 }
 
 // sidebarWidthAt is the sidebar width that puts the sash at x, the inverse of sidebarFrames, with x

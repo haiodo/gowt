@@ -53,3 +53,9 @@ func itemsMinEdge(*swt.Shell) (int32, bool) { return 0, false }
 
 // startUnfocused does nothing: SWT keeps its choice, the first control.
 func startUnfocused(*swt.Shell) {}
+
+func sidebarFullHeightAvailable() bool { return false }
+
+func fullHeightSidebar(*swt.Shell, *swt.Composite, bool) {}
+
+func syncSidebarScrollUnderToolbar(*swt.Composite, bool) {}

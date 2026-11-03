@@ -76,7 +76,12 @@ func TestWebView(t *testing.T) {
 			wv.AddScript("window.__s = 42")
 			wv.OnNavigationStarted = func(u string) { started = append(started, u) }
 			wv.OnNavigationFinished = func(u string) { finished = append(finished, u) }
-			wv.OnNavigationFailed = func(u string, _ error) { failedURL = u }
+			wv.OnNavigationFailed = func(u string, err error) {
+				failedURL = u
+				if u != "http://127.0.0.1:1/" { // the last step navigates nowhere on purpose
+					t.Errorf("navigation to %s failed: %v", u, err)
+				}
+			}
 			wv.OnMessage = func(m string) { msgs = append(msgs, m) }
 			wv.OnTitleChanged = func(s string) { titles = append(titles, s) }
 			w.SetSize(400, 300)

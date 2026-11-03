@@ -338,6 +338,12 @@ func (e *wv2Engine) hookEvents() {
 			w.OnTitleChanged(str(e.view, 48))
 		}
 	})
+	add(25, e.view, func(_, args uintptr) { // ProcessFailed
+		kind := heap[int32]()
+		if vcall(args, 3, addr(kind)) == sOK {
+			e.processFailed(*kind)
+		}
+	})
 	add(34, e.view, func(_, args uintptr) { // WebMessageReceived
 		if w.OnMessage != nil {
 			w.OnMessage(messageText(str(args, 4)))
@@ -358,6 +364,34 @@ func (e *wv2Engine) hookEvents() {
 		}
 		vcall(args, 5, 1) // put_Handled
 	})
+}
+
+// processFailed handles COREWEBVIEW2_PROCESS_FAILED. The browser process exiting (kind 0) kills
+// the engine, like a broken runtime at creation (see start): every later call would fail at the
+// COM level anyway. A render or frame render exit (kind 1, 3) is recovered by the runtime with the
+// next navigation, so only the loads in flight abort and the engine stays usable. The remaining
+// kinds (GPU, utility, unresponsive, ...) leave the page alive and are not failures here.
+func (e *wv2Engine) processFailed(kind int32) {
+	if kind != 0 && kind != 1 && kind != 3 {
+		return
+	}
+	err := fmt.Errorf("webview: WebView2 process failed (kind %d)", kind)
+	if kind == 0 {
+		e.fail(err)
+		return
+	}
+	// The loads in flight died with the process and never complete: resetting the count keeps a
+	// late CONNECTION_ABORTED of the dead load from classifying the next one as superseded.
+	e.loads = 0
+	e.cancelled = false
+	p := e.pending
+	e.pending = nil
+	for _, o := range p {
+		o.abort(err)
+	}
+	if e.lastURL != "" {
+		e.w.navFailed(e.lastURL, err)
+	}
 }
 
 // scriptDialog gets every page dialog, as the default ones are off. window.gowt.call's prompt goes to

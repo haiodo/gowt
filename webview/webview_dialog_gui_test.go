@@ -52,6 +52,7 @@ func TestWebViewScriptDialogs(t *testing.T) {
 				return &webview.Response{MimeType: "text/html", Body: []byte(dialogHTML)}
 			})
 			wv.OnMessage = func(m string) { msgs = append(msgs, m) }
+			wv.OnNavigationFailed = func(u string, err error) { t.Errorf("navigation to %s failed: %v", u, err) }
 			w.SetSize(400, 300)
 			w.Show()
 			wv.Navigate("app://host/index.html")

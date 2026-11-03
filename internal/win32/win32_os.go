@@ -5110,7 +5110,9 @@ func OSDispatchMessage(lpmsg *MSG) int64 {
 		lpmsg.toC(p_lpmsg)
 	}
 	traceDispatch(lpmsg)
-	r, _, _ := syscall.SyscallN(proc_OSDispatchMessage.addr(), uintptr(p_lpmsg))
+	// The window procedure runs Go callbacks that can grow (move) this goroutine's stack while
+	// the OS still reads the MSG: uintptrescapes keeps b_lpmsg on the heap.
+	r, _, _ := syscallEscaping(proc_OSDispatchMessage.addr(), uintptr(p_lpmsg))
 	if lpmsg != nil {
 		lpmsg.fromC(p_lpmsg)
 	}

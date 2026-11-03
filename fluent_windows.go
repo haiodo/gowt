@@ -14,6 +14,7 @@ const textHeightDips = 32
 
 // fluentText gives a Text the Windows 11 text box look; noBorder (NoBorder) keeps the plain edit.
 func fluentText(t *TextView, noBorder bool) {
+	overlayScroll(&t.t.Control)
 	if noBorder {
 		return
 	}
@@ -50,7 +51,10 @@ func fluentCard(d *swt.Display) *swt.Color {
 	return swt.NewColorRedGreenBlue(int32(c.R), int32(c.G), int32(c.B))
 }
 
-func fluentTable(t *swt.Table) { fluent.Table(t, rowHeight()) }
+func fluentTable(t *swt.Table) {
+	overlayScroll(&t.Control)
+	fluent.Table(t, rowHeight())
+}
 
 // rowHeight is Spacing.RowHeight once App.SetDensity chose a density, else 0 for the native height.
 func rowHeight() int {
@@ -60,14 +64,23 @@ func rowHeight() int {
 	return Spacing.RowHeight
 }
 
-func fluentList(l *swt.List) { fluent.List(l, rowHeight()) }
+func fluentList(l *swt.List) {
+	overlayScroll(&l.Control)
+	fluent.List(l, rowHeight())
+}
 
-func fluentTree(t *swt.Tree) { fluent.Tree(t, rowHeight()) }
+func fluentTree(t *swt.Tree) {
+	overlayScroll(&t.Control)
+	fluent.Tree(t, rowHeight())
+}
 
 // fluentStyledText makes the StyledText background its own. Under the Fluent shell (INHERIT_DEFAULT) SWT
 // fills the space below the last line with the parent's background while the lines get the list one.
 // Ceiling: setEnabled(false) no longer greys it, as for any StyledText given a background.
-func fluentStyledText(t *swt.StyledText) { t.SetBackgroundWithColor(t.GetBackground()) }
+func fluentStyledText(t *swt.StyledText) {
+	overlayScroll(&t.Control)
+	t.SetBackgroundWithColor(t.GetBackground())
+}
 
 // fluentShell hides focus rectangles until the keyboard is used and sets the Fluent window background.
 func fluentShell(s *swt.Shell) {

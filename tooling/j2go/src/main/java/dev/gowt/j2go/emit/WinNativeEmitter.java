@@ -28,7 +28,7 @@ final class WinNativeEmitter {
 	// VtblCall, every COM method call, is escaping as a whole.
 	private static final java.util.Set<String> ESCAPING = java.util.Set.of("DoDragDrop", "TrackPopupMenu", "MessageBox", "ChooseColor", "ChooseFont",
 			"PrintDlg", "DocumentProperties", "DragDetect", "ShellExecuteEx", "EnumDisplayMonitors", "EnumFontFamilies", "EnumEnhMetaFile",
-			"GetMessage", "PeekMessage", "CoCreateInstance", "CoGetClassObject", "OleCreate", "OleCreateFromFile", "OleCreatePropertyFrame",
+			"GetMessage", "PeekMessage", "DispatchMessage", "CoCreateInstance", "CoGetClassObject", "OleCreate", "OleCreateFromFile", "OleCreatePropertyFrame",
 			"OleGetClipboard");
 	// Escaping costs an allocation per call even without a pointer argument, so these escape only with one.
 	private static final java.util.Set<String> ESCAPING_WITH_POINTER = java.util.Set.of("SendMessage");

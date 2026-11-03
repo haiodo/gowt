@@ -73,7 +73,7 @@ func TestProcDump(t *testing.T) {
 				return
 			}
 			log, err := os.ReadFile(logs[0])
-			want := fmt.Sprintf("args=%q", []string{"-accepteula", "-ma", "-e", "1", "-f", "C0000005", "-n", "1", pid, crashDir})
+			want := fmt.Sprintf("args=%q", []string{"-accepteula", "-ma", "-e", "-f", "C0000005", "-n", "1", pid, crashDir})
 			if err != nil || !strings.Contains(string(log), want) || !strings.Contains(string(log), "monitor stderr") {
 				t.Fatalf("monitor output: %v\n%s", err, log)
 			}

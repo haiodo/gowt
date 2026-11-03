@@ -2,7 +2,7 @@
 
 Example: [`examples/icons`](../examples/icons).
 
-`icons.Get(app, name, opts...)` returns a named icon from the system set of the current OS: SF Symbols on macOS, Segoe Fluent Icons on Windows, freedesktop symbolic icons on Linux. A symbol the OS lacks comes from an embedded Lucide set, so the same names work everywhere.
+`icons.Get(app, name, opts...)` returns a named icon from the system set of the current OS: SF Symbols on macOS, Segoe Fluent Icons on Windows, freedesktop symbolic icons on Linux. A symbol the OS lacks comes from an embedded Lucide set, so the same names work everywhere. On Windows and Linux `file` and `folder` always use Lucide, keeping one document metaphor and stroke weight with their neighbours.
 
 ```go
 var b *gowt.ButtonView
@@ -25,4 +25,4 @@ app.OnThemeChange(func(bool) { button.SetImage(icons.Get(app, "search", icons.Si
 
 ## Known gaps
 
-- Without the Fluent font (CrossOver) Windows uses the Lucide fallback; the Fluent glyph path was not checked on the real Windows 11 virtual machine.
+- Without the Fluent font (CrossOver) Windows uses the Lucide fallback.

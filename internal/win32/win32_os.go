@@ -5110,7 +5110,7 @@ func OSDispatchMessage(lpmsg *MSG) int64 {
 		lpmsg.toC(p_lpmsg)
 	}
 	traceDispatch(lpmsg)
-	r, _, _ := syscall.SyscallN(proc_OSDispatchMessage.addr(), uintptr(p_lpmsg))
+	r, _, _ := syscallEscaping(proc_OSDispatchMessage.addr(), uintptr(p_lpmsg))
 	if lpmsg != nil {
 		lpmsg.fromC(p_lpmsg)
 	}

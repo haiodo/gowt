@@ -157,6 +157,31 @@ func TestPeekMessageSurvivesStackGrowth(t *testing.T) {
 	}
 }
 
+func TestDispatchMessageSurvivesStackGrowth(t *testing.T) {
+	for range 10 {
+		onFreshThread(func() {
+			called := false
+			hwnd := testWindow(t, hwndMessage, func(msg uint32, wp, lp uintptr) (uintptr, bool) {
+				if msg != testWMUser {
+					return 0, false
+				}
+				called = true
+				grow()
+				return 0, true
+			})
+			defer procDestroyWindowT.Call(hwnd)
+			msg := MSG{Hwnd: int64(hwnd), Message: testWMUser, WParam: 11, LParam: 22}
+			OSDispatchMessage(&msg)
+			if !called {
+				t.Error("the window procedure was not called")
+			}
+			if msg.Hwnd != int64(hwnd) || msg.Message != testWMUser || msg.WParam != 11 || msg.LParam != 22 {
+				t.Errorf("message = %+v changed", msg)
+			}
+		})
+	}
+}
+
 func needGUI(t *testing.T) {
 	t.Helper()
 	if os.Getenv("GOWT_GUI_TEST") == "" {

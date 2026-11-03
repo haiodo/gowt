@@ -186,7 +186,9 @@ func SetDarkContent(a *gowt.App, on bool) { setDarkContent(a.Unwrap(), on) }
 // ToolbarItem is one entry of the window toolbar.
 type ToolbarItem struct {
 	Title   string // label and tooltip
-	Symbol  string // SF Symbol name such as "plus" or "square.and.arrow.up"; "" shows the title only
+	Icon    *gowt.Image // custom image on Windows and Linux; the native macOS toolbar keeps Symbol
+	IconSVG []byte // monochrome SVG, drawn in the bar's text colour on Windows and Linux
+	Symbol  string // SF Symbol name such as "plus" or "square.and.arrow.up"; used after Icon and IconSVG
 	OnClick func()
 	Space   bool // flexible space; the other fields are ignored
 	// Group makes the item one capsule of segments, such as the back and forward pair; each segment
@@ -248,6 +250,9 @@ func SetToolbar(w *gowt.Window, items ...ToolbarItem) bool {
 func FocusSearch(w *gowt.Window) bool {
 	s := w.Unwrap()
 	if b := bars[s]; b != nil && b.search != nil && !b.search.Unwrap().IsDisposed() {
+		for _, o := range b.overflows {
+			o.revealSearch()
+		}
 		b.search.Focus()
 		b.search.Unwrap().SelectAll()
 		return true

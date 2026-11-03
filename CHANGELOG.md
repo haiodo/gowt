@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- New: `look.ToolbarItem` accepts `Icon` and `IconSVG` before `Symbol`. On Windows and Linux the toolbar gives its controls `Spacing.ControlHeight`, uses `Type.Caption` for Small text, and moves items that do not fit into a `More` menu with their icon, title, enabled state and QA ID. `FocusSearch` reveals a hidden search field.
+- New: Windows Text, Table, Tree, List and StyledText use a two-pixel scroll indicator over the client area instead of reserving scrollbar width. Mouse-wheel scrolling keeps working, and the indicator follows the scroll position.
+- New: Tenniarb's code pane has a context menu with Cut, Copy, Paste and Select All plus their Windows shortcuts. Toolbar icon-only items expose their tooltip as the MSAA name.
+- Changed: Windows and Linux document and folder icons use Lucide for one stroke weight. Mica now applies only to the system frame and title bar, leaving the client area opaque and black text visible.
+- Fixed: Windows `DispatchMessage` keeps its message buffer off the movable Go stack while native window procedures call back into Go. The reproduced `TestSetTextLaysOut` crash no longer occurs in that test; the full root suite completes without a native crash. ProcDump now monitors only unhandled exceptions, so recovered Go panics no longer stop the run.
+- Tests: full `look` passes on Windows 11 arm64 and Ubuntu GNOME UTM. Toolbar, icon, overlay-scroll and Tenniarb code-menu checks pass there. The full Windows root suite has no native crash; its existing clipboard failure remains open.
+
 ## v0.15.0 (2026-11-01)
 
 - Fixed: translated JUnit `DisabledOnOs` and `EnabledOnOs` conditions use the running platform instead of assuming macOS. Conditional registrations retain their test bodies, and method and class conditions are combined. Eight SWT registrations can now execute on applicable platforms.

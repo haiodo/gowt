@@ -3,6 +3,7 @@ package icons
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -47,5 +48,16 @@ func TestFindSymbolic(t *testing.T) {
 	}
 	if inh := themeParents(filepath.Join(dir, "Test")); len(inh) != 2 || inh[0] != "Base" {
 		t.Fatalf("inherits %v", inh)
+	}
+}
+
+func TestDocumentIconsUseLucide(t *testing.T) {
+	if runtime.GOOS == "darwin" {
+		t.Skip("macOS keeps SF Symbols")
+	}
+	for _, name := range []string{"file", "folder"} {
+		if got := systemIcon(nil, iconDict[name], 16, gowt.RGB{}); got != nil {
+			t.Errorf("%s uses a system icon instead of the Lucide fallback", name)
+		}
 	}
 }

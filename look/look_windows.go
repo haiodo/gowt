@@ -37,10 +37,8 @@ func dwmSet(h int64, attr, value int32) {
 const backdropOnKey = "gowt.look.backdropOn"
 
 // setBackdrop needs Windows 11 22H2 (build 22621); older builds keep the opaque window.
-// Translucent is Acrylic, Glass is Mica. The material shows only where the client area is painted black
-// (DWM treats RGB 0,0,0 over an extended frame as transparent), so the shell background becomes black:
-// widgets with their own opaque background are unaffected, but text drawn in pure black turns transparent -
-// use a near-black foreground on the material.
+// Translucent extends Acrylic through the client area. Glass keeps the client opaque and puts Mica only
+// on the system frame and title bar: an extended client would make pure-black text transparent.
 func setBackdrop(s *swt.Shell, b Backdrop) {
 	if windowsBuild() < buildWin11_22H2 {
 		return
@@ -51,7 +49,7 @@ func setBackdrop(s *swt.Shell, b Backdrop) {
 	case BackdropTranslucent:
 		kind, margin = dwmbbAcrylic, -1
 	case BackdropGlass:
-		kind, margin = dwmbbMica, -1
+		kind = dwmbbMica
 	}
 	dwmSet(h, dwmaSystemBackdropType, kind)
 	m := [4]int32{margin, margin, margin, margin}

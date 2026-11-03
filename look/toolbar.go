@@ -21,31 +21,37 @@ var barSymbols = map[string]string{
 	"plus":                `<path d="M12 5v14M5 12h14"/>`,
 	"square.and.arrow.up": `<path d="M12 3v12M8 7l4-4 4 4M6 11v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8"/>`,
 
-	"square.and.arrow.down":      `<path d="M12 3v12M8 11l4 4 4-4M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/>`,
-	"terminal":                   `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 10l3 2-3 2M12 15h5"/>`,
-	"shippingbox":                `<path d="M12 3l8 4v10l-8 4-8-4V7zM4 7l8 4 8-4M12 11v10"/>`,
-	"folder":                     `<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>`,
-	"doc":                        `<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5"/>`,
-	"house":                      `<path d="M4 11l8-7 8 7M6 10v10h12V10M10 20v-6h4v6"/>`,
-	"sidebar.left":               `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>`,
-	"sidebar.right":              `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/>`,
-	"gearshape":                  `<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>`,
-	"magnifyingglass":            `<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>`,
-	"trash":                      `<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>`,
-	"arrow.clockwise":            `<path d="M20 12a8 8 0 1 1-2.34-5.66M17.7 2.5v4.5h-4.5"/>`,
-	"arrow.up":                   `<path d="M12 20V5M6 11l6-6 6 6"/>`,
-	"arrow.down":                 `<path d="M12 4v15M6 13l6 6 6-6"/>`,
-	"checkmark":                  `<path d="M5 12.5l4.5 4.5L19 7"/>`,
-	"xmark":                      `<path d="M6 6l12 12M18 6L6 18"/>`,
-	"minus":                      `<path d="M5 12h14"/>`,
-	"play.fill":                  `<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>`,
-	"stop.fill":                  `<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>`,
-	"pause.fill":                 `<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>`,
-	"info.circle":                `<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>`,
-	"ellipsis.circle":            `<circle cx="12" cy="12" r="9"/><path d="M8 12h.01M12 12h.01M16 12h.01"/>`,
-	"line.3.horizontal.decrease": `<path d="M4 7h16M7 12h10M10 17h4"/>`,
-	"list.bullet":                `<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>`,
-	"square.grid.2x2":            `<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>`,
+	"square.and.arrow.down":              `<path d="M12 3v12M8 11l4 4 4-4M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/>`,
+	"terminal":                           `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 10l3 2-3 2M12 15h5"/>`,
+	"shippingbox":                        `<path d="M12 3l8 4v10l-8 4-8-4V7zM4 7l8 4 8-4M12 11v10"/>`,
+	"folder":                             `<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>`,
+	"doc":                                `<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5"/>`,
+	"house":                              `<path d="M4 11l8-7 8 7M6 10v10h12V10M10 20v-6h4v6"/>`,
+	"sidebar.left":                       `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>`,
+	"sidebar.right":                      `<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/>`,
+	"gearshape":                          `<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>`,
+	"magnifyingglass":                    `<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>`,
+	"minus.magnifyingglass":              `<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M7 10.5h7"/>`,
+	"plus.magnifyingglass":               `<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M7 10.5h7M10.5 7v7"/>`,
+	"arrow.up.left.and.arrow.down.right": `<path d="M4 10V4h6M4 4l6 6M20 14v6h-6M20 20l-6-6"/>`,
+	"text.bubble":                        `<path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2V6a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3z"/><path d="M7 8h10M7 12h7"/>`,
+	"rectangle.bottomthird.inset.filled": `<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 14h18v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="currentColor"/>`,
+	"ellipsis":                           `<path d="M5 12h.01M12 12h.01M19 12h.01"/>`,
+	"trash":                              `<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>`,
+	"arrow.clockwise":                    `<path d="M20 12a8 8 0 1 1-2.34-5.66M17.7 2.5v4.5h-4.5"/>`,
+	"arrow.up":                           `<path d="M12 20V5M6 11l6-6 6 6"/>`,
+	"arrow.down":                         `<path d="M12 4v15M6 13l6 6 6-6"/>`,
+	"checkmark":                          `<path d="M5 12.5l4.5 4.5L19 7"/>`,
+	"xmark":                              `<path d="M6 6l12 12M18 6L6 18"/>`,
+	"minus":                              `<path d="M5 12h14"/>`,
+	"play.fill":                          `<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>`,
+	"stop.fill":                          `<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>`,
+	"pause.fill":                         `<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>`,
+	"info.circle":                        `<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>`,
+	"ellipsis.circle":                    `<circle cx="12" cy="12" r="9"/><path d="M8 12h.01M12 12h.01M16 12h.01"/>`,
+	"line.3.horizontal.decrease":         `<path d="M4 7h16M7 12h10M10 17h4"/>`,
+	"list.bullet":                        `<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>`,
+	"square.grid.2x2":                    `<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>`,
 }
 
 const barSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">%s</svg>`
@@ -68,7 +74,9 @@ type toolbarBar struct {
 	// strip is the row of Inspector items: over the inspector, or at the end of the bar while it is hidden
 	strip      *gowt.Panel
 	stripIcons []func(on, off string) []*swt.Image
+	overflows  []*barOverflow
 	images     []*swt.Image
+	menuImages []*swt.Image
 	bg         swt.RGB // content colour the bar was styled for
 	stripBG    swt.RGB // colour the strip was styled for: the inspector's, or the content's while it is hidden
 	line       *swt.Color
@@ -101,6 +109,7 @@ func (b *toolbarBar) HandleEvent(e *swt.Event) {
 	if e.Type == swt.Dispose {
 		s.GetDisplay().RemoveListener(swt.Settings, b)
 		disposeImages(b.images)
+		disposeImages(b.menuImages)
 		delete(bars, s)
 		return
 	}
@@ -117,6 +126,9 @@ func (b *toolbarBar) HandleEvent(e *swt.Event) {
 
 // build makes the bar again from the items, or removes it when there are none or no content column.
 func (b *toolbarBar) build() {
+	b.overflows = nil
+	disposeImages(b.menuImages)
+	b.menuImages = nil
 	if b.panel != nil {
 		b.panel.Unwrap().Dispose()
 		b.panel, b.title, b.icons, b.lead, b.search = nil, nil, nil, nil, nil
@@ -173,7 +185,7 @@ func (b *toolbarBar) fill() {
 		spaced = spaced || it.Space
 	}
 	var p *gowt.Panel
-	b.w.Add(gowt.Grid(len(over)+len(lead)+1+len(trail), gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.Ref(&p)))
+	b.w.Add(gowt.Grid(len(over)+len(lead)+len(trail)+2, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.Ref(&p)))
 	p.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
 	p.Unwrap().AddPaintListener(painter(func(e *swt.PaintEvent) {
 		r := p.Unwrap().GetClientArea()
@@ -181,16 +193,20 @@ func (b *toolbarBar) fill() {
 		e.Gc.DrawLine(0, r.Height-1, r.Width, r.Height-1)
 	}))
 	b.panel = p
+	var cells []barCell
 	shown := b.sidebar != nil && b.sidebar.AsComposite().GetVisible()
 	for _, it := range over {
 		it.ID = "" // the copy is hidden while the sidebar shows; the ID belongs to the item in the sidebar row
-		if c := b.item(p, it, &b.icons); c != nil {
+		c := b.item(p, it, &b.icons)
+		if c != nil {
 			c.SetVisible(!shown)
 			b.lead = append(b.lead, c)
 		}
+		cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
 	}
 	for _, it := range lead {
-		b.item(p, it, &b.icons)
+		c := b.item(p, it, &b.icons)
+		cells = append(cells, barCell{item: it, widget: c, flex: it.Space})
 	}
 	p.Add(gowt.Label(b.w.Unwrap().GetText(), gowt.Cell(gowt.GridCell{GrowX: !spaced, Align: gowt.AlignFill, VAlign: gowt.AlignCenter}), gowt.Ref(&b.title)))
 	if gowt.ChosenDensity().Legacy() {
@@ -202,23 +218,29 @@ func (b *toolbarBar) fill() {
 	} else {
 		b.title.SetFont(gowt.Type.Subtitle)
 	}
+	cells = append(cells, barCell{widget: b.title, flex: !spaced})
 	for _, it := range trail {
-		b.item(p, it, &b.icons)
+		c := b.item(p, it, &b.icons)
+		cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
 	}
+	b.newOverflow(p, cells, &b.icons)
 	if len(over) > 0 {
 		// The row goes first in the sidebar, its items at the right end, as over the macOS sidebar.
-		side.Add(gowt.Grid(len(over)+1, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.GrowX(), gowt.Ref(&b.side)))
+		side.Add(gowt.Grid(len(over)+2, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.GrowX(), gowt.Ref(&b.side)))
 		b.side.Unwrap().MoveAbove(nil)
 		b.side.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
 		b.side.Add(gowt.Spacer())
+		cells = []barCell{{flex: true}}
 		for _, it := range over {
-			b.item(b.side, it, &b.sideIcons)
+			c := b.item(b.side, it, &b.sideIcons)
+			cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
 		}
+		b.newOverflow(b.side, cells, &b.sideIcons)
 	}
 	if len(insp) > 0 {
 		// The strip is a window child that barTop places, as the bar is: inside the inspector it would
 		// take the inspector's padding and miss the bar's height.
-		b.w.Add(gowt.Grid(len(insp), gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.Ref(&b.strip)))
+		b.w.Add(gowt.Grid(len(insp)+1, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.Ref(&b.strip)))
 		st := b.strip.Unwrap()
 		st.SetBackgroundMode(swt.INHERIT_DEFAULT)
 		st.AddPaintListener(painter(func(e *swt.PaintEvent) {
@@ -226,9 +248,12 @@ func (b *toolbarBar) fill() {
 			e.Gc.SetForeground(b.stripLine)
 			e.Gc.DrawLine(0, r.Height-1, r.Width, r.Height-1)
 		}))
+		cells = nil
 		for _, it := range insp {
-			b.item(b.strip, it, &b.stripIcons)
+			c := b.item(b.strip, it, &b.stripIcons)
+			cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
 		}
+		b.newOverflow(b.strip, cells, &b.stripIcons)
 	}
 	b.restyle(true)
 }
@@ -241,12 +266,12 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		return nil
 	case it.OnSearch != nil:
 		var t *gowt.TextView
-		opts := []gowt.Option{gowt.Search(), gowt.Size(gowt.Scaled(240), 0), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)}
+		opts := []gowt.Option{gowt.Search(), gowt.Size(gowt.Scaled(240), gowt.Spacing.ControlHeight), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)}
 		if it.ID != "" {
 			opts = append(opts, gowt.ID(it.ID))
 		}
 		if it.Small {
-			opts = append(opts, gowt.Typeface(smallFont))
+			opts = append(opts, gowt.Typeface(barSmallFont()))
 		}
 		p.Add(gowt.Text(opts...))
 		t.SetHint(it.Title)
@@ -258,7 +283,7 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		return t
 	case it.Text != nil && len(it.Group) == 0:
 		var bt *gowt.ButtonView
-		opts := []gowt.Option{gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Tooltip(it.Title), gowt.Ref(&bt)}
+		opts := []gowt.Option{gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Size(0, gowt.Spacing.ControlHeight), gowt.Tooltip(it.Title), gowt.Ref(&bt)}
 		if it.OnClick != nil {
 			opts = append(opts, gowt.OnClick(it.OnClick))
 		}
@@ -266,7 +291,7 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 			opts = append(opts, gowt.ID(it.ID))
 		}
 		if it.Small {
-			opts = append(opts, gowt.Typeface(smallFont))
+			opts = append(opts, gowt.Typeface(barSmallFont()))
 		}
 		p.Add(gowt.Button(it.Text.Peek(), opts...))
 		gowt.Watch(bt, it.Text, bt.SetText)
@@ -276,7 +301,7 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		return bt
 	default:
 		var tb *gowt.ToolBarView
-		p.Add(gowt.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&tb)))
+		p.Add(gowt.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Size(0, gowt.Spacing.ControlHeight), gowt.Ref(&tb)))
 		segs := it.Group
 		if len(segs) == 0 {
 			segs = []ToolbarItem{it}
@@ -284,7 +309,7 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		size := 16
 		if it.Small {
 			size = 13
-			tb.SetFont(smallFont)
+			tb.SetFont(barSmallFont())
 		}
 		for _, g := range segs {
 			toolItem(tb, g, size, icons)
@@ -293,8 +318,287 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 	}
 }
 
-// smallFont is the text of a Small item: 11 to 13, as the small and regular control fonts of macOS.
-var smallFont = gowt.Font{Scale: 11.0 / 13}
+type barCell struct {
+	item           ToolbarItem
+	widget         gowt.Widget
+	overflow, flex bool
+}
+
+type barOverflow struct {
+	bar     *toolbarBar
+	panel   *gowt.Panel
+	cells   []barCell
+	button  *gowt.ToolBarView
+	menu    *gowt.Menu
+	icons   *[]func(on, off string) []*swt.Image
+	hidden  []int
+	applied []int
+	fitting bool
+}
+
+func (b *toolbarBar) newOverflow(p *gowt.Panel, cells []barCell, icons *[]func(on, off string) []*swt.Image) {
+	o := &barOverflow{bar: b, panel: p, cells: cells}
+	b.overflows = append(b.overflows, o)
+	o.icons = icons
+	p.Unwrap().AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { o.fit() }))
+}
+
+func (o *barOverflow) setButtonVisible(on bool) {
+	if on && o.button == nil {
+		var tb *gowt.ToolBarView
+		o.panel.Add(gowt.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Size(0, gowt.Spacing.ControlHeight), gowt.Ref(&tb)))
+		o.button = tb
+		toolItem(tb, ToolbarItem{Title: "More", Symbol: "ellipsis", OnClick: o.show}, 16, o.icons)
+		o.bar.restyle(true)
+	}
+	if o.button != nil {
+		o.button.SetVisible(on)
+	}
+}
+
+func (o *barOverflow) show() {
+	if o.menu != nil {
+		o.menu.Show()
+	}
+}
+
+func (o *barOverflow) revealSearch() {
+	for i, c := range o.cells {
+		if c.item.OnSearch == nil {
+			continue
+		}
+		c.overflow = false
+		o.cells[i] = c
+		if !hasIndex(o.hidden, i) {
+			continue
+		}
+		o.fitting = true
+		defer func() { o.fitting = false }()
+		setBarIDs(c.widget, c.item, true)
+		c.widget.SetVisible(true)
+		o.hidden = withoutIndex(o.hidden, i)
+		o.applied = withoutIndex(o.applied, i)
+		o.setButtonVisible(len(o.hidden) > 0)
+		o.bar.rebuildMenus()
+	}
+}
+
+func withoutIndex(indices []int, unwanted int) []int {
+	out := make([]int, 0, len(indices))
+	for _, i := range indices {
+		if i != unwanted {
+			out = append(out, i)
+		}
+	}
+	return out
+}
+
+func (o *barOverflow) candidates() []int {
+	var out []int
+	for i, c := range o.cells {
+		if c.overflow && !c.flex && !c.item.Nav && !c.item.Space {
+			out = append(out, i)
+		}
+	}
+	return out
+}
+
+func (o *barOverflow) fit() {
+	if o.fitting || o.panel.Unwrap().IsDisposed() {
+		return
+	}
+	width := o.panel.Unwrap().GetClientArea().Width
+	if width <= 0 {
+		return
+	}
+	candidates := o.candidates()
+	hidden := []int(nil)
+	for n := 0; n <= len(candidates); n++ {
+		hidden = candidates[len(candidates)-n:]
+		if o.required(hidden) <= width {
+			break
+		}
+	}
+	if sameIndices(hidden, o.hidden) {
+		return
+	}
+	o.fitting = true
+	defer func() { o.fitting = false }()
+	o.hidden = hidden
+	for _, i := range candidates {
+		o.apply(i, hasIndex(hidden, i))
+	}
+	o.applied = hidden
+	o.setButtonVisible(len(hidden) > 0)
+	o.bar.rebuildMenus()
+}
+
+func (o *barOverflow) required(hidden []int) int32 {
+	width := int32(2 * gowt.Scaled(8))
+	visible := 0
+	for i, c := range o.cells {
+		if hasIndex(hidden, i) || c.widget != nil && !c.widget.Visible() && !hasIndex(o.applied, i) {
+			continue
+		}
+		visible++
+		if c.flex || c.widget == nil {
+			continue
+		}
+		width += barControl(c.widget).ComputeSize(swt.DEFAULT, swt.DEFAULT).X
+	}
+	if len(hidden) > 0 {
+		visible++
+		if o.button == nil {
+			width += int32(gowt.Scaled(32))
+		} else {
+			width += o.button.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X
+		}
+	}
+	return width + int32(max(visible-1, 0)*gowt.Scaled(6))
+}
+
+func (o *barOverflow) apply(i int, hide bool) {
+	c := o.cells[i]
+	if c.widget == nil {
+		return
+	}
+	if hide && c.widget.Visible() {
+		setBarIDs(c.widget, c.item, false)
+		c.widget.SetVisible(false)
+	}
+	if !hide && hasIndex(o.applied, i) {
+		setBarIDs(c.widget, c.item, true)
+		c.widget.SetVisible(true)
+	}
+}
+
+func (b *toolbarBar) rebuildMenus() {
+	disposeImages(b.menuImages)
+	b.menuImages = nil
+	for _, o := range b.overflows {
+		if o.menu != nil {
+			o.button.Unwrap().SetMenu(nil)
+			o.menu.Unwrap().Dispose()
+			o.menu = nil
+		}
+		if len(o.hidden) > 0 {
+			o.menu = gowt.PopupMenu(o.button)
+			for _, i := range o.hidden {
+				o.menuItem(o.cells[i].item)
+			}
+		}
+	}
+}
+
+func (o *barOverflow) menuItem(it ToolbarItem) {
+	if len(it.Group) > 0 {
+		for _, g := range it.Group {
+			o.menuItem(g)
+		}
+		return
+	}
+	click := it.OnClick
+	if it.OnSearch != nil {
+		click = func() { FocusSearch(o.bar.w) }
+	}
+	mi := o.menu.Item(it.Title, click)
+	if it.ID != "" {
+		mi.Unwrap().SetDataKeyValue("gowt.id", it.ID)
+	}
+	if img := o.menuImage(it); img != nil {
+		mi.Unwrap().SetImage(img)
+	}
+	if it.Enabled != nil {
+		mi.SetEnabled(it.Enabled.Peek())
+		o.menu.OnShow(func() { mi.SetEnabled(it.Enabled.Peek()) })
+	}
+}
+
+func (o *barOverflow) menuImage(it ToolbarItem) *swt.Image {
+	if it.Icon != nil {
+		return it.Icon.Unwrap()
+	}
+	shape, ok := barSymbols[it.Symbol]
+	if len(it.IconSVG) == 0 && !ok {
+		return nil
+	}
+	data := string(it.IconSVG)
+	if len(it.IconSVG) == 0 {
+		data = fmt.Sprintf(barSVG, shape)
+	}
+	system := o.bar.w.Unwrap().GetDisplay().GetSystemColor(swt.COLOR_WIDGET_FOREGROUND).GetRGB()
+	fg := barForeground(*system, o.bar.bg)
+	img := swt.NewImageDeviceImageDataProvider(o.bar.w.Unwrap().GetDisplay(), svg.NewImageDataProvider([]byte(data), 16, 16, hexRGB(fg)))
+	o.bar.menuImages = append(o.bar.menuImages, img)
+	return img
+}
+
+func setBarIDs(w gowt.Widget, it ToolbarItem, restore bool) {
+	id := ""
+	if restore {
+		id = it.ID
+	}
+	switch v := w.(type) {
+	case *gowt.ToolBarView:
+		segs := it.Group
+		if len(segs) == 0 {
+			segs = []ToolbarItem{it}
+		}
+		for i, ti := range v.Unwrap().GetItems() {
+			segmentID := ""
+			if restore && i < len(segs) {
+				segmentID = segs[i].ID
+			}
+			ti.SetDataKeyValue("gowt.id", segmentID)
+		}
+	case *gowt.ButtonView:
+		v.Unwrap().SetDataKeyValue("gowt.id", id)
+	case *gowt.TextView:
+		v.Unwrap().SetDataKeyValue("gowt.id", id)
+	}
+}
+
+func barControl(w gowt.Widget) *swt.Control {
+	switch v := w.(type) {
+	case *gowt.ToolBarView:
+		return &v.Unwrap().Control
+	case *gowt.ButtonView:
+		return &v.Unwrap().Control
+	case *gowt.TextView:
+		return &v.Unwrap().Control
+	case *gowt.LabelView:
+		return &v.Unwrap().Control
+	}
+	return nil
+}
+
+func hasIndex(indices []int, wanted int) bool {
+	for _, i := range indices {
+		if i == wanted {
+			return true
+		}
+	}
+	return false
+}
+
+func sameIndices(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func barSmallFont() gowt.Font {
+	if gowt.ChosenDensity().Legacy() {
+		return gowt.Font{Scale: 11.0 / 13}
+	}
+	return gowt.Type.Caption
+}
 
 // sidebarShown moves the Sidebar items to the start of the bar while the sidebar is hidden; the row in
 // the sidebar hides with it.
@@ -304,12 +608,12 @@ func (b *toolbarBar) sidebarShown(on bool) {
 	}
 }
 
-// toolItem adds a flat button whose symbol, size points square, icons sets in the bar's text colour,
+// toolItem adds a flat button whose image, size points square, icons sets in the bar's text colour,
 // dimmed while Enabled is false.
 func toolItem(tb *gowt.ToolBarView, it ToolbarItem, size int, icons *[]func(on, off string) []*swt.Image) {
-	shape, ok := barSymbols[it.Symbol]
+	shape, symbol := barSymbols[it.Symbol]
 	text := ""
-	if !ok {
+	if it.Icon == nil && len(it.IconSVG) == 0 && !symbol {
 		text = it.Title
 	}
 	ti := tb.Item(text, it.OnClick)
@@ -317,8 +621,15 @@ func toolItem(tb *gowt.ToolBarView, it ToolbarItem, size int, icons *[]func(on, 
 	if it.ID != "" {
 		ti.Unwrap().SetDataKeyValue("gowt.id", it.ID) // qatree.IDKey
 	}
-	if ok {
-		data := fmt.Sprintf(barSVG, shape)
+	switch {
+	case it.Icon != nil:
+		ti.Unwrap().SetImage(it.Icon.Unwrap())
+		ti.Unwrap().SetDisabledImage(it.Icon.Unwrap())
+	case len(it.IconSVG) > 0 || symbol:
+		data := string(it.IconSVG)
+		if len(it.IconSVG) == 0 {
+			data = fmt.Sprintf(barSVG, shape)
+		}
 		*icons = append(*icons, func(on, off string) []*swt.Image {
 			d := tb.Unwrap().GetDisplay()
 			img := swt.NewImageDeviceImageDataProvider(d, svg.NewImageDataProvider([]byte(data), size, size, on))
@@ -375,6 +686,7 @@ func (b *toolbarBar) restyle(force bool) {
 		b.strip.Unwrap().Redraw()
 	}
 	disposeImages(old)
+	b.rebuildMenus()
 	p.Redraw()
 }
 

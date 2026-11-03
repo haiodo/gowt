@@ -38,7 +38,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "testexec: procdump log=%q error=%v\n", logPath, logErr)
 		} else {
 			fmt.Fprintf(os.Stderr, "testexec: procdump log=%q\n", logPath)
-			monitor = exec.Command(procdump, "-accepteula", "-ma", "-e", "1", "-f", "C0000005", "-n", "1", strconv.Itoa(cmd.Process.Pid), crashDir)
+			monitor = exec.Command(procdump, "-accepteula", "-ma", "-e", "-f", "C0000005", "-n", "1", strconv.Itoa(cmd.Process.Pid), crashDir)
 			monitor.Stdout, monitor.Stderr = monitorLog, monitorLog
 			if err := monitor.Start(); err != nil {
 				fmt.Fprintf(os.Stderr, "testexec: procdump start error=%v\n", err)

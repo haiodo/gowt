@@ -31,6 +31,9 @@ func findIconFont(a *gowt.App) string {
 // systemIcon draws the glyph white on black into an image and reads the brightness back as the
 // alpha mask, because a GDI bitmap has no alpha channel.
 func systemIcon(a *gowt.App, e iconEntry, px int, c gowt.RGB) *swt.ImageData {
+	if e.lucide == "folder" || e.lucide == "file" {
+		return nil // one document metaphor and stroke weight with the Lucide neighbours
+	}
 	face := iconFont(a)
 	if face == "" || px <= 0 {
 		return nil

@@ -26,3 +26,14 @@ func TestAccessibleRoleToOs(t *testing.T) {
 		}
 	}
 }
+
+func TestToolItemNameText(t *testing.T) {
+	item := &ToolItem{toolTipText: "More"}
+	if got := item.getNameText_(); got != "More" {
+		t.Errorf("icon name %q, want More", got)
+	}
+	item.text = "Fit"
+	if got := item.getNameText_(); got != "Fit" {
+		t.Errorf("text name %q, want Fit", got)
+	}
+}

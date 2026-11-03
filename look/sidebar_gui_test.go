@@ -9,6 +9,7 @@ import (
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/icons"
+	"github.com/haiodo/gowt/internal/qatree"
 	"github.com/haiodo/gowt/look"
 	"github.com/haiodo/gowt/swt"
 )
@@ -406,22 +407,20 @@ func TestSidebarPostedDrag(t *testing.T) {
 	}
 }
 
-// Sidebar items wider than 120 points set the narrowest sidebar: SetSidebarWidth and a drag stop
-// there, so the items never cross into the content, and the drag does not hide the sidebar.
-func TestSidebarItemsMinWidth(t *testing.T) {
+// A narrower sidebar moves trailing items into its overflow menu instead of clipping them.
+func TestSidebarItemsOverflow(t *testing.T) {
 	var items []look.ToolbarItem
 	for _, s := range []string{"Scan Node.js", "Scan Docker", "Open Profile..."} {
 		items = append(items, look.ToolbarItem{Title: s, Sidebar: true})
 	}
 	sidebarWindow(t, items, 220, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+		if native {
+			t.Skip("NSToolbar has its own overflow")
+		}
 		look.SetSidebarWidth(w, 500)
 		app.Flush()
 		look.SetSidebarWidth(w, 120)
 		least := look.SidebarWidth(w)
-		t.Logf("narrowest sidebar for three text items: %d", least)
-		if least <= 200 {
-			t.Errorf("SetSidebarWidth(120) gave %d, too narrow for three text items", least)
-		}
 		sash := sashOf(w)
 		send := func(typ int32, x int32) int32 {
 			e := swt.NewEvent()
@@ -433,9 +432,18 @@ func TestSidebarItemsMinWidth(t *testing.T) {
 		send(swt.MouseDown, 0)
 		got := send(swt.Selection, x0-60)
 		send(swt.MouseUp, 0)
-		if !look.SidebarVisible(w) || look.SidebarWidth(w) != least || got != x0 {
-			t.Errorf("dragged 60 points below the narrowest %d: visible %v, width %d, sash at %d, want it to stay at %d",
-				least, look.SidebarVisible(w), look.SidebarWidth(w), got, x0)
+		app.Flush()
+		if !look.SidebarVisible(w) || look.SidebarWidth(w) != least-60 || got != x0-60 {
+			t.Errorf("dragged 60 points: visible %v, width %d, sash at %d, want %d and %d",
+				look.SidebarVisible(w), look.SidebarWidth(w), got, least-60, x0-60)
+		}
+		more, _ := qatree.Find(app.Unwrap(), qatree.Selector{Class: "ToolItem", Text: "More"})
+		if len(more) != 1 || !more[0].Visible {
+			t.Errorf("overflow button is %+v, want one visible More", more)
+		}
+		last, _ := qatree.Find(app.Unwrap(), qatree.Selector{Class: "MenuItem", Text: "Open Profile..."})
+		if len(last) != 1 {
+			t.Errorf("last item is %+v, want one in the overflow menu", last)
 		}
 	})
 }

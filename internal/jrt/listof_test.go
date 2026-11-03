@@ -19,6 +19,13 @@ func TestListOfSpreadsReferenceArrays(t *testing.T) {
 	}
 }
 
+func TestListStringShowsEventOrder(t *testing.T) {
+	l := ListOf("Visibility.show", "Progress.completed")
+	if got := l.String(); got != "[Visibility.show Progress.completed]" {
+		t.Fatalf("List.String() = %q", got)
+	}
+}
+
 func TestTreeSetAddSortsAndDedups(t *testing.T) {
 	s := NewTreeSet()
 	for _, v := range []int32{5, 1, 3, 5, 0, 3, 9} {

@@ -1,6 +1,7 @@
 package jrt
 
 import (
+	"fmt"
 	"reflect"
 	"slices"
 	"sort"
@@ -323,6 +324,8 @@ func (l *List) ToArray() []any {
 	defer l.mu.Unlock()
 	return append([]any(nil), l.items...)
 }
+
+func (l *List) String() string { return fmt.Sprint(l.ToArray()) }
 
 // Equals is List.equals: the same elements in the same order.
 func (l *List) Equals(o any) bool {

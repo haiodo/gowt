@@ -105,9 +105,10 @@ func Momentary() Option {
 	})
 }
 
-// Small gives a Segmented, a Button, a single-line Text or a Number the small control size, as in
-// Xcode's inspector: macOS NSControlSizeSmall with its 11-point font; Windows and Linux the font
-// smaller by the same ratio, and a field the compact height (24 dips on Windows, 24 px on Linux).
+// Small gives a Segmented, a Button, a single-line Text (including Search) or a Number the small
+// control size, as in Xcode's inspector: macOS NSControlSizeSmall with its 11-point font; Windows
+// and Linux the font smaller by the same ratio, and a field the compact height (24 dips on Windows,
+// 24 px on Linux).
 func Small() Option {
 	return hook(func(w Widget) error {
 		switch v := w.(type) {

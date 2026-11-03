@@ -210,13 +210,6 @@ func (this *ToolItem) GetToolTipText() string {
 	return this.toolTipText
 }
 
-func (this *ToolItem) getNameText_() string {
-	if this.text != "" {
-		return this.text
-	}
-	return this.toolTipText
-}
-
 func (this *ToolItem) GetWidth() int32 {
 	this.CheckWidget()
 	return DPIUtilPixelToPoint(this.GetWidthInPixels(), this.impl.getAutoscalingZoom_())

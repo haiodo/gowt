@@ -266,12 +266,14 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		return nil
 	case it.OnSearch != nil:
 		var t *gowt.TextView
+		// Small leaves the height hint DEFAULT so the native compact field height applies (24 dips on Windows).
 		opts := []gowt.Option{gowt.Search(), gowt.Size(6*gowt.Spacing.ControlHeight, gowt.Spacing.ControlHeight), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)}
+		if it.Small {
+			opts = []gowt.Option{gowt.Search(), gowt.Size(6*gowt.Spacing.ControlHeight, int(swt.DEFAULT)), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)}
+			opts = append(opts, gowt.Small(), gowt.Typeface(barSmallFont()))
+		}
 		if it.ID != "" {
 			opts = append(opts, gowt.ID(it.ID))
-		}
-		if it.Small {
-			opts = append(opts, gowt.Typeface(barSmallFont()))
 		}
 		p.Add(gowt.Text(opts...))
 		t.SetHint(it.Title)

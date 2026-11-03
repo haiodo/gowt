@@ -83,17 +83,21 @@ func TestNumberField(t *testing.T) {
 	})
 }
 
-// Prefix and Small refuse a multi-line Text; Step refuses a Text.
+// Prefix, Suffix and Small refuse a multi-line Text, Prefix and Suffix a Search; Step refuses a Text.
 func TestAffixMisfit(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
 		var errs []error
 		app.OnError(func(err error) { errs = append(errs, err) })
 		put[*TextView](w, Text(Multiline(), Prefix("X")))
-		put[*TextView](w, Text(Search(), Small()))
+		put[*TextView](w, Text(Search(), Prefix("X")))
 		put[*TextView](w, Text(Step(1)))
 		put[*TextView](w, Text(Prefix("X"), Suffix("%"), Small()))
+		s := put[*TextView](w, Text(Search(), Small()))
 		if len(errs) != 3 {
 			t.Errorf("errors %v, want three", errs)
+		}
+		if s.aff == nil || !s.aff.small {
+			t.Errorf("search affix %+v, want small", s.aff)
 		}
 	})
 }

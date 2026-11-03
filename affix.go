@@ -47,14 +47,19 @@ func withAffix(w Widget, name string, set func(*affix)) error {
 	var t *TextView
 	switch v := w.(type) {
 	case *TextView:
-		if v.t.GetStyle()&(swt.MULTI|swt.SEARCH|swt.PASSWORD) == 0 {
+		st := v.t.GetStyle() & (swt.MULTI | swt.SEARCH | swt.PASSWORD)
+		if st == 0 || (name == "Small" && st == swt.SEARCH) {
 			t = v
 		}
 	case *NumberView:
 		t = v.f
 	}
 	if t == nil {
-		return fmt.Errorf("gowt: %s applies to a single-line Text without Search or Password and to Number, not to %s", name, nameOf(w.control()))
+		without := "Search or Password"
+		if name == "Small" {
+			without = "Password"
+		}
+		return fmt.Errorf("gowt: %s applies to a single-line Text without %s and to Number, not to %s", name, without, nameOf(w.control()))
 	}
 	if t.aff == nil {
 		t.aff = &affix{}

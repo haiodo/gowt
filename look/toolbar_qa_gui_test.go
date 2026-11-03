@@ -130,7 +130,7 @@ func TestToolbarOverflow(t *testing.T) {
 			w.Add(gowt.VBox(gowt.Ref(&content)), gowt.VBox(gowt.Ref(&inspector)))
 			look.SetInspector(w, content, inspector, 260)
 			items := []look.ToolbarItem{{Title: "Back", ID: "back", Symbol: "chevron.backward", Nav: true},
-				{Title: "Search", ID: "search", OnSearch: func(string) {}}}
+				{Title: "Search", ID: "search", Small: true, OnSearch: func(string) {}}}
 			for i := 0; i < 16; i++ {
 				items = append(items, look.ToolbarItem{Title: fmt.Sprintf("Action %d", i), ID: fmt.Sprintf("action-%d", i), Symbol: "plus"})
 			}
@@ -203,9 +203,13 @@ func TestToolbarOverflow(t *testing.T) {
 				} else {
 					// Windows SEARCH reserves EM_SETMARGINS room for its search and clear icons and a
 					// 2 px frame, so the outer control exceeds the 6*ControlHeight content hint; the hint
-					// is the text area, not the bounds.
-					if search[0].Bounds[2] < 6*gowt.Spacing.ControlHeight || search[0].Bounds[3] < gowt.Spacing.ControlHeight {
-						fail("search bounds %v, want at least %d by %d of text area", search[0].Bounds, 6*gowt.Spacing.ControlHeight, gowt.Spacing.ControlHeight)
+					// is the text area, not the bounds. The Small field is compact, so on Windows its
+					// outer height stays within ControlHeight plus the native frame.
+					if search[0].Bounds[2] < 6*gowt.Spacing.ControlHeight || search[0].Bounds[3] <= 0 {
+						fail("search bounds %v, want a width of at least %d of text area and a positive height", search[0].Bounds, 6*gowt.Spacing.ControlHeight)
+					}
+					if runtime.GOOS == "windows" && search[0].Bounds[3] > gowt.Spacing.ControlHeight+2 {
+						fail("search bounds %v, want the compact outer height within %d plus the native frame", search[0].Bounds, gowt.Spacing.ControlHeight)
 					}
 				}
 				enabled.Set(true)

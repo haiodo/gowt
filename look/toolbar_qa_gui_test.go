@@ -131,7 +131,9 @@ func TestToolbarOverflow(t *testing.T) {
 			look.SetInspector(w, content, inspector, 260)
 			items := []look.ToolbarItem{{Title: "Back", ID: "back", Symbol: "chevron.backward", Nav: true},
 				{Title: "Search", ID: "search", Small: true, OnSearch: func(string) {}}}
-			for i := 0; i < 16; i++ {
+			// Seven actions fit within the 864 px toolbar available on the CI display;
+			// sixteen could never all be restored there.
+			for i := 0; i < 7; i++ {
 				items = append(items, look.ToolbarItem{Title: fmt.Sprintf("Action %d", i), ID: fmt.Sprintf("action-%d", i), Symbol: "plus"})
 			}
 			doc := []byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`)
@@ -151,7 +153,13 @@ func TestToolbarOverflow(t *testing.T) {
 			look.SetToolbar(w, items...)
 			least := gowt.Scaled(160)
 			look.SetInspectorWidth(w, least)
-			w.SetSize(900, 600)
+			// A size above the session's maximum tracking width can never settle,
+			// so the wide phase must use the largest applicable width.
+			wide := maxWindowWidth()
+			if wide > 1600 {
+				wide = 1600
+			}
+			w.SetSize(int(wide), 600)
 			w.Show()
 			d := app.Unwrap()
 			check := func(step, class string) {
@@ -229,51 +237,77 @@ func TestToolbarOverflow(t *testing.T) {
 				items, _ := qatree.Find(d, qatree.Selector{Class: "MenuItem"})
 				return fmt.Sprintf("shell=%v client=%v inspector=%d menuItems=%d comps=%v %s", s.GetBounds(), s.GetClientArea(), look.InspectorWidth(w), len(items), comps, shellDiag(s))
 			}
+			// Find actual overflow instead of assuming a fixed width fits all
+			// platform metrics and display limits.
+			narrowWidth := func(f func(width int32)) {
+				width := wide
+				var step func()
+				step = func() {
+					w.SetSize(int(width), 600)
+					awaitSize(width, 600, diag, func() {
+						fit, _ := qatree.Find(d, qatree.Selector{ID: "fit"})
+						if len(fit) == 1 && fit[0].Class == "MenuItem" {
+							f(width)
+							return
+						}
+						if width < 400 {
+							fail("no width below %d overflowed fit, want one that does", wide)
+							f(width)
+							return
+						}
+						width -= 80
+						step()
+					})
+				}
+				step()
+			}
 			app.After(500*time.Millisecond, func() {
-				check("narrow", "MenuItem")
-				if got := look.InspectorWidth(w); got != least {
-					fail("inspector width %d, want the requested minimum %d", got, least)
-				}
-				last, _ := qatree.Find(d, qatree.Selector{ID: "inspector-7"})
-				if len(last) != 1 || last[0].Class != "MenuItem" {
-					fail("last inspector command is %+v, want one overflow MenuItem", last)
-				}
-				if !look.FocusSearch(w) {
-					fail("FocusSearch did not find the hidden field")
-				}
-				search, _ := qatree.Find(d, qatree.Selector{ID: "search"})
-				if len(search) != 1 || search[0].Class != "Text" || !search[0].Focused {
-					fail("revealed search is %+v, want one focused Text", search)
-				} else {
-					// Windows SEARCH reserves EM_SETMARGINS room for its search and clear icons and a
-					// 2 px frame, so the outer control exceeds the 6*ControlHeight content hint; the hint
-					// is the text area, not the bounds. The Small field is compact, so on Windows its
-					// outer height stays within ControlHeight plus the native frame.
-					if search[0].Bounds[2] < 6*gowt.Spacing.ControlHeight || search[0].Bounds[3] <= 0 {
-						fail("search bounds %v, want a width of at least %d of text area and a positive height", search[0].Bounds, 6*gowt.Spacing.ControlHeight)
+				narrowWidth(func(narrow int32) {
+					check("narrow", "MenuItem")
+					if got := look.InspectorWidth(w); got != least {
+						fail("inspector width %d, want the requested minimum %d", got, least)
 					}
-					if runtime.GOOS == "windows" && search[0].Bounds[3] > gowt.Spacing.ControlHeight+2 {
-						fail("search bounds %v, want the compact outer height within %d plus the native frame", search[0].Bounds, gowt.Spacing.ControlHeight)
+					last, _ := qatree.Find(d, qatree.Selector{ID: "inspector-7"})
+					if len(last) != 1 || last[0].Class != "MenuItem" {
+						fail("last inspector command is %+v, want one overflow MenuItem", last)
 					}
-				}
-				enabled.Set(true)
-				if actErr := qatree.Act(d, qatree.Selector{ID: "fit"}, "click", json.RawMessage(nil)); actErr != nil {
-					fail("click fit: %v", actErr)
-				}
-				if clicks != 1 {
-					fail("fit clicks %d, want 1", clicks)
-				}
-				w.SetSize(1600, 600)
-				awaitSize(1600, 600, diag, func() {
-					check("wide", "Button")
-					restored, _ := qatree.Find(d, qatree.Selector{ID: "forward"})
-					if len(restored) != 1 || restored[0].Class != "Button" {
-						fail("restored group segment is %+v, want one Button with its ID", restored)
+					if !look.FocusSearch(w) {
+						fail("FocusSearch did not find the hidden field")
 					}
-					w.SetSize(900, 600)
-					awaitSize(900, 600, diag, func() {
-						check("narrow again", "MenuItem")
-						w.Close()
+					search, _ := qatree.Find(d, qatree.Selector{ID: "search"})
+					if len(search) != 1 || search[0].Class != "Text" || !search[0].Focused {
+						fail("revealed search is %+v, want one focused Text", search)
+					} else {
+						// Windows SEARCH reserves EM_SETMARGINS room for its search and clear icons and a
+						// 2 px frame, so the outer control exceeds the 6*ControlHeight content hint; the hint
+						// is the text area, not the bounds. The Small field is compact, so on Windows its
+						// outer height stays within ControlHeight plus the native frame.
+						if search[0].Bounds[2] < 6*gowt.Spacing.ControlHeight || search[0].Bounds[3] <= 0 {
+							fail("search bounds %v, want a width of at least %d of text area and a positive height", search[0].Bounds, 6*gowt.Spacing.ControlHeight)
+						}
+						if runtime.GOOS == "windows" && search[0].Bounds[3] > gowt.Spacing.ControlHeight+2 {
+							fail("search bounds %v, want the compact outer height within %d plus the native frame", search[0].Bounds, gowt.Spacing.ControlHeight)
+						}
+					}
+					enabled.Set(true)
+					if actErr := qatree.Act(d, qatree.Selector{ID: "fit"}, "click", json.RawMessage(nil)); actErr != nil {
+						fail("click fit: %v", actErr)
+					}
+					if clicks != 1 {
+						fail("fit clicks %d, want 1", clicks)
+					}
+					w.SetSize(int(wide), 600)
+					awaitSize(wide, 600, diag, func() {
+						check("wide", "Button")
+						restored, _ := qatree.Find(d, qatree.Selector{ID: "forward"})
+						if len(restored) != 1 || restored[0].Class != "Button" {
+							fail("restored group segment is %+v, want one Button with its ID", restored)
+						}
+						w.SetSize(int(narrow), 600)
+						awaitSize(narrow, 600, diag, func() {
+							check("narrow again", "MenuItem")
+							w.Close()
+						})
 					})
 				})
 			})

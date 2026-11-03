@@ -185,6 +185,24 @@ func TestToolbarOverflow(t *testing.T) {
 					}
 				}
 			}
+			// awaitSize runs f once the window has size width x height and rx bindings have caught
+			// up. A fixed delay races a display that applies a resize in steps: the QA snapshot then
+			// catches a mid-reflow overflow (items hidden for an intermediate width) or a state a
+			// pending rx flush has not applied yet. Polling goes through the event loop, never inline:
+			// work queued before the wait (resize messages, Async, rx effects) must land first.
+			awaitSize := func(width, height int32, f func()) {
+				deadline := time.Now().Add(5 * time.Second)
+				var poll func()
+				poll = func() {
+					sz := w.Unwrap().GetSize()
+					if (sz.X != width || sz.Y != height || rx.Pending() > 0) && time.Now().Before(deadline) {
+						app.After(20*time.Millisecond, poll)
+						return
+					}
+					f()
+				}
+				app.After(20*time.Millisecond, poll)
+			}
 			app.After(500*time.Millisecond, func() {
 				check("narrow", "MenuItem")
 				if got := look.InspectorWidth(w); got != least {
@@ -220,14 +238,14 @@ func TestToolbarOverflow(t *testing.T) {
 					fail("fit clicks %d, want 1", clicks)
 				}
 				w.SetSize(1600, 600)
-				app.After(500*time.Millisecond, func() {
+				awaitSize(1600, 600, func() {
 					check("wide", "Button")
 					restored, _ := qatree.Find(d, qatree.Selector{ID: "forward"})
 					if len(restored) != 1 || restored[0].Class != "Button" {
 						fail("restored group segment is %+v, want one Button with its ID", restored)
 					}
 					w.SetSize(900, 600)
-					app.After(500*time.Millisecond, func() {
+					awaitSize(900, 600, func() {
 						check("narrow again", "MenuItem")
 						w.Close()
 					})

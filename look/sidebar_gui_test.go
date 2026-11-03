@@ -419,9 +419,11 @@ func TestSidebarItemsOverflow(t *testing.T) {
 	for _, s := range []string{"Scan Node.js", "Scan Docker", "Open Profile..."} {
 		items = append(items, look.ToolbarItem{Title: s, Sidebar: true})
 	}
+	nativeToolbar := false
 	sidebarWindow(t, items, 220, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+		nativeToolbar = native
 		if native {
-			t.Skip("NSToolbar has its own overflow")
+			return
 		}
 		look.SetSidebarWidth(w, 500)
 		app.Flush()
@@ -452,6 +454,11 @@ func TestSidebarItemsOverflow(t *testing.T) {
 			t.Errorf("last item is %+v, want one in the overflow menu", last)
 		}
 	})
+	if nativeToolbar {
+		// The callback runs on the UI thread: t.Skip there would Goexit the TestMain loop.
+		// Skip from the test goroutine instead.
+		t.Skip("NSToolbar has its own overflow")
+	}
 }
 
 // A width below the narrowest, given to SetSidebar, is laid out at the narrowest, so the first drag

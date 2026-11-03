@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.15.2 (2026-11-03)
+
+- New: `look.SetSidebarFullHeight(w, on)` opts into a flush full-height macOS sidebar. Call it before or after `SetSidebar`. A top-aligned native List, Table or Tree scrolls under the toolbar's blurred header, and the window buttons move right by the 7-point glass inset. Passing `false` restores the floating sidebar, scroll inset policy and AppKit button positions. Windows and Linux keep their regular layout.
+- Fixed: the macOS sidebar overflow test skips from its test goroutine instead of exiting the UI-thread `TestMain` loop and hanging every later sidebar test.
+- Tests: targeted macOS sidebar GUI checks pass, including full-height scrolling, resize, repeated mode switches and window-button restoration. Linux UTM passes 15 sidebar tests and confirms the unchanged layout. Posted-event checks still require Accessibility permission on macOS and remain unavailable under Wayland.
+
 ## v0.15.1 (2026-11-03)
 
 - New: `look.ToolbarItem` accepts `Icon` and `IconSVG` before `Symbol`. On Windows and Linux the toolbar gives its controls `Spacing.ControlHeight`, uses `Type.Caption` for Small text, and moves items that do not fit into a `More` menu with their icon, title, enabled state and QA ID. `FocusSearch` reveals a hidden search field.

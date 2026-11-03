@@ -189,19 +189,45 @@ func TestToolbarOverflow(t *testing.T) {
 			// up. A fixed delay races a display that applies a resize in steps: the QA snapshot then
 			// catches a mid-reflow overflow (items hidden for an intermediate width) or a state a
 			// pending rx flush has not applied yet. Polling goes through the event loop, never inline:
-			// work queued before the wait (resize messages, Async, rx effects) must land first.
-			awaitSize := func(width, height int32, f func()) {
-				deadline := time.Now().Add(5 * time.Second)
+			// work queued before the wait (resize messages, Async, rx effects) must land first. The
+			// settle outcome and describe() are logged: a timeout must tell whether the shell never
+			// reached the size (a display/size limit) or the reflow left the bar narrow at the final
+			// width (items still hidden with room to spare).
+			awaitSize := func(width, height int32, describe func() string, f func()) {
+				start := time.Now()
+				deadline := start.Add(5 * time.Second)
+				logged := false
 				var poll func()
 				poll = func() {
 					sz := w.Unwrap().GetSize()
-					if (sz.X != width || sz.Y != height || rx.Pending() > 0) && time.Now().Before(deadline) {
+					settled := sz.X == width && sz.Y == height && rx.Pending() == 0
+					if !settled && time.Now().Before(deadline) {
 						app.After(20*time.Millisecond, poll)
 						return
+					}
+					if !logged {
+						logged = true
+						t.Logf("awaitSize %dx%d settled=%v after %s pending=%d %s", width, height, settled, time.Since(start).Round(time.Millisecond), rx.Pending(), describe())
 					}
 					f()
 				}
 				app.After(20*time.Millisecond, poll)
+			}
+			// diag is the geometry snapshot awaitSize logs with the settle outcome: the shell and
+			// client area, the visible composites (the toolbar bar panel among them) and the overflow
+			// menu population.
+			diag := func() string {
+				s := w.Unwrap()
+				var comps []string
+				if ns, ferr := qatree.Find(d, qatree.Selector{Class: "Composite"}); ferr == nil {
+					for _, n := range ns {
+						if n.Visible {
+							comps = append(comps, fmt.Sprintf("%s@%v", n.Path, n.Bounds))
+						}
+					}
+				}
+				items, _ := qatree.Find(d, qatree.Selector{Class: "MenuItem"})
+				return fmt.Sprintf("shell=%v client=%v inspector=%d menuItems=%d comps=%v %s", s.GetBounds(), s.GetClientArea(), look.InspectorWidth(w), len(items), comps, shellDiag(s))
 			}
 			app.After(500*time.Millisecond, func() {
 				check("narrow", "MenuItem")
@@ -238,14 +264,14 @@ func TestToolbarOverflow(t *testing.T) {
 					fail("fit clicks %d, want 1", clicks)
 				}
 				w.SetSize(1600, 600)
-				awaitSize(1600, 600, func() {
+				awaitSize(1600, 600, diag, func() {
 					check("wide", "Button")
 					restored, _ := qatree.Find(d, qatree.Selector{ID: "forward"})
 					if len(restored) != 1 || restored[0].Class != "Button" {
 						fail("restored group segment is %+v, want one Button with its ID", restored)
 					}
 					w.SetSize(900, 600)
-					awaitSize(900, 600, func() {
+					awaitSize(900, 600, diag, func() {
 						check("narrow again", "MenuItem")
 						w.Close()
 					})

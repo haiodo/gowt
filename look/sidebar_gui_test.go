@@ -85,7 +85,7 @@ func TestSidebarItemRow(t *testing.T) {
 	}
 	var native bool
 	var items int
-	var rowY, listY int32
+	var rowY, listY, itemX int32
 	onMain(func() {
 		err := gowt.Run(func(app *gowt.App) {
 			w := app.Window("sidebar")
@@ -100,8 +100,9 @@ func TestSidebarItemRow(t *testing.T) {
 			rowY, listY = row.GetBounds().Y, kids[len(kids)-1].GetBounds().Y
 			if c, ok := row.Impl().(*swt.Composite); ok {
 				for _, ch := range c.GetChildren() {
-					if tb, ok := ch.Impl().(*swt.ToolBar); ok {
-						items += int(tb.GetItemCount())
+					if _, ok := ch.Impl().(*swt.Button); ok {
+						items++
+						itemX = ch.GetBounds().X
 					}
 				}
 			}
@@ -115,7 +116,12 @@ func TestSidebarItemRow(t *testing.T) {
 		t.Skip("native toolbar")
 	}
 	if items != 1 {
-		t.Errorf("sidebar row has %d tool items, want 1", items)
+		t.Errorf("sidebar row has %d icon buttons, want 1", items)
+	}
+	// Leading alignment: the first command sits at the row grid's own left padding, wherever the
+	// sidebar margin places the row.
+	if want := int32(gowt.Scaled(8)); itemX != want {
+		t.Errorf("sidebar command starts at x %d, want the leading padding at %d", itemX, want)
 	}
 	if rowY >= listY {
 		t.Errorf("sidebar row at y %d, not above the list at y %d", rowY, listY)

@@ -60,6 +60,15 @@ func TestInspectorWidthAt(t *testing.T) {
 	}
 }
 
+// The inspector asks only for its 160-point minimum: strip items that do not fit overflow into
+// the More menu, so a requested width below the strip's preferred size stays settable.
+func TestInspectorMinWidth(t *testing.T) {
+	p := &pane{kind: inspectorPane}
+	if got := p.minWidth(); got != minInspectorWidth() {
+		t.Errorf("inspector minWidth %d, want the %d minimum", got, minInspectorWidth())
+	}
+}
+
 // room is what a pane takes from the content, nothing for a missing or hidden pane.
 func TestPaneRoom(t *testing.T) {
 	var none *pane

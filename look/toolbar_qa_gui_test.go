@@ -15,8 +15,8 @@ import (
 	"github.com/haiodo/gowt/svg"
 )
 
-// The order of SetToolbar and SetSidebar must not matter (the sidebar rebuilds the macOS toolbar), the
-// toolbar buttons are ToolItem nodes that Click runs, and FocusSearch gives the search field the focus.
+// The order of SetToolbar and SetSidebar must not matter (the sidebar rebuilds the macOS toolbar),
+// Click runs the toolbar buttons, and FocusSearch gives the search field the focus.
 func TestToolbarQA(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
@@ -87,8 +87,21 @@ func TestToolbarQA(t *testing.T) {
 			for _, e := range errs {
 				t.Error(e)
 			}
-			if button.Class != "ToolItem" || button.Text != "New" || seg.Class != "ToolItem" || seg.Text != "Back" {
-				t.Errorf("nodes %+v and %+v, want ToolItems titled New and Back", button, seg)
+			if runtime.GOOS == "darwin" {
+				if button.Class != "ToolItem" || button.Text != "New" || seg.Class != "ToolItem" || seg.Text != "Back" {
+					t.Errorf("nodes %+v and %+v, want ToolItems titled New and Back", button, seg)
+				}
+			} else {
+				if button.Class != "Button" || seg.Class != "Button" {
+					t.Errorf("nodes %+v and %+v, want icon Buttons", button, seg)
+				}
+				for _, n := range []qatree.Node{button, seg} {
+					// Native widget metrics win over the ControlHeight hint (GTK: 30 against 28), as for
+					// the Search field: the buttons stay square at the native size.
+					if n.Bounds[2] != n.Bounds[3] || n.Bounds[2] <= 0 {
+						t.Errorf("%s bounds %v, want a square of the native size", n.ID, n.Bounds)
+					}
+				}
 			}
 			if clicks != 2 || back != 1 {
 				t.Errorf("clicks: New %d, Back %d, want 2 and 1", clicks, back)
@@ -124,14 +137,20 @@ func TestToolbarOverflow(t *testing.T) {
 			doc := []byte(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`)
 			items = append(items,
 				look.ToolbarItem{Title: "Image", ID: "image", Icon: app.ImageFromProvider(svg.NewImageDataProvider(doc, 16, 16, "#000000")), IconSVG: doc, Symbol: "plus"},
-				look.ToolbarItem{Title: "SVG", ID: "svg", IconSVG: doc})
+				look.ToolbarItem{Title: "SVG", ID: "svg", IconSVG: doc},
+				look.ToolbarItem{Group: []look.ToolbarItem{{Title: "Forward", ID: "forward", Symbol: "chevron.forward"}}})
 			clicks := 0
 			enabled := rx.New(false)
 			items = append(items,
 				look.ToolbarItem{Space: true},
 				look.ToolbarItem{Title: "Fit to Window", ID: "fit", Symbol: "arrow.up.left.and.arrow.down.right", Enabled: enabled, OnClick: func() { clicks++ }},
 				look.ToolbarItem{Title: "Comment Mode", ID: "comment", Symbol: "text.bubble"})
+			for i := 0; i < 8; i++ {
+				items = append(items, look.ToolbarItem{Title: fmt.Sprintf("Inspector %d", i), ID: fmt.Sprintf("inspector-%d", i), Symbol: "plus", Inspector: true})
+			}
 			look.SetToolbar(w, items...)
+			least := gowt.Scaled(160)
+			look.SetInspectorWidth(w, least)
 			w.SetSize(900, 600)
 			w.Show()
 			d := app.Unwrap()
@@ -152,21 +171,42 @@ func TestToolbarOverflow(t *testing.T) {
 					}
 				}
 				client := w.Unwrap().GetClientArea()
-				buttons, _ := qatree.Find(d, qatree.Selector{Class: "ToolItem"})
-				for _, button := range buttons {
-					if button.Visible && int32(button.Bounds[0]+button.Bounds[2]) > client.X+client.Width {
-						fail("%s: %s ends past the client area: %v", step, button.ID, button.Bounds)
+				for _, class := range []string{"Button", "ToolItem"} {
+					buttons, _ := qatree.Find(d, qatree.Selector{Class: class})
+					for _, button := range buttons {
+						if button.Visible && int32(button.Bounds[0]+button.Bounds[2]) > client.X+client.Width {
+							fail("%s: %s ends past the client area: %v", step, button.ID, button.Bounds)
+						}
+						// Native widget metrics win over the ControlHeight hint (GTK: 30 against 28): the
+						// buttons stay square at the native size.
+						if class == "Button" && button.Visible && (button.Bounds[2] != button.Bounds[3] || button.Bounds[2] <= 0) {
+							fail("%s: %s bounds %v, want a square of the native size", step, button.ID, button.Bounds)
+						}
 					}
 				}
 			}
 			app.After(500*time.Millisecond, func() {
 				check("narrow", "MenuItem")
+				if got := look.InspectorWidth(w); got != least {
+					fail("inspector width %d, want the requested minimum %d", got, least)
+				}
+				last, _ := qatree.Find(d, qatree.Selector{ID: "inspector-7"})
+				if len(last) != 1 || last[0].Class != "MenuItem" {
+					fail("last inspector command is %+v, want one overflow MenuItem", last)
+				}
 				if !look.FocusSearch(w) {
 					fail("FocusSearch did not find the hidden field")
 				}
 				search, _ := qatree.Find(d, qatree.Selector{ID: "search"})
 				if len(search) != 1 || search[0].Class != "Text" || !search[0].Focused {
 					fail("revealed search is %+v, want one focused Text", search)
+				} else {
+					// Windows SEARCH reserves EM_SETMARGINS room for its search and clear icons and a
+					// 2 px frame, so the outer control exceeds the 6*ControlHeight content hint; the hint
+					// is the text area, not the bounds.
+					if search[0].Bounds[2] < 6*gowt.Spacing.ControlHeight || search[0].Bounds[3] < gowt.Spacing.ControlHeight {
+						fail("search bounds %v, want at least %d by %d of text area", search[0].Bounds, 6*gowt.Spacing.ControlHeight, gowt.Spacing.ControlHeight)
+					}
 				}
 				enabled.Set(true)
 				if actErr := qatree.Act(d, qatree.Selector{ID: "fit"}, "click", json.RawMessage(nil)); actErr != nil {
@@ -177,7 +217,11 @@ func TestToolbarOverflow(t *testing.T) {
 				}
 				w.SetSize(1600, 600)
 				app.After(500*time.Millisecond, func() {
-					check("wide", "ToolItem")
+					check("wide", "Button")
+					restored, _ := qatree.Find(d, qatree.Selector{ID: "forward"})
+					if len(restored) != 1 || restored[0].Class != "Button" {
+						fail("restored group segment is %+v, want one Button with its ID", restored)
+					}
 					w.SetSize(900, 600)
 					app.After(500*time.Millisecond, func() {
 						check("narrow again", "MenuItem")

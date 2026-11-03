@@ -473,8 +473,8 @@ func SetInspectorVisible(w *gowt.Window, on bool) { inspectorOf(w).setVisible(on
 // InspectorVisible reports whether the inspector of a SetInspector window is shown; false without one.
 func InspectorVisible(w *gowt.Window) bool { return inspectorOf(w).visible() }
 
-// SetInspectorWidth sets the inspector width in points, at least 160, and on Windows and Linux at
-// least the room of its Inspector toolbar items; a hidden inspector comes back at it.
+// SetInspectorWidth sets the inspector width in points, at least 160; toolbar items that do not fit
+// overflow into the strip's More menu. A hidden inspector comes back at it.
 func SetInspectorWidth(w *gowt.Window, width int) { inspectorOf(w).setWidth(width) }
 
 // InspectorWidth is the inspector width in points, also while it is hidden; 0 without SetInspector.
@@ -698,20 +698,15 @@ func (p *pane) notify() {
 
 // minWidth is the narrowest pane. For the sidebar that is minSidebarWidth, or the room its Sidebar
 // toolbar items need where that is more (the macOS toolbar group up to its inset from the edge, the
-// Windows and Linux row); for the inspector minInspectorWidth, or the Windows and Linux strip of its
-// Inspector items.
+// Windows and Linux row); for the inspector minInspectorWidth, with toolbar overflow fitting its strip.
 func (p *pane) minWidth() int32 {
 	if p.kind == bottomPane {
 		return minBottomHeight()
 	}
-	b := bars[p.l.w.Unwrap()]
 	if p.kind == inspectorPane {
-		m := minInspectorWidth()
-		if b != nil && b.strip != nil {
-			m = max(m, b.strip.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X)
-		}
-		return m
+		return minInspectorWidth()
 	}
+	b := bars[p.l.w.Unwrap()]
 	m := max(minSidebarWidth(), p.l.itemsMin)
 	if b != nil && b.side != nil {
 		m = max(m, b.side.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X)

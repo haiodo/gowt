@@ -2,6 +2,7 @@ package look
 
 import (
 	"fmt"
+	"runtime"
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/internal/jrt"
@@ -225,12 +226,11 @@ func (b *toolbarBar) fill() {
 	}
 	b.newOverflow(p, cells, &b.icons)
 	if len(over) > 0 {
-		// The row goes first in the sidebar, its items at the right end, as over the macOS sidebar.
-		side.Add(gowt.Grid(len(over)+2, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.GrowX(), gowt.Ref(&b.side)))
+		// The row goes first in the sidebar, with commands at the leading edge as in a navigation pane.
+		side.Add(gowt.Grid(len(over)+1, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.GrowX(), gowt.Ref(&b.side)))
 		b.side.Unwrap().MoveAbove(nil)
 		b.side.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
-		b.side.Add(gowt.Spacer())
-		cells = []barCell{{flex: true}}
+		cells = nil
 		for _, it := range over {
 			c := b.item(b.side, it, &b.sideIcons)
 			cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
@@ -266,7 +266,7 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		return nil
 	case it.OnSearch != nil:
 		var t *gowt.TextView
-		opts := []gowt.Option{gowt.Search(), gowt.Size(gowt.Scaled(240), gowt.Spacing.ControlHeight), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)}
+		opts := []gowt.Option{gowt.Search(), gowt.Size(6*gowt.Spacing.ControlHeight, gowt.Spacing.ControlHeight), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&t)}
 		if it.ID != "" {
 			opts = append(opts, gowt.ID(it.ID))
 		}
@@ -300,8 +300,6 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		}
 		return bt
 	default:
-		var tb *gowt.ToolBarView
-		p.Add(gowt.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Size(0, gowt.Spacing.ControlHeight), gowt.Ref(&tb)))
 		segs := it.Group
 		if len(segs) == 0 {
 			segs = []ToolbarItem{it}
@@ -309,6 +307,28 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		size := 16
 		if it.Small {
 			size = 13
+		}
+		iconOnly := true
+		for _, g := range segs {
+			_, symbol := barSymbols[g.Symbol]
+			iconOnly = iconOnly && (g.Icon != nil || len(g.IconSVG) > 0 || symbol)
+		}
+		// The square Button is the Windows and Linux fallback; macOS keeps ToolItem, which supplies the
+		// disabled image and the ToolItem nodes the QA tree expects there.
+		if iconOnly && runtime.GOOS != "darwin" {
+			if len(segs) == 1 {
+				return toolButton(p, segs[0], size, icons)
+			}
+			var group *gowt.Panel
+			p.Add(gowt.HBox(gowt.Gap(0), gowt.Padding(0), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&group)))
+			for _, g := range segs {
+				toolButton(group, g, size, icons)
+			}
+			return group
+		}
+		var tb *gowt.ToolBarView
+		p.Add(gowt.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Size(0, gowt.Spacing.ControlHeight), gowt.Ref(&tb)))
+		if it.Small {
 			tb.SetFont(barSmallFont())
 		}
 		for _, g := range segs {
@@ -316,6 +336,39 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		}
 		return tb
 	}
+}
+
+// toolButton adds a square icon button; ToolItem.SetWidth sizes only separators on Windows and Linux.
+func toolButton(p *gowt.Panel, it ToolbarItem, size int, icons *[]func(on, off string) []*swt.Image) *gowt.ButtonView {
+	var bt *gowt.ButtonView
+	opts := []gowt.Option{gowt.Borderless(), gowt.Place(gowt.AlignStart, gowt.AlignCenter),
+		gowt.Size(gowt.Spacing.ControlHeight, gowt.Spacing.ControlHeight), gowt.Tooltip(it.Title), gowt.AccessibleLabel(it.Title), gowt.Ref(&bt)}
+	if it.OnClick != nil {
+		opts = append(opts, gowt.OnClick(it.OnClick))
+	}
+	if it.ID != "" {
+		opts = append(opts, gowt.ID(it.ID))
+	}
+	p.Add(gowt.Button("", opts...))
+	shape, symbol := barSymbols[it.Symbol]
+	switch {
+	case it.Icon != nil:
+		bt.Unwrap().SetImage(it.Icon.Unwrap())
+	case len(it.IconSVG) > 0 || symbol:
+		data := string(it.IconSVG)
+		if len(it.IconSVG) == 0 {
+			data = fmt.Sprintf(barSVG, shape)
+		}
+		*icons = append(*icons, func(on, _ string) []*swt.Image {
+			img := swt.NewImageDeviceImageDataProvider(bt.Unwrap().GetDisplay(), svg.NewImageDataProvider([]byte(data), size, size, on))
+			bt.Unwrap().SetImage(img)
+			return []*swt.Image{img}
+		})
+	}
+	if it.Enabled != nil {
+		gowt.Watch(bt, it.Enabled, bt.SetEnabled)
+	}
+	return bt
 }
 
 type barCell struct {
@@ -407,7 +460,9 @@ func (o *barOverflow) fit() {
 	if o.fitting || o.panel.Unwrap().IsDisposed() {
 		return
 	}
-	width := o.panel.Unwrap().GetClientArea().Width
+	// required counts the grid's own padding, so it compares against the outer width, not the
+	// client area: a strip sized to its content would otherwise always overflow by the padding.
+	width := o.panel.Unwrap().GetBounds().Width
 	if width <= 0 {
 		return
 	}
@@ -552,9 +607,20 @@ func setBarIDs(w gowt.Widget, it ToolbarItem, restore bool) {
 			ti.SetDataKeyValue("gowt.id", segmentID)
 		}
 	case *gowt.ButtonView:
+		if restore && len(it.Group) == 1 {
+			id = it.Group[0].ID
+		}
 		v.Unwrap().SetDataKeyValue("gowt.id", id)
 	case *gowt.TextView:
 		v.Unwrap().SetDataKeyValue("gowt.id", id)
+	case *gowt.Panel:
+		for i, child := range v.Unwrap().GetChildren() {
+			segmentID := ""
+			if restore && i < len(it.Group) {
+				segmentID = it.Group[i].ID
+			}
+			child.SetDataKeyValue("gowt.id", segmentID)
+		}
 	}
 }
 
@@ -567,6 +633,8 @@ func barControl(w gowt.Widget) *swt.Control {
 	case *gowt.TextView:
 		return &v.Unwrap().Control
 	case *gowt.LabelView:
+		return &v.Unwrap().Control
+	case *gowt.Panel:
 		return &v.Unwrap().Control
 	}
 	return nil
@@ -739,6 +807,11 @@ func barTop(s *swt.Shell, ct, ib [4]int32) ([4]int32, [4]int32) {
 			ib = [4]int32{ib[0], ib[1] + h, ib[2], max(ib[3]-h, 0)}
 		} else {
 			sw := min(st.ComputeSize(swt.DEFAULT, h).X, w)
+			for _, o := range b.overflows {
+				if o.panel == b.strip {
+					sw = min(max(sw, o.required(nil)), w)
+				}
+			}
 			w -= sw
 			st.SetBounds(ct[0]+w, ct[1], sw, h)
 		}

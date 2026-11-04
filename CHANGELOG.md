@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.15.3 (2026-11-04)
+
+- Fixed: Windows WebView2 reports browser and renderer process failures through `OnNavigationFailed`. Renderer and frame-renderer exits abort only the operations in flight, so later navigation and evaluation can recover; a browser-process exit remains fatal.
+- Fixed: macOS `TreeView.Edit` raises its inline editor above the native outline row views. The edited row no longer draws over the field; native typing, Enter and Esc are covered by GUI checks.
+- Tests: the toolbar overflow check waits for the applied window size and adapts its fixture to Windows display limits and high-DPI metrics. JUnit list failures now include the list contents.
+
 ## v0.15.2 (2026-11-03)
 
 - New: `look.SetSidebarFullHeight(w, on)` opts into a flush full-height macOS sidebar. Call it before or after `SetSidebar`. A top-aligned native List, Table or Tree scrolls under the toolbar's blurred header, and the window buttons move right by the 7-point glass inset. Passing `false` restores the floating sidebar, scroll inset policy and AppKit button positions. Windows and Linux keep their regular layout.

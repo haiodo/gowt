@@ -1,5 +1,7 @@
 # Contributing to gowt
 
+Planned repository-wide work is tracked in [ROADMAP.md](ROADMAP.md).
+
 ## Build and test
 
 Go 1.27 or newer (see `go.mod`). No C compiler, no Java.

@@ -97,7 +97,7 @@ func main() {
 
 <img src="docs/img/art/readme-docs.png" alt="Gopher reading on a pile of books" width="160" align="right">
 
-Start at [docs/README.md](docs/README.md). Each topic has a page and a runnable program:
+Start at [docs/README.md](docs/README.md). The public development plan is in [ROADMAP.md](ROADMAP.md). Each topic has a page and a runnable program:
 
 | Topic | Page | Example |
 |---|---|---|

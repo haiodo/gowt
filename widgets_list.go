@@ -651,6 +651,7 @@ func (t *TreeView) Edit(n *Node, onCommit func(string), onCancel func()) {
 		}
 	}))
 	editor.SetEditor(text, n.it, 0)
+	raiseTreeEditor(&text.Control)
 	text.SelectAll()
 	text.SetFocus()
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/ebitengine/purego/objc"
 	"github.com/haiodo/gowt/internal/cocoa"
+	"github.com/haiodo/gowt/swt"
 )
 
 func TestTreeEditNativeKeys(t *testing.T) {
@@ -28,6 +29,22 @@ func TestTreeEditNativeKeys(t *testing.T) {
 				commit := func(value string) { commits++; node.SetText(value) }
 				cancel := func() { cancels++ }
 				tree.Edit(node, commit, cancel)
+				var field *swt.Text
+				for _, child := range tree.t.GetChildren() {
+					if text, ok := child.Impl().(*swt.Text); ok && !text.IsDisposed() {
+						field = text
+					}
+				}
+				if field == nil {
+					t.Fatal("no tree editor")
+				}
+				// The row views of a macOS tree are subviews of the outline view; the editor
+				// must sit above them, or it draws behind the row it edits.
+				sv := field.View.Superview()
+				subs := sv.Subviews()
+				if top := subs.ObjectAtIndex(subs.Count() - 1); top.Id != field.View.Id {
+					t.Error("editor is not above the tree row views")
+				}
 				win := tree.t.View.Window()
 				key := func(character string, keyCode uint16) {
 					s := cocoa.NSStringStringWith(character)

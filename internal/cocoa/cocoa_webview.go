@@ -106,26 +106,14 @@ func (this *WebView) InitWithFrame(frame NSRect, frameName *NSString, groupName 
 	if result == this.Id {
 		cond925 = this
 	} else {
-		var cond926 *WebView
-		if result != 0 {
-			cond926 = NewWebViewOverload1(result)
-		} else {
-			cond926 = nil
-		}
-		cond925 = (cond926)
+		cond925 = (orNil(result, NewWebViewOverload1))
 	}
 	return cond925
 }
 
 func (this *WebView) MainFrame() *WebFrame {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_mainFrame)
-	var cond927 *WebFrame
-	if result != 0 {
-		cond927 = NewWebFrameOverload1(result)
-	} else {
-		cond927 = nil
-	}
-	return cond927
+	return orNil(result, NewWebFrameOverload1)
 }
 
 func (this *WebView) Paste(sender *id) {

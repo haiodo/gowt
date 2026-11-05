@@ -60,13 +60,7 @@ func (this *NSFontPanel) PanelConvertFont(fontObj *NSFont) *NSFont {
 		cond266 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_panelConvertFont_, cond266)
-	var cond267 *NSFont
-	if result != 0 {
-		cond267 = NewNSFontOverload1(result)
-	} else {
-		cond267 = nil
-	}
-	return cond267
+	return orNil(result, NewNSFontOverload1)
 }
 
 func (this *NSFontPanel) SetPanelFont(fontObj *NSFont, flag bool) {
@@ -81,13 +75,7 @@ func (this *NSFontPanel) SetPanelFont(fontObj *NSFont, flag bool) {
 
 func NSFontPanelSharedFontPanel() *NSFontPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSFontPanel, OSSel_sharedFontPanel)
-	var cond269 *NSFontPanel
-	if result != 0 {
-		cond269 = NewNSFontPanelOverload1(result)
-	} else {
-		cond269 = nil
-	}
-	return cond269
+	return orNil(result, NewNSFontPanelOverload1)
 }
 
 func NSFontPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {

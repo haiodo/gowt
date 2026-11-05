@@ -54,13 +54,7 @@ func (this *NSSearchField) initNSSearchFieldOverload2(id *id) {
 
 func (this *NSSearchField) RecentSearches() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_recentSearches)
-	var cond630 *NSArray
-	if result != 0 {
-		cond630 = NewNSArrayOverload1(result)
-	} else {
-		cond630 = nil
-	}
-	return cond630
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func NSSearchFieldCellClass() int64 {

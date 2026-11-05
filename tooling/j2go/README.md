@@ -226,8 +226,10 @@ contract left open:
   initializer, a plain assignment RHS, or nested inside an argument/return expression) is
   lowered uniformly to a temp var declared with the ternary's resolved Go type, plus an
   `if/else` assigning it; nested lowering composes through the same "prelude" mechanism used for
-  instanceof. Not attempted: a bare ternary as a method's whole return expression (not present
-  in the 4 files) - would need the same treatment but wasn't exercised.
+  instanceof. One cocoa-only exception: `result != 0 ? new T(result) : null` with `result` an
+  int64 handle and the constructor taking that same handle is emitted as `orNil(result, NewT...)`
+  (`tryOrNil`, see internal/cocoa `orNil`) - the constructor reference is passed, so it still
+  runs once and only for a non-zero handle.
 - **`switch` expression with `yield`**: only the shape actually used by
   `RGB(float,float,float)` is supported - `target = switch (e) { case C -> { stmts; yield v; }
   ... };` lowers to a `switch` statement where each arm's statements are emitted as-is and the

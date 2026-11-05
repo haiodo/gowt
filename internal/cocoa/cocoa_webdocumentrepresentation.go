@@ -54,11 +54,5 @@ func (this *WebDocumentRepresentation) initWebDocumentRepresentationOverload2(id
 
 func (this *WebDocumentRepresentation) DocumentSource() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_documentSource)
-	var cond909 *NSString
-	if result != 0 {
-		cond909 = NewNSStringOverload1(result)
-	} else {
-		cond909 = nil
-	}
-	return cond909
+	return orNil(result, NewNSStringOverload1)
 }

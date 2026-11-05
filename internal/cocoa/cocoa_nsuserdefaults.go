@@ -60,13 +60,7 @@ func (this *NSUserDefaults) ObjectForKey(defaultName *NSString) *id {
 		cond795 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_objectForKey_, cond795)
-	var cond796 *id
-	if result != 0 {
-		cond796 = NewidOverload1(result)
-	} else {
-		cond796 = nil
-	}
-	return cond796
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSUserDefaults) RegisterDefaults(registrationDictionary *NSDictionary) {
@@ -97,22 +91,10 @@ func (this *NSUserDefaults) StringForKey(defaultName *NSString) *NSString {
 		cond799 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForKey_, cond799)
-	var cond800 *NSString
-	if result != 0 {
-		cond800 = NewNSStringOverload1(result)
-	} else {
-		cond800 = nil
-	}
-	return cond800
+	return orNil(result, NewNSStringOverload1)
 }
 
 func NSUserDefaultsStandardUserDefaults() *NSUserDefaults {
 	var result int64 = OSObjc_msgSend(OSClass_NSUserDefaults, OSSel_standardUserDefaults)
-	var cond801 *NSUserDefaults
-	if result != 0 {
-		cond801 = NewNSUserDefaultsOverload1(result)
-	} else {
-		cond801 = nil
-	}
-	return cond801
+	return orNil(result, NewNSUserDefaultsOverload1)
 }

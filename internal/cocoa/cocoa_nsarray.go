@@ -78,24 +78,12 @@ func (this *NSArray) IndexOfObjectIdenticalTo(anObject *id) int64 {
 
 func (this *NSArray) ObjectAtIndex(index int64) *id {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_objectAtIndex_, index)
-	var cond55 *id
-	if result != 0 {
-		cond55 = NewidOverload1(result)
-	} else {
-		cond55 = nil
-	}
-	return cond55
+	return orNil(result, NewidOverload1)
 }
 
 func NSArrayArray() *NSArray {
 	var result int64 = OSObjc_msgSend(OSClass_NSArray, OSSel_array)
-	var cond56 *NSArray
-	if result != 0 {
-		cond56 = NewNSArrayOverload1(result)
-	} else {
-		cond56 = nil
-	}
-	return cond56
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func NSArrayArrayWithObject(anObject *id) *NSArray {
@@ -106,11 +94,5 @@ func NSArrayArrayWithObject(anObject *id) *NSArray {
 		cond57 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSArray, OSSel_arrayWithObject_, cond57)
-	var cond58 *NSArray
-	if result != 0 {
-		cond58 = NewNSArrayOverload1(result)
-	} else {
-		cond58 = nil
-	}
-	return cond58
+	return orNil(result, NewNSArrayOverload1)
 }

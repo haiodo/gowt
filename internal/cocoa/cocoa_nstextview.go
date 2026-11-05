@@ -58,13 +58,7 @@ func (this *NSTextView) CharacterIndexForInsertionAtPoint(point NSPoint) int64 {
 
 func (this *NSTextView) DefaultParagraphStyle() *NSParagraphStyle {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_defaultParagraphStyle)
-	var cond733 *NSParagraphStyle
-	if result != 0 {
-		cond733 = NewNSParagraphStyleOverload1(result)
-	} else {
-		cond733 = nil
-	}
-	return cond733
+	return orNil(result, NewNSParagraphStyleOverload1)
 }
 
 func (this *NSTextView) DragSelectionWithEvent(event *NSEvent, mouseOffset NSSize, slideBack bool) bool {
@@ -83,46 +77,22 @@ func (this *NSTextView) DrawViewBackgroundInRect(rect NSRect) {
 
 func (this *NSTextView) LayoutManager() *NSLayoutManager {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_layoutManager)
-	var cond735 *NSLayoutManager
-	if result != 0 {
-		cond735 = NewNSLayoutManagerOverload1(result)
-	} else {
-		cond735 = nil
-	}
-	return cond735
+	return orNil(result, NewNSLayoutManagerOverload1)
 }
 
 func (this *NSTextView) LinkTextAttributes() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_linkTextAttributes)
-	var cond736 *NSDictionary
-	if result != 0 {
-		cond736 = NewNSDictionaryOverload1(result)
-	} else {
-		cond736 = nil
-	}
-	return cond736
+	return orNil(result, NewNSDictionaryOverload1)
 }
 
 func (this *NSTextView) MarkedTextAttributes() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_markedTextAttributes)
-	var cond737 *NSDictionary
-	if result != 0 {
-		cond737 = NewNSDictionaryOverload1(result)
-	} else {
-		cond737 = nil
-	}
-	return cond737
+	return orNil(result, NewNSDictionaryOverload1)
 }
 
 func (this *NSTextView) SelectedTextAttributes() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_selectedTextAttributes)
-	var cond738 *NSDictionary
-	if result != 0 {
-		cond738 = NewNSDictionaryOverload1(result)
-	} else {
-		cond738 = nil
-	}
-	return cond738
+	return orNil(result, NewNSDictionaryOverload1)
 }
 
 func (this *NSTextView) SetAllowsUndo(allowsUndo bool) {
@@ -187,22 +157,10 @@ func (this *NSTextView) ShouldDrawInsertionPoint() bool {
 
 func (this *NSTextView) TextContainer() *NSTextContainer {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_textContainer)
-	var cond743 *NSTextContainer
-	if result != 0 {
-		cond743 = NewNSTextContainerOverload1(result)
-	} else {
-		cond743 = nil
-	}
-	return cond743
+	return orNil(result, NewNSTextContainerOverload1)
 }
 
 func (this *NSTextView) TextStorage() *NSTextStorage {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_textStorage)
-	var cond744 *NSTextStorage
-	if result != 0 {
-		cond744 = NewNSTextStorageOverload1(result)
-	} else {
-		cond744 = nil
-	}
-	return cond744
+	return orNil(result, NewNSTextStorageOverload1)
 }

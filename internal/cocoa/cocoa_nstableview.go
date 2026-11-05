@@ -118,13 +118,7 @@ func (this *NSTableView) DragImageForRowsWithIndexes(dragRows *NSIndexSet, table
 		cond692 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload60(this.Id, OSSel_dragImageForRowsWithIndexes_tableColumns_event_offset_, cond690, cond691, cond692, dragImageOffset)
-	var cond693 *NSImage
-	if result != 0 {
-		cond693 = NewNSImageOverload1(result)
-	} else {
-		cond693 = nil
-	}
-	return cond693
+	return orNil(result, NewNSImageOverload1)
 }
 
 func (this *NSTableView) DrawBackgroundInClipRect(clipRect NSRect) {
@@ -139,13 +133,7 @@ func (this *NSTableView) FrameOfCellAtColumn(column int64, row int64) NSRect {
 
 func (this *NSTableView) HeaderView() *NSTableHeaderView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_headerView)
-	var cond694 *NSTableHeaderView
-	if result != 0 {
-		cond694 = NewNSTableHeaderViewOverload1(result)
-	} else {
-		cond694 = nil
-	}
-	return cond694
+	return orNil(result, NewNSTableHeaderViewOverload1)
 }
 
 func (this *NSTableView) HighlightSelectionInClipRect(clipRect NSRect) {
@@ -184,13 +172,7 @@ func (this *NSTableView) NumberOfSelectedRows() int64 {
 
 func (this *NSTableView) PreparedCellAtColumn(column int64, row int64) *NSCell {
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_preparedCellAtColumn_row_, column, row)
-	var cond695 *NSCell
-	if result != 0 {
-		cond695 = NewNSCellOverload1(result)
-	} else {
-		cond695 = nil
-	}
-	return cond695
+	return orNil(result, NewNSCellOverload1)
 }
 
 func (this *NSTableView) RectOfColumn(column int64) NSRect {
@@ -261,13 +243,7 @@ func (this *NSTableView) SelectedRow() int64 {
 
 func (this *NSTableView) SelectedRowIndexes() *NSIndexSet {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_selectedRowIndexes)
-	var cond699 *NSIndexSet
-	if result != 0 {
-		cond699 = NewNSIndexSetOverload1(result)
-	} else {
-		cond699 = nil
-	}
-	return cond699
+	return orNil(result, NewNSIndexSetOverload1)
 }
 
 func (this *NSTableView) SetAllowsColumnReordering(allowsColumnReordering bool) {
@@ -374,13 +350,7 @@ func (this *NSTableView) SetUsesAlternatingRowBackgroundColors(usesAlternatingRo
 
 func (this *NSTableView) TableColumns() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_tableColumns)
-	var cond707 *NSArray
-	if result != 0 {
-		cond707 = NewNSArrayOverload1(result)
-	} else {
-		cond707 = nil
-	}
-	return cond707
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSTableView) Tile() {

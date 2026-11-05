@@ -54,13 +54,7 @@ func (this *NSImageView) initNSImageViewOverload2(id *id) {
 
 func (this *NSImageView) Image() *NSImage {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_image)
-	var cond322 *NSImage
-	if result != 0 {
-		cond322 = NewNSImageOverload1(result)
-	} else {
-		cond322 = nil
-	}
-	return cond322
+	return orNil(result, NewNSImageOverload1)
 }
 
 func (this *NSImageView) SetImage(image *NSImage) {

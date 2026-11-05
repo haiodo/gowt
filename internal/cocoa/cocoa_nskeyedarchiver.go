@@ -60,11 +60,5 @@ func NSKeyedArchiverArchivedDataWithRootObject(rootObject *id) *NSData {
 		cond330 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSKeyedArchiver, OSSel_archivedDataWithRootObject_, cond330)
-	var cond331 *NSData
-	if result != 0 {
-		cond331 = NewNSDataOverload1(result)
-	} else {
-		cond331 = nil
-	}
-	return cond331
+	return orNil(result, NewNSDataOverload1)
 }

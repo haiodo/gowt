@@ -60,13 +60,7 @@ func (this *NSFileManager) EnumeratorAtPath(path *NSString) *NSDirectoryEnumerat
 		cond244 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_enumeratorAtPath_, cond244)
-	var cond245 *NSDirectoryEnumerator
-	if result != 0 {
-		cond245 = NewNSDirectoryEnumeratorOverload1(result)
-	} else {
-		cond245 = nil
-	}
-	return cond245
+	return orNil(result, NewNSDirectoryEnumeratorOverload1)
 }
 
 func (this *NSFileManager) FileExistsAtPath(path *NSString) bool {
@@ -101,11 +95,5 @@ func (this *NSFileManager) IsExecutableFileAtPath(path *NSString) bool {
 
 func NSFileManagerDefaultManager() *NSFileManager {
 	var result int64 = OSObjc_msgSend(OSClass_NSFileManager, OSSel_defaultManager)
-	var cond249 *NSFileManager
-	if result != 0 {
-		cond249 = NewNSFileManagerOverload1(result)
-	} else {
-		cond249 = nil
-	}
-	return cond249
+	return orNil(result, NewNSFileManagerOverload1)
 }

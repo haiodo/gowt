@@ -71,13 +71,7 @@ func (this *NSObject) AccessibilityAttributeValue(attribute *NSString, parameter
 		cond443 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_accessibilityAttributeValue_forParameter_, cond442, cond443)
-	var cond444 *id
-	if result != 0 {
-		cond444 = NewidOverload1(result)
-	} else {
-		cond444 = nil
-	}
-	return cond444
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSObject) AccessibilitySetOverrideValue(value *id, attribute *NSString) bool {
@@ -108,13 +102,7 @@ func (this *NSObject) DraggedImage(image *NSImage, screenPoint NSPoint, operatio
 
 func (this *NSObject) DraggingDestinationWindow() *NSWindow {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_draggingDestinationWindow)
-	var cond448 *NSWindow
-	if result != 0 {
-		cond448 = NewNSWindowOverload1(result)
-	} else {
-		cond448 = nil
-	}
-	return cond448
+	return orNil(result, NewNSWindowOverload1)
 }
 
 func (this *NSObject) DraggingLocation() NSPoint {
@@ -125,13 +113,7 @@ func (this *NSObject) DraggingLocation() NSPoint {
 
 func (this *NSObject) DraggingPasteboard() *NSPasteboard {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_draggingPasteboard)
-	var cond449 *NSPasteboard
-	if result != 0 {
-		cond449 = NewNSPasteboardOverload1(result)
-	} else {
-		cond449 = nil
-	}
-	return cond449
+	return orNil(result, NewNSPasteboardOverload1)
 }
 
 func (this *NSObject) DraggingSourceOperationMask() int64 {
@@ -262,13 +244,7 @@ func (this *NSObject) Autorelease() *NSObject {
 	if result == this.Id {
 		cond465 = this
 	} else {
-		var cond466 *NSObject
-		if result != 0 {
-			cond466 = NewNSObjectOverload1(result)
-		} else {
-			cond466 = nil
-		}
-		cond465 = (cond466)
+		cond465 = (orNil(result, NewNSObjectOverload1))
 	}
 	return cond465
 }
@@ -285,13 +261,7 @@ func (this *NSObject) CancelAuthenticationChallenge(challenge *NSURLAuthenticati
 
 func (this *NSObject) ClassName() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_className)
-	var cond468 *NSString
-	if result != 0 {
-		cond468 = NewNSStringOverload1(result)
-	} else {
-		cond468 = nil
-	}
-	return cond468
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSObject) ConformsToProtocol(aProtocol *Protocol) bool {
@@ -306,24 +276,12 @@ func (this *NSObject) ConformsToProtocol(aProtocol *Protocol) bool {
 
 func (this *NSObject) Copy() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_copy)
-	var cond470 *id
-	if result != 0 {
-		cond470 = NewidOverload1(result)
-	} else {
-		cond470 = nil
-	}
-	return cond470
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSObject) Description() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_description)
-	var cond471 *NSString
-	if result != 0 {
-		cond471 = NewNSStringOverload1(result)
-	} else {
-		cond471 = nil
-	}
-	return cond471
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSObject) Init() *NSObject {
@@ -332,13 +290,7 @@ func (this *NSObject) Init() *NSObject {
 	if result == this.Id {
 		cond472 = this
 	} else {
-		var cond473 *NSObject
-		if result != 0 {
-			cond473 = NewNSObjectOverload1(result)
-		} else {
-			cond473 = nil
-		}
-		cond472 = (cond473)
+		cond472 = (orNil(result, NewNSObjectOverload1))
 	}
 	return cond472
 }
@@ -359,13 +311,7 @@ func (this *NSObject) IsKindOfClass(aClass int64) bool {
 
 func (this *NSObject) MutableCopy() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_mutableCopy)
-	var cond475 *id
-	if result != 0 {
-		cond475 = NewidOverload1(result)
-	} else {
-		cond475 = nil
-	}
-	return cond475
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSObject) PerformSelector(aSelector int64, anArgument *id, delay float64, modes *NSArray) {
@@ -408,13 +354,7 @@ func (this *NSObject) Retain() *NSObject {
 	if result == this.Id {
 		cond479 = this
 	} else {
-		var cond480 *NSObject
-		if result != 0 {
-			cond480 = NewNSObjectOverload1(result)
-		} else {
-			cond480 = nil
-		}
-		cond479 = (cond480)
+		cond479 = (orNil(result, NewNSObjectOverload1))
 	}
 	return cond479
 }
@@ -467,13 +407,7 @@ func (this *NSObject) ValueForKey(key *NSString) *id {
 		cond485 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_valueForKey_, cond485)
-	var cond486 *id
-	if result != 0 {
-		cond486 = NewidOverload1(result)
-	} else {
-		cond486 = nil
-	}
-	return cond486
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSObject) AddEventListener(type_ *NSString, listener *id, useCapture bool) {

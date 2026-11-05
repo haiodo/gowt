@@ -58,13 +58,7 @@ func (this *NSMutableDictionary) InitWithCapacity(numItems int64) *NSMutableDict
 	if result == this.Id {
 		cond398 = this
 	} else {
-		var cond399 *NSMutableDictionary
-		if result != 0 {
-			cond399 = NewNSMutableDictionaryOverload1(result)
-		} else {
-			cond399 = nil
-		}
-		cond398 = (cond399)
+		cond398 = (orNil(result, NewNSMutableDictionaryOverload1))
 	}
 	return cond398
 }
@@ -123,13 +117,7 @@ func (this *NSMutableDictionary) SetValueOnNSObject(value *id, key *NSString) {
 
 func NSMutableDictionaryDictionaryWithCapacity(numItems int64) *NSMutableDictionary {
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableDictionary, OSSel_dictionaryWithCapacity_, numItems)
-	var cond406 *NSMutableDictionary
-	if result != 0 {
-		cond406 = NewNSMutableDictionaryOverload1(result)
-	} else {
-		cond406 = nil
-	}
-	return cond406
+	return orNil(result, NewNSMutableDictionaryOverload1)
 }
 
 func NSMutableDictionaryDictionaryWithObject(object *id, key *id) *NSMutableDictionary {
@@ -146,11 +134,5 @@ func NSMutableDictionaryDictionaryWithObject(object *id, key *id) *NSMutableDict
 		cond408 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload54(OSClass_NSMutableDictionary, OSSel_dictionaryWithObject_forKey_, cond407, cond408)
-	var cond409 *NSMutableDictionary
-	if result != 0 {
-		cond409 = NewNSMutableDictionaryOverload1(result)
-	} else {
-		cond409 = nil
-	}
-	return cond409
+	return orNil(result, NewNSMutableDictionaryOverload1)
 }

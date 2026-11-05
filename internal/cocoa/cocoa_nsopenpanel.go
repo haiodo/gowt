@@ -54,13 +54,7 @@ func (this *NSOpenPanel) initNSOpenPanelOverload2(id *id) {
 
 func (this *NSOpenPanel) Filenames() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_filenames)
-	var cond499 *NSArray
-	if result != 0 {
-		cond499 = NewNSArrayOverload1(result)
-	} else {
-		cond499 = nil
-	}
-	return cond499
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSOpenPanel) SetAccessoryViewDisclosed(accessoryViewDisclosed bool) {
@@ -81,24 +75,12 @@ func (this *NSOpenPanel) SetCanChooseFiles(canChooseFiles bool) {
 
 func NSOpenPanelOpenPanel() *NSOpenPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSOpenPanel, OSSel_openPanel)
-	var cond500 *NSOpenPanel
-	if result != 0 {
-		cond500 = NewNSOpenPanelOverload1(result)
-	} else {
-		cond500 = nil
-	}
-	return cond500
+	return orNil(result, NewNSOpenPanelOverload1)
 }
 
 func NSOpenPanelSavePanel() *NSSavePanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSOpenPanel, OSSel_savePanel)
-	var cond501 *NSSavePanel
-	if result != 0 {
-		cond501 = NewNSSavePanelOverload1(result)
-	} else {
-		cond501 = nil
-	}
-	return cond501
+	return orNil(result, NewNSSavePanelOverload1)
 }
 
 func NSOpenPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {

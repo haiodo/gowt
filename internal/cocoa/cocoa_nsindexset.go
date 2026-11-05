@@ -70,13 +70,7 @@ func (this *NSIndexSet) InitWithIndex(value int64) *NSIndexSet {
 	if result == this.Id {
 		cond324 = this
 	} else {
-		var cond325 *NSIndexSet
-		if result != 0 {
-			cond325 = NewNSIndexSetOverload1(result)
-		} else {
-			cond325 = nil
-		}
-		cond324 = (cond325)
+		cond324 = (orNil(result, NewNSIndexSetOverload1))
 	}
 	return cond324
 }
@@ -87,13 +81,7 @@ func (this *NSIndexSet) InitWithIndexesInRange(range_ NSRange) *NSIndexSet {
 	if result == this.Id {
 		cond326 = this
 	} else {
-		var cond327 *NSIndexSet
-		if result != 0 {
-			cond327 = NewNSIndexSetOverload1(result)
-		} else {
-			cond327 = nil
-		}
-		cond326 = (cond327)
+		cond326 = (orNil(result, NewNSIndexSetOverload1))
 	}
 	return cond326
 }

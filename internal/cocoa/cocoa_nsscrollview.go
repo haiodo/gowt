@@ -60,24 +60,12 @@ func (this *NSScrollView) ContentSize() NSSize {
 
 func (this *NSScrollView) ContentView() *NSClipView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_contentView)
-	var cond624 *NSClipView
-	if result != 0 {
-		cond624 = NewNSClipViewOverload1(result)
-	} else {
-		cond624 = nil
-	}
-	return cond624
+	return orNil(result, NewNSClipViewOverload1)
 }
 
 func (this *NSScrollView) DocumentView() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_documentView)
-	var cond625 *NSView
-	if result != 0 {
-		cond625 = NewNSViewOverload1(result)
-	} else {
-		cond625 = nil
-	}
-	return cond625
+	return orNil(result, NewNSViewOverload1)
 }
 
 func (this *NSScrollView) DocumentVisibleRect() NSRect {

@@ -54,24 +54,12 @@ func (this *NSTableColumn) initNSTableColumnOverload2(id *id) {
 
 func (this *NSTableColumn) DataCell() *NSCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_dataCell)
-	var cond678 *NSCell
-	if result != 0 {
-		cond678 = NewNSCellOverload1(result)
-	} else {
-		cond678 = nil
-	}
-	return cond678
+	return orNil(result, NewNSCellOverload1)
 }
 
 func (this *NSTableColumn) HeaderCell() *NSTableHeaderCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_headerCell)
-	var cond679 *NSTableHeaderCell
-	if result != 0 {
-		cond679 = NewNSTableHeaderCellOverload1(result)
-	} else {
-		cond679 = nil
-	}
-	return cond679
+	return orNil(result, NewNSTableHeaderCellOverload1)
 }
 
 func (this *NSTableColumn) InitWithIdentifier(identifier *NSString) *NSTableColumn {
@@ -86,13 +74,7 @@ func (this *NSTableColumn) InitWithIdentifier(identifier *NSString) *NSTableColu
 	if result == this.Id {
 		cond681 = this
 	} else {
-		var cond682 *NSTableColumn
-		if result != 0 {
-			cond682 = NewNSTableColumnOverload1(result)
-		} else {
-			cond682 = nil
-		}
-		cond681 = (cond682)
+		cond681 = (orNil(result, NewNSTableColumnOverload1))
 	}
 	return cond681
 }

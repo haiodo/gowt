@@ -102,13 +102,7 @@ func (this *NSGraphicsContext) ShouldAntialias() bool {
 
 func NSGraphicsContextCurrentContext() *NSGraphicsContext {
 	var result int64 = OSObjc_msgSend(OSClass_NSGraphicsContext, OSSel_currentContext)
-	var cond281 *NSGraphicsContext
-	if result != 0 {
-		cond281 = NewNSGraphicsContextOverload1(result)
-	} else {
-		cond281 = nil
-	}
-	return cond281
+	return orNil(result, NewNSGraphicsContextOverload1)
 }
 
 func NSGraphicsContextGraphicsContextWithBitmapImageRep(bitmapRep *NSBitmapImageRep) *NSGraphicsContext {
@@ -119,24 +113,12 @@ func NSGraphicsContextGraphicsContextWithBitmapImageRep(bitmapRep *NSBitmapImage
 		cond282 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSGraphicsContext, OSSel_graphicsContextWithBitmapImageRep_, cond282)
-	var cond283 *NSGraphicsContext
-	if result != 0 {
-		cond283 = NewNSGraphicsContextOverload1(result)
-	} else {
-		cond283 = nil
-	}
-	return cond283
+	return orNil(result, NewNSGraphicsContextOverload1)
 }
 
 func NSGraphicsContextGraphicsContextWithGraphicsPort(graphicsPort int64, initialFlippedState bool) *NSGraphicsContext {
 	var result int64 = OSObjc_msgSendOverload52(OSClass_NSGraphicsContext, OSSel_graphicsContextWithGraphicsPort_flipped_, graphicsPort, initialFlippedState)
-	var cond284 *NSGraphicsContext
-	if result != 0 {
-		cond284 = NewNSGraphicsContextOverload1(result)
-	} else {
-		cond284 = nil
-	}
-	return cond284
+	return orNil(result, NewNSGraphicsContextOverload1)
 }
 
 func NSGraphicsContextGraphicsContextWithWindow(window *NSWindow) *NSGraphicsContext {
@@ -147,13 +129,7 @@ func NSGraphicsContextGraphicsContextWithWindow(window *NSWindow) *NSGraphicsCon
 		cond285 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSGraphicsContext, OSSel_graphicsContextWithWindow_, cond285)
-	var cond286 *NSGraphicsContext
-	if result != 0 {
-		cond286 = NewNSGraphicsContextOverload1(result)
-	} else {
-		cond286 = nil
-	}
-	return cond286
+	return orNil(result, NewNSGraphicsContextOverload1)
 }
 
 func NSGraphicsContextStatic_restoreGraphicsState() {

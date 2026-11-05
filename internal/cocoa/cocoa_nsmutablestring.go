@@ -54,33 +54,15 @@ func (this *NSMutableString) initNSMutableStringOverload2(id *id) {
 
 func NSMutableStringString() *NSMutableString {
 	var result int64 = OSObjc_msgSend(OSClass_NSMutableString, OSSel_string)
-	var cond414 *NSMutableString
-	if result != 0 {
-		cond414 = NewNSMutableStringOverload1(result)
-	} else {
-		cond414 = nil
-	}
-	return cond414
+	return orNil(result, NewNSMutableStringOverload1)
 }
 
 func NSMutableStringStringWithCharacters(characters []uint16, length int64) *NSMutableString {
 	var result int64 = OSObjc_msgSendOverload34(OSClass_NSMutableString, OSSel_stringWithCharacters_length_, characters, length)
-	var cond415 *NSMutableString
-	if result != 0 {
-		cond415 = NewNSMutableStringOverload1(result)
-	} else {
-		cond415 = nil
-	}
-	return cond415
+	return orNil(result, NewNSMutableStringOverload1)
 }
 
 func NSMutableStringStringWithUTF8String(nullTerminatedCString int64) *NSMutableString {
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableString, OSSel_stringWithUTF8String_, nullTerminatedCString)
-	var cond416 *NSMutableString
-	if result != 0 {
-		cond416 = NewNSMutableStringOverload1(result)
-	} else {
-		cond416 = nil
-	}
-	return cond416
+	return orNil(result, NewNSMutableStringOverload1)
 }

@@ -58,24 +58,12 @@ func (this *NSHTTPCookie) IsSessionOnly() bool {
 
 func (this *NSHTTPCookie) Name() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_name)
-	var cond288 *NSString
-	if result != 0 {
-		cond288 = NewNSStringOverload1(result)
-	} else {
-		cond288 = nil
-	}
-	return cond288
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSHTTPCookie) Value() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_value)
-	var cond289 *NSString
-	if result != 0 {
-		cond289 = NewNSStringOverload1(result)
-	} else {
-		cond289 = nil
-	}
-	return cond289
+	return orNil(result, NewNSStringOverload1)
 }
 
 func NSHTTPCookieCookiesWithResponseHeaderFields(headerFields *NSDictionary, URL *NSURL) *NSArray {
@@ -92,11 +80,5 @@ func NSHTTPCookieCookiesWithResponseHeaderFields(headerFields *NSDictionary, URL
 		cond291 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload54(OSClass_NSHTTPCookie, OSSel_cookiesWithResponseHeaderFields_forURL_, cond290, cond291)
-	var cond292 *NSArray
-	if result != 0 {
-		cond292 = NewNSArrayOverload1(result)
-	} else {
-		cond292 = nil
-	}
-	return cond292
+	return orNil(result, NewNSArrayOverload1)
 }

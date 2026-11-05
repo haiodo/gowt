@@ -108,13 +108,7 @@ func (this *NSView) BeginPageInRect(aRect NSRect, location NSPoint) {
 
 func (this *NSView) BitmapImageRepForCachingDisplayInRect(rect NSRect) *NSBitmapImageRep {
 	var result int64 = OSObjc_msgSendOverload13(this.Id, OSSel_bitmapImageRepForCachingDisplayInRect_, rect)
-	var cond811 *NSBitmapImageRep
-	if result != 0 {
-		cond811 = NewNSBitmapImageRepOverload1(result)
-	} else {
-		cond811 = nil
-	}
-	return cond811
+	return orNil(result, NewNSBitmapImageRepOverload1)
 }
 
 func (this *NSView) Bounds() NSRect {
@@ -259,13 +253,7 @@ func (this *NSView) HitTest(aPoint NSPoint) *NSView {
 	if result == this.Id {
 		cond822 = this
 	} else {
-		var cond823 *NSView
-		if result != 0 {
-			cond823 = NewNSViewOverload1(result)
-		} else {
-			cond823 = nil
-		}
-		cond822 = (cond823)
+		cond822 = (orNil(result, NewNSViewOverload1))
 	}
 	return cond822
 }
@@ -276,13 +264,7 @@ func (this *NSView) InitWithFrame(frameRect NSRect) *NSView {
 	if result == this.Id {
 		cond824 = this
 	} else {
-		var cond825 *NSView
-		if result != 0 {
-			cond825 = NewNSViewOverload1(result)
-		} else {
-			cond825 = nil
-		}
-		cond824 = (cond825)
+		cond824 = (orNil(result, NewNSViewOverload1))
 	}
 	return cond824
 }
@@ -315,13 +297,7 @@ func (this *NSView) IsOpaque() bool {
 
 func (this *NSView) Layer() *CALayer {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_layer)
-	var cond827 *CALayer
-	if result != 0 {
-		cond827 = NewCALayerOverload1(result)
-	} else {
-		cond827 = nil
-	}
-	return cond827
+	return orNil(result, NewCALayerOverload1)
 }
 
 func (this *NSView) LockFocus() {
@@ -340,13 +316,7 @@ func (this *NSView) MenuForEvent(event *NSEvent) *NSMenu {
 		cond828 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_menuForEvent_, cond828)
-	var cond829 *NSMenu
-	if result != 0 {
-		cond829 = NewNSMenuOverload1(result)
-	} else {
-		cond829 = nil
-	}
-	return cond829
+	return orNil(result, NewNSMenuOverload1)
 }
 
 func (this *NSView) Mouse(aPoint NSPoint, aRect NSRect) bool {
@@ -485,13 +455,7 @@ func (this *NSView) ShouldDelayWindowOrderingForEvent(theEvent *NSEvent) bool {
 
 func (this *NSView) Subviews() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_subviews)
-	var cond835 *NSArray
-	if result != 0 {
-		cond835 = NewNSArrayOverload1(result)
-	} else {
-		cond835 = nil
-	}
-	return cond835
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSView) Superview() *NSView {
@@ -500,26 +464,14 @@ func (this *NSView) Superview() *NSView {
 	if result == this.Id {
 		cond836 = this
 	} else {
-		var cond837 *NSView
-		if result != 0 {
-			cond837 = NewNSViewOverload1(result)
-		} else {
-			cond837 = nil
-		}
-		cond836 = (cond837)
+		cond836 = (orNil(result, NewNSViewOverload1))
 	}
 	return cond836
 }
 
 func (this *NSView) TrackingAreas() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_trackingAreas)
-	var cond838 *NSArray
-	if result != 0 {
-		cond838 = NewNSArrayOverload1(result)
-	} else {
-		cond838 = nil
-	}
-	return cond838
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSView) UnlockFocus() {
@@ -556,11 +508,5 @@ func (this *NSView) VisibleRect() NSRect {
 
 func (this *NSView) Window() *NSWindow {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_window)
-	var cond840 *NSWindow
-	if result != 0 {
-		cond840 = NewNSWindowOverload1(result)
-	} else {
-		cond840 = nil
-	}
-	return cond840
+	return orNil(result, NewNSWindowOverload1)
 }

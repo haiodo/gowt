@@ -54,13 +54,7 @@ func (this *NSColorList) initNSColorListOverload2(id *id) {
 
 func (this *NSColorList) AllKeys() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_allKeys)
-	var cond167 *NSArray
-	if result != 0 {
-		cond167 = NewNSArrayOverload1(result)
-	} else {
-		cond167 = nil
-	}
-	return cond167
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSColorList) ColorWithKey(key *NSString) *NSColor {
@@ -71,13 +65,7 @@ func (this *NSColorList) ColorWithKey(key *NSString) *NSColor {
 		cond168 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_colorWithKey_, cond168)
-	var cond169 *NSColor
-	if result != 0 {
-		cond169 = NewNSColorOverload1(result)
-	} else {
-		cond169 = nil
-	}
-	return cond169
+	return orNil(result, NewNSColorOverload1)
 }
 
 func (this *NSColorList) InitWithName(name *NSString) *NSColorList {
@@ -92,13 +80,7 @@ func (this *NSColorList) InitWithName(name *NSString) *NSColorList {
 	if result == this.Id {
 		cond171 = this
 	} else {
-		var cond172 *NSColorList
-		if result != 0 {
-			cond172 = NewNSColorListOverload1(result)
-		} else {
-			cond172 = nil
-		}
-		cond171 = (cond172)
+		cond171 = (orNil(result, NewNSColorListOverload1))
 	}
 	return cond171
 }
@@ -137,11 +119,5 @@ func NSColorListColorListNamed(name *NSString) *NSColorList {
 		cond176 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSColorList, OSSel_colorListNamed_, cond176)
-	var cond177 *NSColorList
-	if result != 0 {
-		cond177 = NewNSColorListOverload1(result)
-	} else {
-		cond177 = nil
-	}
-	return cond177
+	return orNil(result, NewNSColorListOverload1)
 }

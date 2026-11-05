@@ -58,13 +58,7 @@ func (this *NSApplication) ActivateIgnoringOtherApps(flag bool) {
 
 func (this *NSApplication) ApplicationIconImage() *NSImage {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_applicationIconImage)
-	var cond21 *NSImage
-	if result != 0 {
-		cond21 = NewNSImageOverload1(result)
-	} else {
-		cond21 = nil
-	}
-	return cond21
+	return orNil(result, NewNSImageOverload1)
 }
 
 func (this *NSApplication) ArrangeInFront(sender *id) {
@@ -101,24 +95,12 @@ func (this *NSApplication) BeginSheet(sheet *NSWindow, docWindow *NSWindow, moda
 
 func (this *NSApplication) CurrentEvent() *NSEvent {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_currentEvent)
-	var cond26 *NSEvent
-	if result != 0 {
-		cond26 = NewNSEventOverload1(result)
-	} else {
-		cond26 = nil
-	}
-	return cond26
+	return orNil(result, NewNSEventOverload1)
 }
 
 func (this *NSApplication) DockTile() *NSDockTile {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_dockTile)
-	var cond27 *NSDockTile
-	if result != 0 {
-		cond27 = NewNSDockTileOverload1(result)
-	} else {
-		cond27 = nil
-	}
-	return cond27
+	return orNil(result, NewNSDockTileOverload1)
 }
 
 func (this *NSApplication) EndSheet(sheet *NSWindow, returnCode int64) {
@@ -165,24 +147,12 @@ func (this *NSApplication) IsRunning() bool {
 
 func (this *NSApplication) KeyWindow() *NSWindow {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_keyWindow)
-	var cond31 *NSWindow
-	if result != 0 {
-		cond31 = NewNSWindowOverload1(result)
-	} else {
-		cond31 = nil
-	}
-	return cond31
+	return orNil(result, NewNSWindowOverload1)
 }
 
 func (this *NSApplication) MainMenu() *NSMenu {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_mainMenu)
-	var cond32 *NSMenu
-	if result != 0 {
-		cond32 = NewNSMenuOverload1(result)
-	} else {
-		cond32 = nil
-	}
-	return cond32
+	return orNil(result, NewNSMenuOverload1)
 }
 
 func (this *NSApplication) NextEventMatchingMask(mask int64, expiration *NSDate, mode *NSString, deqFlag bool) *NSEvent {
@@ -199,13 +169,7 @@ func (this *NSApplication) NextEventMatchingMask(mask int64, expiration *NSDate,
 		cond34 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload59(this.Id, OSSel_nextEventMatchingMask_untilDate_inMode_dequeue_, mask, cond33, cond34, deqFlag)
-	var cond35 *NSEvent
-	if result != 0 {
-		cond35 = NewNSEventOverload1(result)
-	} else {
-		cond35 = nil
-	}
-	return cond35
+	return orNil(result, NewNSEventOverload1)
 }
 
 func (this *NSApplication) OrderFrontStandardAboutPanel(sender *id) {
@@ -358,33 +322,15 @@ func (this *NSApplication) UnhideAllApplications(sender *id) {
 
 func (this *NSApplication) WindowWithWindowNumber(windowNum int64) *NSWindow {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_windowWithWindowNumber_, windowNum)
-	var cond50 *NSWindow
-	if result != 0 {
-		cond50 = NewNSWindowOverload1(result)
-	} else {
-		cond50 = nil
-	}
-	return cond50
+	return orNil(result, NewNSWindowOverload1)
 }
 
 func (this *NSApplication) Windows() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_windows)
-	var cond51 *NSArray
-	if result != 0 {
-		cond51 = NewNSArrayOverload1(result)
-	} else {
-		cond51 = nil
-	}
-	return cond51
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func NSApplicationSharedApplication() *NSApplication {
 	var result int64 = OSObjc_msgSend(OSClass_NSApplication, OSSel_sharedApplication)
-	var cond52 *NSApplication
-	if result != 0 {
-		cond52 = NewNSApplicationOverload1(result)
-	} else {
-		cond52 = nil
-	}
-	return cond52
+	return orNil(result, NewNSApplicationOverload1)
 }

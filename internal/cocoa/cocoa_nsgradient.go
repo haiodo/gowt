@@ -82,13 +82,7 @@ func (this *NSGradient) InitWithColors(colorArray *NSArray) *NSGradient {
 	if result == this.Id {
 		cond275 = this
 	} else {
-		var cond276 *NSGradient
-		if result != 0 {
-			cond276 = NewNSGradientOverload1(result)
-		} else {
-			cond276 = nil
-		}
-		cond275 = (cond276)
+		cond275 = (orNil(result, NewNSGradientOverload1))
 	}
 	return cond275
 }
@@ -111,13 +105,7 @@ func (this *NSGradient) InitWithStartingColor(startingColor *NSColor, endingColo
 	if result == this.Id {
 		cond279 = this
 	} else {
-		var cond280 *NSGradient
-		if result != 0 {
-			cond280 = NewNSGradientOverload1(result)
-		} else {
-			cond280 = nil
-		}
-		cond279 = (cond280)
+		cond279 = (orNil(result, NewNSGradientOverload1))
 	}
 	return cond279
 }

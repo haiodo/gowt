@@ -58,24 +58,12 @@ func (this *NSPrintOperation) CleanUpOperation() {
 
 func (this *NSPrintOperation) Context() *NSGraphicsContext {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_context)
-	var cond552 *NSGraphicsContext
-	if result != 0 {
-		cond552 = NewNSGraphicsContextOverload1(result)
-	} else {
-		cond552 = nil
-	}
-	return cond552
+	return orNil(result, NewNSGraphicsContextOverload1)
 }
 
 func (this *NSPrintOperation) CreateContext() *NSGraphicsContext {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_createContext)
-	var cond553 *NSGraphicsContext
-	if result != 0 {
-		cond553 = NewNSGraphicsContextOverload1(result)
-	} else {
-		cond553 = nil
-	}
-	return cond553
+	return orNil(result, NewNSGraphicsContextOverload1)
 }
 
 func (this *NSPrintOperation) DeliverResult() bool {
@@ -122,13 +110,7 @@ func NSPrintOperationPrintOperationWithView(view *NSView, printInfo *NSPrintInfo
 		cond556 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload54(OSClass_NSPrintOperation, OSSel_printOperationWithView_printInfo_, cond555, cond556)
-	var cond557 *NSPrintOperation
-	if result != 0 {
-		cond557 = NewNSPrintOperationOverload1(result)
-	} else {
-		cond557 = nil
-	}
-	return cond557
+	return orNil(result, NewNSPrintOperationOverload1)
 }
 
 func NSPrintOperationSetCurrentOperation(operation *NSPrintOperation) {

@@ -54,13 +54,7 @@ func (this *NSHTTPCookieStorage) initNSHTTPCookieStorageOverload2(id *id) {
 
 func (this *NSHTTPCookieStorage) Cookies() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_cookies)
-	var cond293 *NSArray
-	if result != 0 {
-		cond293 = NewNSArrayOverload1(result)
-	} else {
-		cond293 = nil
-	}
-	return cond293
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSHTTPCookieStorage) CookiesForURL(URL *NSURL) *NSArray {
@@ -71,13 +65,7 @@ func (this *NSHTTPCookieStorage) CookiesForURL(URL *NSURL) *NSArray {
 		cond294 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_cookiesForURL_, cond294)
-	var cond295 *NSArray
-	if result != 0 {
-		cond295 = NewNSArrayOverload1(result)
-	} else {
-		cond295 = nil
-	}
-	return cond295
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSHTTPCookieStorage) DeleteCookie(cookie *NSHTTPCookie) {
@@ -102,11 +90,5 @@ func (this *NSHTTPCookieStorage) SetCookie(cookie *NSHTTPCookie) {
 
 func NSHTTPCookieStorageSharedHTTPCookieStorage() *NSHTTPCookieStorage {
 	var result int64 = OSObjc_msgSend(OSClass_NSHTTPCookieStorage, OSSel_sharedHTTPCookieStorage)
-	var cond298 *NSHTTPCookieStorage
-	if result != 0 {
-		cond298 = NewNSHTTPCookieStorageOverload1(result)
-	} else {
-		cond298 = nil
-	}
-	return cond298
+	return orNil(result, NewNSHTTPCookieStorageOverload1)
 }

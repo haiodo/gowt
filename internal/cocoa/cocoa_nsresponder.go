@@ -374,13 +374,7 @@ func (this *NSResponder) TouchesMovedWithEvent(event *NSEvent) {
 
 func (this *NSResponder) UndoManager() *NSUndoManager {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_undoManager)
-	var cond600 *NSUndoManager
-	if result != 0 {
-		cond600 = NewNSUndoManagerOverload1(result)
-	} else {
-		cond600 = nil
-	}
-	return cond600
+	return orNil(result, NewNSUndoManagerOverload1)
 }
 
 func (this *NSResponder) ValidRequestorForSendType(sendType *NSString, returnType *NSString) *id {
@@ -397,11 +391,5 @@ func (this *NSResponder) ValidRequestorForSendType(sendType *NSString, returnTyp
 		cond602 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_validRequestorForSendType_returnType_, cond601, cond602)
-	var cond603 *id
-	if result != 0 {
-		cond603 = NewidOverload1(result)
-	} else {
-		cond603 = nil
-	}
-	return cond603
+	return orNil(result, NewidOverload1)
 }

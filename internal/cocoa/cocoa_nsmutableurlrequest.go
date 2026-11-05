@@ -110,11 +110,5 @@ func NSMutableURLRequestRequestWithURL(URL *NSURL) *NSMutableURLRequest {
 		cond422 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSMutableURLRequest, OSSel_requestWithURL_, cond422)
-	var cond423 *NSMutableURLRequest
-	if result != 0 {
-		cond423 = NewNSMutableURLRequestOverload1(result)
-	} else {
-		cond423 = nil
-	}
-	return cond423
+	return orNil(result, NewNSMutableURLRequestOverload1)
 }

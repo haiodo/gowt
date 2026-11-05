@@ -54,35 +54,17 @@ func (this *NSBundle) initNSBundleOverload2(id *id) {
 
 func (this *NSBundle) BundleIdentifier() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_bundleIdentifier)
-	var cond88 *NSString
-	if result != 0 {
-		cond88 = NewNSStringOverload1(result)
-	} else {
-		cond88 = nil
-	}
-	return cond88
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSBundle) BundlePath() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_bundlePath)
-	var cond89 *NSString
-	if result != 0 {
-		cond89 = NewNSStringOverload1(result)
-	} else {
-		cond89 = nil
-	}
-	return cond89
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSBundle) InfoDictionary() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_infoDictionary)
-	var cond90 *NSDictionary
-	if result != 0 {
-		cond90 = NewNSDictionaryOverload1(result)
-	} else {
-		cond90 = nil
-	}
-	return cond90
+	return orNil(result, NewNSDictionaryOverload1)
 }
 
 func (this *NSBundle) ObjectForInfoDictionaryKey(key *NSString) *id {
@@ -93,13 +75,7 @@ func (this *NSBundle) ObjectForInfoDictionaryKey(key *NSString) *id {
 		cond91 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_objectForInfoDictionaryKey_, cond91)
-	var cond92 *id
-	if result != 0 {
-		cond92 = NewidOverload1(result)
-	} else {
-		cond92 = nil
-	}
-	return cond92
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSBundle) PathForResource(name *NSString, ext *NSString) *NSString {
@@ -116,13 +92,7 @@ func (this *NSBundle) PathForResource(name *NSString, ext *NSString) *NSString {
 		cond94 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_pathForResource_ofType_, cond93, cond94)
-	var cond95 *NSString
-	if result != 0 {
-		cond95 = NewNSStringOverload1(result)
-	} else {
-		cond95 = nil
-	}
-	return cond95
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSBundle) PathForResourceNameExtSubpathLocalizationName(name *NSString, ext *NSString, subpath *NSString, localizationName *NSString) *NSString {
@@ -151,13 +121,7 @@ func (this *NSBundle) PathForResourceNameExtSubpathLocalizationName(name *NSStri
 		cond99 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload60(this.Id, OSSel_pathForResource_ofType_inDirectory_forLocalization_, cond96, cond97, cond98, cond99)
-	var cond100 *NSString
-	if result != 0 {
-		cond100 = NewNSStringOverload1(result)
-	} else {
-		cond100 = nil
-	}
-	return cond100
+	return orNil(result, NewNSStringOverload1)
 }
 
 func NSBundleLoadNibFile(fileName *NSString, context *NSDictionary, zone int64) bool {
@@ -184,13 +148,7 @@ func NSBundleBundleWithIdentifier(identifier *NSString) *NSBundle {
 		cond103 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSBundle, OSSel_bundleWithIdentifier_, cond103)
-	var cond104 *NSBundle
-	if result != 0 {
-		cond104 = NewNSBundleOverload1(result)
-	} else {
-		cond104 = nil
-	}
-	return cond104
+	return orNil(result, NewNSBundleOverload1)
 }
 
 func NSBundleBundleWithPath(path *NSString) *NSBundle {
@@ -201,22 +159,10 @@ func NSBundleBundleWithPath(path *NSString) *NSBundle {
 		cond105 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSBundle, OSSel_bundleWithPath_, cond105)
-	var cond106 *NSBundle
-	if result != 0 {
-		cond106 = NewNSBundleOverload1(result)
-	} else {
-		cond106 = nil
-	}
-	return cond106
+	return orNil(result, NewNSBundleOverload1)
 }
 
 func NSBundleMainBundle() *NSBundle {
 	var result int64 = OSObjc_msgSend(OSClass_NSBundle, OSSel_mainBundle)
-	var cond107 *NSBundle
-	if result != 0 {
-		cond107 = NewNSBundleOverload1(result)
-	} else {
-		cond107 = nil
-	}
-	return cond107
+	return orNil(result, NewNSBundleOverload1)
 }

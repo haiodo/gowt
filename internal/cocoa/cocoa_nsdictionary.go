@@ -54,13 +54,7 @@ func (this *NSDictionary) initNSDictionaryOverload2(id *id) {
 
 func (this *NSDictionary) AllKeys() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_allKeys)
-	var cond221 *NSArray
-	if result != 0 {
-		cond221 = NewNSArrayOverload1(result)
-	} else {
-		cond221 = nil
-	}
-	return cond221
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSDictionary) Count() int64 {
@@ -69,13 +63,7 @@ func (this *NSDictionary) Count() int64 {
 
 func (this *NSDictionary) ObjectEnumerator() *NSEnumerator {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_objectEnumerator)
-	var cond222 *NSEnumerator
-	if result != 0 {
-		cond222 = NewNSEnumeratorOverload1(result)
-	} else {
-		cond222 = nil
-	}
-	return cond222
+	return orNil(result, NewNSEnumeratorOverload1)
 }
 
 func (this *NSDictionary) ObjectForKey(aKey *id) *id {
@@ -86,13 +74,7 @@ func (this *NSDictionary) ObjectForKey(aKey *id) *id {
 		cond223 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_objectForKey_, cond223)
-	var cond224 *id
-	if result != 0 {
-		cond224 = NewidOverload1(result)
-	} else {
-		cond224 = nil
-	}
-	return cond224
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSDictionary) ValueForKey(key *NSString) *id {
@@ -103,13 +85,7 @@ func (this *NSDictionary) ValueForKey(key *NSString) *id {
 		cond225 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_valueForKey_, cond225)
-	var cond226 *id
-	if result != 0 {
-		cond226 = NewidOverload1(result)
-	} else {
-		cond226 = nil
-	}
-	return cond226
+	return orNil(result, NewidOverload1)
 }
 
 func NSDictionaryDictionaryWithObject(object *id, key *id) *NSDictionary {
@@ -126,11 +102,5 @@ func NSDictionaryDictionaryWithObject(object *id, key *id) *NSDictionary {
 		cond228 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload54(OSClass_NSDictionary, OSSel_dictionaryWithObject_forKey_, cond227, cond228)
-	var cond229 *NSDictionary
-	if result != 0 {
-		cond229 = NewNSDictionaryOverload1(result)
-	} else {
-		cond229 = nil
-	}
-	return cond229
+	return orNil(result, NewNSDictionaryOverload1)
 }

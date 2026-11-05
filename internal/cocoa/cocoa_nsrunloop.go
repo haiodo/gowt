@@ -86,11 +86,5 @@ func (this *NSRunLoop) RunMode(mode *NSString, limitDate *NSDate) bool {
 
 func NSRunLoopCurrentRunLoop() *NSRunLoop {
 	var result int64 = OSObjc_msgSend(OSClass_NSRunLoop, OSSel_currentRunLoop)
-	var cond608 *NSRunLoop
-	if result != 0 {
-		cond608 = NewNSRunLoopOverload1(result)
-	} else {
-		cond608 = nil
-	}
-	return cond608
+	return orNil(result, NewNSRunLoopOverload1)
 }

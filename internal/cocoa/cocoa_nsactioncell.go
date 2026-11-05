@@ -72,11 +72,5 @@ func (this *NSActionCell) SetTarget(target *id) {
 
 func (this *NSActionCell) Target() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_target)
-	var cond3 *id
-	if result != 0 {
-		cond3 = NewidOverload1(result)
-	} else {
-		cond3 = nil
-	}
-	return cond3
+	return orNil(result, NewidOverload1)
 }

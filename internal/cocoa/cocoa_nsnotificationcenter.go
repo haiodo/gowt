@@ -86,11 +86,5 @@ func (this *NSNotificationCenter) RemoveObserver(observer *id) {
 
 func NSNotificationCenterDefaultCenter() *NSNotificationCenter {
 	var result int64 = OSObjc_msgSend(OSClass_NSNotificationCenter, OSSel_defaultCenter)
-	var cond430 *NSNotificationCenter
-	if result != 0 {
-		cond430 = NewNSNotificationCenterOverload1(result)
-	} else {
-		cond430 = nil
-	}
-	return cond430
+	return orNil(result, NewNSNotificationCenterOverload1)
 }

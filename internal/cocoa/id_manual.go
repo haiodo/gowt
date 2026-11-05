@@ -46,3 +46,12 @@ func (this *id) Impl() idImpl {
 func (this *id) SetImpl_(impl idImpl) {
 	this.impl = impl
 }
+
+// orNil wraps a raw ObjC handle in its typed wrapper, or yields nil for a zero handle
+// (translated `result != 0 ? new T(result) : null`); the constructor runs once, only non-zero.
+func orNil[T any](result int64, constructor func(int64) *T) *T {
+	if result == 0 {
+		return nil
+	}
+	return constructor(result)
+}

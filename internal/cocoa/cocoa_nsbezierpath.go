@@ -98,13 +98,7 @@ func (this *NSBezierPath) BezierPathByFlatteningPath() *NSBezierPath {
 	if result == this.Id {
 		cond67 = this
 	} else {
-		var cond68 *NSBezierPath
-		if result != 0 {
-			cond68 = NewNSBezierPathOverload1(result)
-		} else {
-			cond68 = nil
-		}
-		cond67 = (cond68)
+		cond67 = (orNil(result, NewNSBezierPathOverload1))
 	}
 	return cond67
 }
@@ -211,35 +205,17 @@ func (this *NSBezierPath) TransformUsingAffineTransform(transform *NSAffineTrans
 
 func NSBezierPathBezierPath() *NSBezierPath {
 	var result int64 = OSObjc_msgSend(OSClass_NSBezierPath, OSSel_bezierPath)
-	var cond70 *NSBezierPath
-	if result != 0 {
-		cond70 = NewNSBezierPathOverload1(result)
-	} else {
-		cond70 = nil
-	}
-	return cond70
+	return orNil(result, NewNSBezierPathOverload1)
 }
 
 func NSBezierPathBezierPathWithRect(rect NSRect) *NSBezierPath {
 	var result int64 = OSObjc_msgSendOverload13(OSClass_NSBezierPath, OSSel_bezierPathWithRect_, rect)
-	var cond71 *NSBezierPath
-	if result != 0 {
-		cond71 = NewNSBezierPathOverload1(result)
-	} else {
-		cond71 = nil
-	}
-	return cond71
+	return orNil(result, NewNSBezierPathOverload1)
 }
 
 func NSBezierPathBezierPathWithRoundedRect(rect NSRect, xRadius float64, yRadius float64) *NSBezierPath {
 	var result int64 = OSObjc_msgSendOverload20(OSClass_NSBezierPath, OSSel_bezierPathWithRoundedRect_xRadius_yRadius_, rect, xRadius, yRadius)
-	var cond72 *NSBezierPath
-	if result != 0 {
-		cond72 = NewNSBezierPathOverload1(result)
-	} else {
-		cond72 = nil
-	}
-	return cond72
+	return orNil(result, NewNSBezierPathOverload1)
 }
 
 func NSBezierPathDefaultFlatness() float64 {

@@ -58,33 +58,15 @@ func (this *NSURLAuthenticationChallenge) PreviousFailureCount() int64 {
 
 func (this *NSURLAuthenticationChallenge) ProposedCredential() *NSURLCredential {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_proposedCredential)
-	var cond781 *NSURLCredential
-	if result != 0 {
-		cond781 = NewNSURLCredentialOverload1(result)
-	} else {
-		cond781 = nil
-	}
-	return cond781
+	return orNil(result, NewNSURLCredentialOverload1)
 }
 
 func (this *NSURLAuthenticationChallenge) ProtectionSpace() *NSURLProtectionSpace {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_protectionSpace)
-	var cond782 *NSURLProtectionSpace
-	if result != 0 {
-		cond782 = NewNSURLProtectionSpaceOverload1(result)
-	} else {
-		cond782 = nil
-	}
-	return cond782
+	return orNil(result, NewNSURLProtectionSpaceOverload1)
 }
 
 func (this *NSURLAuthenticationChallenge) Sender() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_sender)
-	var cond783 *id
-	if result != 0 {
-		cond783 = NewidOverload1(result)
-	} else {
-		cond783 = nil
-	}
-	return cond783
+	return orNil(result, NewidOverload1)
 }

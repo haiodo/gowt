@@ -62,24 +62,12 @@ func (this *NSControl) Action() int64 {
 
 func (this *NSControl) Cell() *NSCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_cell)
-	var cond186 *NSCell
-	if result != 0 {
-		cond186 = NewNSCellOverload1(result)
-	} else {
-		cond186 = nil
-	}
-	return cond186
+	return orNil(result, NewNSCellOverload1)
 }
 
 func (this *NSControl) CurrentEditor() *NSText {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_currentEditor)
-	var cond187 *NSText
-	if result != 0 {
-		cond187 = NewNSTextOverload1(result)
-	} else {
-		cond187 = nil
-	}
-	return cond187
+	return orNil(result, NewNSTextOverload1)
 }
 
 func (this *NSControl) DoubleValue() float64 {
@@ -88,13 +76,7 @@ func (this *NSControl) DoubleValue() float64 {
 
 func (this *NSControl) Font() *NSFont {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_font)
-	var cond188 *NSFont
-	if result != 0 {
-		cond188 = NewNSFontOverload1(result)
-	} else {
-		cond188 = nil
-	}
-	return cond188
+	return orNil(result, NewNSFontOverload1)
 }
 
 func (this *NSControl) IsEnabled() bool {
@@ -181,24 +163,12 @@ func (this *NSControl) SizeToFit() {
 
 func (this *NSControl) StringValue() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_stringValue)
-	var cond194 *NSString
-	if result != 0 {
-		cond194 = NewNSStringOverload1(result)
-	} else {
-		cond194 = nil
-	}
-	return cond194
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSControl) Target() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_target)
-	var cond195 *id
-	if result != 0 {
-		cond195 = NewidOverload1(result)
-	} else {
-		cond195 = nil
-	}
-	return cond195
+	return orNil(result, NewidOverload1)
 }
 
 func NSControlCellClass() int64 {

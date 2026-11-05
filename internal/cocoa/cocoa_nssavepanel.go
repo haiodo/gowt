@@ -54,24 +54,12 @@ func (this *NSSavePanel) initNSSavePanelOverload2(id *id) {
 
 func (this *NSSavePanel) Filename() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_filename)
-	var cond609 *NSString
-	if result != 0 {
-		cond609 = NewNSStringOverload1(result)
-	} else {
-		cond609 = nil
-	}
-	return cond609
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSSavePanel) NameFieldStringValue() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_nameFieldStringValue)
-	var cond610 *NSString
-	if result != 0 {
-		cond610 = NewNSStringOverload1(result)
-	} else {
-		cond610 = nil
-	}
-	return cond610
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSSavePanel) RunModal() int64 {
@@ -172,13 +160,7 @@ func (this *NSSavePanel) ValidateVisibleColumns() {
 
 func NSSavePanelSavePanel() *NSSavePanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSSavePanel, OSSel_savePanel)
-	var cond619 *NSSavePanel
-	if result != 0 {
-		cond619 = NewNSSavePanelOverload1(result)
-	} else {
-		cond619 = nil
-	}
-	return cond619
+	return orNil(result, NewNSSavePanelOverload1)
 }
 
 func NSSavePanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {

@@ -64,13 +64,7 @@ func (this *NSToolbar) InitWithIdentifier(identifier *NSString) *NSToolbar {
 	if result == this.Id {
 		cond754 = this
 	} else {
-		var cond755 *NSToolbar
-		if result != 0 {
-			cond755 = NewNSToolbarOverload1(result)
-		} else {
-			cond755 = nil
-		}
-		cond754 = (cond755)
+		cond754 = (orNil(result, NewNSToolbarOverload1))
 	}
 	return cond754
 }

@@ -54,13 +54,7 @@ func (this *NSNumberFormatter) initNSNumberFormatterOverload2(id *id) {
 
 func (this *NSNumberFormatter) DecimalSeparator() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_decimalSeparator)
-	var cond439 *NSString
-	if result != 0 {
-		cond439 = NewNSStringOverload1(result)
-	} else {
-		cond439 = nil
-	}
-	return cond439
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSNumberFormatter) SetAllowsFloats(allowsFloats bool) {

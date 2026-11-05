@@ -58,13 +58,7 @@ func (this *NSTextTab) InitWithType(type_ int64, loc float64) *NSTextTab {
 	if result == this.Id {
 		cond731 = this
 	} else {
-		var cond732 *NSTextTab
-		if result != 0 {
-			cond732 = NewNSTextTabOverload1(result)
-		} else {
-			cond732 = nil
-		}
-		cond731 = (cond732)
+		cond731 = (orNil(result, NewNSTextTabOverload1))
 	}
 	return cond731
 }

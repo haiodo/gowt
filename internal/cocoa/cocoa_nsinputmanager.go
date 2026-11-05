@@ -68,11 +68,5 @@ func (this *NSInputManager) WantsToHandleMouseEvents() bool {
 
 func NSInputManagerCurrentInputManager() *NSInputManager {
 	var result int64 = OSObjc_msgSend(OSClass_NSInputManager, OSSel_currentInputManager)
-	var cond329 *NSInputManager
-	if result != 0 {
-		cond329 = NewNSInputManagerOverload1(result)
-	} else {
-		cond329 = nil
-	}
-	return cond329
+	return orNil(result, NewNSInputManagerOverload1)
 }

@@ -66,13 +66,7 @@ func (this *NSLocale) DisplayNameForKey(key *id, value *id) *NSString {
 		cond349 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_displayNameForKey_value_, cond348, cond349)
-	var cond350 *NSString
-	if result != 0 {
-		cond350 = NewNSStringOverload1(result)
-	} else {
-		cond350 = nil
-	}
-	return cond350
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSLocale) InitWithLocaleIdentifier(string_ *NSString) *NSLocale {
@@ -87,13 +81,7 @@ func (this *NSLocale) InitWithLocaleIdentifier(string_ *NSString) *NSLocale {
 	if result == this.Id {
 		cond352 = this
 	} else {
-		var cond353 *NSLocale
-		if result != 0 {
-			cond353 = NewNSLocaleOverload1(result)
-		} else {
-			cond353 = nil
-		}
-		cond352 = (cond353)
+		cond352 = (orNil(result, NewNSLocaleOverload1))
 	}
 	return cond352
 }

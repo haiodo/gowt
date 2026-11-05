@@ -60,11 +60,5 @@ func (this *NSProcessInfo) OperatingSystemVersion() NSOperatingSystemVersion {
 
 func NSProcessInfoProcessInfo() *NSProcessInfo {
 	var result int64 = OSObjc_msgSend(OSClass_NSProcessInfo, OSSel_processInfo)
-	var cond568 *NSProcessInfo
-	if result != 0 {
-		cond568 = NewNSProcessInfoOverload1(result)
-	} else {
-		cond568 = nil
-	}
-	return cond568
+	return orNil(result, NewNSProcessInfoOverload1)
 }

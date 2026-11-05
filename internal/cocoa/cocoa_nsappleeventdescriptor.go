@@ -58,13 +58,7 @@ func (this *NSAppleEventDescriptor) InitListDescriptor() *NSAppleEventDescriptor
 	if result == this.Id {
 		cond19 = this
 	} else {
-		var cond20 *NSAppleEventDescriptor
-		if result != 0 {
-			cond20 = NewNSAppleEventDescriptorOverload1(result)
-		} else {
-			cond20 = nil
-		}
-		cond19 = (cond20)
+		cond19 = (orNil(result, NewNSAppleEventDescriptorOverload1))
 	}
 	return cond19
 }

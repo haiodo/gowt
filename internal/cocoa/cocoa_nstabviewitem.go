@@ -68,13 +68,7 @@ func (this *NSTabViewItem) InitWithIdentifier(identifier *id) *NSTabViewItem {
 	if result == this.Id {
 		cond674 = this
 	} else {
-		var cond675 *NSTabViewItem
-		if result != 0 {
-			cond675 = NewNSTabViewItemOverload1(result)
-		} else {
-			cond675 = nil
-		}
-		cond674 = (cond675)
+		cond674 = (orNil(result, NewNSTabViewItemOverload1))
 	}
 	return cond674
 }

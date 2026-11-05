@@ -54,13 +54,7 @@ func (this *NSDockTile) initNSDockTileOverload2(id *id) {
 
 func (this *NSDockTile) BadgeLabel() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_badgeLabel)
-	var cond230 *NSString
-	if result != 0 {
-		cond230 = NewNSStringOverload1(result)
-	} else {
-		cond230 = nil
-	}
-	return cond230
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSDockTile) SetBadgeLabel(badgeLabel *NSString) {

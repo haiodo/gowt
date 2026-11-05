@@ -80,13 +80,7 @@ func (this *NSAttributedString) Attribute(attrName *NSString, location int64, ra
 		cond59 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload58(this.Id, OSSel_attribute_atIndex_effectiveRange_, cond59, location, range_)
-	var cond60 *id
-	if result != 0 {
-		cond60 = NewidOverload1(result)
-	} else {
-		cond60 = nil
-	}
-	return cond60
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSAttributedString) AttributedSubstringFromRange(range_ NSRange) *NSAttributedString {
@@ -95,26 +89,14 @@ func (this *NSAttributedString) AttributedSubstringFromRange(range_ NSRange) *NS
 	if result == this.Id {
 		cond61 = this
 	} else {
-		var cond62 *NSAttributedString
-		if result != 0 {
-			cond62 = NewNSAttributedStringOverload1(result)
-		} else {
-			cond62 = nil
-		}
-		cond61 = (cond62)
+		cond61 = (orNil(result, NewNSAttributedStringOverload1))
 	}
 	return cond61
 }
 
 func (this *NSAttributedString) AttributesAtIndex(location int64, range_ int64, rangeLimit NSRange) *NSDictionary {
 	var result int64 = OSObjc_msgSendOverload55(this.Id, OSSel_attributesAtIndex_longestEffectiveRange_inRange_, location, range_, rangeLimit)
-	var cond63 *NSDictionary
-	if result != 0 {
-		cond63 = NewNSDictionaryOverload1(result)
-	} else {
-		cond63 = nil
-	}
-	return cond63
+	return orNil(result, NewNSDictionaryOverload1)
 }
 
 func (this *NSAttributedString) Length() int64 {
@@ -123,11 +105,5 @@ func (this *NSAttributedString) Length() int64 {
 
 func (this *NSAttributedString) String() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_string)
-	var cond64 *NSString
-	if result != 0 {
-		cond64 = NewNSStringOverload1(result)
-	} else {
-		cond64 = nil
-	}
-	return cond64
+	return orNil(result, NewNSStringOverload1)
 }

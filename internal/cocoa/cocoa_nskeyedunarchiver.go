@@ -60,11 +60,5 @@ func NSKeyedUnarchiverUnarchiveObjectWithData(data *NSData) *id {
 		cond332 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSKeyedUnarchiver, OSSel_unarchiveObjectWithData_, cond332)
-	var cond333 *id
-	if result != 0 {
-		cond333 = NewidOverload1(result)
-	} else {
-		cond333 = nil
-	}
-	return cond333
+	return orNil(result, NewidOverload1)
 }

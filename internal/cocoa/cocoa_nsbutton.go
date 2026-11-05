@@ -54,13 +54,7 @@ func (this *NSButton) initNSButtonOverload2(id *id) {
 
 func (this *NSButton) AttributedTitle() *NSAttributedString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_attributedTitle)
-	var cond108 *NSAttributedString
-	if result != 0 {
-		cond108 = NewNSAttributedStringOverload1(result)
-	} else {
-		cond108 = nil
-	}
-	return cond108
+	return orNil(result, NewNSAttributedStringOverload1)
 }
 
 func (this *NSButton) BezelStyle() int64 {

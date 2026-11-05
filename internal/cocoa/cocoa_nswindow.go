@@ -94,13 +94,7 @@ func (this *NSWindow) CollectionBehavior() int64 {
 
 func (this *NSWindow) ContentView() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_contentView)
-	var cond842 *NSView
-	if result != 0 {
-		cond842 = NewNSViewOverload1(result)
-	} else {
-		cond842 = nil
-	}
-	return cond842
+	return orNil(result, NewNSViewOverload1)
 }
 
 func (this *NSWindow) ConvertBaseToScreen(aPoint NSPoint) NSPoint {
@@ -117,24 +111,12 @@ func (this *NSWindow) ConvertScreenToBase(aPoint NSPoint) NSPoint {
 
 func (this *NSWindow) DefaultButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_defaultButtonCell)
-	var cond843 *NSButtonCell
-	if result != 0 {
-		cond843 = NewNSButtonCellOverload1(result)
-	} else {
-		cond843 = nil
-	}
-	return cond843
+	return orNil(result, NewNSButtonCellOverload1)
 }
 
 func (this *NSWindow) Delegate() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_delegate)
-	var cond844 *id
-	if result != 0 {
-		cond844 = NewidOverload1(result)
-	} else {
-		cond844 = nil
-	}
-	return cond844
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSWindow) Deminiaturize(sender *id) {
@@ -185,24 +167,12 @@ func (this *NSWindow) FieldEditor(createFlag bool, anObject *id) *NSText {
 		cond847 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload29(this.Id, OSSel_fieldEditor_forObject_, createFlag, cond847)
-	var cond848 *NSText
-	if result != 0 {
-		cond848 = NewNSTextOverload1(result)
-	} else {
-		cond848 = nil
-	}
-	return cond848
+	return orNil(result, NewNSTextOverload1)
 }
 
 func (this *NSWindow) FirstResponder() *NSResponder {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_firstResponder)
-	var cond849 *NSResponder
-	if result != 0 {
-		cond849 = NewNSResponderOverload1(result)
-	} else {
-		cond849 = nil
-	}
-	return cond849
+	return orNil(result, NewNSResponderOverload1)
 }
 
 func (this *NSWindow) FlushWindowIfNeeded() {
@@ -223,13 +193,7 @@ func (this *NSWindow) FrameRectForContentRect(contentRect NSRect) NSRect {
 
 func (this *NSWindow) GraphicsContext() *NSGraphicsContext {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_graphicsContext)
-	var cond850 *NSGraphicsContext
-	if result != 0 {
-		cond850 = NewNSGraphicsContextOverload1(result)
-	} else {
-		cond850 = nil
-	}
-	return cond850
+	return orNil(result, NewNSGraphicsContextOverload1)
 }
 
 func (this *NSWindow) HasShadow() bool {
@@ -242,13 +206,7 @@ func (this *NSWindow) InitWithContentRect(contentRect NSRect, aStyle int64, buff
 	if result == this.Id {
 		cond851 = this
 	} else {
-		var cond852 *NSWindow
-		if result != 0 {
-			cond852 = NewNSWindowOverload1(result)
-		} else {
-			cond852 = nil
-		}
-		cond851 = (cond852)
+		cond851 = (orNil(result, NewNSWindowOverload1))
 	}
 	return cond851
 }
@@ -265,13 +223,7 @@ func (this *NSWindow) InitWithContentRectContentRectAStyleBufferingTypeFlagScree
 	if result == this.Id {
 		cond854 = this
 	} else {
-		var cond855 *NSWindow
-		if result != 0 {
-			cond855 = NewNSWindowOverload1(result)
-		} else {
-			cond855 = nil
-		}
-		cond854 = (cond855)
+		cond854 = (orNil(result, NewNSWindowOverload1))
 	}
 	return cond854
 }
@@ -400,13 +352,7 @@ func (this *NSWindow) ParentWindow() *NSWindow {
 	if result == this.Id {
 		cond862 = this
 	} else {
-		var cond863 *NSWindow
-		if result != 0 {
-			cond863 = NewNSWindowOverload1(result)
-		} else {
-			cond863 = nil
-		}
-		cond862 = (cond863)
+		cond862 = (orNil(result, NewNSWindowOverload1))
 	}
 	return cond862
 }
@@ -423,13 +369,7 @@ func (this *NSWindow) RemoveChildWindow(childWin *NSWindow) {
 
 func (this *NSWindow) Screen() *NSScreen {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_screen)
-	var cond865 *NSScreen
-	if result != 0 {
-		cond865 = NewNSScreenOverload1(result)
-	} else {
-		cond865 = nil
-	}
-	return cond865
+	return orNil(result, NewNSScreenOverload1)
 }
 
 func (this *NSWindow) SendEvent(theEvent *NSEvent) {
@@ -582,13 +522,7 @@ func (this *NSWindow) ToggleFullScreen(sender *id) {
 
 func (this *NSWindow) Toolbar() *NSToolbar {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_toolbar)
-	var cond874 *NSToolbar
-	if result != 0 {
-		cond874 = NewNSToolbarOverload1(result)
-	} else {
-		cond874 = nil
-	}
-	return cond874
+	return orNil(result, NewNSToolbarOverload1)
 }
 
 func (this *NSWindow) WindowNumber() int64 {

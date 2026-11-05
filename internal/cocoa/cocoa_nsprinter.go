@@ -54,24 +54,12 @@ func (this *NSPrinter) initNSPrinterOverload2(id *id) {
 
 func (this *NSPrinter) Name() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_name)
-	var cond564 *NSString
-	if result != 0 {
-		cond564 = NewNSStringOverload1(result)
-	} else {
-		cond564 = nil
-	}
-	return cond564
+	return orNil(result, NewNSStringOverload1)
 }
 
 func NSPrinterPrinterNames() *NSArray {
 	var result int64 = OSObjc_msgSend(OSClass_NSPrinter, OSSel_printerNames)
-	var cond565 *NSArray
-	if result != 0 {
-		cond565 = NewNSArrayOverload1(result)
-	} else {
-		cond565 = nil
-	}
-	return cond565
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func NSPrinterPrinterWithName(name *NSString) *NSPrinter {
@@ -82,11 +70,5 @@ func NSPrinterPrinterWithName(name *NSString) *NSPrinter {
 		cond566 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSPrinter, OSSel_printerWithName_, cond566)
-	var cond567 *NSPrinter
-	if result != 0 {
-		cond567 = NewNSPrinterOverload1(result)
-	} else {
-		cond567 = nil
-	}
-	return cond567
+	return orNil(result, NewNSPrinterOverload1)
 }

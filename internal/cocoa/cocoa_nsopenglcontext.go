@@ -78,13 +78,7 @@ func (this *NSOpenGLContext) InitWithFormat(format *NSOpenGLPixelFormat, share *
 	if result == this.Id {
 		cond492 = this
 	} else {
-		var cond493 *NSOpenGLContext
-		if result != 0 {
-			cond493 = NewNSOpenGLContextOverload1(result)
-		} else {
-			cond493 = nil
-		}
-		cond492 = (cond493)
+		cond492 = (orNil(result, NewNSOpenGLContextOverload1))
 	}
 	return cond492
 }
@@ -113,22 +107,10 @@ func (this *NSOpenGLContext) Update() {
 
 func (this *NSOpenGLContext) View() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_view)
-	var cond495 *NSView
-	if result != 0 {
-		cond495 = NewNSViewOverload1(result)
-	} else {
-		cond495 = nil
-	}
-	return cond495
+	return orNil(result, NewNSViewOverload1)
 }
 
 func NSOpenGLContextCurrentContext() *NSOpenGLContext {
 	var result int64 = OSObjc_msgSend(OSClass_NSOpenGLContext, OSSel_currentContext)
-	var cond496 *NSOpenGLContext
-	if result != 0 {
-		cond496 = NewNSOpenGLContextOverload1(result)
-	} else {
-		cond496 = nil
-	}
-	return cond496
+	return orNil(result, NewNSOpenGLContextOverload1)
 }

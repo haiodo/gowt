@@ -90,13 +90,7 @@ func (this *NSTabView) SelectTabViewItemAtIndex(index int64) {
 
 func (this *NSTabView) SelectedTabViewItem() *NSTabViewItem {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_selectedTabViewItem)
-	var cond669 *NSTabViewItem
-	if result != 0 {
-		cond669 = NewNSTabViewItemOverload1(result)
-	} else {
-		cond669 = nil
-	}
-	return cond669
+	return orNil(result, NewNSTabViewItemOverload1)
 }
 
 func (this *NSTabView) SetControlSize(controlSize int64) {
@@ -129,11 +123,5 @@ func (this *NSTabView) SetTabViewType(tabViewType int64) {
 
 func (this *NSTabView) TabViewItemAtPoint(point NSPoint) *NSTabViewItem {
 	var result int64 = OSObjc_msgSendOverload2(this.Id, OSSel_tabViewItemAtPoint_, point)
-	var cond672 *NSTabViewItem
-	if result != 0 {
-		cond672 = NewNSTabViewItemOverload1(result)
-	} else {
-		cond672 = nil
-	}
-	return cond672
+	return orNil(result, NewNSTabViewItemOverload1)
 }

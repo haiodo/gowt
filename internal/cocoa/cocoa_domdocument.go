@@ -54,11 +54,5 @@ func (this *DOMDocument) initDOMDocumentOverload2(id *id) {
 
 func (this *DOMDocument) WebFrame() *WebFrame {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_webFrame)
-	var cond1 *WebFrame
-	if result != 0 {
-		cond1 = NewWebFrameOverload1(result)
-	} else {
-		cond1 = nil
-	}
-	return cond1
+	return orNil(result, NewWebFrameOverload1)
 }

@@ -64,13 +64,7 @@ func (this *NSStatusBar) RemoveStatusItem(item *NSStatusItem) {
 
 func (this *NSStatusBar) StatusItemWithLength(length float64) *NSStatusItem {
 	var result int64 = OSObjc_msgSendOverload35(this.Id, OSSel_statusItemWithLength_, length)
-	var cond639 *NSStatusItem
-	if result != 0 {
-		cond639 = NewNSStatusItemOverload1(result)
-	} else {
-		cond639 = nil
-	}
-	return cond639
+	return orNil(result, NewNSStatusItemOverload1)
 }
 
 func (this *NSStatusBar) Thickness() float64 {
@@ -79,11 +73,5 @@ func (this *NSStatusBar) Thickness() float64 {
 
 func NSStatusBarSystemStatusBar() *NSStatusBar {
 	var result int64 = OSObjc_msgSend(OSClass_NSStatusBar, OSSel_systemStatusBar)
-	var cond640 *NSStatusBar
-	if result != 0 {
-		cond640 = NewNSStatusBarOverload1(result)
-	} else {
-		cond640 = nil
-	}
-	return cond640
+	return orNil(result, NewNSStatusBarOverload1)
 }

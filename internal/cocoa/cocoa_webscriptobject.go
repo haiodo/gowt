@@ -54,11 +54,5 @@ func (this *WebScriptObject) initWebScriptObjectOverload2(id *id) {
 
 func (this *WebScriptObject) WebScriptValueAtIndex(index int32) *id {
 	var result int64 = OSObjc_msgSendOverload41(this.Id, OSSel_webScriptValueAtIndex_, index)
-	var cond919 *id
-	if result != 0 {
-		cond919 = NewidOverload1(result)
-	} else {
-		cond919 = nil
-	}
-	return cond919
+	return orNil(result, NewidOverload1)
 }

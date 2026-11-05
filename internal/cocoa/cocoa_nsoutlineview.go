@@ -114,13 +114,7 @@ func (this *NSOutlineView) IsItemExpanded(item *id) bool {
 
 func (this *NSOutlineView) ItemAtRow(row int64) *id {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_itemAtRow_, row)
-	var cond508 *id
-	if result != 0 {
-		cond508 = NewidOverload1(result)
-	} else {
-		cond508 = nil
-	}
-	return cond508
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSOutlineView) LevelForItem(item *id) int64 {

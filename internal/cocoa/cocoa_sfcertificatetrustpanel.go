@@ -76,13 +76,7 @@ func (this *SFCertificateTrustPanel) BeginSheetForWindow(docWindow *NSWindow, de
 
 func SFCertificateTrustPanelSharedCertificateTrustPanel() *SFCertificateTrustPanel {
 	var result int64 = OSObjc_msgSend(OSClass_SFCertificateTrustPanel, OSSel_sharedCertificateTrustPanel)
-	var cond903 *SFCertificateTrustPanel
-	if result != 0 {
-		cond903 = NewSFCertificateTrustPanelOverload1(result)
-	} else {
-		cond903 = nil
-	}
-	return cond903
+	return orNil(result, NewSFCertificateTrustPanelOverload1)
 }
 
 func SFCertificateTrustPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {

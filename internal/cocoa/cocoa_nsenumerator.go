@@ -54,11 +54,5 @@ func (this *NSEnumerator) initNSEnumeratorOverload2(id *id) {
 
 func (this *NSEnumerator) NextObject() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_nextObject)
-	var cond232 *id
-	if result != 0 {
-		cond232 = NewidOverload1(result)
-	} else {
-		cond232 = nil
-	}
-	return cond232
+	return orNil(result, NewidOverload1)
 }

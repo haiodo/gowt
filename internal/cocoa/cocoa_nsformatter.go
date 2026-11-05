@@ -60,11 +60,5 @@ func (this *NSFormatter) StringForObjectValue(obj *id) *NSString {
 		cond271 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForObjectValue_, cond271)
-	var cond272 *NSString
-	if result != 0 {
-		cond272 = NewNSStringOverload1(result)
-	} else {
-		cond272 = nil
-	}
-	return cond272
+	return orNil(result, NewNSStringOverload1)
 }

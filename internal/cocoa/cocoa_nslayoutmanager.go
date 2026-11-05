@@ -234,13 +234,7 @@ func (this *NSLayoutManager) SetUsesScreenFonts(usesScreenFonts bool) {
 
 func (this *NSLayoutManager) Typesetter() *NSTypesetter {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_typesetter)
-	var cond346 *NSTypesetter
-	if result != 0 {
-		cond346 = NewNSTypesetterOverload1(result)
-	} else {
-		cond346 = nil
-	}
-	return cond346
+	return orNil(result, NewNSTypesetterOverload1)
 }
 
 func (this *NSLayoutManager) UsedRectForTextContainer(container *NSTextContainer) NSRect {

@@ -352,6 +352,9 @@ final class ExpressionEmitter {
 	// ---------------------------------------------------------------- conditional
 
 	private String emitConditionalHoisted(ConditionalExpression ce) {
+		// Cocoa PI idiom `result != 0 ? new T(result) : null`: one orNil call, constructor runs once, only non-zero.
+		String orNil = tryOrNil(ce);
+		if (orNil != null) return orNil;
 		String tmp = "cond" + (++emitter.tempCounter);
 		ITypeBinding target = ce.resolveTypeBinding();
 		String goType = dev.gowt.j2go.GoTypes.map(target, emitter);
@@ -373,6 +376,46 @@ final class ExpressionEmitter {
 		emitter.prelude.add("\t" + tmp + " = " + elseText);
 		emitter.prelude.add("}");
 		return tmp;
+	}
+
+	/** `result != 0 ? new T(result) : null` (cocoa PI handle-to-object idiom) as `orNil(result, NewTOverloadK)`.
+	 *  Only the exact shape: an int64 handle compared to zero, a single-argument constructor taking that
+	 *  same handle, and a null else - so orNil's lazy call keeps the single-construction semantics. */
+	private String tryOrNil(ConditionalExpression ce) {
+		if (dev.gowt.j2go.GoTypes.platform != dev.gowt.j2go.Platform.COCOA
+				|| !(ce.getExpression() instanceof InfixExpression ie)
+				|| ie.getOperator() != InfixExpression.Operator.NOT_EQUALS
+				|| !(ie.getLeftOperand() instanceof SimpleName var)
+				|| !isZeroLiteral(ie.getRightOperand())
+				|| !"int64".equals(dev.gowt.j2go.GoTypes.map(var.resolveTypeBinding(), emitter))
+				|| !(ce.getThenExpression() instanceof ClassInstanceCreation cic)
+				|| cic.getAnonymousClassDeclaration() != null
+				|| cic.arguments().size() != 1
+				|| !(cic.arguments().get(0) instanceof SimpleName arg)
+				|| arg.resolveBinding() == null || !arg.resolveBinding().isEqualTo(var.resolveBinding())
+				|| !(ce.getElseExpression() instanceof NullLiteral)) return null;
+		String goType = dev.gowt.j2go.GoTypes.map(ce.resolveTypeBinding(), emitter);
+		if (!goType.startsWith("*")) return null;
+		// The constructor reference itself, so orNil calls it lazily: an exported `New...` taking one long.
+		IMethodBinding ctor = cic.resolveConstructorBinding();
+		ITypeBinding declaring = ctor.getDeclaringClass();
+		TypeModel.ClassInfo ci = emitter.model.lookup(declaring);
+		// orNil lives in the cocoa PI package: never rewrite references that would need a qualifier.
+		if (ci == null || ci.isStruct || !ci.goPackage.equals(emitter.currentGoPackage)
+				|| !"cocoa".equals(emitter.currentGoPackage)
+				|| !TypeModel.exportsConstructor(ctor, ci)
+				|| EmitUtil.isInnerClass(declaring)
+				|| ctor.getParameterTypes().length != 1
+				|| !ctor.getParameterTypes()[0].getName().equals("long")) return null;
+		String goName = emitter.ctorGoName(ctor, emitter.qualify("New" + ci.goFuncPrefix, ci));
+		emitter.tempCounter++; // the hoisted path would burn a cond number; keep downstream numbering stable
+		return "orNil(" + emitter.expr(var) + ", " + goName + ")";
+	}
+
+	private static boolean isZeroLiteral(Expression e) {
+		if (!(e instanceof NumberLiteral nl)) return false;
+		String token = nl.getToken();
+		return token.equals("0") || token.equals("0L") || token.equals("0l");
 	}
 
 	/** A switch expression outside a plain assignment (`return switch ...`, an argument): lowered

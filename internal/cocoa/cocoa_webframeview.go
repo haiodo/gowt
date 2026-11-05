@@ -68,11 +68,5 @@ func (this *WebFrameView) PrintOperationWithPrintInfo(printInfo *NSPrintInfo) *N
 		cond915 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_printOperationWithPrintInfo_, cond915)
-	var cond916 *NSPrintOperation
-	if result != 0 {
-		cond916 = NewNSPrintOperationOverload1(result)
-	} else {
-		cond916 = nil
-	}
-	return cond916
+	return orNil(result, NewNSPrintOperationOverload1)
 }

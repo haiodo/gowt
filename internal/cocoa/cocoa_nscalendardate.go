@@ -74,13 +74,7 @@ func (this *NSCalendarDate) SecondOfMinute() int64 {
 
 func (this *NSCalendarDate) TimeZone() *NSTimeZone {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_timeZone)
-	var cond119 *NSTimeZone
-	if result != 0 {
-		cond119 = NewNSTimeZoneOverload1(result)
-	} else {
-		cond119 = nil
-	}
-	return cond119
+	return orNil(result, NewNSTimeZoneOverload1)
 }
 
 func (this *NSCalendarDate) YearOfCommonEra() int64 {
@@ -89,13 +83,7 @@ func (this *NSCalendarDate) YearOfCommonEra() int64 {
 
 func NSCalendarDateCalendarDate() *NSCalendarDate {
 	var result int64 = OSObjc_msgSend(OSClass_NSCalendarDate, OSSel_calendarDate)
-	var cond120 *NSCalendarDate
-	if result != 0 {
-		cond120 = NewNSCalendarDateOverload1(result)
-	} else {
-		cond120 = nil
-	}
-	return cond120
+	return orNil(result, NewNSCalendarDateOverload1)
 }
 
 func NSCalendarDateDateWithYear(year int64, month int64, day int64, hour int64, minute int64, second int64, aTimeZone *NSTimeZone) *NSCalendarDate {
@@ -106,33 +94,15 @@ func NSCalendarDateDateWithYear(year int64, month int64, day int64, hour int64, 
 		cond121 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload64(OSClass_NSCalendarDate, OSSel_dateWithYear_month_day_hour_minute_second_timeZone_, year, month, day, hour, minute, second, cond121)
-	var cond122 *NSCalendarDate
-	if result != 0 {
-		cond122 = NewNSCalendarDateOverload1(result)
-	} else {
-		cond122 = nil
-	}
-	return cond122
+	return orNil(result, NewNSCalendarDateOverload1)
 }
 
 func NSCalendarDateDateWithTimeIntervalSinceNow(secs float64) *NSCalendarDate {
 	var result int64 = OSObjc_msgSendOverload35(OSClass_NSCalendarDate, OSSel_dateWithTimeIntervalSinceNow_, secs)
-	var cond123 *NSCalendarDate
-	if result != 0 {
-		cond123 = NewNSCalendarDateOverload1(result)
-	} else {
-		cond123 = nil
-	}
-	return cond123
+	return orNil(result, NewNSCalendarDateOverload1)
 }
 
 func NSCalendarDateDistantFuture() *NSDate {
 	var result int64 = OSObjc_msgSend(OSClass_NSCalendarDate, OSSel_distantFuture)
-	var cond124 *NSDate
-	if result != 0 {
-		cond124 = NewNSDateOverload1(result)
-	} else {
-		cond124 = nil
-	}
-	return cond124
+	return orNil(result, NewNSDateOverload1)
 }

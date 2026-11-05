@@ -58,22 +58,10 @@ func (this *NSError) Code() int64 {
 
 func (this *NSError) LocalizedDescription() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_localizedDescription)
-	var cond233 *NSString
-	if result != 0 {
-		cond233 = NewNSStringOverload1(result)
-	} else {
-		cond233 = nil
-	}
-	return cond233
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSError) UserInfo() *NSDictionary {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_userInfo)
-	var cond234 *NSDictionary
-	if result != 0 {
-		cond234 = NewNSDictionaryOverload1(result)
-	} else {
-		cond234 = nil
-	}
-	return cond234
+	return orNil(result, NewNSDictionaryOverload1)
 }

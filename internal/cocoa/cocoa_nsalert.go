@@ -60,13 +60,7 @@ func (this *NSAlert) AddButtonWithTitle(title *NSString) *NSButton {
 		cond9 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_addButtonWithTitle_, cond9)
-	var cond10 *NSButton
-	if result != 0 {
-		cond10 = NewNSButtonOverload1(result)
-	} else {
-		cond10 = nil
-	}
-	return cond10
+	return orNil(result, NewNSButtonOverload1)
 }
 
 func (this *NSAlert) BeginSheetModalForWindow(window *NSWindow, delegate *id, didEndSelector int64, contextInfo int64) {
@@ -105,11 +99,5 @@ func (this *NSAlert) SetIcon(icon *NSImage) {
 
 func (this *NSAlert) Window() *NSPanel {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_window)
-	var cond14 *NSPanel
-	if result != 0 {
-		cond14 = NewNSPanelOverload1(result)
-	} else {
-		cond14 = nil
-	}
-	return cond14
+	return orNil(result, NewNSPanelOverload1)
 }

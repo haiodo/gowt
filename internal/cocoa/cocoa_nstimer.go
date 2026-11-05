@@ -68,13 +68,7 @@ func (this *NSTimer) SetFireDate(fireDate *NSDate) {
 
 func (this *NSTimer) UserInfo() *id {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_userInfo)
-	var cond749 *id
-	if result != 0 {
-		cond749 = NewidOverload1(result)
-	} else {
-		cond749 = nil
-	}
-	return cond749
+	return orNil(result, NewidOverload1)
 }
 
 func NSTimerScheduledTimerWithTimeInterval(ti float64, aTarget *id, aSelector int64, userInfo *id, yesOrNo bool) *NSTimer {
@@ -91,11 +85,5 @@ func NSTimerScheduledTimerWithTimeInterval(ti float64, aTarget *id, aSelector in
 		cond751 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload38(OSClass_NSTimer, OSSel_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_, ti, cond750, aSelector, cond751, yesOrNo)
-	var cond752 *NSTimer
-	if result != 0 {
-		cond752 = NewNSTimerOverload1(result)
-	} else {
-		cond752 = nil
-	}
-	return cond752
+	return orNil(result, NewNSTimerOverload1)
 }

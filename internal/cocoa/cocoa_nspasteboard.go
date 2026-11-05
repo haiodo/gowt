@@ -76,13 +76,7 @@ func (this *NSPasteboard) AvailableTypeFromArray(types *NSArray) *NSString {
 		cond517 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_availableTypeFromArray_, cond517)
-	var cond518 *NSString
-	if result != 0 {
-		cond518 = NewNSStringOverload1(result)
-	} else {
-		cond518 = nil
-	}
-	return cond518
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSPasteboard) DataForType(dataType *NSString) *NSData {
@@ -93,13 +87,7 @@ func (this *NSPasteboard) DataForType(dataType *NSString) *NSData {
 		cond519 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_dataForType_, cond519)
-	var cond520 *NSData
-	if result != 0 {
-		cond520 = NewNSDataOverload1(result)
-	} else {
-		cond520 = nil
-	}
-	return cond520
+	return orNil(result, NewNSDataOverload1)
 }
 
 func (this *NSPasteboard) DeclareTypes(newTypes *NSArray, newOwner *id) int64 {
@@ -126,13 +114,7 @@ func (this *NSPasteboard) PropertyListForType(dataType *NSString) *id {
 		cond523 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_propertyListForType_, cond523)
-	var cond524 *id
-	if result != 0 {
-		cond524 = NewidOverload1(result)
-	} else {
-		cond524 = nil
-	}
-	return cond524
+	return orNil(result, NewidOverload1)
 }
 
 func (this *NSPasteboard) SetData(data *NSData, dataType *NSString) bool {
@@ -191,24 +173,12 @@ func (this *NSPasteboard) StringForType(dataType *NSString) *NSString {
 		cond531 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_stringForType_, cond531)
-	var cond532 *NSString
-	if result != 0 {
-		cond532 = NewNSStringOverload1(result)
-	} else {
-		cond532 = nil
-	}
-	return cond532
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSPasteboard) Types() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_types)
-	var cond533 *NSArray
-	if result != 0 {
-		cond533 = NewNSArrayOverload1(result)
-	} else {
-		cond533 = nil
-	}
-	return cond533
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSPasteboard) WriteObjects(objects *NSArray) bool {
@@ -223,13 +193,7 @@ func (this *NSPasteboard) WriteObjects(objects *NSArray) bool {
 
 func NSPasteboardGeneralPasteboard() *NSPasteboard {
 	var result int64 = OSObjc_msgSend(OSClass_NSPasteboard, OSSel_generalPasteboard)
-	var cond535 *NSPasteboard
-	if result != 0 {
-		cond535 = NewNSPasteboardOverload1(result)
-	} else {
-		cond535 = nil
-	}
-	return cond535
+	return orNil(result, NewNSPasteboardOverload1)
 }
 
 func NSPasteboardPasteboardWithName(name *NSString) *NSPasteboard {
@@ -240,11 +204,5 @@ func NSPasteboardPasteboardWithName(name *NSString) *NSPasteboard {
 		cond536 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSPasteboard, OSSel_pasteboardWithName_, cond536)
-	var cond537 *NSPasteboard
-	if result != 0 {
-		cond537 = NewNSPasteboardOverload1(result)
-	} else {
-		cond537 = nil
-	}
-	return cond537
+	return orNil(result, NewNSPasteboardOverload1)
 }

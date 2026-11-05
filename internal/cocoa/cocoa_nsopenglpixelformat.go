@@ -62,13 +62,7 @@ func (this *NSOpenGLPixelFormat) InitWithAttributes(attribs []int32) *NSOpenGLPi
 	if result == this.Id {
 		cond497 = this
 	} else {
-		var cond498 *NSOpenGLPixelFormat
-		if result != 0 {
-			cond498 = NewNSOpenGLPixelFormatOverload1(result)
-		} else {
-			cond498 = nil
-		}
-		cond497 = (cond498)
+		cond497 = (orNil(result, NewNSOpenGLPixelFormatOverload1))
 	}
 	return cond497
 }

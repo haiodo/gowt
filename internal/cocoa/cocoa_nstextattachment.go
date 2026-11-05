@@ -64,13 +64,7 @@ func (this *NSTextAttachment) InitWithFileWrapper(fileWrapper *NSFileWrapper) *N
 	if result == this.Id {
 		cond718 = this
 	} else {
-		var cond719 *NSTextAttachment
-		if result != 0 {
-			cond719 = NewNSTextAttachmentOverload1(result)
-		} else {
-			cond719 = nil
-		}
-		cond718 = (cond719)
+		cond718 = (orNil(result, NewNSTextAttachmentOverload1))
 	}
 	return cond718
 }

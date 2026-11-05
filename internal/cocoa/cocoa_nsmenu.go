@@ -88,35 +88,17 @@ func (this *NSMenu) InsertItem(newItem *NSMenuItem, index int64) {
 
 func (this *NSMenu) ItemArray() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_itemArray)
-	var cond357 *NSArray
-	if result != 0 {
-		cond357 = NewNSArrayOverload1(result)
-	} else {
-		cond357 = nil
-	}
-	return cond357
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSMenu) ItemAtIndex(index int64) *NSMenuItem {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_itemAtIndex_, index)
-	var cond358 *NSMenuItem
-	if result != 0 {
-		cond358 = NewNSMenuItemOverload1(result)
-	} else {
-		cond358 = nil
-	}
-	return cond358
+	return orNil(result, NewNSMenuItemOverload1)
 }
 
 func (this *NSMenu) ItemWithTag(tag int64) *NSMenuItem {
 	var result int64 = OSObjc_msgSendOverload44(this.Id, OSSel_itemWithTag_, tag)
-	var cond359 *NSMenuItem
-	if result != 0 {
-		cond359 = NewNSMenuItemOverload1(result)
-	} else {
-		cond359 = nil
-	}
-	return cond359
+	return orNil(result, NewNSMenuItemOverload1)
 }
 
 func (this *NSMenu) NumberOfItems() int64 {
@@ -179,13 +161,7 @@ func (this *NSMenu) SetSubmenu(aMenu *NSMenu, anItem *NSMenuItem) {
 
 func (this *NSMenu) Title() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_title)
-	var cond365 *NSString
-	if result != 0 {
-		cond365 = NewNSStringOverload1(result)
-	} else {
-		cond365 = nil
-	}
-	return cond365
+	return orNil(result, NewNSStringOverload1)
 }
 
 func NSMenuPopUpContextMenu(menu *NSMenu, event *NSEvent, view *NSView) {

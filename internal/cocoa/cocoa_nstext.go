@@ -184,11 +184,5 @@ func (this *NSText) SetTextColor(textColor *NSColor) {
 
 func (this *NSText) String() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_string)
-	var cond716 *NSString
-	if result != 0 {
-		cond716 = NewNSStringOverload1(result)
-	} else {
-		cond716 = nil
-	}
-	return cond716
+	return orNil(result, NewNSStringOverload1)
 }

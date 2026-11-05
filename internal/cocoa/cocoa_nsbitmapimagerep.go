@@ -70,13 +70,7 @@ func (this *NSBitmapImageRep) BytesPerRow() int64 {
 
 func (this *NSBitmapImageRep) ColorAtX(x int64, y int64) *NSColor {
 	var result int64 = OSObjc_msgSendOverload54(this.Id, OSSel_colorAtX_y_, x, y)
-	var cond73 *NSColor
-	if result != 0 {
-		cond73 = NewNSColorOverload1(result)
-	} else {
-		cond73 = nil
-	}
-	return cond73
+	return orNil(result, NewNSColorOverload1)
 }
 
 func (this *NSBitmapImageRep) InitWithBitmapDataPlanes(planes int64, width int64, height int64, bps int64, spp int64, alpha bool, isPlanar bool, colorSpaceName *NSString, bitmapFormat int64, rBytes int64, pBits int64) *NSBitmapImageRep {
@@ -91,13 +85,7 @@ func (this *NSBitmapImageRep) InitWithBitmapDataPlanes(planes int64, width int64
 	if result == this.Id {
 		cond75 = this
 	} else {
-		var cond76 *NSBitmapImageRep
-		if result != 0 {
-			cond76 = NewNSBitmapImageRepOverload1(result)
-		} else {
-			cond76 = nil
-		}
-		cond75 = (cond76)
+		cond75 = (orNil(result, NewNSBitmapImageRepOverload1))
 	}
 	return cond75
 }
@@ -114,13 +102,7 @@ func (this *NSBitmapImageRep) InitWithData(data *NSData) *NSBitmapImageRep {
 	if result == this.Id {
 		cond78 = this
 	} else {
-		var cond79 *NSBitmapImageRep
-		if result != 0 {
-			cond79 = NewNSBitmapImageRepOverload1(result)
-		} else {
-			cond79 = nil
-		}
-		cond78 = (cond79)
+		cond78 = (orNil(result, NewNSBitmapImageRepOverload1))
 	}
 	return cond78
 }
@@ -141,11 +123,5 @@ func NSBitmapImageRepImageRepWithContentsOfFile(filename *NSString) *NSImageRep 
 		cond80 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSBitmapImageRep, OSSel_imageRepWithContentsOfFile_, cond80)
-	var cond81 *NSImageRep
-	if result != 0 {
-		cond81 = NewNSImageRepOverload1(result)
-	} else {
-		cond81 = nil
-	}
-	return cond81
+	return orNil(result, NewNSImageRepOverload1)
 }

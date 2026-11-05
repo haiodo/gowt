@@ -54,44 +54,20 @@ func (this *WebDataSource) initWebDataSourceOverload2(id *id) {
 
 func (this *WebDataSource) PageTitle() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_pageTitle)
-	var cond905 *NSString
-	if result != 0 {
-		cond905 = NewNSStringOverload1(result)
-	} else {
-		cond905 = nil
-	}
-	return cond905
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *WebDataSource) Representation() *WebDocumentRepresentation {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_representation)
-	var cond906 *WebDocumentRepresentation
-	if result != 0 {
-		cond906 = NewWebDocumentRepresentationOverload1(result)
-	} else {
-		cond906 = nil
-	}
-	return cond906
+	return orNil(result, NewWebDocumentRepresentationOverload1)
 }
 
 func (this *WebDataSource) Request() *NSMutableURLRequest {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_request)
-	var cond907 *NSMutableURLRequest
-	if result != 0 {
-		cond907 = NewNSMutableURLRequestOverload1(result)
-	} else {
-		cond907 = nil
-	}
-	return cond907
+	return orNil(result, NewNSMutableURLRequestOverload1)
 }
 
 func (this *WebDataSource) WebFrame() *WebFrame {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_webFrame)
-	var cond908 *WebFrame
-	if result != 0 {
-		cond908 = NewWebFrameOverload1(result)
-	} else {
-		cond908 = nil
-	}
-	return cond908
+	return orNil(result, NewWebFrameOverload1)
 }

@@ -64,11 +64,5 @@ func (this *NSTextStorage) AddLayoutManager(aLayoutManager *NSLayoutManager) {
 
 func (this *NSTextStorage) Paragraphs() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_paragraphs)
-	var cond730 *NSArray
-	if result != 0 {
-		cond730 = NewNSArrayOverload1(result)
-	} else {
-		cond730 = nil
-	}
-	return cond730
+	return orNil(result, NewNSArrayOverload1)
 }

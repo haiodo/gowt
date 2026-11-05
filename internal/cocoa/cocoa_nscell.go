@@ -54,13 +54,7 @@ func (this *NSCell) initNSCellOverload2(id *id) {
 
 func (this *NSCell) AttributedStringValue() *NSAttributedString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_attributedStringValue)
-	var cond125 *NSAttributedString
-	if result != 0 {
-		cond125 = NewNSAttributedStringOverload1(result)
-	} else {
-		cond125 = nil
-	}
-	return cond125
+	return orNil(result, NewNSAttributedStringOverload1)
 }
 
 func (this *NSCell) CellSize() NSSize {
@@ -131,13 +125,7 @@ func (this *NSCell) FocusRingMaskBoundsForFrame(cellFrame NSRect, controlView *N
 
 func (this *NSCell) Font() *NSFont {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_font)
-	var cond130 *NSFont
-	if result != 0 {
-		cond130 = NewNSFontOverload1(result)
-	} else {
-		cond130 = nil
-	}
-	return cond130
+	return orNil(result, NewNSFontOverload1)
 }
 
 func (this *NSCell) HitTestForEvent(event *NSEvent, cellFrame NSRect, controlView *NSView) int64 {
@@ -158,13 +146,7 @@ func (this *NSCell) HitTestForEvent(event *NSEvent, cellFrame NSRect, controlVie
 
 func (this *NSCell) Image() *NSImage {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_image)
-	var cond133 *NSImage
-	if result != 0 {
-		cond133 = NewNSImageOverload1(result)
-	} else {
-		cond133 = nil
-	}
-	return cond133
+	return orNil(result, NewNSImageOverload1)
 }
 
 func (this *NSCell) ImageRectForBounds(theRect NSRect) NSRect {
@@ -281,13 +263,7 @@ func (this *NSCell) SetWraps(wraps bool) {
 
 func (this *NSCell) Title() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_title)
-	var cond139 *NSString
-	if result != 0 {
-		cond139 = NewNSStringOverload1(result)
-	} else {
-		cond139 = nil
-	}
-	return cond139
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSCell) TitleRectForBounds(theRect NSRect) NSRect {

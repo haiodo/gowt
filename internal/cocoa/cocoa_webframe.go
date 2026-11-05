@@ -54,24 +54,12 @@ func (this *WebFrame) initWebFrameOverload2(id *id) {
 
 func (this *WebFrame) DOMDocument() *DOMDocument {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_DOMDocument)
-	var cond910 *DOMDocument
-	if result != 0 {
-		cond910 = NewDOMDocumentOverload1(result)
-	} else {
-		cond910 = nil
-	}
-	return cond910
+	return orNil(result, NewDOMDocumentOverload1)
 }
 
 func (this *WebFrame) DataSource() *WebDataSource {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_dataSource)
-	var cond911 *WebDataSource
-	if result != 0 {
-		cond911 = NewWebDataSourceOverload1(result)
-	} else {
-		cond911 = nil
-	}
-	return cond911
+	return orNil(result, NewWebDataSourceOverload1)
 }
 
 func (this *WebFrame) GlobalContext() int64 {

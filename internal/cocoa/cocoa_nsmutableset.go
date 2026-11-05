@@ -64,11 +64,5 @@ func (this *NSMutableSet) AddObjectsFromArray(array *NSArray) {
 
 func NSMutableSetSet() *NSMutableSet {
 	var result int64 = OSObjc_msgSend(OSClass_NSMutableSet, OSSel_set)
-	var cond413 *NSMutableSet
-	if result != 0 {
-		cond413 = NewNSMutableSetOverload1(result)
-	} else {
-		cond413 = nil
-	}
-	return cond413
+	return orNil(result, NewNSMutableSetOverload1)
 }

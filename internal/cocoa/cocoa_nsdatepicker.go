@@ -54,13 +54,7 @@ func (this *NSDatePicker) initNSDatePickerOverload2(id *id) {
 
 func (this *NSDatePicker) DateValue() *NSDate {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_dateValue)
-	var cond217 *NSDate
-	if result != 0 {
-		cond217 = NewNSDateOverload1(result)
-	} else {
-		cond217 = nil
-	}
-	return cond217
+	return orNil(result, NewNSDateOverload1)
 }
 
 func (this *NSDatePicker) SetBackgroundColor(backgroundColor *NSColor) {

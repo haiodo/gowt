@@ -88,11 +88,5 @@ func NSImageRepImageRepWithContentsOfFile(filename *NSString) *NSImageRep {
 		cond320 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSImageRep, OSSel_imageRepWithContentsOfFile_, cond320)
-	var cond321 *NSImageRep
-	if result != 0 {
-		cond321 = NewNSImageRepOverload1(result)
-	} else {
-		cond321 = nil
-	}
-	return cond321
+	return orNil(result, NewNSImageRepOverload1)
 }

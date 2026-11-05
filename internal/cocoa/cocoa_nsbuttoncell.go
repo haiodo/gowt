@@ -120,11 +120,5 @@ func (this *NSButtonCell) SetImagePosition(imagePosition int64) {
 
 func (this *NSButtonCell) Title() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_title)
-	var cond118 *NSString
-	if result != 0 {
-		cond118 = NewNSStringOverload1(result)
-	} else {
-		cond118 = nil
-	}
-	return cond118
+	return orNil(result, NewNSStringOverload1)
 }

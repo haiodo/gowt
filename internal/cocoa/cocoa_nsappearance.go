@@ -54,13 +54,7 @@ func (this *NSAppearance) initNSAppearanceOverload2(id *id) {
 
 func (this *NSAppearance) Name() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_name)
-	var cond15 *NSString
-	if result != 0 {
-		cond15 = NewNSStringOverload1(result)
-	} else {
-		cond15 = nil
-	}
-	return cond15
+	return orNil(result, NewNSStringOverload1)
 }
 
 func NSAppearanceAppearanceNamed(name *NSString) *NSAppearance {
@@ -71,22 +65,10 @@ func NSAppearanceAppearanceNamed(name *NSString) *NSAppearance {
 		cond16 = int64(0)
 	}
 	var result int64 = OSObjc_msgSendOverload44(OSClass_NSAppearance, OSSel_appearanceNamed_, cond16)
-	var cond17 *NSAppearance
-	if result != 0 {
-		cond17 = NewNSAppearanceOverload1(result)
-	} else {
-		cond17 = nil
-	}
-	return cond17
+	return orNil(result, NewNSAppearanceOverload1)
 }
 
 func NSAppearanceCurrentAppearance() *NSAppearance {
 	var result int64 = OSObjc_msgSend(OSClass_NSAppearance, OSSel_currentAppearance)
-	var cond18 *NSAppearance
-	if result != 0 {
-		cond18 = NewNSAppearanceOverload1(result)
-	} else {
-		cond18 = nil
-	}
-	return cond18
+	return orNil(result, NewNSAppearanceOverload1)
 }

@@ -58,13 +58,7 @@ func (this *NSTextContainer) InitWithContainerSize(aContainerSize NSSize) *NSTex
 	if result == this.Id {
 		cond721 = this
 	} else {
-		var cond722 *NSTextContainer
-		if result != 0 {
-			cond722 = NewNSTextContainerOverload1(result)
-		} else {
-			cond722 = nil
-		}
-		cond721 = (cond722)
+		cond721 = (orNil(result, NewNSTextContainerOverload1))
 	}
 	return cond721
 }

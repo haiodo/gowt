@@ -94,11 +94,5 @@ func (this *NSPrintPanel) SetOptions(options int64) {
 
 func NSPrintPanelPrintPanel() *NSPrintPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSPrintPanel, OSSel_printPanel)
-	var cond563 *NSPrintPanel
-	if result != 0 {
-		cond563 = NewNSPrintPanelOverload1(result)
-	} else {
-		cond563 = nil
-	}
-	return cond563
+	return orNil(result, NewNSPrintPanelOverload1)
 }

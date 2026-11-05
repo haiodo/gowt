@@ -58,13 +58,7 @@ func (this *NSBox) BorderWidth() float64 {
 
 func (this *NSBox) ContentView() *NSView {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_contentView)
-	var cond82 *NSView
-	if result != 0 {
-		cond82 = NewNSViewOverload1(result)
-	} else {
-		cond82 = nil
-	}
-	return cond82
+	return orNil(result, NewNSViewOverload1)
 }
 
 func (this *NSBox) ContentViewMargins() NSSize {
@@ -129,22 +123,10 @@ func (this *NSBox) SetTitlePosition(titlePosition int64) {
 
 func (this *NSBox) TitleCell() *NSCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_titleCell)
-	var cond86 *NSCell
-	if result != 0 {
-		cond86 = NewNSCellOverload1(result)
-	} else {
-		cond86 = nil
-	}
-	return cond86
+	return orNil(result, NewNSCellOverload1)
 }
 
 func (this *NSBox) TitleFont() *NSFont {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_titleFont)
-	var cond87 *NSFont
-	if result != 0 {
-		cond87 = NewNSFontOverload1(result)
-	} else {
-		cond87 = nil
-	}
-	return cond87
+	return orNil(result, NewNSFontOverload1)
 }

@@ -64,13 +64,7 @@ func (this *NSCursor) InitWithImage(newImage *NSImage, aPoint NSPoint) *NSCursor
 	if result == this.Id {
 		cond197 = this
 	} else {
-		var cond198 *NSCursor
-		if result != 0 {
-			cond198 = NewNSCursorOverload1(result)
-		} else {
-			cond198 = nil
-		}
-		cond197 = (cond198)
+		cond197 = (orNil(result, NewNSCursorOverload1))
 	}
 	return cond197
 }
@@ -89,68 +83,32 @@ func (this *NSCursor) SetOnMouseEntered(flag bool) {
 
 func NSCursorIBeamCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_IBeamCursor)
-	var cond199 *NSCursor
-	if result != 0 {
-		cond199 = NewNSCursorOverload1(result)
-	} else {
-		cond199 = nil
-	}
-	return cond199
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorArrowCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_arrowCursor)
-	var cond200 *NSCursor
-	if result != 0 {
-		cond200 = NewNSCursorOverload1(result)
-	} else {
-		cond200 = nil
-	}
-	return cond200
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorCrosshairCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_crosshairCursor)
-	var cond201 *NSCursor
-	if result != 0 {
-		cond201 = NewNSCursorOverload1(result)
-	} else {
-		cond201 = nil
-	}
-	return cond201
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorCurrentCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_currentCursor)
-	var cond202 *NSCursor
-	if result != 0 {
-		cond202 = NewNSCursorOverload1(result)
-	} else {
-		cond202 = nil
-	}
-	return cond202
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorOperationNotAllowedCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_operationNotAllowedCursor)
-	var cond203 *NSCursor
-	if result != 0 {
-		cond203 = NewNSCursorOverload1(result)
-	} else {
-		cond203 = nil
-	}
-	return cond203
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorPointingHandCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_pointingHandCursor)
-	var cond204 *NSCursor
-	if result != 0 {
-		cond204 = NewNSCursorOverload1(result)
-	} else {
-		cond204 = nil
-	}
-	return cond204
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorPop() {
@@ -159,68 +117,32 @@ func NSCursorPop() {
 
 func NSCursorResizeDownCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_resizeDownCursor)
-	var cond205 *NSCursor
-	if result != 0 {
-		cond205 = NewNSCursorOverload1(result)
-	} else {
-		cond205 = nil
-	}
-	return cond205
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorResizeLeftCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_resizeLeftCursor)
-	var cond206 *NSCursor
-	if result != 0 {
-		cond206 = NewNSCursorOverload1(result)
-	} else {
-		cond206 = nil
-	}
-	return cond206
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorResizeLeftRightCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_resizeLeftRightCursor)
-	var cond207 *NSCursor
-	if result != 0 {
-		cond207 = NewNSCursorOverload1(result)
-	} else {
-		cond207 = nil
-	}
-	return cond207
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorResizeRightCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_resizeRightCursor)
-	var cond208 *NSCursor
-	if result != 0 {
-		cond208 = NewNSCursorOverload1(result)
-	} else {
-		cond208 = nil
-	}
-	return cond208
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorResizeUpCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_resizeUpCursor)
-	var cond209 *NSCursor
-	if result != 0 {
-		cond209 = NewNSCursorOverload1(result)
-	} else {
-		cond209 = nil
-	}
-	return cond209
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorResizeUpDownCursor() *NSCursor {
 	var result int64 = OSObjc_msgSend(OSClass_NSCursor, OSSel_resizeUpDownCursor)
-	var cond210 *NSCursor
-	if result != 0 {
-		cond210 = NewNSCursorOverload1(result)
-	} else {
-		cond210 = nil
-	}
-	return cond210
+	return orNil(result, NewNSCursorOverload1)
 }
 
 func NSCursorSetHiddenUntilMouseMoves(flag bool) {

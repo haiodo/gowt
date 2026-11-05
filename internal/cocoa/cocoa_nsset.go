@@ -54,13 +54,7 @@ func (this *NSSet) initNSSetOverload2(id *id) {
 
 func (this *NSSet) AllObjects() *NSArray {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_allObjects)
-	var cond635 *NSArray
-	if result != 0 {
-		cond635 = NewNSArrayOverload1(result)
-	} else {
-		cond635 = nil
-	}
-	return cond635
+	return orNil(result, NewNSArrayOverload1)
 }
 
 func (this *NSSet) Count() int64 {
@@ -69,22 +63,10 @@ func (this *NSSet) Count() int64 {
 
 func (this *NSSet) ObjectEnumerator() *NSEnumerator {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_objectEnumerator)
-	var cond636 *NSEnumerator
-	if result != 0 {
-		cond636 = NewNSEnumeratorOverload1(result)
-	} else {
-		cond636 = nil
-	}
-	return cond636
+	return orNil(result, NewNSEnumeratorOverload1)
 }
 
 func NSSetSet() *NSSet {
 	var result int64 = OSObjc_msgSend(OSClass_NSSet, OSSel_set)
-	var cond637 *NSSet
-	if result != 0 {
-		cond637 = NewNSSetOverload1(result)
-	} else {
-		cond637 = nil
-	}
-	return cond637
+	return orNil(result, NewNSSetOverload1)
 }

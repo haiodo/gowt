@@ -64,13 +64,7 @@ func (this *NSColorPanel) AttachColorList(colorList *NSColorList) {
 
 func (this *NSColorPanel) Color() *NSColor {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_color)
-	var cond179 *NSColor
-	if result != 0 {
-		cond179 = NewNSColorOverload1(result)
-	} else {
-		cond179 = nil
-	}
-	return cond179
+	return orNil(result, NewNSColorOverload1)
 }
 
 func (this *NSColorPanel) SetColor(color *NSColor) {
@@ -85,13 +79,7 @@ func (this *NSColorPanel) SetColor(color *NSColor) {
 
 func NSColorPanelSharedColorPanel() *NSColorPanel {
 	var result int64 = OSObjc_msgSend(OSClass_NSColorPanel, OSSel_sharedColorPanel)
-	var cond181 *NSColorPanel
-	if result != 0 {
-		cond181 = NewNSColorPanelOverload1(result)
-	} else {
-		cond181 = nil
-	}
-	return cond181
+	return orNil(result, NewNSColorPanelOverload1)
 }
 
 func NSColorPanelMinFrameWidthWithTitle(aTitle *NSString, aStyle int64) float64 {

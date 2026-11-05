@@ -72,13 +72,7 @@ func (this *NSAffineTransform) InitWithTransform(transform *NSAffineTransform) *
 	if result == this.Id {
 		cond5 = this
 	} else {
-		var cond6 *NSAffineTransform
-		if result != 0 {
-			cond6 = NewNSAffineTransformOverload1(result)
-		} else {
-			cond6 = nil
-		}
-		cond5 = (cond6)
+		cond5 = (orNil(result, NewNSAffineTransformOverload1))
 	}
 	return cond5
 }
@@ -133,11 +127,5 @@ func (this *NSAffineTransform) TranslateXBy(deltaX float64, deltaY float64) {
 
 func NSAffineTransformTransform() *NSAffineTransform {
 	var result int64 = OSObjc_msgSend(OSClass_NSAffineTransform, OSSel_transform)
-	var cond8 *NSAffineTransform
-	if result != 0 {
-		cond8 = NewNSAffineTransformOverload1(result)
-	} else {
-		cond8 = nil
-	}
-	return cond8
+	return orNil(result, NewNSAffineTransformOverload1)
 }

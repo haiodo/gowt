@@ -54,13 +54,7 @@ func (this *NSSearchFieldCell) initNSSearchFieldCellOverload2(id *id) {
 
 func (this *NSSearchFieldCell) CancelButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_cancelButtonCell)
-	var cond631 *NSButtonCell
-	if result != 0 {
-		cond631 = NewNSButtonCellOverload1(result)
-	} else {
-		cond631 = nil
-	}
-	return cond631
+	return orNil(result, NewNSButtonCellOverload1)
 }
 
 func (this *NSSearchFieldCell) CancelButtonRectForBounds(rect NSRect) NSRect {
@@ -71,13 +65,7 @@ func (this *NSSearchFieldCell) CancelButtonRectForBounds(rect NSRect) NSRect {
 
 func (this *NSSearchFieldCell) SearchButtonCell() *NSButtonCell {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_searchButtonCell)
-	var cond632 *NSButtonCell
-	if result != 0 {
-		cond632 = NewNSButtonCellOverload1(result)
-	} else {
-		cond632 = nil
-	}
-	return cond632
+	return orNil(result, NewNSButtonCellOverload1)
 }
 
 func (this *NSSearchFieldCell) SearchButtonRectForBounds(rect NSRect) NSRect {

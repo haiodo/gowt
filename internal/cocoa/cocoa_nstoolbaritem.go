@@ -64,26 +64,14 @@ func (this *NSToolbarItem) InitWithItemIdentifier(itemIdentifier *NSString) *NST
 	if result == this.Id {
 		cond760 = this
 	} else {
-		var cond761 *NSToolbarItem
-		if result != 0 {
-			cond761 = NewNSToolbarItemOverload1(result)
-		} else {
-			cond761 = nil
-		}
-		cond760 = (cond761)
+		cond760 = (orNil(result, NewNSToolbarItemOverload1))
 	}
 	return cond760
 }
 
 func (this *NSToolbarItem) ItemIdentifier() *NSString {
 	var result int64 = OSObjc_msgSend(this.Id, OSSel_itemIdentifier)
-	var cond762 *NSString
-	if result != 0 {
-		cond762 = NewNSStringOverload1(result)
-	} else {
-		cond762 = nil
-	}
-	return cond762
+	return orNil(result, NewNSStringOverload1)
 }
 
 func (this *NSToolbarItem) SetAction(action int64) {

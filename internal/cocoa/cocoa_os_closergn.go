@@ -18,339 +18,109 @@ package cocoa
 
 import (
 	"github.com/ebitengine/purego"
-	"sync"
 	"unsafe"
 )
 
-var OSCGPDFContextBeginPage_impl func(context int64, pageInfo int64)
-var OSCGPDFContextBeginPage_once sync.Once
-
-func OSCGPDFContextBeginPage(context int64, pageInfo int64) {
-	OSCGPDFContextBeginPage_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPDFContextBeginPage_impl, purego.RTLD_DEFAULT, "CGPDFContextBeginPage")
-	})
-	OSCGPDFContextBeginPage_impl(context, pageInfo)
-}
-
-var OSCGPDFContextClose_impl func(context int64)
-var OSCGPDFContextClose_once sync.Once
-
-func OSCGPDFContextClose(context int64) {
-	OSCGPDFContextClose_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPDFContextClose_impl, purego.RTLD_DEFAULT, "CGPDFContextClose")
-	})
-	OSCGPDFContextClose_impl(context)
-}
-
-var OSCGPDFContextCreateWithURL_impl func(url int64, mediaBox *CGRect, auxiliaryInfo int64) int64
-var OSCGPDFContextCreateWithURL_once sync.Once
-
-func OSCGPDFContextCreateWithURL(url int64, mediaBox *CGRect, auxiliaryInfo int64) int64 {
-	OSCGPDFContextCreateWithURL_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPDFContextCreateWithURL_impl, purego.RTLD_DEFAULT, "CGPDFContextCreateWithURL")
-	})
-	return OSCGPDFContextCreateWithURL_impl(url, mediaBox, auxiliaryInfo)
-}
-
-var OSCGPDFContextEndPage_impl func(context int64)
-var OSCGPDFContextEndPage_once sync.Once
-
-func OSCGPDFContextEndPage(context int64) {
-	OSCGPDFContextEndPage_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPDFContextEndPage_impl, purego.RTLD_DEFAULT, "CGPDFContextEndPage")
-	})
-	OSCGPDFContextEndPage_impl(context)
-}
-
-var OSCGPathAddCurveToPoint_impl func(path int64, m int64, cp1x float64, cp1y float64, cp2x float64, cp2y float64, x float64, y float64)
-var OSCGPathAddCurveToPoint_once sync.Once
-
-func OSCGPathAddCurveToPoint(path int64, m int64, cp1x float64, cp1y float64, cp2x float64, cp2y float64, x float64, y float64) {
-	OSCGPathAddCurveToPoint_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPathAddCurveToPoint_impl, purego.RTLD_DEFAULT, "CGPathAddCurveToPoint")
-	})
-	OSCGPathAddCurveToPoint_impl(path, m, cp1x, cp1y, cp2x, cp2y, x, y)
-}
-
-var OSCGPathAddLineToPoint_impl func(path int64, m int64, x float64, y float64)
-var OSCGPathAddLineToPoint_once sync.Once
-
-func OSCGPathAddLineToPoint(path int64, m int64, x float64, y float64) {
-	OSCGPathAddLineToPoint_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPathAddLineToPoint_impl, purego.RTLD_DEFAULT, "CGPathAddLineToPoint")
-	})
-	OSCGPathAddLineToPoint_impl(path, m, x, y)
-}
-
-var OSCGPathApply_impl func(path int64, info int64, function int64)
-var OSCGPathApply_once sync.Once
-
-func OSCGPathApply(path int64, info int64, function int64) {
-	OSCGPathApply_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPathApply_impl, purego.RTLD_DEFAULT, "CGPathApply")
-	})
-	OSCGPathApply_impl(path, info, function)
-}
-
-var OSCGPathCloseSubpath_impl func(path int64)
-var OSCGPathCloseSubpath_once sync.Once
-
-func OSCGPathCloseSubpath(path int64) {
-	OSCGPathCloseSubpath_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPathCloseSubpath_impl, purego.RTLD_DEFAULT, "CGPathCloseSubpath")
-	})
-	OSCGPathCloseSubpath_impl(path)
-}
-
-var OSCGPathCreateMutable_impl func() int64
-var OSCGPathCreateMutable_once sync.Once
-
-func OSCGPathCreateMutable() int64 {
-	OSCGPathCreateMutable_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPathCreateMutable_impl, purego.RTLD_DEFAULT, "CGPathCreateMutable")
-	})
-	return OSCGPathCreateMutable_impl()
-}
-
-func OSCGPathElement_sizeof() int32 { return int32(unsafe.Sizeof(CGPathElement{})) }
-
-var OSCGPathMoveToPoint_impl func(path int64, m int64, x float64, y float64)
-var OSCGPathMoveToPoint_once sync.Once
-
-func OSCGPathMoveToPoint(path int64, m int64, x float64, y float64) {
-	OSCGPathMoveToPoint_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPathMoveToPoint_impl, purego.RTLD_DEFAULT, "CGPathMoveToPoint")
-	})
-	OSCGPathMoveToPoint_impl(path, m, x, y)
-}
-
-var OSCGPathRelease_impl func(path int64)
-var OSCGPathRelease_once sync.Once
-
-func OSCGPathRelease(path int64) {
-	OSCGPathRelease_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGPathRelease_impl, purego.RTLD_DEFAULT, "CGPathRelease")
-	})
-	OSCGPathRelease_impl(path)
-}
-
-func OSCGPoint_sizeof() int32 { return int32(unsafe.Sizeof(CGPoint{})) }
-
-func OSCGRect_sizeof() int32 { return int32(unsafe.Sizeof(CGRect{})) }
-
-func OSCGSize_sizeof() int32 { return int32(unsafe.Sizeof(CGSize{})) }
-
-var OSCPSSetProcessName_impl func(psn []int32, name int64) int32
-var OSCPSSetProcessName_once sync.Once
-
-func OSCPSSetProcessName(psn []int32, name int64) int32 {
-	OSCPSSetProcessName_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCPSSetProcessName_impl, purego.RTLD_DEFAULT, "CPSSetProcessName")
-	})
-	return OSCPSSetProcessName_impl(psn, name)
-}
-
-var OSCTFontManagerRegisterFontsForURL_impl func(fontURL int64, scope int32, error_ int64) bool
-var OSCTFontManagerRegisterFontsForURL_once sync.Once
-
-func OSCTFontManagerRegisterFontsForURL(fontURL int64, scope int32, error_ int64) bool {
-	OSCTFontManagerRegisterFontsForURL_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCTFontManagerRegisterFontsForURL_impl, purego.RTLD_DEFAULT, "CTFontManagerRegisterFontsForURL")
-	})
-	return OSCTFontManagerRegisterFontsForURL_impl(fontURL, scope, error_)
-}
-
-var OSCancelMenuTracking_impl func(inRootMenu int64, inImmediate bool, inDismissalReason int32) int32
-var OSCancelMenuTracking_once sync.Once
-
-func OSCancelMenuTracking(inRootMenu int64, inImmediate bool, inDismissalReason int32) int32 {
-	OSCancelMenuTracking_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCancelMenuTracking_impl, purego.RTLD_DEFAULT, "CancelMenuTracking")
-	})
-	return OSCancelMenuTracking_impl(inRootMenu, inImmediate, inDismissalReason)
-}
-
-var OSCloseRgn_impl func(dstRgn int64)
-var OSCloseRgn_once sync.Once
+var OSCloseRgn_lazy lazyFunc[func(dstRgn int64)]
 
 func OSCloseRgn(dstRgn int64) {
-	OSCloseRgn_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSCloseRgn_impl, purego.RTLD_DEFAULT, "CloseRgn") })
-	OSCloseRgn_impl(dstRgn)
+	OSCloseRgn_lazy.get("CloseRgn")(dstRgn)
 }
 
-var OSCopyRgn_impl func(srcRgnHandle int64, dstRgnHandle int64)
-var OSCopyRgn_once sync.Once
+var OSCopyRgn_lazy lazyFunc[func(srcRgnHandle int64, dstRgnHandle int64)]
 
 func OSCopyRgn(srcRgnHandle int64, dstRgnHandle int64) {
-	OSCopyRgn_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSCopyRgn_impl, purego.RTLD_DEFAULT, "CopyRgn") })
-	OSCopyRgn_impl(srcRgnHandle, dstRgnHandle)
+	OSCopyRgn_lazy.get("CopyRgn")(srcRgnHandle, dstRgnHandle)
 }
 
-var OSDiffRgn_impl func(srcRgnA int64, srcRgnB int64, dstRgn int64)
-var OSDiffRgn_once sync.Once
+var OSDiffRgn_lazy lazyFunc[func(srcRgnA int64, srcRgnB int64, dstRgn int64)]
 
 func OSDiffRgn(srcRgnA int64, srcRgnB int64, dstRgn int64) {
-	OSDiffRgn_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSDiffRgn_impl, purego.RTLD_DEFAULT, "DiffRgn") })
-	OSDiffRgn_impl(srcRgnA, srcRgnB, dstRgn)
+	OSDiffRgn_lazy.get("DiffRgn")(srcRgnA, srcRgnB, dstRgn)
 }
 
-var OSDisposeRgn_impl func(rgnHandle int64)
-var OSDisposeRgn_once sync.Once
+var OSDisposeRgn_lazy lazyFunc[func(rgnHandle int64)]
 
 func OSDisposeRgn(rgnHandle int64) {
-	OSDisposeRgn_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSDisposeRgn_impl, purego.RTLD_DEFAULT, "DisposeRgn")
-	})
-	OSDisposeRgn_impl(rgnHandle)
+	OSDisposeRgn_lazy.get("DisposeRgn")(rgnHandle)
 }
 
-var OSEmptyRgn_impl func(rgnHandle int64) bool
-var OSEmptyRgn_once sync.Once
+var OSEmptyRgn_lazy lazyFunc[func(rgnHandle int64) bool]
 
 func OSEmptyRgn(rgnHandle int64) bool {
-	OSEmptyRgn_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSEmptyRgn_impl, purego.RTLD_DEFAULT, "EmptyRgn") })
-	return OSEmptyRgn_impl(rgnHandle)
+	return OSEmptyRgn_lazy.get("EmptyRgn")(rgnHandle)
 }
 
-var OSGetCurrentProcess_impl func(psn []int32) int32
-var OSGetCurrentProcess_once sync.Once
+var OSGetCurrentProcess_lazy lazyFunc[func(psn []int32) int32]
 
 func OSGetCurrentProcess(psn []int32) int32 {
-	OSGetCurrentProcess_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSGetCurrentProcess_impl, purego.RTLD_DEFAULT, "GetCurrentProcess")
-	})
-	return OSGetCurrentProcess_impl(psn)
+	return OSGetCurrentProcess_lazy.get("GetCurrentProcess")(psn)
 }
 
-var OSGetIconRefFromTypeInfo_impl func(inCreator int32, inType int32, inExtension int64, inMIMEType int64, inUsageFlags int32, outIconRef []int64) int32
-var OSGetIconRefFromTypeInfo_once sync.Once
+var OSGetIconRefFromTypeInfo_lazy lazyFunc[func(inCreator int32, inType int32, inExtension int64, inMIMEType int64, inUsageFlags int32, outIconRef []int64) int32]
 
 func OSGetIconRefFromTypeInfo(inCreator int32, inType int32, inExtension int64, inMIMEType int64, inUsageFlags int32, outIconRef []int64) int32 {
-	OSGetIconRefFromTypeInfo_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSGetIconRefFromTypeInfo_impl, purego.RTLD_DEFAULT, "GetIconRefFromTypeInfo")
-	})
-	return OSGetIconRefFromTypeInfo_impl(inCreator, inType, inExtension, inMIMEType, inUsageFlags, outIconRef)
+	return OSGetIconRefFromTypeInfo_lazy.get("GetIconRefFromTypeInfo")(inCreator, inType, inExtension, inMIMEType, inUsageFlags, outIconRef)
 }
 
-var OSGetRegionBounds_impl func(rgnHandle int64, bounds []int16)
-var OSGetRegionBounds_once sync.Once
+var OSGetRegionBounds_lazy lazyFunc[func(rgnHandle int64, bounds []int16)]
 
 func OSGetRegionBounds(rgnHandle int64, bounds []int16) {
-	OSGetRegionBounds_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSGetRegionBounds_impl, purego.RTLD_DEFAULT, "GetRegionBounds")
-	})
-	OSGetRegionBounds_impl(rgnHandle, bounds)
+	OSGetRegionBounds_lazy.get("GetRegionBounds")(rgnHandle, bounds)
 }
 
-var OSGetSystemUIMode_impl func(outMode []int32, outOptions []int32) int32
-var OSGetSystemUIMode_once sync.Once
+var OSGetSystemUIMode_lazy lazyFunc[func(outMode []int32, outOptions []int32) int32]
 
 func OSGetSystemUIMode(outMode []int32, outOptions []int32) int32 {
-	OSGetSystemUIMode_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSGetSystemUIMode_impl, purego.RTLD_DEFAULT, "GetSystemUIMode")
-	})
-	return OSGetSystemUIMode_impl(outMode, outOptions)
+	return OSGetSystemUIMode_lazy.get("GetSystemUIMode")(outMode, outOptions)
 }
 
-var OSGetThemeMetric_impl func(themeConstant int32, metric []int32)
-var OSGetThemeMetric_once sync.Once
+var OSGetThemeMetric_lazy lazyFunc[func(themeConstant int32, metric []int32)]
 
 func OSGetThemeMetric(themeConstant int32, metric []int32) {
-	OSGetThemeMetric_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSGetThemeMetric_impl, purego.RTLD_DEFAULT, "GetThemeMetric")
-	})
-	OSGetThemeMetric_impl(themeConstant, metric)
+	OSGetThemeMetric_lazy.get("GetThemeMetric")(themeConstant, metric)
 }
 
-var OSHIThemeDrawFocusRect_impl func(inRect *CGRect, inHasFocus bool, inContext int64, inOrientation int32) int32
-var OSHIThemeDrawFocusRect_once sync.Once
+var OSHIThemeDrawFocusRect_lazy lazyFunc[func(inRect *CGRect, inHasFocus bool, inContext int64, inOrientation int32) int32]
 
 func OSHIThemeDrawFocusRect(inRect *CGRect, inHasFocus bool, inContext int64, inOrientation int32) int32 {
-	OSHIThemeDrawFocusRect_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSHIThemeDrawFocusRect_impl, purego.RTLD_DEFAULT, "HIThemeDrawFocusRect")
-	})
-	return OSHIThemeDrawFocusRect_impl(inRect, inHasFocus, inContext, inOrientation)
+	return OSHIThemeDrawFocusRect_lazy.get("HIThemeDrawFocusRect")(inRect, inHasFocus, inContext, inOrientation)
 }
 
-var OSJSEvaluateScript_impl func(ctx int64, script int64, thisObject int64, sourceURL int64, startingLineNumber int32, exception []int64) int64
-var OSJSEvaluateScript_once sync.Once
+var OSJSEvaluateScript_lazy lazyFunc[func(ctx int64, script int64, thisObject int64, sourceURL int64, startingLineNumber int32, exception []int64) int64]
 
 func OSJSEvaluateScript(ctx int64, script int64, thisObject int64, sourceURL int64, startingLineNumber int32, exception []int64) int64 {
-	OSJSEvaluateScript_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSJSEvaluateScript_impl, purego.RTLD_DEFAULT, "JSEvaluateScript")
-	})
-	return OSJSEvaluateScript_impl(ctx, script, thisObject, sourceURL, startingLineNumber, exception)
+	return OSJSEvaluateScript_lazy.get("JSEvaluateScript")(ctx, script, thisObject, sourceURL, startingLineNumber, exception)
 }
 
-var OSJSStringCreateWithUTF8CString_impl func(string_ []int8) int64
-var OSJSStringCreateWithUTF8CString_once sync.Once
+var OSJSStringCreateWithUTF8CString_lazy lazyFunc[func(string_ []int8) int64]
 
 func OSJSStringCreateWithUTF8CString(string_ []int8) int64 {
-	OSJSStringCreateWithUTF8CString_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSJSStringCreateWithUTF8CString_impl, purego.RTLD_DEFAULT, "JSStringCreateWithUTF8CString")
-	})
-	return OSJSStringCreateWithUTF8CString_impl(string_)
+	return OSJSStringCreateWithUTF8CString_lazy.get("JSStringCreateWithUTF8CString")(string_)
 }
 
-var OSJSStringRelease_impl func(string_ int64)
-var OSJSStringRelease_once sync.Once
+var OSJSStringRelease_lazy lazyFunc[func(string_ int64)]
 
 func OSJSStringRelease(string_ int64) {
-	OSJSStringRelease_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSJSStringRelease_impl, purego.RTLD_DEFAULT, "JSStringRelease")
-	})
-	OSJSStringRelease_impl(string_)
+	OSJSStringRelease_lazy.get("JSStringRelease")(string_)
 }
 
-var OSLMGetKbdType_impl func() int8
-var OSLMGetKbdType_once sync.Once
+var OSLMGetKbdType_lazy lazyFunc[func() int8]
 
 func OSLMGetKbdType() int8 {
-	OSLMGetKbdType_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSLMGetKbdType_impl, purego.RTLD_DEFAULT, "LMGetKbdType")
-	})
-	return OSLMGetKbdType_impl()
+	return OSLMGetKbdType_lazy.get("LMGetKbdType")()
 }
 
-var OSLineTo_impl func(h int16, v int16)
-var OSLineTo_once sync.Once
+var OSLineTo_lazy lazyFunc[func(h int16, v int16)]
 
 func OSLineTo(h int16, v int16) {
-	OSLineTo_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSLineTo_impl, purego.RTLD_DEFAULT, "LineTo") })
-	OSLineTo_impl(h, v)
+	OSLineTo_lazy.get("LineTo")(h, v)
 }
 
-var OSMoveTo_impl func(h int16, v int16)
-var OSMoveTo_once sync.Once
+var OSMoveTo_lazy lazyFunc[func(h int16, v int16)]
 
 func OSMoveTo(h int16, v int16) {
-	OSMoveTo_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSMoveTo_impl, purego.RTLD_DEFAULT, "MoveTo") })
-	OSMoveTo_impl(h, v)
+	OSMoveTo_lazy.get("MoveTo")(h, v)
 }
 
 func OSNSAccessibilityAttributedStringForRangeParameterizedAttribute() int64 {
@@ -753,15 +523,10 @@ func OSNSAccessibilityPositionAttribute() int64 {
 	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSNSAccessibilityPostNotification_impl func(element int64, notification int64)
-var OSNSAccessibilityPostNotification_once sync.Once
+var OSNSAccessibilityPostNotification_lazy lazyFunc[func(element int64, notification int64)]
 
 func OSNSAccessibilityPostNotification(element int64, notification int64) {
-	OSNSAccessibilityPostNotification_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSAccessibilityPostNotification_impl, purego.RTLD_DEFAULT, "NSAccessibilityPostNotification")
-	})
-	OSNSAccessibilityPostNotification_impl(element, notification)
+	OSNSAccessibilityPostNotification_lazy.get("NSAccessibilityPostNotification")(element, notification)
 }
 
 func OSNSAccessibilityPressAction() int64 {
@@ -828,13 +593,152 @@ func OSNSAccessibilityRoleAttribute() int64 {
 	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSNSAccessibilityRoleDescription_impl func(role int64, subrole int64) int64
-var OSNSAccessibilityRoleDescription_once sync.Once
+var OSNSAccessibilityRoleDescription_lazy lazyFunc[func(role int64, subrole int64) int64]
 
 func OSNSAccessibilityRoleDescription(role int64, subrole int64) int64 {
-	OSNSAccessibilityRoleDescription_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSAccessibilityRoleDescription_impl, purego.RTLD_DEFAULT, "NSAccessibilityRoleDescription")
-	})
-	return OSNSAccessibilityRoleDescription_impl(role, subrole)
+	return OSNSAccessibilityRoleDescription_lazy.get("NSAccessibilityRoleDescription")(role, subrole)
+}
+
+func OSNSAccessibilityRoleDescriptionAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRoleDescriptionAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilityRowCountChangedNotification() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRowCountChangedNotification")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilityRowIndexRangeAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRowIndexRangeAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilityRowRole() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRowRole")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilityRowsAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRowsAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilityScrollBarRole() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityScrollBarRole")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedChildrenAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedChildrenAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedChildrenChangedNotification() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedChildrenChangedNotification")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedColumnsAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedColumnsAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedRowsAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedRowsAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedRowsChangedNotification() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedRowsChangedNotification")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedTextAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedTextAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedTextChangedNotification() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedTextChangedNotification")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedTextRangeAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedTextRangeAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilitySelectedTextRangesAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedTextRangesAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilityServesAsTitleForUIElementsAttribute() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityServesAsTitleForUIElementsAttribute")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSAccessibilityShowMenuAction() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityShowMenuAction")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }

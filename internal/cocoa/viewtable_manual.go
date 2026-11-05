@@ -9,12 +9,15 @@ import "github.com/ebitengine/purego"
 // registers without a patch of the translated Display. Classes registered before the call (the accessibility delegate does it in an
 // init()) are not reported; Display.initClasses runs later, in NewDisplay.
 func OnClassRegistered(fn func(cls int64)) {
-	OSObjc_registerClassPair_once.Do(func() {
+	// Poke the native's lazyFunc backing directly (same package), same as the old _impl/_once pair:
+	// bind eagerly, then swap the impl for a wrapper around the previous one.
+	l := &OSObjc_registerClassPair_lazy
+	l.once.Do(func() {
 		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_registerClassPair_impl, purego.RTLD_DEFAULT, "objc_registerClassPair")
+		purego.RegisterLibFunc(&l.impl, purego.RTLD_DEFAULT, "objc_registerClassPair")
 	})
-	prev := OSObjc_registerClassPair_impl
-	OSObjc_registerClassPair_impl = func(cls int64) {
+	prev := l.impl
+	l.impl = func(cls int64) {
 		prev(cls)
 		fn(cls)
 	}

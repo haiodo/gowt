@@ -454,16 +454,22 @@ calls into libobjc/AppKit), not just compiles them.
 ### Direction 1+2: generic native binding, no more natives.properties as the main path
 
 `Natives`/`emitStaticNativeMethod` no longer look up a fixed `(libVar, symbol)` pair per native
-base name. Every static native now gets:
+base name. Every static native now gets one generated variable and a one-line wrapper, backed by
+the hand-written generic `lazyFunc[T]` helper in the PI package (`internal/cocoa/lazyfunc_manual.go`):
 
 ```go
-var <goName>_impl func(<params>) <ret>
-var <goName>_once sync.Once
+var <goName>_lazy lazyFunc[func(<params>) <ret>]
+
 func <goName>(<params>) <ret> {
-	<goName>_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&<goName>_impl, purego.RTLD_DEFAULT, "<symbol>") })
-	return <goName>_impl(<args>)
+	return <goName>_lazy.get("<symbol>")(<args>)
 }
 ```
+
+`lazyFunc[T]` holds a `sync.Once` and the bound `impl T`; `get(symbol)` runs
+`ensureFrameworks(); purego.RegisterLibFunc(&l.impl, purego.RTLD_DEFAULT, symbol)` inside
+`once.Do` (that exact order, so concurrent first calls register exactly once) and returns the
+function - replacing the earlier per-native `_impl func` + `_once sync.Once` pair and keeping
+the `sync`/`purego` imports in the one manual file instead of every generated part file.
 
 `<symbol>` is `natives.properties`'s override for the Java base name if one exists, else the
 literal Java method name - no Javadoc `accessor=`/`flags=` parsing is implemented (zero
@@ -3101,8 +3107,8 @@ Ceilings: `TrayItem`/`Tray`/`TaskBar` are translated but were never run; `Charac
 largest single item was `internal/cocoa.init`, 445 KB - one `func() { defer recover ... }()` closure per deferred static field,
 1 550 of them being `OSSel_x = OSSel_registerName("x")`, `OSClass_x = OSObjc_getClass("X")`, `OSProtocol_x = OSObjc_getProtocol("X")`.
 `Display.InitClasses` itself is 14 KB and all of `swt` in `hello` is 700 KB, so lazy per-class registration cannot reach the 1 MB
-bar the plan set; it was not done, and the registration order of SWT is unchanged. The per-native `sync.Once` closures that
-the program actually reaches are about 95 KB in `hello` (unreached ones are dropped by the linker); a single table would save a part of that - not done.
+bar the plan set; it was not done, and the registration order of SWT is unchanged. The per-native lazy bindings
+that the program actually reaches are about 95 KB in `hello` (unreached ones are dropped by the linker); a single table would save a part of that - not done.
 
 Rule: `EmitUtil.deferredInitFunc` collects the init entries whose text is exactly one of those three lookups into one table per
 lookup function (`for _, e := range [...]struct{p *int64; n string}{...} { *e.p = fn(e.n) }`), emitted ahead of the remaining

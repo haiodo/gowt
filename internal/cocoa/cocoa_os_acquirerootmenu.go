@@ -17,21 +17,14 @@
 package cocoa
 
 import (
-	"github.com/ebitengine/purego"
 	"runtime"
-	"sync"
 	"unsafe"
 )
 
-var OSAcquireRootMenu_impl func() int64
-var OSAcquireRootMenu_once sync.Once
+var OSAcquireRootMenu_lazy lazyFunc[func() int64]
 
 func OSAcquireRootMenu() int64 {
-	OSAcquireRootMenu_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSAcquireRootMenu_impl, purego.RTLD_DEFAULT, "AcquireRootMenu")
-	})
-	return OSAcquireRootMenu_impl()
+	return OSAcquireRootMenu_lazy.get("AcquireRootMenu")()
 }
 
 func OSCALLBACK_NSTextAttachmentCell_attachment(a0 int64) int64 {
@@ -396,532 +389,384 @@ func OSCALLBACK_webView_setFrame_(a0 int64) int64 {
 	}))
 }
 
-var OSCFDataGetBytePtr_impl func(theData int64) int64
-var OSCFDataGetBytePtr_once sync.Once
+var OSCFDataGetBytePtr_lazy lazyFunc[func(theData int64) int64]
 
 func OSCFDataGetBytePtr(theData int64) int64 {
-	OSCFDataGetBytePtr_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCFDataGetBytePtr_impl, purego.RTLD_DEFAULT, "CFDataGetBytePtr")
-	})
-	return OSCFDataGetBytePtr_impl(theData)
+	return OSCFDataGetBytePtr_lazy.get("CFDataGetBytePtr")(theData)
 }
 
-var OSCFDataGetLength_impl func(theData int64) int64
-var OSCFDataGetLength_once sync.Once
+var OSCFDataGetLength_lazy lazyFunc[func(theData int64) int64]
 
 func OSCFDataGetLength(theData int64) int64 {
-	OSCFDataGetLength_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCFDataGetLength_impl, purego.RTLD_DEFAULT, "CFDataGetLength")
-	})
-	return OSCFDataGetLength_impl(theData)
+	return OSCFDataGetLength_lazy.get("CFDataGetLength")(theData)
 }
 
-var OSCFRelease_impl func(cf int64)
-var OSCFRelease_once sync.Once
+var OSCFRelease_lazy lazyFunc[func(cf int64)]
 
 func OSCFRelease(cf int64) {
-	OSCFRelease_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCFRelease_impl, purego.RTLD_DEFAULT, "CFRelease")
-	})
-	OSCFRelease_impl(cf)
+	OSCFRelease_lazy.get("CFRelease")(cf)
 }
 
-var OSCFRunLoopAddObserver_impl func(rl int64, observer int64, mode int64)
-var OSCFRunLoopAddObserver_once sync.Once
+var OSCFRunLoopAddObserver_lazy lazyFunc[func(rl int64, observer int64, mode int64)]
 
 func OSCFRunLoopAddObserver(rl int64, observer int64, mode int64) {
-	OSCFRunLoopAddObserver_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCFRunLoopAddObserver_impl, purego.RTLD_DEFAULT, "CFRunLoopAddObserver")
-	})
-	OSCFRunLoopAddObserver_impl(rl, observer, mode)
+	OSCFRunLoopAddObserver_lazy.get("CFRunLoopAddObserver")(rl, observer, mode)
 }
 
-var OSCFRunLoopGetCurrent_impl func() int64
-var OSCFRunLoopGetCurrent_once sync.Once
+var OSCFRunLoopGetCurrent_lazy lazyFunc[func() int64]
 
 func OSCFRunLoopGetCurrent() int64 {
-	OSCFRunLoopGetCurrent_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCFRunLoopGetCurrent_impl, purego.RTLD_DEFAULT, "CFRunLoopGetCurrent")
-	})
-	return OSCFRunLoopGetCurrent_impl()
+	return OSCFRunLoopGetCurrent_lazy.get("CFRunLoopGetCurrent")()
 }
 
-var OSCFRunLoopObserverCreate_impl func(allocator int64, activities int64, repeats bool, order int64, callout int64, context int64) int64
-var OSCFRunLoopObserverCreate_once sync.Once
+var OSCFRunLoopObserverCreate_lazy lazyFunc[func(allocator int64, activities int64, repeats bool, order int64, callout int64, context int64) int64]
 
 func OSCFRunLoopObserverCreate(allocator int64, activities int64, repeats bool, order int64, callout int64, context int64) int64 {
-	OSCFRunLoopObserverCreate_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCFRunLoopObserverCreate_impl, purego.RTLD_DEFAULT, "CFRunLoopObserverCreate")
-	})
-	return OSCFRunLoopObserverCreate_impl(allocator, activities, repeats, order, callout, context)
+	return OSCFRunLoopObserverCreate_lazy.get("CFRunLoopObserverCreate")(allocator, activities, repeats, order, callout, context)
 }
 
-var OSCFRunLoopObserverInvalidate_impl func(observer int64)
-var OSCFRunLoopObserverInvalidate_once sync.Once
+var OSCFRunLoopObserverInvalidate_lazy lazyFunc[func(observer int64)]
 
 func OSCFRunLoopObserverInvalidate(observer int64) {
-	OSCFRunLoopObserverInvalidate_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCFRunLoopObserverInvalidate_impl, purego.RTLD_DEFAULT, "CFRunLoopObserverInvalidate")
-	})
-	OSCFRunLoopObserverInvalidate_impl(observer)
+	OSCFRunLoopObserverInvalidate_lazy.get("CFRunLoopObserverInvalidate")(observer)
 }
 
-var OSCFURLCreateStringByAddingPercentEscapes_impl func(allocator int64, originalString int64, charactersToLeaveUnescaped int64, legalURLCharactersToBeEscaped int64, encoding int32) int64
-var OSCFURLCreateStringByAddingPercentEscapes_once sync.Once
+var OSCFURLCreateStringByAddingPercentEscapes_lazy lazyFunc[func(allocator int64, originalString int64, charactersToLeaveUnescaped int64, legalURLCharactersToBeEscaped int64, encoding int32) int64]
 
 func OSCFURLCreateStringByAddingPercentEscapes(allocator int64, originalString int64, charactersToLeaveUnescaped int64, legalURLCharactersToBeEscaped int64, encoding int32) int64 {
-	OSCFURLCreateStringByAddingPercentEscapes_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCFURLCreateStringByAddingPercentEscapes_impl, purego.RTLD_DEFAULT, "CFURLCreateStringByAddingPercentEscapes")
-	})
-	return OSCFURLCreateStringByAddingPercentEscapes_impl(allocator, originalString, charactersToLeaveUnescaped, legalURLCharactersToBeEscaped, encoding)
+	return OSCFURLCreateStringByAddingPercentEscapes_lazy.get("CFURLCreateStringByAddingPercentEscapes")(allocator, originalString, charactersToLeaveUnescaped, legalURLCharactersToBeEscaped, encoding)
 }
 
 func OSCGAffineTransform_sizeof() int32 { return int32(unsafe.Sizeof(CGAffineTransform{})) }
 
-var OSCGBitmapContextCreate_impl func(data int64, width int64, height int64, bitsPerComponent int64, bytesPerRow int64, space int64, bitmapInfo int32) int64
-var OSCGBitmapContextCreate_once sync.Once
+var OSCGBitmapContextCreate_lazy lazyFunc[func(data int64, width int64, height int64, bitsPerComponent int64, bytesPerRow int64, space int64, bitmapInfo int32) int64]
 
 func OSCGBitmapContextCreate(data int64, width int64, height int64, bitsPerComponent int64, bytesPerRow int64, space int64, bitmapInfo int32) int64 {
-	OSCGBitmapContextCreate_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGBitmapContextCreate_impl, purego.RTLD_DEFAULT, "CGBitmapContextCreate")
-	})
-	return OSCGBitmapContextCreate_impl(data, width, height, bitsPerComponent, bytesPerRow, space, bitmapInfo)
+	return OSCGBitmapContextCreate_lazy.get("CGBitmapContextCreate")(data, width, height, bitsPerComponent, bytesPerRow, space, bitmapInfo)
 }
 
-var OSCGColorCreate_impl func(space int64, components []float64) int64
-var OSCGColorCreate_once sync.Once
+var OSCGColorCreate_lazy lazyFunc[func(space int64, components []float64) int64]
 
 func OSCGColorCreate(space int64, components []float64) int64 {
-	OSCGColorCreate_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGColorCreate_impl, purego.RTLD_DEFAULT, "CGColorCreate")
-	})
-	return OSCGColorCreate_impl(space, components)
+	return OSCGColorCreate_lazy.get("CGColorCreate")(space, components)
 }
 
-var OSCGColorRelease_impl func(color int64)
-var OSCGColorRelease_once sync.Once
+var OSCGColorRelease_lazy lazyFunc[func(color int64)]
 
 func OSCGColorRelease(color int64) {
-	OSCGColorRelease_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGColorRelease_impl, purego.RTLD_DEFAULT, "CGColorRelease")
-	})
-	OSCGColorRelease_impl(color)
+	OSCGColorRelease_lazy.get("CGColorRelease")(color)
 }
 
-var OSCGColorSpaceCreateDeviceRGB_impl func() int64
-var OSCGColorSpaceCreateDeviceRGB_once sync.Once
+var OSCGColorSpaceCreateDeviceRGB_lazy lazyFunc[func() int64]
 
 func OSCGColorSpaceCreateDeviceRGB() int64 {
-	OSCGColorSpaceCreateDeviceRGB_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGColorSpaceCreateDeviceRGB_impl, purego.RTLD_DEFAULT, "CGColorSpaceCreateDeviceRGB")
-	})
-	return OSCGColorSpaceCreateDeviceRGB_impl()
+	return OSCGColorSpaceCreateDeviceRGB_lazy.get("CGColorSpaceCreateDeviceRGB")()
 }
 
-var OSCGColorSpaceRelease_impl func(space int64)
-var OSCGColorSpaceRelease_once sync.Once
+var OSCGColorSpaceRelease_lazy lazyFunc[func(space int64)]
 
 func OSCGColorSpaceRelease(space int64) {
-	OSCGColorSpaceRelease_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGColorSpaceRelease_impl, purego.RTLD_DEFAULT, "CGColorSpaceRelease")
-	})
-	OSCGColorSpaceRelease_impl(space)
+	OSCGColorSpaceRelease_lazy.get("CGColorSpaceRelease")(space)
 }
 
-var OSCGContextAddPath_impl func(context int64, path int64)
-var OSCGContextAddPath_once sync.Once
+var OSCGContextAddPath_lazy lazyFunc[func(context int64, path int64)]
 
 func OSCGContextAddPath(context int64, path int64) {
-	OSCGContextAddPath_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextAddPath_impl, purego.RTLD_DEFAULT, "CGContextAddPath")
-	})
-	OSCGContextAddPath_impl(context, path)
+	OSCGContextAddPath_lazy.get("CGContextAddPath")(context, path)
 }
 
-var OSCGContextBeginTransparencyLayerWithRect_impl func(context int64, rect CGRect, auxiliaryInfo int64)
-var OSCGContextBeginTransparencyLayerWithRect_once sync.Once
+var OSCGContextBeginTransparencyLayerWithRect_lazy lazyFunc[func(context int64, rect CGRect, auxiliaryInfo int64)]
 
 func OSCGContextBeginTransparencyLayerWithRect(context int64, rect CGRect, auxiliaryInfo int64) {
-	OSCGContextBeginTransparencyLayerWithRect_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextBeginTransparencyLayerWithRect_impl, purego.RTLD_DEFAULT, "CGContextBeginTransparencyLayerWithRect")
-	})
-	OSCGContextBeginTransparencyLayerWithRect_impl(context, rect, auxiliaryInfo)
+	OSCGContextBeginTransparencyLayerWithRect_lazy.get("CGContextBeginTransparencyLayerWithRect")(context, rect, auxiliaryInfo)
 }
 
-var OSCGContextCopyPath_impl func(context int64) int64
-var OSCGContextCopyPath_once sync.Once
+var OSCGContextCopyPath_lazy lazyFunc[func(context int64) int64]
 
 func OSCGContextCopyPath(context int64) int64 {
-	OSCGContextCopyPath_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextCopyPath_impl, purego.RTLD_DEFAULT, "CGContextCopyPath")
-	})
-	return OSCGContextCopyPath_impl(context)
+	return OSCGContextCopyPath_lazy.get("CGContextCopyPath")(context)
 }
 
-var OSCGContextDrawImage_impl func(c int64, rect CGRect, image int64)
-var OSCGContextDrawImage_once sync.Once
+var OSCGContextDrawImage_lazy lazyFunc[func(c int64, rect CGRect, image int64)]
 
 func OSCGContextDrawImage(c int64, rect CGRect, image int64) {
-	OSCGContextDrawImage_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextDrawImage_impl, purego.RTLD_DEFAULT, "CGContextDrawImage")
-	})
-	OSCGContextDrawImage_impl(c, rect, image)
+	OSCGContextDrawImage_lazy.get("CGContextDrawImage")(c, rect, image)
 }
 
-var OSCGContextEndTransparencyLayer_impl func(context int64)
-var OSCGContextEndTransparencyLayer_once sync.Once
+var OSCGContextEndTransparencyLayer_lazy lazyFunc[func(context int64)]
 
 func OSCGContextEndTransparencyLayer(context int64) {
-	OSCGContextEndTransparencyLayer_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextEndTransparencyLayer_impl, purego.RTLD_DEFAULT, "CGContextEndTransparencyLayer")
-	})
-	OSCGContextEndTransparencyLayer_impl(context)
+	OSCGContextEndTransparencyLayer_lazy.get("CGContextEndTransparencyLayer")(context)
 }
 
-var OSCGContextFillRect_impl func(c int64, rect CGRect)
-var OSCGContextFillRect_once sync.Once
+var OSCGContextFillRect_lazy lazyFunc[func(c int64, rect CGRect)]
 
 func OSCGContextFillRect(c int64, rect CGRect) {
-	OSCGContextFillRect_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextFillRect_impl, purego.RTLD_DEFAULT, "CGContextFillRect")
-	})
-	OSCGContextFillRect_impl(c, rect)
+	OSCGContextFillRect_lazy.get("CGContextFillRect")(c, rect)
 }
 
-var OSCGContextRelease_impl func(c int64)
-var OSCGContextRelease_once sync.Once
+var OSCGContextRelease_lazy lazyFunc[func(c int64)]
 
 func OSCGContextRelease(c int64) {
-	OSCGContextRelease_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextRelease_impl, purego.RTLD_DEFAULT, "CGContextRelease")
-	})
-	OSCGContextRelease_impl(c)
+	OSCGContextRelease_lazy.get("CGContextRelease")(c)
 }
 
-var OSCGContextReplacePathWithStrokedPath_impl func(c int64)
-var OSCGContextReplacePathWithStrokedPath_once sync.Once
+var OSCGContextReplacePathWithStrokedPath_lazy lazyFunc[func(c int64)]
 
 func OSCGContextReplacePathWithStrokedPath(c int64) {
-	OSCGContextReplacePathWithStrokedPath_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextReplacePathWithStrokedPath_impl, purego.RTLD_DEFAULT, "CGContextReplacePathWithStrokedPath")
-	})
-	OSCGContextReplacePathWithStrokedPath_impl(c)
+	OSCGContextReplacePathWithStrokedPath_lazy.get("CGContextReplacePathWithStrokedPath")(c)
 }
 
-var OSCGContextRestoreGState_impl func(c int64)
-var OSCGContextRestoreGState_once sync.Once
+var OSCGContextRestoreGState_lazy lazyFunc[func(c int64)]
 
 func OSCGContextRestoreGState(c int64) {
-	OSCGContextRestoreGState_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextRestoreGState_impl, purego.RTLD_DEFAULT, "CGContextRestoreGState")
-	})
-	OSCGContextRestoreGState_impl(c)
+	OSCGContextRestoreGState_lazy.get("CGContextRestoreGState")(c)
 }
 
-var OSCGContextSaveGState_impl func(c int64)
-var OSCGContextSaveGState_once sync.Once
+var OSCGContextSaveGState_lazy lazyFunc[func(c int64)]
 
 func OSCGContextSaveGState(c int64) {
-	OSCGContextSaveGState_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextSaveGState_impl, purego.RTLD_DEFAULT, "CGContextSaveGState")
-	})
-	OSCGContextSaveGState_impl(c)
+	OSCGContextSaveGState_lazy.get("CGContextSaveGState")(c)
 }
 
-var OSCGContextScaleCTM_impl func(c int64, sx float64, sy float64)
-var OSCGContextScaleCTM_once sync.Once
+var OSCGContextScaleCTM_lazy lazyFunc[func(c int64, sx float64, sy float64)]
 
 func OSCGContextScaleCTM(c int64, sx float64, sy float64) {
-	OSCGContextScaleCTM_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextScaleCTM_impl, purego.RTLD_DEFAULT, "CGContextScaleCTM")
-	})
-	OSCGContextScaleCTM_impl(c, sx, sy)
+	OSCGContextScaleCTM_lazy.get("CGContextScaleCTM")(c, sx, sy)
 }
 
-var OSCGContextSetBlendMode_impl func(context int64, mode int32)
-var OSCGContextSetBlendMode_once sync.Once
+var OSCGContextSetBlendMode_lazy lazyFunc[func(context int64, mode int32)]
 
 func OSCGContextSetBlendMode(context int64, mode int32) {
-	OSCGContextSetBlendMode_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextSetBlendMode_impl, purego.RTLD_DEFAULT, "CGContextSetBlendMode")
-	})
-	OSCGContextSetBlendMode_impl(context, mode)
+	OSCGContextSetBlendMode_lazy.get("CGContextSetBlendMode")(context, mode)
 }
 
-var OSCGContextSetFillColor_impl func(context int64, components []float64)
-var OSCGContextSetFillColor_once sync.Once
+var OSCGContextSetFillColor_lazy lazyFunc[func(context int64, components []float64)]
 
 func OSCGContextSetFillColor(context int64, components []float64) {
-	OSCGContextSetFillColor_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextSetFillColor_impl, purego.RTLD_DEFAULT, "CGContextSetFillColor")
-	})
-	OSCGContextSetFillColor_impl(context, components)
+	OSCGContextSetFillColor_lazy.get("CGContextSetFillColor")(context, components)
 }
 
-var OSCGContextSetFillColorSpace_impl func(context int64, space int64)
-var OSCGContextSetFillColorSpace_once sync.Once
+var OSCGContextSetFillColorSpace_lazy lazyFunc[func(context int64, space int64)]
 
 func OSCGContextSetFillColorSpace(context int64, space int64) {
-	OSCGContextSetFillColorSpace_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextSetFillColorSpace_impl, purego.RTLD_DEFAULT, "CGContextSetFillColorSpace")
-	})
-	OSCGContextSetFillColorSpace_impl(context, space)
+	OSCGContextSetFillColorSpace_lazy.get("CGContextSetFillColorSpace")(context, space)
 }
 
-var OSCGContextSetLineCap_impl func(c int64, cap int32)
-var OSCGContextSetLineCap_once sync.Once
+var OSCGContextSetLineCap_lazy lazyFunc[func(c int64, cap int32)]
 
 func OSCGContextSetLineCap(c int64, cap int32) {
-	OSCGContextSetLineCap_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextSetLineCap_impl, purego.RTLD_DEFAULT, "CGContextSetLineCap")
-	})
-	OSCGContextSetLineCap_impl(c, cap)
+	OSCGContextSetLineCap_lazy.get("CGContextSetLineCap")(c, cap)
 }
 
-var OSCGContextSetLineDash_impl func(c int64, phase float64, lengths []float64, count int64)
-var OSCGContextSetLineDash_once sync.Once
+var OSCGContextSetLineDash_lazy lazyFunc[func(c int64, phase float64, lengths []float64, count int64)]
 
 func OSCGContextSetLineDash(c int64, phase float64, lengths []float64, count int64) {
-	OSCGContextSetLineDash_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextSetLineDash_impl, purego.RTLD_DEFAULT, "CGContextSetLineDash")
-	})
-	OSCGContextSetLineDash_impl(c, phase, lengths, count)
+	OSCGContextSetLineDash_lazy.get("CGContextSetLineDash")(c, phase, lengths, count)
 }
 
-var OSCGContextSetLineJoin_impl func(c int64, join int32)
-var OSCGContextSetLineJoin_once sync.Once
+var OSCGContextSetLineJoin_lazy lazyFunc[func(c int64, join int32)]
 
 func OSCGContextSetLineJoin(c int64, join int32) {
-	OSCGContextSetLineJoin_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextSetLineJoin_impl, purego.RTLD_DEFAULT, "CGContextSetLineJoin")
-	})
-	OSCGContextSetLineJoin_impl(c, join)
+	OSCGContextSetLineJoin_lazy.get("CGContextSetLineJoin")(c, join)
 }
 
-var OSCGContextSetLineWidth_impl func(c int64, width float64)
-var OSCGContextSetLineWidth_once sync.Once
+var OSCGContextSetLineWidth_lazy lazyFunc[func(c int64, width float64)]
 
 func OSCGContextSetLineWidth(c int64, width float64) {
-	OSCGContextSetLineWidth_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextSetLineWidth_impl, purego.RTLD_DEFAULT, "CGContextSetLineWidth")
-	})
-	OSCGContextSetLineWidth_impl(c, width)
+	OSCGContextSetLineWidth_lazy.get("CGContextSetLineWidth")(c, width)
 }
 
-var OSCGContextSetMiterLimit_impl func(c int64, limit float64)
-var OSCGContextSetMiterLimit_once sync.Once
+var OSCGContextSetMiterLimit_lazy lazyFunc[func(c int64, limit float64)]
 
 func OSCGContextSetMiterLimit(c int64, limit float64) {
-	OSCGContextSetMiterLimit_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextSetMiterLimit_impl, purego.RTLD_DEFAULT, "CGContextSetMiterLimit")
-	})
-	OSCGContextSetMiterLimit_impl(c, limit)
+	OSCGContextSetMiterLimit_lazy.get("CGContextSetMiterLimit")(c, limit)
 }
 
-var OSCGContextStrokePath_impl func(c int64)
-var OSCGContextStrokePath_once sync.Once
+var OSCGContextStrokePath_lazy lazyFunc[func(c int64)]
 
 func OSCGContextStrokePath(c int64) {
-	OSCGContextStrokePath_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextStrokePath_impl, purego.RTLD_DEFAULT, "CGContextStrokePath")
-	})
-	OSCGContextStrokePath_impl(c)
+	OSCGContextStrokePath_lazy.get("CGContextStrokePath")(c)
 }
 
-var OSCGContextTranslateCTM_impl func(c int64, tx float64, ty float64)
-var OSCGContextTranslateCTM_once sync.Once
+var OSCGContextTranslateCTM_lazy lazyFunc[func(c int64, tx float64, ty float64)]
 
 func OSCGContextTranslateCTM(c int64, tx float64, ty float64) {
-	OSCGContextTranslateCTM_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGContextTranslateCTM_impl, purego.RTLD_DEFAULT, "CGContextTranslateCTM")
-	})
-	OSCGContextTranslateCTM_impl(c, tx, ty)
+	OSCGContextTranslateCTM_lazy.get("CGContextTranslateCTM")(c, tx, ty)
 }
 
-var OSCGDataProviderCreateWithData_impl func(info int64, data int64, size int64, releaseData int64) int64
-var OSCGDataProviderCreateWithData_once sync.Once
+var OSCGDataProviderCreateWithData_lazy lazyFunc[func(info int64, data int64, size int64, releaseData int64) int64]
 
 func OSCGDataProviderCreateWithData(info int64, data int64, size int64, releaseData int64) int64 {
-	OSCGDataProviderCreateWithData_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGDataProviderCreateWithData_impl, purego.RTLD_DEFAULT, "CGDataProviderCreateWithData")
-	})
-	return OSCGDataProviderCreateWithData_impl(info, data, size, releaseData)
+	return OSCGDataProviderCreateWithData_lazy.get("CGDataProviderCreateWithData")(info, data, size, releaseData)
 }
 
-var OSCGDataProviderRelease_impl func(provider int64)
-var OSCGDataProviderRelease_once sync.Once
+var OSCGDataProviderRelease_lazy lazyFunc[func(provider int64)]
 
 func OSCGDataProviderRelease(provider int64) {
-	OSCGDataProviderRelease_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGDataProviderRelease_impl, purego.RTLD_DEFAULT, "CGDataProviderRelease")
-	})
-	OSCGDataProviderRelease_impl(provider)
+	OSCGDataProviderRelease_lazy.get("CGDataProviderRelease")(provider)
 }
 
-var OSCGDisplayCreateImage_impl func(displayID int32) int64
-var OSCGDisplayCreateImage_once sync.Once
+var OSCGDisplayCreateImage_lazy lazyFunc[func(displayID int32) int64]
 
 func OSCGDisplayCreateImage(displayID int32) int64 {
-	OSCGDisplayCreateImage_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGDisplayCreateImage_impl, purego.RTLD_DEFAULT, "CGDisplayCreateImage")
-	})
-	return OSCGDisplayCreateImage_impl(displayID)
+	return OSCGDisplayCreateImage_lazy.get("CGDisplayCreateImage")(displayID)
 }
 
-var OSCGEventCreateKeyboardEvent_impl func(source int64, virtualKey int16, keyDown bool) int64
-var OSCGEventCreateKeyboardEvent_once sync.Once
+var OSCGEventCreateKeyboardEvent_lazy lazyFunc[func(source int64, virtualKey int16, keyDown bool) int64]
 
 func OSCGEventCreateKeyboardEvent(source int64, virtualKey int16, keyDown bool) int64 {
-	OSCGEventCreateKeyboardEvent_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGEventCreateKeyboardEvent_impl, purego.RTLD_DEFAULT, "CGEventCreateKeyboardEvent")
-	})
-	return OSCGEventCreateKeyboardEvent_impl(source, virtualKey, keyDown)
+	return OSCGEventCreateKeyboardEvent_lazy.get("CGEventCreateKeyboardEvent")(source, virtualKey, keyDown)
 }
 
-var OSCGEventCreateMouseEvent_impl func(source int64, mouseType int32, mouseCursorPosition CGPoint, mouseButton int32) int64
-var OSCGEventCreateMouseEvent_once sync.Once
+var OSCGEventCreateMouseEvent_lazy lazyFunc[func(source int64, mouseType int32, mouseCursorPosition CGPoint, mouseButton int32) int64]
 
 func OSCGEventCreateMouseEvent(source int64, mouseType int32, mouseCursorPosition CGPoint, mouseButton int32) int64 {
-	OSCGEventCreateMouseEvent_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGEventCreateMouseEvent_impl, purego.RTLD_DEFAULT, "CGEventCreateMouseEvent")
-	})
-	return OSCGEventCreateMouseEvent_impl(source, mouseType, mouseCursorPosition, mouseButton)
+	return OSCGEventCreateMouseEvent_lazy.get("CGEventCreateMouseEvent")(source, mouseType, mouseCursorPosition, mouseButton)
 }
 
-var OSCGEventCreateScrollWheelEvent_impl func(source int64, units int32, wheelCount int32, wheel1 int32) int64
-var OSCGEventCreateScrollWheelEvent_once sync.Once
+var OSCGEventCreateScrollWheelEvent_lazy lazyFunc[func(source int64, units int32, wheelCount int32, wheel1 int32) int64]
 
 func OSCGEventCreateScrollWheelEvent(source int64, units int32, wheelCount int32, wheel1 int32) int64 {
-	OSCGEventCreateScrollWheelEvent_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGEventCreateScrollWheelEvent_impl, purego.RTLD_DEFAULT, "CGEventCreateScrollWheelEvent")
-	})
-	return OSCGEventCreateScrollWheelEvent_impl(source, units, wheelCount, wheel1)
+	return OSCGEventCreateScrollWheelEvent_lazy.get("CGEventCreateScrollWheelEvent")(source, units, wheelCount, wheel1)
 }
 
-var OSCGEventGetIntegerValueField_impl func(event int64, field int32) int64
-var OSCGEventGetIntegerValueField_once sync.Once
+var OSCGEventGetIntegerValueField_lazy lazyFunc[func(event int64, field int32) int64]
 
 func OSCGEventGetIntegerValueField(event int64, field int32) int64 {
-	OSCGEventGetIntegerValueField_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGEventGetIntegerValueField_impl, purego.RTLD_DEFAULT, "CGEventGetIntegerValueField")
-	})
-	return OSCGEventGetIntegerValueField_impl(event, field)
+	return OSCGEventGetIntegerValueField_lazy.get("CGEventGetIntegerValueField")(event, field)
 }
 
-var OSCGEventPost_impl func(tap int32, event int64)
-var OSCGEventPost_once sync.Once
+var OSCGEventPost_lazy lazyFunc[func(tap int32, event int64)]
 
 func OSCGEventPost(tap int32, event int64) {
-	OSCGEventPost_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGEventPost_impl, purego.RTLD_DEFAULT, "CGEventPost")
-	})
-	OSCGEventPost_impl(tap, event)
+	OSCGEventPost_lazy.get("CGEventPost")(tap, event)
 }
 
-var OSCGEventSourceCreate_impl func(stateID int32) int64
-var OSCGEventSourceCreate_once sync.Once
+var OSCGEventSourceCreate_lazy lazyFunc[func(stateID int32) int64]
 
 func OSCGEventSourceCreate(stateID int32) int64 {
-	OSCGEventSourceCreate_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGEventSourceCreate_impl, purego.RTLD_DEFAULT, "CGEventSourceCreate")
-	})
-	return OSCGEventSourceCreate_impl(stateID)
+	return OSCGEventSourceCreate_lazy.get("CGEventSourceCreate")(stateID)
 }
 
-var OSCGGetDisplaysWithRect_impl func(rect CGRect, maxDisplays int32, displays int64, matchingDisplayCount int64) int32
-var OSCGGetDisplaysWithRect_once sync.Once
+var OSCGGetDisplaysWithRect_lazy lazyFunc[func(rect CGRect, maxDisplays int32, displays int64, matchingDisplayCount int64) int32]
 
 func OSCGGetDisplaysWithRect(rect CGRect, maxDisplays int32, displays int64, matchingDisplayCount int64) int32 {
-	OSCGGetDisplaysWithRect_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGGetDisplaysWithRect_impl, purego.RTLD_DEFAULT, "CGGetDisplaysWithRect")
-	})
-	return OSCGGetDisplaysWithRect_impl(rect, maxDisplays, displays, matchingDisplayCount)
+	return OSCGGetDisplaysWithRect_lazy.get("CGGetDisplaysWithRect")(rect, maxDisplays, displays, matchingDisplayCount)
 }
 
-var OSCGImageCreate_impl func(width int64, height int64, bitsPerComponent int64, bitsPerPixel int64, bytesPerRow int64, space int64, bitmapInfo int32, provider int64, decode int64, shouldInterpolate bool, intent int32) int64
-var OSCGImageCreate_once sync.Once
+var OSCGImageCreate_lazy lazyFunc[func(width int64, height int64, bitsPerComponent int64, bitsPerPixel int64, bytesPerRow int64, space int64, bitmapInfo int32, provider int64, decode int64, shouldInterpolate bool, intent int32) int64]
 
 func OSCGImageCreate(width int64, height int64, bitsPerComponent int64, bitsPerPixel int64, bytesPerRow int64, space int64, bitmapInfo int32, provider int64, decode int64, shouldInterpolate bool, intent int32) int64 {
-	OSCGImageCreate_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGImageCreate_impl, purego.RTLD_DEFAULT, "CGImageCreate")
-	})
-	return OSCGImageCreate_impl(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, space, bitmapInfo, provider, decode, shouldInterpolate, intent)
+	return OSCGImageCreate_lazy.get("CGImageCreate")(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, space, bitmapInfo, provider, decode, shouldInterpolate, intent)
 }
 
-var OSCGImageGetHeight_impl func(image int64) int64
-var OSCGImageGetHeight_once sync.Once
+var OSCGImageGetHeight_lazy lazyFunc[func(image int64) int64]
 
 func OSCGImageGetHeight(image int64) int64 {
-	OSCGImageGetHeight_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGImageGetHeight_impl, purego.RTLD_DEFAULT, "CGImageGetHeight")
-	})
-	return OSCGImageGetHeight_impl(image)
+	return OSCGImageGetHeight_lazy.get("CGImageGetHeight")(image)
 }
 
-var OSCGImageGetWidth_impl func(image int64) int64
-var OSCGImageGetWidth_once sync.Once
+var OSCGImageGetWidth_lazy lazyFunc[func(image int64) int64]
 
 func OSCGImageGetWidth(image int64) int64 {
-	OSCGImageGetWidth_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGImageGetWidth_impl, purego.RTLD_DEFAULT, "CGImageGetWidth")
-	})
-	return OSCGImageGetWidth_impl(image)
+	return OSCGImageGetWidth_lazy.get("CGImageGetWidth")(image)
 }
 
-var OSCGImageRelease_impl func(image int64)
-var OSCGImageRelease_once sync.Once
+var OSCGImageRelease_lazy lazyFunc[func(image int64)]
 
 func OSCGImageRelease(image int64) {
-	OSCGImageRelease_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSCGImageRelease_impl, purego.RTLD_DEFAULT, "CGImageRelease")
-	})
-	OSCGImageRelease_impl(image)
+	OSCGImageRelease_lazy.get("CGImageRelease")(image)
+}
+
+var OSCGPDFContextBeginPage_lazy lazyFunc[func(context int64, pageInfo int64)]
+
+func OSCGPDFContextBeginPage(context int64, pageInfo int64) {
+	OSCGPDFContextBeginPage_lazy.get("CGPDFContextBeginPage")(context, pageInfo)
+}
+
+var OSCGPDFContextClose_lazy lazyFunc[func(context int64)]
+
+func OSCGPDFContextClose(context int64) {
+	OSCGPDFContextClose_lazy.get("CGPDFContextClose")(context)
+}
+
+var OSCGPDFContextCreateWithURL_lazy lazyFunc[func(url int64, mediaBox *CGRect, auxiliaryInfo int64) int64]
+
+func OSCGPDFContextCreateWithURL(url int64, mediaBox *CGRect, auxiliaryInfo int64) int64 {
+	return OSCGPDFContextCreateWithURL_lazy.get("CGPDFContextCreateWithURL")(url, mediaBox, auxiliaryInfo)
+}
+
+var OSCGPDFContextEndPage_lazy lazyFunc[func(context int64)]
+
+func OSCGPDFContextEndPage(context int64) {
+	OSCGPDFContextEndPage_lazy.get("CGPDFContextEndPage")(context)
+}
+
+var OSCGPathAddCurveToPoint_lazy lazyFunc[func(path int64, m int64, cp1x float64, cp1y float64, cp2x float64, cp2y float64, x float64, y float64)]
+
+func OSCGPathAddCurveToPoint(path int64, m int64, cp1x float64, cp1y float64, cp2x float64, cp2y float64, x float64, y float64) {
+	OSCGPathAddCurveToPoint_lazy.get("CGPathAddCurveToPoint")(path, m, cp1x, cp1y, cp2x, cp2y, x, y)
+}
+
+var OSCGPathAddLineToPoint_lazy lazyFunc[func(path int64, m int64, x float64, y float64)]
+
+func OSCGPathAddLineToPoint(path int64, m int64, x float64, y float64) {
+	OSCGPathAddLineToPoint_lazy.get("CGPathAddLineToPoint")(path, m, x, y)
+}
+
+var OSCGPathApply_lazy lazyFunc[func(path int64, info int64, function int64)]
+
+func OSCGPathApply(path int64, info int64, function int64) {
+	OSCGPathApply_lazy.get("CGPathApply")(path, info, function)
+}
+
+var OSCGPathCloseSubpath_lazy lazyFunc[func(path int64)]
+
+func OSCGPathCloseSubpath(path int64) {
+	OSCGPathCloseSubpath_lazy.get("CGPathCloseSubpath")(path)
+}
+
+var OSCGPathCreateMutable_lazy lazyFunc[func() int64]
+
+func OSCGPathCreateMutable() int64 {
+	return OSCGPathCreateMutable_lazy.get("CGPathCreateMutable")()
+}
+
+func OSCGPathElement_sizeof() int32 { return int32(unsafe.Sizeof(CGPathElement{})) }
+
+var OSCGPathMoveToPoint_lazy lazyFunc[func(path int64, m int64, x float64, y float64)]
+
+func OSCGPathMoveToPoint(path int64, m int64, x float64, y float64) {
+	OSCGPathMoveToPoint_lazy.get("CGPathMoveToPoint")(path, m, x, y)
+}
+
+var OSCGPathRelease_lazy lazyFunc[func(path int64)]
+
+func OSCGPathRelease(path int64) {
+	OSCGPathRelease_lazy.get("CGPathRelease")(path)
+}
+
+func OSCGPoint_sizeof() int32 { return int32(unsafe.Sizeof(CGPoint{})) }
+
+func OSCGRect_sizeof() int32 { return int32(unsafe.Sizeof(CGRect{})) }
+
+func OSCGSize_sizeof() int32 { return int32(unsafe.Sizeof(CGSize{})) }
+
+var OSCPSSetProcessName_lazy lazyFunc[func(psn []int32, name int64) int32]
+
+func OSCPSSetProcessName(psn []int32, name int64) int32 {
+	return OSCPSSetProcessName_lazy.get("CPSSetProcessName")(psn, name)
+}
+
+var OSCTFontManagerRegisterFontsForURL_lazy lazyFunc[func(fontURL int64, scope int32, error_ int64) bool]
+
+func OSCTFontManagerRegisterFontsForURL(fontURL int64, scope int32, error_ int64) bool {
+	return OSCTFontManagerRegisterFontsForURL_lazy.get("CTFontManagerRegisterFontsForURL")(fontURL, scope, error_)
+}
+
+var OSCancelMenuTracking_lazy lazyFunc[func(inRootMenu int64, inImmediate bool, inDismissalReason int32) int32]
+
+func OSCancelMenuTracking(inRootMenu int64, inImmediate bool, inDismissalReason int32) int32 {
+	return OSCancelMenuTracking_lazy.get("CancelMenuTracking")(inRootMenu, inImmediate, inDismissalReason)
 }

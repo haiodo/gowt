@@ -17,9 +17,7 @@ package cocoa
 
 import (
 	"fmt"
-	"github.com/ebitengine/purego"
 	"os"
-	"sync"
 	"unsafe"
 )
 
@@ -42,238 +40,144 @@ func NewC() *C {
 func (this *C) initC() {
 }
 
-var CFree_impl func(ptr int64)
-var CFree_once sync.Once
+var CFree_lazy lazyFunc[func(ptr int64)]
 
 func CFree(ptr int64) {
-	CFree_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&CFree_impl, purego.RTLD_DEFAULT, "free") })
-	CFree_impl(ptr)
+	CFree_lazy.get("free")(ptr)
 }
 
-var CGetenv_impl func(env []int8) int64
-var CGetenv_once sync.Once
+var CGetenv_lazy lazyFunc[func(env []int8) int64]
 
 func CGetenv(env []int8) int64 {
-	CGetenv_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&CGetenv_impl, purego.RTLD_DEFAULT, "getenv") })
-	return CGetenv_impl(env)
+	return CGetenv_lazy.get("getenv")(env)
 }
 
-var CSetenv_impl func(env []int8, value []int8, overwrite int32) int32
-var CSetenv_once sync.Once
+var CSetenv_lazy lazyFunc[func(env []int8, value []int8, overwrite int32) int32]
 
 func CSetenv(env []int8, value []int8, overwrite int32) int32 {
-	CSetenv_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&CSetenv_impl, purego.RTLD_DEFAULT, "setenv") })
-	return CSetenv_impl(env, value, overwrite)
+	return CSetenv_lazy.get("setenv")(env, value, overwrite)
 }
 
-var CMalloc_impl func(size int64) int64
-var CMalloc_once sync.Once
+var CMalloc_lazy lazyFunc[func(size int64) int64]
 
 func CMalloc(size int64) int64 {
-	CMalloc_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&CMalloc_impl, purego.RTLD_DEFAULT, "malloc") })
-	return CMalloc_impl(size)
+	return CMalloc_lazy.get("malloc")(size)
 }
 
-var CMemmove_impl func(dest int64, src []int8, size int64)
-var CMemmove_once sync.Once
+var CMemmove_lazy lazyFunc[func(dest int64, src []int8, size int64)]
 
 func CMemmove(dest int64, src []int8, size int64) {
-	CMemmove_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&CMemmove_impl, purego.RTLD_DEFAULT, "memmove") })
-	CMemmove_impl(dest, src, size)
+	CMemmove_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload1_impl func(dest int64, src []uint16, size int64)
-var CMemmoveOverload1_once sync.Once
+var CMemmoveOverload1_lazy lazyFunc[func(dest int64, src []uint16, size int64)]
 
 func CMemmoveOverload1(dest int64, src []uint16, size int64) {
-	CMemmoveOverload1_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload1_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload1_impl(dest, src, size)
+	CMemmoveOverload1_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload2_impl func(dest int64, src []float64, size int64)
-var CMemmoveOverload2_once sync.Once
+var CMemmoveOverload2_lazy lazyFunc[func(dest int64, src []float64, size int64)]
 
 func CMemmoveOverload2(dest int64, src []float64, size int64) {
-	CMemmoveOverload2_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload2_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload2_impl(dest, src, size)
+	CMemmoveOverload2_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload3_impl func(dest int64, src []float32, size int64)
-var CMemmoveOverload3_once sync.Once
+var CMemmoveOverload3_lazy lazyFunc[func(dest int64, src []float32, size int64)]
 
 func CMemmoveOverload3(dest int64, src []float32, size int64) {
-	CMemmoveOverload3_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload3_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload3_impl(dest, src, size)
+	CMemmoveOverload3_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload4_impl func(dest int64, src []int32, size int64)
-var CMemmoveOverload4_once sync.Once
+var CMemmoveOverload4_lazy lazyFunc[func(dest int64, src []int32, size int64)]
 
 func CMemmoveOverload4(dest int64, src []int32, size int64) {
-	CMemmoveOverload4_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload4_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload4_impl(dest, src, size)
+	CMemmoveOverload4_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload5_impl func(dest int64, src []int64, size int64)
-var CMemmoveOverload5_once sync.Once
+var CMemmoveOverload5_lazy lazyFunc[func(dest int64, src []int64, size int64)]
 
 func CMemmoveOverload5(dest int64, src []int64, size int64) {
-	CMemmoveOverload5_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload5_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload5_impl(dest, src, size)
+	CMemmoveOverload5_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload6_impl func(dest int64, src []int16, size int64)
-var CMemmoveOverload6_once sync.Once
+var CMemmoveOverload6_lazy lazyFunc[func(dest int64, src []int16, size int64)]
 
 func CMemmoveOverload6(dest int64, src []int16, size int64) {
-	CMemmoveOverload6_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload6_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload6_impl(dest, src, size)
+	CMemmoveOverload6_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload7_impl func(dest []int8, src []uint16, size int64)
-var CMemmoveOverload7_once sync.Once
+var CMemmoveOverload7_lazy lazyFunc[func(dest []int8, src []uint16, size int64)]
 
 func CMemmoveOverload7(dest []int8, src []uint16, size int64) {
-	CMemmoveOverload7_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload7_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload7_impl(dest, src, size)
+	CMemmoveOverload7_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload8_impl func(dest []int8, src int64, size int64)
-var CMemmoveOverload8_once sync.Once
+var CMemmoveOverload8_lazy lazyFunc[func(dest []int8, src int64, size int64)]
 
 func CMemmoveOverload8(dest []int8, src int64, size int64) {
-	CMemmoveOverload8_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload8_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload8_impl(dest, src, size)
+	CMemmoveOverload8_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload9_impl func(dest int64, src int64, size int64)
-var CMemmoveOverload9_once sync.Once
+var CMemmoveOverload9_lazy lazyFunc[func(dest int64, src int64, size int64)]
 
 func CMemmoveOverload9(dest int64, src int64, size int64) {
-	CMemmoveOverload9_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload9_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload9_impl(dest, src, size)
+	CMemmoveOverload9_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload10_impl func(dest []uint16, src int64, size int64)
-var CMemmoveOverload10_once sync.Once
+var CMemmoveOverload10_lazy lazyFunc[func(dest []uint16, src int64, size int64)]
 
 func CMemmoveOverload10(dest []uint16, src int64, size int64) {
-	CMemmoveOverload10_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload10_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload10_impl(dest, src, size)
+	CMemmoveOverload10_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload11_impl func(dest []float64, src int64, size int64)
-var CMemmoveOverload11_once sync.Once
+var CMemmoveOverload11_lazy lazyFunc[func(dest []float64, src int64, size int64)]
 
 func CMemmoveOverload11(dest []float64, src int64, size int64) {
-	CMemmoveOverload11_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload11_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload11_impl(dest, src, size)
+	CMemmoveOverload11_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload12_impl func(dest []float32, src int64, size int64)
-var CMemmoveOverload12_once sync.Once
+var CMemmoveOverload12_lazy lazyFunc[func(dest []float32, src int64, size int64)]
 
 func CMemmoveOverload12(dest []float32, src int64, size int64) {
-	CMemmoveOverload12_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload12_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload12_impl(dest, src, size)
+	CMemmoveOverload12_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload13_impl func(dest []int32, src []int8, size int64)
-var CMemmoveOverload13_once sync.Once
+var CMemmoveOverload13_lazy lazyFunc[func(dest []int32, src []int8, size int64)]
 
 func CMemmoveOverload13(dest []int32, src []int8, size int64) {
-	CMemmoveOverload13_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload13_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload13_impl(dest, src, size)
+	CMemmoveOverload13_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload14_impl func(dest []int16, src int64, size int64)
-var CMemmoveOverload14_once sync.Once
+var CMemmoveOverload14_lazy lazyFunc[func(dest []int16, src int64, size int64)]
 
 func CMemmoveOverload14(dest []int16, src int64, size int64) {
-	CMemmoveOverload14_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload14_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload14_impl(dest, src, size)
+	CMemmoveOverload14_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload15_impl func(dest []int32, src int64, size int64)
-var CMemmoveOverload15_once sync.Once
+var CMemmoveOverload15_lazy lazyFunc[func(dest []int32, src int64, size int64)]
 
 func CMemmoveOverload15(dest []int32, src int64, size int64) {
-	CMemmoveOverload15_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload15_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload15_impl(dest, src, size)
+	CMemmoveOverload15_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemmoveOverload16_impl func(dest []int64, src int64, size int64)
-var CMemmoveOverload16_once sync.Once
+var CMemmoveOverload16_lazy lazyFunc[func(dest []int64, src int64, size int64)]
 
 func CMemmoveOverload16(dest []int64, src int64, size int64) {
-	CMemmoveOverload16_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&CMemmoveOverload16_impl, purego.RTLD_DEFAULT, "memmove")
-	})
-	CMemmoveOverload16_impl(dest, src, size)
+	CMemmoveOverload16_lazy.get("memmove")(dest, src, size)
 }
 
-var CMemset_impl func(buffer int64, c int32, num int64) int64
-var CMemset_once sync.Once
+var CMemset_lazy lazyFunc[func(buffer int64, c int32, num int64) int64]
 
 func CMemset(buffer int64, c int32, num int64) int64 {
-	CMemset_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&CMemset_impl, purego.RTLD_DEFAULT, "memset") })
-	return CMemset_impl(buffer, c, num)
+	return CMemset_lazy.get("memset")(buffer, c, num)
 }
 
 func CPTR_sizeof() int32 { return int32(unsafe.Sizeof(uintptr(0))) }
 
-var CStrlen_impl func(s int64) int32
-var CStrlen_once sync.Once
+var CStrlen_lazy lazyFunc[func(s int64) int32]
 
 func CStrlen(s int64) int32 {
-	CStrlen_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&CStrlen_impl, purego.RTLD_DEFAULT, "strlen") })
-	return CStrlen_impl(s)
+	return CStrlen_lazy.get("strlen")(s)
 }
 
 func init() {

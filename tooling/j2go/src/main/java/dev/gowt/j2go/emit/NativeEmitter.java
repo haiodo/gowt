@@ -28,8 +28,9 @@ final class NativeEmitter {
 		return null;
 	}
 
-	// Every static native binds its C symbol lazily on first call (sync.Once + RTLD_DEFAULT),
-	// so a missing/wrong symbol panics when that native is actually invoked, not at package init.
+	// Every static native binds its C symbol lazily on first call (one lazyFunc[T] per native,
+	// see the manual helper in the PI package), so a missing/wrong symbol panics when that
+	// native is actually invoked, not at package init.
 	void emitStaticNativeMethod(MethodDeclaration md, TypeModel.ClassInfo ci, StringBuilder out) {
 		if (dev.gowt.j2go.GoTypes.platform == dev.gowt.j2go.Platform.WIN32) {
 			win.emit(md, ci, out);
@@ -97,19 +98,14 @@ final class NativeEmitter {
 		}
 		String resultParamName = mdParams.isEmpty() ? "result" : emitter.sanitizeIdent(((SingleVariableDeclaration) mdParams.get(0)).getName().getIdentifier());
 		String symbol = emitter.natives.symbolFor(stripSuffix(javaName, "_stret"));
-		String backing = goName + "_impl";
-		String once = goName + "_once";
-		emitter.fileImports.add("sync");
-		emitter.fileImports.add("github.com/ebitengine/purego");
-		out.append("var ").append(backing).append(" func(").append(String.join(", ", restParams)).append(") ")
-				.append(resultStruct.goTypeName).append('\n');
-		out.append("var ").append(once).append(" sync.Once\n");
+		// One lazyFunc[T] per native (manual helper in the PI package) instead of a per-native
+		// _impl/_once pair; sync/purego imports live in the helper.
+		out.append("var ").append(goName).append("_lazy lazyFunc[func(").append(String.join(", ", restParams)).append(") ")
+				.append(resultStruct.goTypeName).append("]\n");
 		out.append("func ").append(goName).append('(').append(resultParamName).append(" *").append(resultStruct.goTypeName);
 		if (!restParams.isEmpty()) out.append(", ").append(String.join(", ", restParams));
-		out.append(") {\n\t").append(once).append(".Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&").append(backing)
-				.append(", purego.RTLD_DEFAULT, \"").append(symbol).append("\") })\n");
-		out.append("\t*").append(resultParamName).append(" = ").append(backing).append('(')
-				.append(String.join(", ", restArgs)).append(")\n}\n\n");
+		out.append(") {\n\t*").append(resultParamName).append(" = ").append(goName).append("_lazy.get(\"").append(symbol)
+				.append("\")(").append(String.join(", ", restArgs)).append(")\n}\n\n");
 	}
 
 	private String stripSuffix(String s, String suffix) {
@@ -142,16 +138,10 @@ final class NativeEmitter {
 			if (byPointer) emitter.fileImports.add("unsafe");
 		}
 		String params = String.join(", ", ps);
-		String backing = goName + "_impl";
-		String once = goName + "_once";
-		emitter.fileImports.add("sync");
-		emitter.fileImports.add("github.com/ebitengine/purego");
-		out.append("var ").append(backing).append(" func(").append(String.join(", ", backingPs)).append(") ").append(ret).append('\n');
-		out.append("var ").append(once).append(" sync.Once\n");
+		out.append("var ").append(goName).append("_lazy lazyFunc[func(").append(String.join(", ", backingPs)).append(") ").append(ret).append("]\n");
 		out.append("func ").append(goName).append('(').append(params).append(") ").append(ret).append(" {\n\t")
-				.append(once).append(".Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&").append(backing)
-				.append(", purego.RTLD_DEFAULT, \"").append(symbol).append("\") })\n\t")
-				.append(ret.isEmpty() ? "" : "return ").append(backing).append('(').append(String.join(", ", args)).append(")\n}\n\n");
+				.append(ret.isEmpty() ? "" : "return ").append(goName).append("_lazy.get(\"").append(symbol)
+				.append("\")(").append(String.join(", ", args)).append(")\n}\n\n");
 	}
 
 	// A constant-global accessor (see caller): Dlsym the address and dereference it directly,

@@ -18,153 +18,8 @@ package cocoa
 
 import (
 	"github.com/ebitengine/purego"
-	"sync"
 	"unsafe"
 )
-
-func OSNSAccessibilityRoleDescriptionAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRoleDescriptionAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilityRowCountChangedNotification() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRowCountChangedNotification")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilityRowIndexRangeAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRowIndexRangeAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilityRowRole() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRowRole")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilityRowsAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityRowsAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilityScrollBarRole() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityScrollBarRole")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedChildrenAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedChildrenAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedChildrenChangedNotification() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedChildrenChangedNotification")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedColumnsAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedColumnsAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedRowsAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedRowsAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedRowsChangedNotification() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedRowsChangedNotification")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedTextAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedTextAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedTextChangedNotification() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedTextChangedNotification")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedTextRangeAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedTextRangeAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilitySelectedTextRangesAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySelectedTextRangesAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilityServesAsTitleForUIElementsAttribute() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityServesAsTitleForUIElementsAttribute")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
-
-func OSNSAccessibilityShowMenuAction() int64 {
-	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilityShowMenuAction")
-	if addr == 0 {
-		return 0
-	}
-	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
-}
 
 func OSNSAccessibilitySizeAttribute() int64 {
 	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSAccessibilitySizeAttribute")
@@ -342,26 +197,16 @@ func OSNSAccessibilityUnderlineTextAttribute() int64 {
 	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSNSAccessibilityUnignoredAncestor_impl func(element int64) int64
-var OSNSAccessibilityUnignoredAncestor_once sync.Once
+var OSNSAccessibilityUnignoredAncestor_lazy lazyFunc[func(element int64) int64]
 
 func OSNSAccessibilityUnignoredAncestor(element int64) int64 {
-	OSNSAccessibilityUnignoredAncestor_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSAccessibilityUnignoredAncestor_impl, purego.RTLD_DEFAULT, "NSAccessibilityUnignoredAncestor")
-	})
-	return OSNSAccessibilityUnignoredAncestor_impl(element)
+	return OSNSAccessibilityUnignoredAncestor_lazy.get("NSAccessibilityUnignoredAncestor")(element)
 }
 
-var OSNSAccessibilityUnignoredChildren_impl func(originalChildren int64) int64
-var OSNSAccessibilityUnignoredChildren_once sync.Once
+var OSNSAccessibilityUnignoredChildren_lazy lazyFunc[func(originalChildren int64) int64]
 
 func OSNSAccessibilityUnignoredChildren(originalChildren int64) int64 {
-	OSNSAccessibilityUnignoredChildren_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSAccessibilityUnignoredChildren_impl, purego.RTLD_DEFAULT, "NSAccessibilityUnignoredChildren")
-	})
-	return OSNSAccessibilityUnignoredChildren_impl(originalChildren)
+	return OSNSAccessibilityUnignoredChildren_lazy.get("NSAccessibilityUnignoredChildren")(originalChildren)
 }
 
 func OSNSAccessibilityUnknownRole() int64 {
@@ -494,23 +339,16 @@ func OSNSBaselineOffsetAttributeName() int64 {
 	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSNSBeep_impl func()
-var OSNSBeep_once sync.Once
+var OSNSBeep_lazy lazyFunc[func()]
 
 func OSNSBeep() {
-	OSNSBeep_once.Do(func() { ensureFrameworks(); purego.RegisterLibFunc(&OSNSBeep_impl, purego.RTLD_DEFAULT, "NSBeep") })
-	OSNSBeep_impl()
+	OSNSBeep_lazy.get("NSBeep")()
 }
 
-var OSNSBitsPerPixelFromDepth_impl func(depth int32) int64
-var OSNSBitsPerPixelFromDepth_once sync.Once
+var OSNSBitsPerPixelFromDepth_lazy lazyFunc[func(depth int32) int64]
 
 func OSNSBitsPerPixelFromDepth(depth int32) int64 {
-	OSNSBitsPerPixelFromDepth_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSBitsPerPixelFromDepth_impl, purego.RTLD_DEFAULT, "NSBitsPerPixelFromDepth")
-	})
-	return OSNSBitsPerPixelFromDepth_impl(depth)
+	return OSNSBitsPerPixelFromDepth_lazy.get("NSBitsPerPixelFromDepth")(depth)
 }
 
 func OSNSCursorAttributeName() int64 {
@@ -553,15 +391,10 @@ func OSNSDragPboard() int64 {
 	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSNSEqualRects_impl func(aRect NSRect, bRect NSRect) bool
-var OSNSEqualRects_once sync.Once
+var OSNSEqualRects_lazy lazyFunc[func(aRect NSRect, bRect NSRect) bool]
 
 func OSNSEqualRects(aRect NSRect, bRect NSRect) bool {
-	OSNSEqualRects_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSEqualRects_impl, purego.RTLD_DEFAULT, "NSEqualRects")
-	})
-	return OSNSEqualRects_impl(aRect, bRect)
+	return OSNSEqualRects_lazy.get("NSEqualRects")(aRect, bRect)
 }
 
 func OSNSEventTrackingRunLoopMode() int64 {
@@ -696,15 +529,10 @@ func OSNSPasteboardTypeString() int64 {
 	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
 }
 
-var OSNSPointInRect_impl func(aPoint NSPoint, aRect NSRect) bool
-var OSNSPointInRect_once sync.Once
+var OSNSPointInRect_lazy lazyFunc[func(aPoint NSPoint, aRect NSRect) bool]
 
 func OSNSPointInRect(aPoint NSPoint, aRect NSRect) bool {
-	OSNSPointInRect_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSNSPointInRect_impl, purego.RTLD_DEFAULT, "NSPointInRect")
-	})
-	return OSNSPointInRect_impl(aPoint, aRect)
+	return OSNSPointInRect_lazy.get("NSPointInRect")(aPoint, aRect)
 }
 
 func OSNSPoint_sizeof() int32 { return int32(unsafe.Sizeof(NSPoint{})) }
@@ -743,6 +571,160 @@ func OSNSPrintJobDisposition() int64 {
 
 func OSNSPrintLastPage() int64 {
 	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSPrintLastPage")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSPrintMustCollate() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSPrintMustCollate")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSPrintOrientation() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSPrintOrientation")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSPrintPreviewJob() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSPrintPreviewJob")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSPrintSaveJob() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSPrintSaveJob")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSPrintSavePath() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSPrintSavePath")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSPrintScalingFactor() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSPrintScalingFactor")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSRange_sizeof() int32 { return int32(unsafe.Sizeof(NSRange{})) }
+
+var OSNSRectFillUsingOperation_lazy lazyFunc[func(aRect NSRect, op int64)]
+
+func OSNSRectFillUsingOperation(aRect NSRect, op int64) {
+	OSNSRectFillUsingOperation_lazy.get("NSRectFillUsingOperation")(aRect, op)
+}
+
+func OSNSRect_sizeof() int32 { return int32(unsafe.Sizeof(NSRect{})) }
+
+var OSNSSearchPathForDirectoriesInDomains_lazy lazyFunc[func(directory int64, domainMask int64, expandTilde bool) int64]
+
+func OSNSSearchPathForDirectoriesInDomains(directory int64, domainMask int64, expandTilde bool) int64 {
+	return OSNSSearchPathForDirectoriesInDomains_lazy.get("NSSearchPathForDirectoriesInDomains")(directory, domainMask, expandTilde)
+}
+
+func OSNSSize_sizeof() int32 { return int32(unsafe.Sizeof(NSSize{})) }
+
+func OSNSSquareStatusItemLength() float64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSSquareStatusItemLength")
+	if addr == 0 {
+		return 0
+	}
+	return *(*float64)(unsafe.Add(unsafe.Pointer(nil), addr))
+}
+
+func OSNSStrikethroughColorAttributeName() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSStrikethroughColorAttributeName")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSStrikethroughStyleAttributeName() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSStrikethroughStyleAttributeName")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSStrokeWidthAttributeName() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSStrokeWidthAttributeName")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSSystemColorsDidChangeNotification() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSSystemColorsDidChangeNotification")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSTIFFPboardType() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSTIFFPboardType")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSToolbarFlexibleSpaceItemIdentifier() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSToolbarFlexibleSpaceItemIdentifier")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSToolbarSpaceItemIdentifier() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSToolbarSpaceItemIdentifier")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSURLPboardType() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSURLPboardType")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSUnderlineColorAttributeName() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSUnderlineColorAttributeName")
+	if addr == 0 {
+		return 0
+	}
+	return int64(*(*int64)(unsafe.Add(unsafe.Pointer(nil), addr)))
+}
+
+func OSNSUnderlineStyleAttributeName() int64 {
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "NSUnderlineStyleAttributeName")
 	if addr == 0 {
 		return 0
 	}

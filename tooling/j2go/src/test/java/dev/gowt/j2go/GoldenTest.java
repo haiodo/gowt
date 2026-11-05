@@ -23,6 +23,10 @@ class GoldenTest {
 	// A rule with a "platform" marker puts its inputs under this platform's own source root, so
 	// the emitted file is platform-specific (its name carries the GOOS suffix, its parts too).
 	private static final String PLATFORM_ROOT = "bundles/org.eclipse.swt/Eclipse SWT/cocoa/fixture";
+	// A rule with a "pi" marker puts its inputs at the PI package's real path under the platform's
+	// PI source root, so the fixture classes ARE that package (structs, natives) and land in
+	// internal/<platform> instead of swt/.
+	private static final String PI_ROOT = "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa";
 
 	@TestFactory
 	Stream<DynamicTest> rules() throws IOException {
@@ -46,7 +50,8 @@ class GoldenTest {
 		// containing "src" it also passes their directory as a --src root.
 		boolean external = Files.exists(rule.resolve("external"));
 		boolean platformRule = Files.exists(rule.resolve("platform"));
-		Path inputs = external ? work.resolve("ext/fixture") : src.resolve(platformRule ? PLATFORM_ROOT : ROOT);
+		boolean piRule = Files.exists(rule.resolve("pi"));
+		Path inputs = external ? work.resolve("ext/fixture") : src.resolve(piRule ? PI_ROOT : platformRule ? PLATFORM_ROOT : ROOT);
 		Files.createDirectories(inputs);
 		for (String n : names) Files.copy(in.resolve(n), inputs.resolve(n));
 
@@ -57,7 +62,7 @@ class GoldenTest {
 		// ${rule} is the rule's absolute directory.
 		if (Files.exists(rule.resolve("args"))) Files.readAllLines(rule.resolve("args")).forEach(l -> cmd.add(l.replace("${rule}", rule.toAbsolutePath().toString()).replace("${classpath}", System.getProperty("java.class.path"))));
 		if (external && Files.readString(rule.resolve("external")).contains("src")) cmd.addAll(List.of("--src", work.resolve("ext").toString()));
-		for (String n : names) cmd.add(external ? inputs.resolve(n).toString() : "fixture/" + n);
+		for (String n : names) cmd.add(external ? inputs.resolve(n).toString() : (piRule ? "org/eclipse/swt/internal/cocoa/" : "fixture/") + n);
 		Process p = new ProcessBuilder(cmd).directory(cwd.toFile()).redirectErrorStream(true).start();
 		String log = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 		assertEquals(0, p.waitFor(), log);

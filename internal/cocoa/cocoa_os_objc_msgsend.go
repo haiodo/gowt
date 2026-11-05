@@ -17,1007 +17,799 @@
 package cocoa
 
 import (
-	"github.com/ebitengine/purego"
-	"sync"
+	"unsafe"
 )
 
-var OSObjc_msgSendOverload10_impl func(id int64, sel int64, arg0 NSRange, arg1 NSRange, arg2 int64, arg3 []int64) int64
-var OSObjc_msgSendOverload10_once sync.Once
+var OSObjc_msgSendOverload10_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 NSRange, arg2 int64, arg3 []int64) int64]
 
 func OSObjc_msgSendOverload10(id int64, sel int64, arg0 NSRange, arg1 NSRange, arg2 int64, arg3 []int64) int64 {
-	OSObjc_msgSendOverload10_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload10_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload10_impl(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload10_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendOverload11_impl func(id int64, sel int64, arg0 NSRange, arg1 int64) int64
-var OSObjc_msgSendOverload11_once sync.Once
+var OSObjc_msgSendOverload11_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64) int64]
 
 func OSObjc_msgSendOverload11(id int64, sel int64, arg0 NSRange, arg1 int64) int64 {
-	OSObjc_msgSendOverload11_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload11_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload11_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload11_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload12_impl func(id int64, sel int64, arg0 NSRange, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 []int8) int64
-var OSObjc_msgSendOverload12_once sync.Once
+var OSObjc_msgSendOverload12_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 []int8) int64]
 
 func OSObjc_msgSendOverload12(id int64, sel int64, arg0 NSRange, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 []int8) int64 {
-	OSObjc_msgSendOverload12_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload12_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload12_impl(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
+	return OSObjc_msgSendOverload12_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
 }
 
-var OSObjc_msgSendOverload13_impl func(id int64, sel int64, arg0 NSRect) int64
-var OSObjc_msgSendOverload13_once sync.Once
+var OSObjc_msgSendOverload13_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect) int64]
 
 func OSObjc_msgSendOverload13(id int64, sel int64, arg0 NSRect) int64 {
-	OSObjc_msgSendOverload13_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload13_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload13_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload13_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload14_impl func(id int64, sel int64, arg0 NSRect, arg1 NSPoint) int64
-var OSObjc_msgSendOverload14_once sync.Once
+var OSObjc_msgSendOverload14_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 NSPoint) int64]
 
 func OSObjc_msgSendOverload14(id int64, sel int64, arg0 NSRect, arg1 NSPoint) int64 {
-	OSObjc_msgSendOverload14_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload14_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload14_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload14_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload15_impl func(id int64, sel int64, arg0 NSRect, arg1 NSRect, arg2 int64, arg3 float64) int64
-var OSObjc_msgSendOverload15_once sync.Once
+var OSObjc_msgSendOverload15_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 NSRect, arg2 int64, arg3 float64) int64]
 
 func OSObjc_msgSendOverload15(id int64, sel int64, arg0 NSRect, arg1 NSRect, arg2 int64, arg3 float64) int64 {
-	OSObjc_msgSendOverload15_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload15_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload15_impl(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload15_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendOverload16_impl func(id int64, sel int64, arg0 NSRect, arg1 NSSize) int64
-var OSObjc_msgSendOverload16_once sync.Once
+var OSObjc_msgSendOverload16_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 NSSize) int64]
 
 func OSObjc_msgSendOverload16(id int64, sel int64, arg0 NSRect, arg1 NSSize) int64 {
-	OSObjc_msgSendOverload16_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload16_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload16_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload16_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload17_impl func(id int64, sel int64, arg0 NSRect, arg1 bool) int64
-var OSObjc_msgSendOverload17_once sync.Once
+var OSObjc_msgSendOverload17_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 bool) int64]
 
 func OSObjc_msgSendOverload17(id int64, sel int64, arg0 NSRect, arg1 bool) int64 {
-	OSObjc_msgSendOverload17_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload17_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload17_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload17_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload18_impl func(id int64, sel int64, arg0 NSRect, arg1 bool, arg2 bool) int64
-var OSObjc_msgSendOverload18_once sync.Once
+var OSObjc_msgSendOverload18_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 bool, arg2 bool) int64]
 
 func OSObjc_msgSendOverload18(id int64, sel int64, arg0 NSRect, arg1 bool, arg2 bool) int64 {
-	OSObjc_msgSendOverload18_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload18_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload18_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload18_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload19_impl func(id int64, sel int64, arg0 NSRect, arg1 float64) int64
-var OSObjc_msgSendOverload19_once sync.Once
+var OSObjc_msgSendOverload19_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 float64) int64]
 
 func OSObjc_msgSendOverload19(id int64, sel int64, arg0 NSRect, arg1 float64) int64 {
-	OSObjc_msgSendOverload19_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload19_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload19_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload19_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload1_impl func(id int64, sel int64, arg0 NSAffineTransformStruct) int64
-var OSObjc_msgSendOverload1_once sync.Once
+var OSObjc_msgSendOverload1_lazy lazyFunc[func(id int64, sel int64, arg0 NSAffineTransformStruct) int64]
 
 func OSObjc_msgSendOverload1(id int64, sel int64, arg0 NSAffineTransformStruct) int64 {
-	OSObjc_msgSendOverload1_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload1_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload1_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload1_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload20_impl func(id int64, sel int64, arg0 NSRect, arg1 float64, arg2 float64) int64
-var OSObjc_msgSendOverload20_once sync.Once
+var OSObjc_msgSendOverload20_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 float64, arg2 float64) int64]
 
 func OSObjc_msgSendOverload20(id int64, sel int64, arg0 NSRect, arg1 float64, arg2 float64) int64 {
-	OSObjc_msgSendOverload20_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload20_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload20_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload20_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload21_impl func(id int64, sel int64, arg0 NSRect, arg1 int64) int64
-var OSObjc_msgSendOverload21_once sync.Once
+var OSObjc_msgSendOverload21_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64) int64]
 
 func OSObjc_msgSendOverload21(id int64, sel int64, arg0 NSRect, arg1 int64) int64 {
-	OSObjc_msgSendOverload21_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload21_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload21_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload21_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload22_impl func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 bool, arg3 int64) int64
-var OSObjc_msgSendOverload22_once sync.Once
+var OSObjc_msgSendOverload22_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 bool, arg3 int64) int64]
 
 func OSObjc_msgSendOverload22(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 bool, arg3 int64) int64 {
-	OSObjc_msgSendOverload22_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload22_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload22_impl(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload22_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendOverload23_impl func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64) int64
-var OSObjc_msgSendOverload23_once sync.Once
+var OSObjc_msgSendOverload23_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64) int64]
 
 func OSObjc_msgSendOverload23(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64) int64 {
-	OSObjc_msgSendOverload23_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload23_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload23_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload23_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload24_impl func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool) int64
-var OSObjc_msgSendOverload24_once sync.Once
+var OSObjc_msgSendOverload24_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool) int64]
 
 func OSObjc_msgSendOverload24(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool) int64 {
-	OSObjc_msgSendOverload24_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload24_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload24_impl(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload24_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendOverload25_impl func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool, arg4 int64) int64
-var OSObjc_msgSendOverload25_once sync.Once
+var OSObjc_msgSendOverload25_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool, arg4 int64) int64]
 
 func OSObjc_msgSendOverload25(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool, arg4 int64) int64 {
-	OSObjc_msgSendOverload25_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload25_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload25_impl(id, sel, arg0, arg1, arg2, arg3, arg4)
+	return OSObjc_msgSendOverload25_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
 
-var OSObjc_msgSendOverload26_impl func(id int64, sel int64, arg0 NSSize) int64
-var OSObjc_msgSendOverload26_once sync.Once
+var OSObjc_msgSendOverload26_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize) int64]
 
 func OSObjc_msgSendOverload26(id int64, sel int64, arg0 NSSize) int64 {
-	OSObjc_msgSendOverload26_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload26_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload26_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload26_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload27_impl func(id int64, sel int64, arg0 bool) int64
-var OSObjc_msgSendOverload27_once sync.Once
+var OSObjc_msgSendOverload27_lazy lazyFunc[func(id int64, sel int64, arg0 bool) int64]
 
 func OSObjc_msgSendOverload27(id int64, sel int64, arg0 bool) int64 {
-	OSObjc_msgSendOverload27_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload27_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload27_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload27_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload28_impl func(id int64, sel int64, arg0 bool, arg1 NSRect) int64
-var OSObjc_msgSendOverload28_once sync.Once
+var OSObjc_msgSendOverload28_lazy lazyFunc[func(id int64, sel int64, arg0 bool, arg1 NSRect) int64]
 
 func OSObjc_msgSendOverload28(id int64, sel int64, arg0 bool, arg1 NSRect) int64 {
-	OSObjc_msgSendOverload28_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload28_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload28_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload28_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload29_impl func(id int64, sel int64, arg0 bool, arg1 int64) int64
-var OSObjc_msgSendOverload29_once sync.Once
+var OSObjc_msgSendOverload29_lazy lazyFunc[func(id int64, sel int64, arg0 bool, arg1 int64) int64]
 
 func OSObjc_msgSendOverload29(id int64, sel int64, arg0 bool, arg1 int64) int64 {
-	OSObjc_msgSendOverload29_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload29_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload29_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload29_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload2_impl func(id int64, sel int64, arg0 NSPoint) int64
-var OSObjc_msgSendOverload2_once sync.Once
+var OSObjc_msgSendOverload2_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint) int64]
 
 func OSObjc_msgSendOverload2(id int64, sel int64, arg0 NSPoint) int64 {
-	OSObjc_msgSendOverload2_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload2_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload2_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload2_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload30_impl func(id int64, sel int64, arg0 []int8) int64
-var OSObjc_msgSendOverload30_once sync.Once
+var OSObjc_msgSendOverload30_lazy lazyFunc[func(id int64, sel int64, arg0 []int8) int64]
 
 func OSObjc_msgSendOverload30(id int64, sel int64, arg0 []int8) int64 {
-	OSObjc_msgSendOverload30_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload30_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload30_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload30_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload31_impl func(id int64, sel int64, arg0 []int8, arg1 int64) int64
-var OSObjc_msgSendOverload31_once sync.Once
+var OSObjc_msgSendOverload31_lazy lazyFunc[func(id int64, sel int64, arg0 []int8, arg1 int64) int64]
 
 func OSObjc_msgSendOverload31(id int64, sel int64, arg0 []int8, arg1 int64) int64 {
-	OSObjc_msgSendOverload31_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload31_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload31_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload31_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload32_impl func(id int64, sel int64, arg0 []uint16) int64
-var OSObjc_msgSendOverload32_once sync.Once
+var OSObjc_msgSendOverload32_lazy lazyFunc[func(id int64, sel int64, arg0 []uint16) int64]
 
 func OSObjc_msgSendOverload32(id int64, sel int64, arg0 []uint16) int64 {
-	OSObjc_msgSendOverload32_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload32_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload32_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload32_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload33_impl func(id int64, sel int64, arg0 []uint16, arg1 NSRange) int64
-var OSObjc_msgSendOverload33_once sync.Once
+var OSObjc_msgSendOverload33_lazy lazyFunc[func(id int64, sel int64, arg0 []uint16, arg1 NSRange) int64]
 
 func OSObjc_msgSendOverload33(id int64, sel int64, arg0 []uint16, arg1 NSRange) int64 {
-	OSObjc_msgSendOverload33_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload33_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload33_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload33_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload34_impl func(id int64, sel int64, arg0 []uint16, arg1 int64) int64
-var OSObjc_msgSendOverload34_once sync.Once
+var OSObjc_msgSendOverload34_lazy lazyFunc[func(id int64, sel int64, arg0 []uint16, arg1 int64) int64]
 
 func OSObjc_msgSendOverload34(id int64, sel int64, arg0 []uint16, arg1 int64) int64 {
-	OSObjc_msgSendOverload34_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload34_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload34_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload34_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload35_impl func(id int64, sel int64, arg0 float64) int64
-var OSObjc_msgSendOverload35_once sync.Once
+var OSObjc_msgSendOverload35_lazy lazyFunc[func(id int64, sel int64, arg0 float64) int64]
 
 func OSObjc_msgSendOverload35(id int64, sel int64, arg0 float64) int64 {
-	OSObjc_msgSendOverload35_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload35_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload35_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload35_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload36_impl func(id int64, sel int64, arg0 float64, arg1 float64) int64
-var OSObjc_msgSendOverload36_once sync.Once
+var OSObjc_msgSendOverload36_lazy lazyFunc[func(id int64, sel int64, arg0 float64, arg1 float64) int64]
 
 func OSObjc_msgSendOverload36(id int64, sel int64, arg0 float64, arg1 float64) int64 {
-	OSObjc_msgSendOverload36_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload36_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload36_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload36_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload37_impl func(id int64, sel int64, arg0 float64, arg1 float64, arg2 float64, arg3 float64) int64
-var OSObjc_msgSendOverload37_once sync.Once
+var OSObjc_msgSendOverload37_lazy lazyFunc[func(id int64, sel int64, arg0 float64, arg1 float64, arg2 float64, arg3 float64) int64]
 
 func OSObjc_msgSendOverload37(id int64, sel int64, arg0 float64, arg1 float64, arg2 float64, arg3 float64) int64 {
-	OSObjc_msgSendOverload37_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload37_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload37_impl(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload37_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendOverload38_impl func(id int64, sel int64, arg0 float64, arg1 int64, arg2 int64, arg3 int64, arg4 bool) int64
-var OSObjc_msgSendOverload38_once sync.Once
+var OSObjc_msgSendOverload38_lazy lazyFunc[func(id int64, sel int64, arg0 float64, arg1 int64, arg2 int64, arg3 int64, arg4 bool) int64]
 
 func OSObjc_msgSendOverload38(id int64, sel int64, arg0 float64, arg1 int64, arg2 int64, arg3 int64, arg4 bool) int64 {
-	OSObjc_msgSendOverload38_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload38_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload38_impl(id, sel, arg0, arg1, arg2, arg3, arg4)
+	return OSObjc_msgSendOverload38_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
 
-var OSObjc_msgSendOverload39_impl func(id int64, sel int64, arg0 []float64) int64
-var OSObjc_msgSendOverload39_once sync.Once
+var OSObjc_msgSendOverload39_lazy lazyFunc[func(id int64, sel int64, arg0 []float64) int64]
 
 func OSObjc_msgSendOverload39(id int64, sel int64, arg0 []float64) int64 {
-	OSObjc_msgSendOverload39_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload39_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload39_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload39_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload3_impl func(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 NSPoint) int64
-var OSObjc_msgSendOverload3_once sync.Once
+var OSObjc_msgSendOverload3_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 NSPoint) int64]
 
 func OSObjc_msgSendOverload3(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 NSPoint) int64 {
-	OSObjc_msgSendOverload3_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload3_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload3_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload3_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload40_impl func(id int64, sel int64, arg0 []float64, arg1 int64, arg2 float64) int64
-var OSObjc_msgSendOverload40_once sync.Once
+var OSObjc_msgSendOverload40_lazy lazyFunc[func(id int64, sel int64, arg0 []float64, arg1 int64, arg2 float64) int64]
 
 func OSObjc_msgSendOverload40(id int64, sel int64, arg0 []float64, arg1 int64, arg2 float64) int64 {
-	OSObjc_msgSendOverload40_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload40_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload40_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload40_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload41_impl func(id int64, sel int64, arg0 int32) int64
-var OSObjc_msgSendOverload41_once sync.Once
+var OSObjc_msgSendOverload41_lazy lazyFunc[func(id int64, sel int64, arg0 int32) int64]
 
 func OSObjc_msgSendOverload41(id int64, sel int64, arg0 int32) int64 {
-	OSObjc_msgSendOverload41_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload41_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload41_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload41_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload42_impl func(id int64, sel int64, arg0 []int32) int64
-var OSObjc_msgSendOverload42_once sync.Once
+var OSObjc_msgSendOverload42_lazy lazyFunc[func(id int64, sel int64, arg0 []int32) int64]
 
 func OSObjc_msgSendOverload42(id int64, sel int64, arg0 []int32) int64 {
-	OSObjc_msgSendOverload42_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload42_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload42_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload42_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload43_impl func(id int64, sel int64, arg0 []int32, arg1 int64) int64
-var OSObjc_msgSendOverload43_once sync.Once
+var OSObjc_msgSendOverload43_lazy lazyFunc[func(id int64, sel int64, arg0 []int32, arg1 int64) int64]
 
 func OSObjc_msgSendOverload43(id int64, sel int64, arg0 []int32, arg1 int64) int64 {
-	OSObjc_msgSendOverload43_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload43_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload43_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload43_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload44_impl func(id int64, sel int64, arg0 int64) int64
-var OSObjc_msgSendOverload44_once sync.Once
+var OSObjc_msgSendOverload44_lazy lazyFunc[func(id int64, sel int64, arg0 int64) int64]
 
 func OSObjc_msgSendOverload44(id int64, sel int64, arg0 int64) int64 {
-	OSObjc_msgSendOverload44_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload44_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload44_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload44_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload45_impl func(id int64, sel int64, arg0 int64, arg1 NSPoint) int64
-var OSObjc_msgSendOverload45_once sync.Once
+var OSObjc_msgSendOverload45_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint) int64]
 
 func OSObjc_msgSendOverload45(id int64, sel int64, arg0 int64, arg1 NSPoint) int64 {
-	OSObjc_msgSendOverload45_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload45_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload45_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload45_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload46_impl func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 NSSize, arg3 int64, arg4 int64, arg5 int64, arg6 bool) int64
-var OSObjc_msgSendOverload46_once sync.Once
+var OSObjc_msgSendOverload46_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 NSSize, arg3 int64, arg4 int64, arg5 int64, arg6 bool) int64]
 
 func OSObjc_msgSendOverload46(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 NSSize, arg3 int64, arg4 int64, arg5 int64, arg6 bool) int64 {
-	OSObjc_msgSendOverload46_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload46_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload46_impl(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+	return OSObjc_msgSendOverload46_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 }
 
-var OSObjc_msgSendOverload47_impl func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64
-var OSObjc_msgSendOverload47_once sync.Once
+var OSObjc_msgSendOverload47_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64]
 
 func OSObjc_msgSendOverload47(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64 {
-	OSObjc_msgSendOverload47_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload47_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload47_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload47_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload48_impl func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int64, arg7 int64, arg8 int64) int64
-var OSObjc_msgSendOverload48_once sync.Once
+var OSObjc_msgSendOverload48_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int64, arg7 int64, arg8 int64) int64]
 
 func OSObjc_msgSendOverload48(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int64, arg7 int64, arg8 int64) int64 {
-	OSObjc_msgSendOverload48_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload48_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload48_impl(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
+	return OSObjc_msgSendOverload48_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 }
 
-var OSObjc_msgSendOverload49_impl func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int16, arg7 int64, arg8 int64) int64
-var OSObjc_msgSendOverload49_once sync.Once
+var OSObjc_msgSendOverload49_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int16, arg7 int64, arg8 int64) int64]
 
 func OSObjc_msgSendOverload49(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int16, arg7 int64, arg8 int64) int64 {
-	OSObjc_msgSendOverload49_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload49_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload49_impl(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
+	return OSObjc_msgSendOverload49_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 }
 
-var OSObjc_msgSendOverload4_impl func(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 int64) int64
-var OSObjc_msgSendOverload4_once sync.Once
+var OSObjc_msgSendOverload4_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 int64) int64]
 
 func OSObjc_msgSendOverload4(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 int64) int64 {
-	OSObjc_msgSendOverload4_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload4_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload4_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload4_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload50_impl func(id int64, sel int64, arg0 int64, arg1 NSRange) int64
-var OSObjc_msgSendOverload50_once sync.Once
+var OSObjc_msgSendOverload50_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSRange) int64]
 
 func OSObjc_msgSendOverload50(id int64, sel int64, arg0 int64, arg1 NSRange) int64 {
-	OSObjc_msgSendOverload50_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload50_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload50_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload50_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload51_impl func(id int64, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64
-var OSObjc_msgSendOverload51_once sync.Once
+var OSObjc_msgSendOverload51_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64]
 
 func OSObjc_msgSendOverload51(id int64, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64 {
-	OSObjc_msgSendOverload51_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload51_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload51_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload51_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload52_impl func(id int64, sel int64, arg0 int64, arg1 bool) int64
-var OSObjc_msgSendOverload52_once sync.Once
+var OSObjc_msgSendOverload52_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 bool) int64]
 
 func OSObjc_msgSendOverload52(id int64, sel int64, arg0 int64, arg1 bool) int64 {
-	OSObjc_msgSendOverload52_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload52_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload52_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload52_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload53_impl func(id int64, sel int64, arg0 int64, arg1 float64) int64
-var OSObjc_msgSendOverload53_once sync.Once
+var OSObjc_msgSendOverload53_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 float64) int64]
 
 func OSObjc_msgSendOverload53(id int64, sel int64, arg0 int64, arg1 float64) int64 {
-	OSObjc_msgSendOverload53_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload53_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload53_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload53_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload54_impl func(id int64, sel int64, arg0 int64, arg1 int64) int64
-var OSObjc_msgSendOverload54_once sync.Once
+var OSObjc_msgSendOverload54_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64) int64]
 
 func OSObjc_msgSendOverload54(id int64, sel int64, arg0 int64, arg1 int64) int64 {
-	OSObjc_msgSendOverload54_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload54_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload54_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload54_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload55_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 NSRange) int64
-var OSObjc_msgSendOverload55_once sync.Once
+var OSObjc_msgSendOverload55_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 NSRange) int64]
 
 func OSObjc_msgSendOverload55(id int64, sel int64, arg0 int64, arg1 int64, arg2 NSRange) int64 {
-	OSObjc_msgSendOverload55_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload55_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload55_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload55_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload56_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 bool) int64
-var OSObjc_msgSendOverload56_once sync.Once
+var OSObjc_msgSendOverload56_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 bool) int64]
 
 func OSObjc_msgSendOverload56(id int64, sel int64, arg0 int64, arg1 int64, arg2 bool) int64 {
-	OSObjc_msgSendOverload56_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload56_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload56_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload56_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload57_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 float64, arg3 int64) int64
-var OSObjc_msgSendOverload57_once sync.Once
+var OSObjc_msgSendOverload57_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 float64, arg3 int64) int64]
 
 func OSObjc_msgSendOverload57(id int64, sel int64, arg0 int64, arg1 int64, arg2 float64, arg3 int64) int64 {
-	OSObjc_msgSendOverload57_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload57_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload57_impl(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload57_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendOverload58_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) int64
-var OSObjc_msgSendOverload58_once sync.Once
+var OSObjc_msgSendOverload58_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) int64]
 
 func OSObjc_msgSendOverload58(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) int64 {
-	OSObjc_msgSendOverload58_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload58_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload58_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload58_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload59_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64
-var OSObjc_msgSendOverload59_once sync.Once
+var OSObjc_msgSendOverload59_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64]
 
 func OSObjc_msgSendOverload59(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64 {
-	OSObjc_msgSendOverload59_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload59_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload59_impl(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload59_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendOverload5_impl func(id int64, sel int64, arg0 NSPoint, arg1 float64, arg2 float64, arg3 float64, arg4 bool) int64
-var OSObjc_msgSendOverload5_once sync.Once
+var OSObjc_msgSendOverload5_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 float64, arg2 float64, arg3 float64, arg4 bool) int64]
 
 func OSObjc_msgSendOverload5(id int64, sel int64, arg0 NSPoint, arg1 float64, arg2 float64, arg3 float64, arg4 bool) int64 {
-	OSObjc_msgSendOverload5_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload5_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload5_impl(id, sel, arg0, arg1, arg2, arg3, arg4)
+	return OSObjc_msgSendOverload5_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
 
-var OSObjc_msgSendOverload60_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64
-var OSObjc_msgSendOverload60_once sync.Once
+var OSObjc_msgSendOverload60_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64]
 
 func OSObjc_msgSendOverload60(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64 {
-	OSObjc_msgSendOverload60_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload60_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload60_impl(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload60_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendOverload61_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) int64
-var OSObjc_msgSendOverload61_once sync.Once
+var OSObjc_msgSendOverload61_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) int64]
 
 func OSObjc_msgSendOverload61(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) int64 {
-	OSObjc_msgSendOverload61_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload61_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload61_impl(id, sel, arg0, arg1, arg2, arg3, arg4)
+	return OSObjc_msgSendOverload61_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
 
-var OSObjc_msgSendOverload62_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 bool, arg6 bool, arg7 int64, arg8 int64, arg9 int64, arg10 int64) int64
-var OSObjc_msgSendOverload62_once sync.Once
+var OSObjc_msgSendOverload62_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 bool, arg6 bool, arg7 int64, arg8 int64, arg9 int64, arg10 int64) int64]
 
 func OSObjc_msgSendOverload62(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 bool, arg6 bool, arg7 int64, arg8 int64, arg9 int64, arg10 int64) int64 {
-	OSObjc_msgSendOverload62_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload62_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload62_impl(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
+	return OSObjc_msgSendOverload62_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
 }
 
-var OSObjc_msgSendOverload63_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64) int64
-var OSObjc_msgSendOverload63_once sync.Once
+var OSObjc_msgSendOverload63_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64) int64]
 
 func OSObjc_msgSendOverload63(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64) int64 {
-	OSObjc_msgSendOverload63_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload63_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload63_impl(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
+	return OSObjc_msgSendOverload63_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
 }
 
-var OSObjc_msgSendOverload64_impl func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64, arg6 int64) int64
-var OSObjc_msgSendOverload64_once sync.Once
+var OSObjc_msgSendOverload64_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64, arg6 int64) int64]
 
 func OSObjc_msgSendOverload64(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64, arg6 int64) int64 {
-	OSObjc_msgSendOverload64_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload64_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload64_impl(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+	return OSObjc_msgSendOverload64_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 }
 
-var OSObjc_msgSendOverload65_impl func(id int64, sel int64, arg0 []int64, arg1 int32, arg2 int32) int64
-var OSObjc_msgSendOverload65_once sync.Once
+var OSObjc_msgSendOverload65_lazy lazyFunc[func(id int64, sel int64, arg0 []int64, arg1 int32, arg2 int32) int64]
 
 func OSObjc_msgSendOverload65(id int64, sel int64, arg0 []int64, arg1 int32, arg2 int32) int64 {
-	OSObjc_msgSendOverload65_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload65_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload65_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload65_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload66_impl func(id int64, sel int64, arg0 []int64, arg1 int64, arg2 int64) int64
-var OSObjc_msgSendOverload66_once sync.Once
+var OSObjc_msgSendOverload66_lazy lazyFunc[func(id int64, sel int64, arg0 []int64, arg1 int64, arg2 int64) int64]
 
 func OSObjc_msgSendOverload66(id int64, sel int64, arg0 []int64, arg1 int64, arg2 int64) int64 {
-	OSObjc_msgSendOverload66_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload66_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload66_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload66_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload6_impl func(id int64, sel int64, arg0 NSPoint, arg1 int64) int64
-var OSObjc_msgSendOverload6_once sync.Once
+var OSObjc_msgSendOverload6_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 int64) int64]
 
 func OSObjc_msgSendOverload6(id int64, sel int64, arg0 NSPoint, arg1 int64) int64 {
-	OSObjc_msgSendOverload6_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload6_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload6_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload6_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendOverload7_impl func(id int64, sel int64, arg0 NSPoint, arg1 int64, arg2 []float64) int64
-var OSObjc_msgSendOverload7_once sync.Once
+var OSObjc_msgSendOverload7_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 int64, arg2 []float64) int64]
 
 func OSObjc_msgSendOverload7(id int64, sel int64, arg0 NSPoint, arg1 int64, arg2 []float64) int64 {
-	OSObjc_msgSendOverload7_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload7_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload7_impl(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload7_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendOverload8_impl func(id int64, sel int64, arg0 NSRange) int64
-var OSObjc_msgSendOverload8_once sync.Once
+var OSObjc_msgSendOverload8_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange) int64]
 
 func OSObjc_msgSendOverload8(id int64, sel int64, arg0 NSRange) int64 {
-	OSObjc_msgSendOverload8_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload8_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload8_impl(id, sel, arg0)
+	return OSObjc_msgSendOverload8_lazy.get("objc_msgSend")(id, sel, arg0)
 }
 
-var OSObjc_msgSendOverload9_impl func(id int64, sel int64, arg0 NSRange, arg1 NSPoint) int64
-var OSObjc_msgSendOverload9_once sync.Once
+var OSObjc_msgSendOverload9_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 NSPoint) int64]
 
 func OSObjc_msgSendOverload9(id int64, sel int64, arg0 NSRange, arg1 NSPoint) int64 {
-	OSObjc_msgSendOverload9_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendOverload9_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSendOverload9_impl(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload9_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
 }
 
-var OSObjc_msgSend_impl func(id int64, sel int64) int64
-var OSObjc_msgSend_once sync.Once
+var OSObjc_msgSend_lazy lazyFunc[func(id int64, sel int64) int64]
 
 func OSObjc_msgSend(id int64, sel int64) int64 {
-	OSObjc_msgSend_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSend_impl, purego.RTLD_DEFAULT, "objc_msgSend")
-	})
-	return OSObjc_msgSend_impl(id, sel)
+	return OSObjc_msgSend_lazy.get("objc_msgSend")(id, sel)
 }
 
-var OSObjc_msgSendSuperOverload10_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64
-var OSObjc_msgSendSuperOverload10_once sync.Once
+var OSObjc_msgSendSuperOverload10_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64]
 
 func OSObjc_msgSendSuperOverload10(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64 {
-	OSObjc_msgSendSuperOverload10_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload10_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload10_impl(superId, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendSuperOverload10_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendSuperOverload11_impl func(superId *objc_super, sel int64, arg0 int64, arg1 bool) int64
-var OSObjc_msgSendSuperOverload11_once sync.Once
+var OSObjc_msgSendSuperOverload11_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 bool) int64]
 
 func OSObjc_msgSendSuperOverload11(superId *objc_super, sel int64, arg0 int64, arg1 bool) int64 {
-	OSObjc_msgSendSuperOverload11_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload11_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload11_impl(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload11_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload12_impl func(superId *objc_super, sel int64, arg0 int64, arg1 int64) int64
-var OSObjc_msgSendSuperOverload12_once sync.Once
+var OSObjc_msgSendSuperOverload12_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 int64) int64]
 
 func OSObjc_msgSendSuperOverload12(superId *objc_super, sel int64, arg0 int64, arg1 int64) int64 {
-	OSObjc_msgSendSuperOverload12_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload12_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload12_impl(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload12_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload13_impl func(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64
-var OSObjc_msgSendSuperOverload13_once sync.Once
+var OSObjc_msgSendSuperOverload13_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64]
 
 func OSObjc_msgSendSuperOverload13(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64 {
-	OSObjc_msgSendSuperOverload13_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload13_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload13_impl(superId, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendSuperOverload13_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendSuperOverload14_impl func(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64
-var OSObjc_msgSendSuperOverload14_once sync.Once
+var OSObjc_msgSendSuperOverload14_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64]
 
 func OSObjc_msgSendSuperOverload14(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64 {
-	OSObjc_msgSendSuperOverload14_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload14_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload14_impl(superId, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendSuperOverload14_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2, arg3)
 }
 
-var OSObjc_msgSendSuperOverload1_impl func(superId *objc_super, sel int64, arg0 NSPoint) int64
-var OSObjc_msgSendSuperOverload1_once sync.Once
+var OSObjc_msgSendSuperOverload1_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSPoint) int64]
 
 func OSObjc_msgSendSuperOverload1(superId *objc_super, sel int64, arg0 NSPoint) int64 {
-	OSObjc_msgSendSuperOverload1_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload1_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload1_impl(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload1_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload2_impl func(superId *objc_super, sel int64, arg0 NSRect) int64
-var OSObjc_msgSendSuperOverload2_once sync.Once
+var OSObjc_msgSendSuperOverload2_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect) int64]
 
 func OSObjc_msgSendSuperOverload2(superId *objc_super, sel int64, arg0 NSRect) int64 {
-	OSObjc_msgSendSuperOverload2_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload2_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload2_impl(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload2_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload3_impl func(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) int64
-var OSObjc_msgSendSuperOverload3_once sync.Once
+var OSObjc_msgSendSuperOverload3_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) int64]
 
 func OSObjc_msgSendSuperOverload3(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) int64 {
-	OSObjc_msgSendSuperOverload3_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload3_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload3_impl(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload3_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload4_impl func(superId *objc_super, sel int64, arg0 NSSize) int64
-var OSObjc_msgSendSuperOverload4_once sync.Once
+var OSObjc_msgSendSuperOverload4_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSSize) int64]
 
 func OSObjc_msgSendSuperOverload4(superId *objc_super, sel int64, arg0 NSSize) int64 {
-	OSObjc_msgSendSuperOverload4_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload4_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload4_impl(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload4_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload5_impl func(superId *objc_super, sel int64, arg0 bool) int64
-var OSObjc_msgSendSuperOverload5_once sync.Once
+var OSObjc_msgSendSuperOverload5_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 bool) int64]
 
 func OSObjc_msgSendSuperOverload5(superId *objc_super, sel int64, arg0 bool) int64 {
-	OSObjc_msgSendSuperOverload5_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload5_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload5_impl(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload5_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload6_impl func(superId *objc_super, sel int64, arg0 bool, arg1 NSRect) int64
-var OSObjc_msgSendSuperOverload6_once sync.Once
+var OSObjc_msgSendSuperOverload6_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 bool, arg1 NSRect) int64]
 
 func OSObjc_msgSendSuperOverload6(superId *objc_super, sel int64, arg0 bool, arg1 NSRect) int64 {
-	OSObjc_msgSendSuperOverload6_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload6_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload6_impl(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload6_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload7_impl func(superId *objc_super, sel int64, arg0 int64) int64
-var OSObjc_msgSendSuperOverload7_once sync.Once
+var OSObjc_msgSendSuperOverload7_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64) int64]
 
 func OSObjc_msgSendSuperOverload7(superId *objc_super, sel int64, arg0 int64) int64 {
-	OSObjc_msgSendSuperOverload7_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload7_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload7_impl(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload7_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuperOverload8_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) int64
-var OSObjc_msgSendSuperOverload8_once sync.Once
+var OSObjc_msgSendSuperOverload8_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) int64]
 
 func OSObjc_msgSendSuperOverload8(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) int64 {
-	OSObjc_msgSendSuperOverload8_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload8_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload8_impl(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload8_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuperOverload9_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64
-var OSObjc_msgSendSuperOverload9_once sync.Once
+var OSObjc_msgSendSuperOverload9_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64]
 
 func OSObjc_msgSendSuperOverload9(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64 {
-	OSObjc_msgSendSuperOverload9_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuperOverload9_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuperOverload9_impl(superId, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendSuperOverload9_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendSuper_impl func(superId *objc_super, sel int64) int64
-var OSObjc_msgSendSuper_once sync.Once
+var OSObjc_msgSendSuper_lazy lazyFunc[func(superId *objc_super, sel int64) int64]
 
 func OSObjc_msgSendSuper(superId *objc_super, sel int64) int64 {
-	OSObjc_msgSendSuper_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuper_impl(superId, sel)
+	return OSObjc_msgSendSuper_lazy.get("objc_msgSendSuper")(superId, sel)
 }
 
-var OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) bool
-var OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_once sync.Once
+var OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) bool]
 
 func OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) bool {
-	OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_impl(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuper_bool_impl func(superId *objc_super, sel int64, arg0 NSRange, arg1 int64) bool
-var OSObjc_msgSendSuper_bool_once sync.Once
+var OSObjc_msgSendSuper_bool_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRange, arg1 int64) bool]
 
 func OSObjc_msgSendSuper_bool(superId *objc_super, sel int64, arg0 NSRange, arg1 int64) bool {
-	OSObjc_msgSendSuper_bool_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_bool_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	return OSObjc_msgSendSuper_bool_impl(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuper_bool_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuper_stretOverload1_impl func(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) NSRect
-var OSObjc_msgSendSuper_stretOverload1_once sync.Once
+var OSObjc_msgSendSuper_stretOverload1_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) NSRect]
 
 func OSObjc_msgSendSuper_stretOverload1(result *NSRect, superId *objc_super, sel int64, arg0 NSRect, arg1 int64) {
-	OSObjc_msgSendSuper_stretOverload1_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload1_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	*result = OSObjc_msgSendSuper_stretOverload1_impl(superId, sel, arg0, arg1)
+	*result = OSObjc_msgSendSuper_stretOverload1_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
-var OSObjc_msgSendSuper_stretOverload2_impl func(superId *objc_super, sel int64, arg0 int64) NSRect
-var OSObjc_msgSendSuper_stretOverload2_once sync.Once
+var OSObjc_msgSendSuper_stretOverload2_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64) NSRect]
 
 func OSObjc_msgSendSuper_stretOverload2(result *NSRect, superId *objc_super, sel int64, arg0 int64) {
-	OSObjc_msgSendSuper_stretOverload2_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload2_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	*result = OSObjc_msgSendSuper_stretOverload2_impl(superId, sel, arg0)
+	*result = OSObjc_msgSendSuper_stretOverload2_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuper_stretOverload3_impl func(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) NSRect
-var OSObjc_msgSendSuper_stretOverload3_once sync.Once
+var OSObjc_msgSendSuper_stretOverload3_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) NSRect]
 
 func OSObjc_msgSendSuper_stretOverload3(result *NSRect, superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) {
-	OSObjc_msgSendSuper_stretOverload3_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload3_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	*result = OSObjc_msgSendSuper_stretOverload3_impl(superId, sel, arg0, arg1, arg2)
+	*result = OSObjc_msgSendSuper_stretOverload3_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2)
 }
 
-var OSObjc_msgSendSuper_stretOverload4_impl func(superId *objc_super, sel int64) NSSize
-var OSObjc_msgSendSuper_stretOverload4_once sync.Once
+var OSObjc_msgSendSuper_stretOverload4_lazy lazyFunc[func(superId *objc_super, sel int64) NSSize]
 
 func OSObjc_msgSendSuper_stretOverload4(result *NSSize, superId *objc_super, sel int64) {
-	OSObjc_msgSendSuper_stretOverload4_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload4_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	*result = OSObjc_msgSendSuper_stretOverload4_impl(superId, sel)
+	*result = OSObjc_msgSendSuper_stretOverload4_lazy.get("objc_msgSendSuper")(superId, sel)
 }
 
-var OSObjc_msgSendSuper_stretOverload5_impl func(superId *objc_super, sel int64, arg0 NSRect) NSSize
-var OSObjc_msgSendSuper_stretOverload5_once sync.Once
+var OSObjc_msgSendSuper_stretOverload5_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect) NSSize]
 
 func OSObjc_msgSendSuper_stretOverload5(result *NSSize, superId *objc_super, sel int64, arg0 NSRect) {
-	OSObjc_msgSendSuper_stretOverload5_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload5_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	*result = OSObjc_msgSendSuper_stretOverload5_impl(superId, sel, arg0)
+	*result = OSObjc_msgSendSuper_stretOverload5_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuper_stretOverload6_impl func(superId *objc_super, sel int64, arg0 bool) NSSize
-var OSObjc_msgSendSuper_stretOverload6_once sync.Once
+var OSObjc_msgSendSuper_stretOverload6_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 bool) NSSize]
 
 func OSObjc_msgSendSuper_stretOverload6(result *NSSize, superId *objc_super, sel int64, arg0 bool) {
-	OSObjc_msgSendSuper_stretOverload6_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stretOverload6_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	*result = OSObjc_msgSendSuper_stretOverload6_impl(superId, sel, arg0)
+	*result = OSObjc_msgSendSuper_stretOverload6_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
 }
 
-var OSObjc_msgSendSuper_stret_impl func(superId *objc_super, sel int64, arg0 NSRect) NSRect
-var OSObjc_msgSendSuper_stret_once sync.Once
+var OSObjc_msgSendSuper_stret_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect) NSRect]
 
 func OSObjc_msgSendSuper_stret(result *NSRect, superId *objc_super, sel int64, arg0 NSRect) {
-	OSObjc_msgSendSuper_stret_once.Do(func() {
-		ensureFrameworks()
-		purego.RegisterLibFunc(&OSObjc_msgSendSuper_stret_impl, purego.RTLD_DEFAULT, "objc_msgSendSuper")
-	})
-	*result = OSObjc_msgSendSuper_stret_impl(superId, sel, arg0)
+	*result = OSObjc_msgSendSuper_stret_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
 }
+
+var OSObjc_msgSend_boolOverload10_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) bool]
+
+func OSObjc_msgSend_boolOverload10(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) bool {
+	return OSObjc_msgSend_boolOverload10_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+}
+
+var OSObjc_msgSend_boolOverload11_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) bool]
+
+func OSObjc_msgSend_boolOverload11(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) bool {
+	return OSObjc_msgSend_boolOverload11_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
+}
+
+var OSObjc_msgSend_boolOverload1_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint) bool]
+
+func OSObjc_msgSend_boolOverload1(id int64, sel int64, arg0 NSPoint) bool {
+	return OSObjc_msgSend_boolOverload1_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_boolOverload2_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 NSRect) bool]
+
+func OSObjc_msgSend_boolOverload2(id int64, sel int64, arg0 NSPoint, arg1 NSRect) bool {
+	return OSObjc_msgSend_boolOverload2_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_boolOverload3_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64) bool]
+
+func OSObjc_msgSend_boolOverload3(id int64, sel int64, arg0 NSRange, arg1 int64) bool {
+	return OSObjc_msgSend_boolOverload3_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_boolOverload4_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect) bool]
+
+func OSObjc_msgSend_boolOverload4(id int64, sel int64, arg0 NSRect) bool {
+	return OSObjc_msgSend_boolOverload4_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_boolOverload5_lazy lazyFunc[func(id int64, sel int64, arg0 int64) bool]
+
+func OSObjc_msgSend_boolOverload5(id int64, sel int64, arg0 int64) bool {
+	return OSObjc_msgSend_boolOverload5_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_boolOverload6_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint) bool]
+
+func OSObjc_msgSend_boolOverload6(id int64, sel int64, arg0 int64, arg1 NSPoint) bool {
+	return OSObjc_msgSend_boolOverload6_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_boolOverload7_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSSize, arg2 bool) bool]
+
+func OSObjc_msgSend_boolOverload7(id int64, sel int64, arg0 int64, arg1 NSSize, arg2 bool) bool {
+	return OSObjc_msgSend_boolOverload7_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+}
+
+var OSObjc_msgSend_boolOverload8_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64) bool]
+
+func OSObjc_msgSend_boolOverload8(id int64, sel int64, arg0 int64, arg1 int64) bool {
+	return OSObjc_msgSend_boolOverload8_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_boolOverload9_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool]
+
+func OSObjc_msgSend_boolOverload9(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool {
+	return OSObjc_msgSend_boolOverload9_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+}
+
+var OSObjc_msgSend_bool_lazy lazyFunc[func(id int64, sel int64) bool]
+
+func OSObjc_msgSend_bool(id int64, sel int64) bool {
+	return OSObjc_msgSend_bool_lazy.get("objc_msgSend")(id, sel)
+}
+
+var OSObjc_msgSend_floatret_lazy lazyFunc[func(id int64, sel int64) float32]
+
+func OSObjc_msgSend_floatret(id int64, sel int64) float32 {
+	return OSObjc_msgSend_floatret_lazy.get("objc_msgSend")(id, sel)
+}
+
+var OSObjc_msgSend_fpretIdSelArg0Arg1_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64) float64]
+
+func OSObjc_msgSend_fpretIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64) float64 {
+	return OSObjc_msgSend_fpretIdSelArg0Arg1_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_fpretIdSelArg0_lazy lazyFunc[func(id int64, sel int64, arg0 int64) float64]
+
+func OSObjc_msgSend_fpretIdSelArg0(id int64, sel int64, arg0 int64) float64 {
+	return OSObjc_msgSend_fpretIdSelArg0_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_fpret_lazy lazyFunc[func(id int64, sel int64) float64]
+
+func OSObjc_msgSend_fpret(id int64, sel int64) float64 {
+	return OSObjc_msgSend_fpret_lazy.get("objc_msgSend")(id, sel)
+}
+
+var OSObjc_msgSend_stretOverload10_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64) NSRect]
+
+func OSObjc_msgSend_stretOverload10(result *NSRect, id int64, sel int64, arg0 NSRange, arg1 int64) {
+	*result = OSObjc_msgSend_stretOverload10_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_stretOverload11_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect) NSRect]
+
+func OSObjc_msgSend_stretOverload11(result *NSRect, id int64, sel int64, arg0 NSRect) {
+	*result = OSObjc_msgSend_stretOverload11_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_stretOverload12_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64) NSRect]
+
+func OSObjc_msgSend_stretOverload12(result *NSRect, id int64, sel int64, arg0 NSRect, arg1 int64) {
+	*result = OSObjc_msgSend_stretOverload12_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_stretOverload13_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize, arg1 int64) NSRect]
+
+func OSObjc_msgSend_stretOverload13(result *NSRect, id int64, sel int64, arg0 NSSize, arg1 int64) {
+	*result = OSObjc_msgSend_stretOverload13_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_stretOverload14_lazy lazyFunc[func(id int64, sel int64, arg0 int64) NSRect]
+
+func OSObjc_msgSend_stretOverload14(result *NSRect, id int64, sel int64, arg0 int64) {
+	*result = OSObjc_msgSend_stretOverload14_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_stretOverload15_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSRect, arg2 int64) NSRect]
+
+func OSObjc_msgSend_stretOverload15(result *NSRect, id int64, sel int64, arg0 int64, arg1 NSRect, arg2 int64) {
+	*result = OSObjc_msgSend_stretOverload15_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+}
+
+var OSObjc_msgSend_stretOverload16_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64) NSRect]
+
+func OSObjc_msgSend_stretOverload16(result *NSRect, id int64, sel int64, arg0 int64, arg1 int64) {
+	*result = OSObjc_msgSend_stretOverload16_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_stretOverload17_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 bool) NSRect]
+
+func OSObjc_msgSend_stretOverload17(result *NSRect, id int64, sel int64, arg0 int64, arg1 int64, arg2 bool) {
+	*result = OSObjc_msgSend_stretOverload17_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+}
+
+var OSObjc_msgSend_stretOverload18_lazy lazyFunc[func(id int64, sel int64) NSSize]
+
+func OSObjc_msgSend_stretOverload18(result *NSSize, id int64, sel int64) {
+	*result = OSObjc_msgSend_stretOverload18_lazy.get("objc_msgSend")(id, sel)
+}
+
+var OSObjc_msgSend_stretOverload19_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect) NSSize]
+
+func OSObjc_msgSend_stretOverload19(result *NSSize, id int64, sel int64, arg0 NSRect) {
+	*result = OSObjc_msgSend_stretOverload19_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_stretOverload1_lazy lazyFunc[func(id int64, sel int64) NSOperatingSystemVersion]
+
+func OSObjc_msgSend_stretOverload1(result *NSOperatingSystemVersion, id int64, sel int64) {
+	*result = OSObjc_msgSend_stretOverload1_lazy.get("objc_msgSend")(id, sel)
+}
+
+var OSObjc_msgSend_stretOverload20_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize) NSSize]
+
+func OSObjc_msgSend_stretOverload20(result *NSSize, id int64, sel int64, arg0 NSSize) {
+	*result = OSObjc_msgSend_stretOverload20_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_stretOverload21_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize, arg1 bool, arg2 bool, arg3 int64) NSSize]
+
+func OSObjc_msgSend_stretOverload21(result *NSSize, id int64, sel int64, arg0 NSSize, arg1 bool, arg2 bool, arg3 int64) {
+	*result = OSObjc_msgSend_stretOverload21_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+}
+
+var OSObjc_msgSend_stretOverload22_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64) NSSize]
+
+func OSObjc_msgSend_stretOverload22(result *NSSize, id int64, sel int64, arg0 NSSize, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64) {
+	*result = OSObjc_msgSend_stretOverload22_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
+}
+
+var OSObjc_msgSend_stretOverload23_lazy lazyFunc[func(id int64, sel int64, arg0 bool) NSSize]
+
+func OSObjc_msgSend_stretOverload23(result *NSSize, id int64, sel int64, arg0 bool) {
+	*result = OSObjc_msgSend_stretOverload23_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_stretOverload2_lazy lazyFunc[func(id int64, sel int64) NSPoint]
+
+func OSObjc_msgSend_stretOverload2(result *NSPoint, id int64, sel int64) {
+	*result = OSObjc_msgSend_stretOverload2_lazy.get("objc_msgSend")(id, sel)
+}
+
+var OSObjc_msgSend_stretOverload3_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint) NSPoint]
+
+func OSObjc_msgSend_stretOverload3(result *NSPoint, id int64, sel int64, arg0 NSPoint) {
+	*result = OSObjc_msgSend_stretOverload3_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_stretOverload4_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 int64) NSPoint]
+
+func OSObjc_msgSend_stretOverload4(result *NSPoint, id int64, sel int64, arg0 NSPoint, arg1 int64) {
+	*result = OSObjc_msgSend_stretOverload4_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_stretOverload5_lazy lazyFunc[func(id int64, sel int64, arg0 int64) NSPoint]
+
+func OSObjc_msgSend_stretOverload5(result *NSPoint, id int64, sel int64, arg0 int64) {
+	*result = OSObjc_msgSend_stretOverload5_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_stretOverload6_lazy lazyFunc[func(id int64, sel int64) NSRange]
+
+func OSObjc_msgSend_stretOverload6(result *NSRange, id int64, sel int64) {
+	*result = OSObjc_msgSend_stretOverload6_lazy.get("objc_msgSend")(id, sel)
+}
+
+var OSObjc_msgSend_stretOverload7_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64) NSRange]
+
+func OSObjc_msgSend_stretOverload7(result *NSRange, id int64, sel int64, arg0 NSRange, arg1 int64) {
+	*result = OSObjc_msgSend_stretOverload7_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+}
+
+var OSObjc_msgSend_stretOverload8_lazy lazyFunc[func(id int64, sel int64, arg0 int64) NSRange]
+
+func OSObjc_msgSend_stretOverload8(result *NSRange, id int64, sel int64, arg0 int64) {
+	*result = OSObjc_msgSend_stretOverload8_lazy.get("objc_msgSend")(id, sel, arg0)
+}
+
+var OSObjc_msgSend_stretOverload9_lazy lazyFunc[func(id int64, sel int64) NSRect]
+
+func OSObjc_msgSend_stretOverload9(result *NSRect, id int64, sel int64) {
+	*result = OSObjc_msgSend_stretOverload9_lazy.get("objc_msgSend")(id, sel)
+}
+
+var OSObjc_msgSend_stret_lazy lazyFunc[func(id int64, sel int64) NSAffineTransformStruct]
+
+func OSObjc_msgSend_stret(result *NSAffineTransformStruct, id int64, sel int64) {
+	*result = OSObjc_msgSend_stret_lazy.get("objc_msgSend")(id, sel)
+}
+
+var OSObjc_registerClassPair_lazy lazyFunc[func(cls int64)]
+
+func OSObjc_registerClassPair(cls int64) {
+	OSObjc_registerClassPair_lazy.get("objc_registerClassPair")(cls)
+}
+
+func OSObjc_super_sizeof() int32 { return int32(unsafe.Sizeof(objc_super{})) }

@@ -67,10 +67,14 @@ final class ClassEmitter {
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof FieldDeclaration fd) emitStaticFields(fd, ci, out); // an interface's fields are constants
 			if (o instanceof MethodDeclaration md && Modifier.isStatic(md.getModifiers())) {
+				emitter.beginChunk(md.getName().getIdentifier(), out);
 				emitStaticMethod(md, ci, out);
+				emitter.endChunk(ci.goTypeName, md.getName().getIdentifier(), out);
 			}
 			if (o instanceof MethodDeclaration md && Modifier.isDefault(md.getModifiers())) {
+				emitter.beginChunk(md.getName().getIdentifier(), out);
 				emitDefaultMethod(md, ci, out);
+				emitter.endChunk(ci.goTypeName, md.getName().getIdentifier(), out);
 			}
 			if (o instanceof EnumDeclaration || o instanceof AnnotationTypeDeclaration) emitTopLevelClass((AbstractTypeDeclaration) o, out);
 		}
@@ -170,7 +174,9 @@ final class ClassEmitter {
 		boolean hasExplicitCtor = false;
 		for (Object o : td.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md && md.isConstructor()) {
+				emitter.beginChunk("New" + ci.goTypeName, out);
 				emitter.emitConstructor(md, ci, td, out);
+				emitter.endChunk(ci.goTypeName, "New" + ci.goTypeName, out);
 				hasExplicitCtor = true;
 			}
 		}
@@ -192,8 +198,10 @@ final class ClassEmitter {
 					emitter.unsupported.add("MethodDeclaration: generic method " + ci.binaryName + "." + md.getName() + " skipped");
 					continue;
 				}
+				emitter.beginChunk(md.getName().getIdentifier(), out);
 				if (Modifier.isNative(md.getModifiers())) emitter.emitUnsupportedNative(md, ci, out);
 				else emitInstanceMethod(md, ci, out);
+				emitter.endChunk(ci.goTypeName, md.getName().getIdentifier(), out);
 			}
 		}
 		for (Object o : td.bodyDeclarations()) {
@@ -202,8 +210,10 @@ final class ClassEmitter {
 				String declClass = smb.getDeclaringClass().getErasure().getQualifiedName();
 				if (Manual.isSkippedMethod(declClass, smb.getName())) continue;
 				if (Manual.manualMethod(Names.erasureKey(smb)) != null) continue;
+				emitter.beginChunk(smb.getName(), out);
 				if (Modifier.isNative(md.getModifiers())) emitter.emitStaticNativeMethod(md, ci, out);
 				else emitStaticMethod(md, ci, out);
+				emitter.endChunk(ci.goTypeName, smb.getName(), out);
 			}
 		}
 		out.append(emitter.defaultForwarders(ci.binding, "*" + ci.goTypeName)).append(CovariantBridges.emit(emitter, ci));

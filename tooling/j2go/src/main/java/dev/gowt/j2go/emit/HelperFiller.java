@@ -16,6 +16,7 @@ public final class HelperFiller {
 	public static String fill(Emitter emitter, Collection<String> referenced) {
 		Set<String> wanted = Set.copyOf(referenced);
 		emitter.fileHelperSource = new ArrayList<>();
+		emitter.helperTags.clear();
 		emitter.currentGoPackage = "swt";
 		for (TypeModel.ClassInfo root : emitter.model.all()) {
 			if (root != root.root) continue;

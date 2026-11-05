@@ -385,7 +385,7 @@ final class NumericEmitter {
 		String elem = upcastObject("e", fe, te); // the Go slice types differ (here), so even an unchanged element needs the copy
 		String name = "upcastArr" + fromGo.replaceAll("[\\[\\]*.]", "") + "To" + toGo.replaceAll("[\\[\\]*.]", "");
 		if (emitter.generatedHelpers.add(name)) {
-			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") " + toGo + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"
+			emitter.addFileHelper("func " + name + "(x " + fromGo + ") " + toGo + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"
 					+ "\tr := make(" + toGo + ", len(x))\n\tfor i, e := range x {\n\t\tr[i] = " + elem + "\n\t}\n\treturn r\n}\n\n");
 		}
 		return name + "(" + text + ")";
@@ -412,7 +412,7 @@ final class NumericEmitter {
 	private String ensureUpcastHelper(String fromGo, String toGo, String path) {
 		String name = "upcast" + fromGo.replaceAll("[*.]", "") + "To" + toGo.replaceAll("[*.]", "");
 		if (emitter.generatedHelpers.add(name)) {
-			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") " + toGo + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n\treturn "
+			emitter.addFileHelper("func " + name + "(x " + fromGo + ") " + toGo + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n\treturn "
 					+ path + "\n}\n\n");
 		}
 		return name;

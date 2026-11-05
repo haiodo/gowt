@@ -65,7 +65,9 @@ final class EnumEmitter {
 		boolean hasCtor = false;
 		for (Object o : ed.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md && md.isConstructor()) {
+				emitter.beginChunk("New" + ci.goTypeName, out);
 				emitter.emitConstructor(md, ci, ed, out);
+				emitter.endChunk(ci.goTypeName, "New" + ci.goTypeName, out);
 				hasCtor = true;
 			}
 		}
@@ -183,7 +185,9 @@ final class EnumEmitter {
 				if (d != null) emitFallback(d, "panic(\"j2go: abstract " + d.goName() + "\")", out);
 				continue;
 			}
+			emitter.beginChunk(md.getName().getIdentifier(), out);
 			classEmitter.emitInstanceMethod(md, ci, out, d == null ? "" : guard(d));
+			emitter.endChunk(ci.goTypeName, md.getName().getIdentifier(), out);
 		}
 		// Overridden in constant bodies but declared by an interface or java.lang.Enum, not by the enum itself.
 		for (Dispatch d : dispatch.values()) {
@@ -193,7 +197,9 @@ final class EnumEmitter {
 		}
 		for (Object o : ed.bodyDeclarations()) {
 			if (o instanceof MethodDeclaration md && !md.isConstructor() && Modifier.isStatic(md.getModifiers()) && !Modifier.isNative(md.getModifiers())) {
+				emitter.beginChunk(md.getName().getIdentifier(), out);
 				classEmitter.emitStaticMethod(md, ci, out);
+				emitter.endChunk(ci.goTypeName, md.getName().getIdentifier(), out);
 			}
 		}
 	}

@@ -206,7 +206,7 @@ final class FunctionalEmitter {
 			b.append("func (f *").append(adapterName).append(") ").append(samGoName).append('(').append(params).append(") ").append(ret).append(" {\n");
 			b.append(ret.isEmpty() ? "\tf.fn(" + args + ")\n" : "\treturn f.fn(" + args + ")\n");
 			b.append("}\n\n").append(emitter.defaultForwarders(ifaceCi.binding, "*" + adapterName));
-			emitter.fileHelperSource.add(b.toString());
+			emitter.addFileHelper(b.toString());
 		}
 		return adapterName;
 	}
@@ -387,7 +387,7 @@ final class FunctionalEmitter {
 		// Another package's impl and init<Base> are unexported: build with the public constructor, then
 		// SetImpl_ (installs the hook wrapper). Ceiling: virtual calls the constructor makes still reach the base implementation.
 		if (foreign && baseCi.root.hasImpl() && !baseCi.root.splitsDispatch()) return marker(cic, "AnonymousClass");
-		emitter.fileHelperSource.add(decl.toString());
+		emitter.addFileHelper(decl.toString());
 		emitter.prelude.add(v + " := &" + typeName + "{}");
 		if (foreign) {
 			emitter.prelude.add(v + "." + baseCi.goTypeName + " = " + foreignCtorCall(cic, baseCi));

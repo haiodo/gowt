@@ -91,6 +91,36 @@ it, never directly. Where to add a new construct:
   (split out of `Emitter` in Round 10 - line budget)
 - **the reflect registry (package `swt/swtreflect`)** -> `ReflectEmitter` (Round 11)
 - **JUnit: `Assertions`/`Assumptions` calls, the per-class test registry** -> `TestEmitter` (Round 12)
+- **splitting a large unit into named method parts** -> `OutputModel` (chunks + part files),
+  `FilePlanner` (deterministic grouping/packing), the `beginChunk`/`endChunk` spans in `Emitter`
+  and the emit loops of `ClassEmitter`/`EnumEmitter` (roadmap TSK-03). See below.
+
+## File parts (declaration-aware output)
+
+A compilation unit whose generated text exceeds `--part-target` lines (ceiling `--part-max`,
+default 1200) is written as a base file plus method-named part files. Splitting is opt-in: a run
+without `--part-target` keeps the legacy single-file layout byte-identical, so each migration
+slice (port.sh's PI invocation today) opts in explicitly. The base
+file keeps the current name (`widgets_button.go`) and holds type declarations, fields, static
+field initializers, `static {}` blocks (the deferred `func init()`), `<T>Static()` lazy blocks,
+shared helpers, test-registration `init()` and declarations that must stay together (impl
+interfaces, hook structs, default forwarders, covariant bridges, implicit constructors). Every
+method - constructors, instance, static, native, interface default/static, enum methods - is
+emitted as a chunk carrying its enclosing Go type; nested and anonymous types, generated helpers
+and dispatch wrappers stay attached to the chunk that produced them. `FilePlanner` groups chunks
+by method name (overloads land in one file named after the method), packs groups up to the target
+and splits an over-ceiling group at owner/chunk boundaries - a single chunk over the ceiling is
+the one allowed exception. Part files are named `<base-stem>_<method>.go`; a platform file's GOOS
+suffix moves to the very end of every part name (`widgets_button_settext_darwin.go`), because that
+suffix is what builds the file only on its OS - the base keeps `widgets_button_darwin.go`, and PI
+parts stay unsuffixed with the explicit `//go:build` tag. The licence header, generated header
+and imports are computed per output file. Units at or below the target keep the previous
+single-file layout byte-identical, as do shared files on non-reference runs (`separateHelpers`).
+`--part-target`/`--part-max` exist mainly so generator tests can exercise the layout on small
+fixtures. Golden rules `testdata/parts` and `testdata/parts-junit` cover overloads, nested and
+anonymous types, static and deferred init, helper separation and test registration;
+`PartsLayoutTest` proves two consecutive generations produce identical trees and that splitting
+does not change the exported API.
 
 ## Run
 

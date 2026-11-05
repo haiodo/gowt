@@ -359,7 +359,9 @@ fi
 
 # gtk: internal/gtk is generated from GIR by tooling/girgen (make gtk-gen), not translated from PI sources.
 if [ "$PLATFORM" != gtk ]; then
-	"${J2GO[@]}" \
+	# The PI bindings are the largest generated files; this is the only invocation that opts into
+	# declaration-aware part files (roadmap TSK-04). SWT/examples/tests stay single-file until their slice.
+	"${J2GO[@]}" --part-target 800 \
 		org/eclipse/swt/internal/C.java \
 		"${PI_FILES[@]}"
 fi

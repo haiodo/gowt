@@ -26,6 +26,9 @@ public class Main {
 		List<String> extraRoots = new ArrayList<>();
 		List<Path> stubRoots = new ArrayList<>();
 		List<String> files = new ArrayList<>();
+		// 0 = splitting disabled: only an explicit --part-target opts a run into part files.
+		int partTargetLines = 0;
+		int partMaxLines = dev.gowt.j2go.emit.FilePlanner.DEFAULT_MAX_LINES;
 		// Files after "--" are parsed and modeled (so names/bindings resolve exactly as they did
 		// when translated) but not re-emitted - e.g. Widget.java needs OS.java's ClassInfo, not
 		// a second copy of cocoa_os.go.
@@ -43,6 +46,8 @@ public class Main {
 				case "--stubs" -> stubRoots.add(Path.of(args[++i]));
 				case "--runtime-import" -> Config.runtimeImport = args[++i];
 				case "--junit-import" -> Config.junitImport = args[++i];
+				case "--part-target" -> partTargetLines = Integer.parseInt(args[++i]);
+				case "--part-max" -> partMaxLines = Integer.parseInt(args[++i]);
 				case "--" -> target = refFiles;
 				default -> target.add(args[i]);
 			}
@@ -51,7 +56,7 @@ public class Main {
 		Config.stubRoots = stubRoots.isEmpty() ? List.of(Config.dir.resolve("stubs")) : stubRoots;
 		Profile.load(Config.dir.resolve("packages.txt"));
 		if (swtRoot == null || outDir == null || files.isEmpty()) {
-			System.err.println("usage: j2go --swt <swt repo root> --out <dir> [--platform cocoa|win32|gtk] [--src <extra source root>]... [--config <dir>] [--stubs <dir>]... [--runtime-import <path>] [--junit-import <path>] <java files...> [-- <reference-only java files...>]");
+			System.err.println("usage: j2go --swt <swt repo root> --out <dir> [--platform cocoa|win32|gtk] [--src <extra source root>]... [--config <dir>] [--stubs <dir>]... [--runtime-import <path>] [--junit-import <path>] [--part-target <lines> (default: off, legacy single file)] [--part-max <lines>] <java files...> [-- <reference-only java files...>]");
 			System.exit(2);
 		}
 
@@ -209,6 +214,8 @@ public class Main {
 		if (System.getenv("J2GO_DUMP_CASCADE") != null) model.dumpCascade(Path.of(System.getenv("J2GO_DUMP_CASCADE")));
 
 		Emitter emitter = new Emitter(model, names, natives, selectors);
+		emitter.partTargetLines = partTargetLines;
+		emitter.partMaxLines = partMaxLines;
 
 		boolean reference = platform == Platform.COCOA;
 		boolean emittedSwtPlatformFile = false;
@@ -264,25 +271,44 @@ public class Main {
 			// DragSourceEvent/DropTargetEvent print TransferData.type, an int on cocoa and win32 and a long on gtk: one file per platform.
 			boolean typeDependent = javaPackage.equals("org.eclipse.swt.dnd") && (typeName.equals("DragSourceEvent") || typeName.equals("DropTargetEvent"));
 			boolean platformFile = !piFile && (commonSource || typeDependent || platformRoots.stream().anyMatch(srcPath::startsWith));
-			String outName = pkgLastSegment + "_" + typeName.toLowerCase(Locale.ROOT) + (platformFile ? "_" + platform.goos : "") + ".go";
+			String baseStem = pkgLastSegment + "_" + typeName.toLowerCase(Locale.ROOT);
+			String outName = baseStem + (platformFile ? "_" + platform.goos : "") + ".go";
 			emittedSwtPlatformFile |= platformFile && outDirName.equals("swt");
 			// A PI package is wholly one OS's: a tag, not a rename (swt files share names across platforms, PI files do not).
 			String header = buildHeader(relPath, source, cu, piFile ? platform.goos : null);
 
-			StringBuilder file = new StringBuilder();
-			file.append(header).append('\n');
-			file.append("package ").append(GoTypes.goPackageOf(javaPackage, typeName)).append("\n\n");
-			if (!result.imports().isEmpty()) {
-				file.append("import (\n");
-				for (String imp : result.imports()) file.append('\t').append('"').append(imp).append("\"\n");
-				file.append(")\n\n");
+			// Declaration-aware layout: the base file keeps the current name; method parts are
+			// named after their method group. A platform file's GOOS suffix stays at the very end
+			// of every part name (widgets_button_settext_darwin.go) - that suffix is what builds
+			// the file only on its OS, so it must not move before the part name. PI files carry
+			// an explicit //go:build tag instead and keep unsuffixed part names.
+			for (dev.gowt.j2go.emit.OutputModel.OutputFile f : result.files().isEmpty()
+					? List.of(new dev.gowt.j2go.emit.OutputModel.OutputFile("", result.body(), result.imports())) : result.files()) {
+				String name = f.suffix().isEmpty() ? outName
+						: baseStem + "_" + f.suffix() + (platformFile ? "_" + platform.goos : "") + ".go";
+				StringBuilder file = new StringBuilder();
+				file.append(header).append('\n');
+				file.append("package ").append(GoTypes.goPackageOf(javaPackage, typeName)).append("\n\n");
+				if (!f.imports().isEmpty()) {
+					file.append("import (\n");
+					for (String imp : f.imports()) file.append('\t').append('"').append(imp).append("\"\n");
+					file.append(")\n\n");
+				}
+				// Split output only: the emission text ends each declaration with a blank line,
+				// and gofmt (which every committed generated file passes through) strips that at
+				// EOF - match it for the new part files. The legacy single-file layout keeps its
+				// historical trailing blank line, byte-identical to what is committed.
+				String body = f.body();
+				if (!result.files().isEmpty()) {
+					while (body.endsWith("\n")) body = body.substring(0, body.length() - 1);
+					body = body + "\n";
+				}
+				file.append(body);
+				Path outPath = Path.of(outDir, outDirName, name);
+				Files.createDirectories(outPath.getParent());
+				Files.writeString(outPath, file.toString(), StandardCharsets.UTF_8);
+				System.out.println("wrote " + outPath);
 			}
-			file.append(result.body());
-
-			Path outPath = Path.of(outDir, outDirName, outName);
-			Files.createDirectories(outPath.getParent());
-			Files.writeString(outPath, file.toString(), StandardCharsets.UTF_8);
-			System.out.println("wrote " + outPath);
 		}
 
 		if (!reference && Profile.active == null && emittedSwtPlatformFile) {
@@ -322,7 +348,7 @@ public class Main {
 	}
 
 	/** Top-level func and type names of the committed shared (GOOS-suffix-free) files of dir. */
-	private static Set<String> definedNames(Path dir) throws IOException {
+	static Set<String> definedNames(Path dir) throws IOException {
 		Set<String> names = new HashSet<>();
 		if (!Files.isDirectory(dir)) return names;
 		var decl = java.util.regex.Pattern.compile("^(?:func|type) ([A-Za-z_][A-Za-z0-9_]*)", java.util.regex.Pattern.MULTILINE);
@@ -337,7 +363,8 @@ public class Main {
 		return names;
 	}
 
-	private static String sharedSource(Path dir) throws IOException {
+	/** Source of the committed shared (GOOS-suffix-free) files of dir, parts included. */
+	static String sharedSource(Path dir) throws IOException {
 		StringBuilder all = new StringBuilder();
 		try (var files = Files.list(dir)) {
 			for (Path f : (Iterable<Path>) files::iterator) {

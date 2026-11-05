@@ -32,6 +32,17 @@ public class Emitter {
 
 	Set<String> fileImports;
 	List<String> fileHelperSource;
+	final List<Integer> helperTags = new ArrayList<>(); // parallel to fileHelperSource: chunk index or -1 (base)
+	// Declaration-aware output: each method is a span of the unit body text, so a large unit can
+	// be planned into named part files (FilePlanner).
+	private final List<ChunkSpan> methodChunks = new ArrayList<>();
+	private int openChunkStart = -1;
+	private int openChunkIndex = -1;
+	// 0 = splitting off: without an explicit --part-target a unit keeps the legacy single file.
+	public int partTargetLines = 0;
+	public int partMaxLines = FilePlanner.DEFAULT_MAX_LINES;
+
+	record ChunkSpan(String owner, String group, int start, int end) {}
 	List<String> prelude;
 	// func init() body: static-field assignments whose initializer needs prelude or calls something (see README).
 	List<String> deferredStaticInits;
@@ -97,14 +108,37 @@ public class Emitter {
 		this.testEmitter = new TestEmitter(this);
 	}
 
-	public record EmitResult(String body, Set<String> imports, String helpers) {}
+	public record EmitResult(String body, Set<String> imports, String helpers, List<OutputModel.OutputFile> files) {}
 	public boolean separateHelpers; // non-reference platform run: a shared file's helpers come out separately
+
+	/** Start recording a method chunk: everything appended to {@code out} until endChunk becomes
+	 *  the chunk's text. */
+	void beginChunk(String group, StringBuilder out) {
+		openChunkStart = out.length();
+		openChunkIndex = methodChunks.size();
+	}
+
+	void endChunk(String owner, String group, StringBuilder out) {
+		methodChunks.add(new ChunkSpan(owner, group, openChunkStart, out.length()));
+		openChunkStart = -1;
+		openChunkIndex = -1;
+	}
+
+	/** A package-level helper func; tagged with the open chunk so splitting attaches it to a
+	 *  valid owner (anonymous struct types and cascade helpers move with the method that
+	 *  generated them), or to the base file outside one. */
+	public void addFileHelper(String text) {
+		fileHelperSource.add(text);
+		helperTags.add(openChunkIndex);
+	}
 
 	public EmitResult emitCompilationUnit(CompilationUnit cu) {
 		currentJavaPackage = cu.getPackage().getName().getFullyQualifiedName();
 		currentGoPackage = dev.gowt.j2go.GoTypes.goPackageOf(currentJavaPackage, ((AbstractTypeDeclaration) cu.types().get(0)).getName().getIdentifier());
 		fileImports = new LinkedHashSet<>();
 		fileHelperSource = new ArrayList<>();
+		helperTags.clear();
+		methodChunks.clear();
 		deferredStaticInits = new ArrayList<>();
 		deferredStaticInitLabels = new ArrayList<>();
 		lazyStaticBlocks.clear();
@@ -120,18 +154,87 @@ public class Emitter {
 			bodies.forEach(out::append);
 			out.append("\t})\n}\n\n");
 		});
-		StringBuilder helpers = new StringBuilder();
-		for (String h : fileHelperSource) if (!separateHelpers) out.append(h); else if (!h.startsWith("// j2go: anonymous")) helpers.append(h);
+		String initText = "";
 		if (!deferredStaticInits.isEmpty()) {
 			fileImports.add("os");
 			fileImports.add("fmt");
-			out.append(EmitUtil.deferredInitFunc(deferredStaticInits, deferredStaticInitLabels));
+			initText = EmitUtil.deferredInitFunc(deferredStaticInits, deferredStaticInitLabels);
 		}
-		// Type mapping records imports as a side effect even where the mapped text is only
-		// compared, never emitted - keep just the imports the body actually references.
-		String body = out.toString();
-		fileImports.removeIf(imp -> !body.contains(imp.substring(imp.lastIndexOf('/') + 1) + "."));
-		return new EmitResult(body, fileImports, helpers.toString());
+		String body = out.toString(); // types, fields, inits and the method chunks, in emission order
+		int totalLines = lineCount(body) + lineCount(initText);
+		for (String h : fileHelperSource) totalLines += lineCount(h);
+		// Small units (and shared files on non-reference runs) keep the legacy single-file layout
+		// byte-identical; large ones are planned into a base file plus named method parts.
+		if (partTargetLines <= 0 || separateHelpers || methodChunks.isEmpty() || totalLines <= partTargetLines) {
+			StringBuilder full = new StringBuilder(body);
+			StringBuilder helpers = new StringBuilder();
+			for (int i = 0; i < fileHelperSource.size(); i++) {
+				String h = fileHelperSource.get(i);
+				if (!separateHelpers) full.append(h);
+				else if (!h.startsWith("// j2go: anonymous")) helpers.append(h);
+			}
+			full.append(initText);
+			String text = full.toString();
+			// Type mapping records imports as a side effect even where the mapped text is only
+			// compared, never emitted - keep just the imports the body actually references.
+			Set<String> imps = new LinkedHashSet<>(fileImports);
+			imps.removeIf(imp -> !text.contains(imp.substring(imp.lastIndexOf('/') + 1) + "."));
+			return new EmitResult(text, imps, helpers.toString(), List.of());
+		}
+		return splitResult(body, initText);
+	}
+
+	// Assemble the declaration-aware layout: chunk spans are lifted out of the body text (no
+	// re-parsing of generated Go), helpers follow the chunk that generated them, and every output
+	// file keeps just the imports its own text references.
+	private EmitResult splitResult(String body, String initText) {
+		List<OutputModel.Chunk> chunks = new ArrayList<>();
+		StringBuilder base = new StringBuilder();
+		int pos = 0;
+		for (ChunkSpan span : methodChunks) {
+			base.append(body, pos, span.start());
+			pos = span.end();
+			chunks.add(new OutputModel.Chunk(span.owner(), span.group(), body.substring(span.start(), span.end())));
+		}
+		base.append(body, pos, body.length());
+		for (int i = 0; i < fileHelperSource.size(); i++) {
+			int tag = helperTags.get(i);
+			if (tag >= 0) chunks.get(tag).text.append(fileHelperSource.get(i));
+			else base.append(fileHelperSource.get(i));
+		}
+		base.append(initText);
+		List<OutputModel.OutputFile> files = new ArrayList<>();
+		String baseText = base.toString();
+		Set<String> baseImports = referencedImports(fileImports, baseText);
+		files.add(new OutputModel.OutputFile("", baseText, baseImports));
+		for (OutputModel.Part part : FilePlanner.plan(chunks, partTargetLines, partMaxLines)) {
+			String text = part.body();
+			files.add(new OutputModel.OutputFile(part.suffix, text, referencedImports(fileImports, text)));
+		}
+		return new EmitResult(baseText, baseImports, "", files);
+	}
+
+	// Per-output-file imports. The single-file layout keeps an import when its package name
+	// appears anywhere (text.contains(pkg + ".")); on per-part imports that misfires when an
+	// identifier merely ends in the package name - CaretPos.addr() keeps "os". A reference
+	// counts only with an identifier boundary before the package name; real selectors
+	// (os.Getenv, fmt.Fprintln(os.Stderr, ...)) still match. The legacy unsplit path keeps the
+	// old substring check, so single-file output stays byte-identical.
+	static Set<String> referencedImports(Set<String> imports, String text) {
+		Set<String> imps = new LinkedHashSet<>(imports);
+		imps.removeIf(imp -> !referencesPackage(text, imp.substring(imp.lastIndexOf('/') + 1)));
+		return imps;
+	}
+
+	static boolean referencesPackage(String text, String pkg) {
+		String boundary = "(?<![A-Za-z0-9_$])" + java.util.regex.Pattern.quote(pkg) + "\\.";
+		return java.util.regex.Pattern.compile(boundary).matcher(text).find();
+	}
+
+	private static int lineCount(String s) {
+		int n = 1;
+		for (int i = 0; i < s.length(); i++) if (s.charAt(i) == '\n') n++;
+		return n;
 	}
 
 	// ---------------------------------------------------------------- cross-component delegators

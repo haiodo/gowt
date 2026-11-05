@@ -20,6 +20,9 @@ class GoldenTest {
 	private static final Path TESTDATA = Path.of("testdata");
 	// Under a common SWT root, so SourcePrep (records, local classes) applies as it does to real sources.
 	private static final String ROOT = "bundles/org.eclipse.swt/Eclipse SWT/common/fixture";
+	// A rule with a "platform" marker puts its inputs under this platform's own source root, so
+	// the emitted file is platform-specific (its name carries the GOOS suffix, its parts too).
+	private static final String PLATFORM_ROOT = "bundles/org.eclipse.swt/Eclipse SWT/cocoa/fixture";
 
 	@TestFactory
 	Stream<DynamicTest> rules() throws IOException {
@@ -42,7 +45,8 @@ class GoldenTest {
 		// An "external" marker file puts the inputs outside the SWT roots, as a non-SWT project's are (absolute paths);
 		// containing "src" it also passes their directory as a --src root.
 		boolean external = Files.exists(rule.resolve("external"));
-		Path inputs = external ? work.resolve("ext/fixture") : src.resolve(ROOT);
+		boolean platformRule = Files.exists(rule.resolve("platform"));
+		Path inputs = external ? work.resolve("ext/fixture") : src.resolve(platformRule ? PLATFORM_ROOT : ROOT);
 		Files.createDirectories(inputs);
 		for (String n : names) Files.copy(in.resolve(n), inputs.resolve(n));
 

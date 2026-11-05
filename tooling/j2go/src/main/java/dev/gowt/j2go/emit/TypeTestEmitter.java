@@ -83,7 +83,7 @@ final class TypeTestEmitter {
 		String as = ensureCascadeHelper(target.root, target);
 		if (emitter.generatedHelpers.add(name)) {
 			String impl = subjectCi == null || subjectCi.isInterface || !subjectCi.root.hasImpl() ? "x" : "x" + emitter.implAccess(subjectCi.root);
-			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") *" + targetName + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"
+			emitter.addFileHelper("func " + name + "(x " + fromGo + ") *" + targetName + " {\n\tif x == nil {\n\t\treturn nil\n\t}\n"
 					+ "\tv, ok := " + as + "(" + impl + ")\n\tif !ok {\n\t\tpanic(\"java.lang.ClassCastException: " + targetName + "\")\n\t}\n\treturn v\n}\n\n");
 		}
 		return name;
@@ -174,7 +174,7 @@ final class TypeTestEmitter {
 		// Also when a shared file defines `name` already: the cascade helper it calls may belong to another platform's files.
 		String as = ensureCascadeHelper(target.root, target);
 		if (emitter.generatedHelpers.add(name)) {
-			emitter.fileHelperSource.add("func " + name + "(x " + fromGo + ") (*" + targetName + ", bool) {\n\tif x == nil {\n\t\treturn nil, false\n\t}\n"
+			emitter.addFileHelper("func " + name + "(x " + fromGo + ") (*" + targetName + ", bool) {\n\tif x == nil {\n\t\treturn nil, false\n\t}\n"
 					+ "\treturn " + as + "(x" + (!subjectCi.root.hasImpl() ? "" : emitter.implAccess(subjectCi.root)) + ")\n}\n\n");
 		}
 		return name;
@@ -193,7 +193,7 @@ final class TypeTestEmitter {
 	String ensureCascadeHelper(TypeModel.ClassInfo root, TypeModel.ClassInfo target) {
 		String name = cascadeHelperName(root, target);
 		if (emitter.generatedHelpers.add(name)) {
-			emitter.fileHelperSource.add(buildCascadeHelper(name, target));
+			emitter.addFileHelper(buildCascadeHelper(name, target));
 		}
 		return name;
 	}

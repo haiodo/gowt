@@ -399,7 +399,8 @@ func panesOf(w *gowt.Window, content Container) *paneLayout {
 	SetFullSizeContent(w, true)
 	overlay, _ := s.GetDataKey("look.panesOverlay").(bool)
 	fullHeight, _ := s.GetDataKey("look.sidebarFullHeight").(bool)
-	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct, overlay: overlay, sidebarFullHeight: fullHeight}
+	fixed, _ := s.GetDataKey(inspectorFixedKey).(bool)
+	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct, overlay: overlay, sidebarFullHeight: fullHeight, inspFixed: fixed}
 	l.SetImpl_(l)
 	// The shell minimum is read once: on macOS 26 it read back 20 points taller than it was set, so a
 	// value read after each set grew.
@@ -435,6 +436,9 @@ const minSizeHookKey = "gowt.look.minSize"
 // focusDefaultKey holds the func that gowt.Window.Show asks for the control to focus when no widget is
 // Focused; gowt has the same key.
 const focusDefaultKey = "gowt.look.focus"
+
+// inspectorFixedKey holds the SetInspectorFixed state, so an inspector rebuilt by SetInspector keeps it.
+const inspectorFixedKey = "look.inspectorFixed"
 
 // firstList returns the first visible List, Table or Tree under c, depth first, or nil.
 func firstList(c *swt.Composite) *swt.Control {
@@ -494,6 +498,24 @@ func InspectorVisible(w *gowt.Window) bool { return inspectorOf(w).visible() }
 // SetInspectorWidth sets the inspector width in points, at least 160; toolbar items that do not fit
 // overflow into the strip's More menu. A hidden inspector comes back at it.
 func SetInspectorWidth(w *gowt.Window, width int) { inspectorOf(w).setWidth(width) }
+
+// SetInspectorFixed keeps the inspector width where it is: its edge no longer drags, the arrow keys on
+// it do nothing and the pointer keeps its shape there. SetInspectorWidth still sets the width. It can
+// come before SetInspector, and a later SetInspector keeps the state.
+func SetInspectorFixed(w *gowt.Window, on bool) {
+	s := w.Unwrap()
+	s.SetDataKeyValue(inspectorFixedKey, on)
+	l := layoutOf(w)
+	if l == nil {
+		return
+	}
+	l.inspFixed = on
+	if l.insp == nil || l.insp.fixed == on {
+		return
+	}
+	l.insp.fixed = on
+	s.Layout()
+}
 
 // InspectorWidth is the inspector width in points, also while it is hidden; 0 without SetInspector.
 func InspectorWidth(w *gowt.Window) int { return inspectorOf(w).widthOrZero() }
@@ -570,6 +592,7 @@ type paneLayout struct {
 	content            *swt.Control
 	overlay            bool
 	sidebarFullHeight  bool
+	inspFixed          bool
 	// column is the frame of the content and the bottom panel at the last layout, under the area behind
 	// a floating sidebar beside the content.
 	column, under [4]int32
@@ -596,13 +619,14 @@ type pane struct {
 	kind     paneKind
 	width    int32 // the height of the bottom panel
 	hidden   bool
+	fixed    bool // the inspector edge takes no drag: SetInspectorFixed
 	dragging bool
 	from     int32 // the width when the drag began
 	onChange []func(visible bool, width int)
 }
 
 func (l *paneLayout) newPane(c *swt.Composite, width int, kind paneKind) *pane {
-	p := &pane{l: l, c: c, width: int32(width), kind: kind}
+	p := &pane{l: l, c: c, width: int32(width), kind: kind, fixed: kind == inspectorPane && l.inspFixed}
 	dir := int32(swt.VERTICAL)
 	if kind == bottomPane {
 		dir = swt.HORIZONTAL
@@ -742,6 +766,9 @@ func (p *pane) minWidth() int32 {
 // released. A drag never hides the pane: a divider that jumps away under the pointer confuses more
 // than one that stops.
 func (p *pane) HandleEvent(e *swt.Event) {
+	if p.fixed {
+		return
+	}
 	switch e.Type {
 	case swt.MouseDown:
 		p.dragging, p.from = true, p.width
@@ -856,7 +883,7 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 		var bg, rest, sh [4]int32
 		bg, ib, rest, sh = inspectorFrames(ct[0], r.Y, ct[2], paneHeight, p.shown(), p.inset(), top, sidebarDivider())
 		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
-		p.sash.SetVisible(!p.hidden)
+		p.sash.SetVisible(!p.hidden && !p.fixed)
 		syncInspector(p.c, bg, l.overlay)
 		ct = rest
 	}

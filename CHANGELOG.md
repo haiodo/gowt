@@ -4,6 +4,7 @@
 
 - Added: a QA build with no `reset` handler logs one line saying so. `qatest.App` ignores the refusal, so
   an app without `reset` carried its windows and models from test to test with no other sign.
+- New: `look.SetInspectorFixed(w, on)` keeps an inspector's width where it is: the edge does not drag, arrow keys on it do nothing and the pointer keeps its shape there, while `SetInspectorWidth` still sets it. `gowt.NoHScroll()` leaves `gowt.Scroll` a vertical bar only.
 
 ## v0.15.3 (2026-11-04)
 

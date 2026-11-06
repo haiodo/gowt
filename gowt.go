@@ -469,6 +469,10 @@ func CellSelect() Option { return style{id: sCellSelect, clear: swt.FULL_SELECTI
 // Text or StyledText; it wins over Border in either order.
 func NoBorder() Option { return style{id: sNoBorder, clear: swt.BORDER} }
 
+// NoHScroll drops the horizontal bar of a Scroll, which then scrolls vertically only; it wins over
+// Scrollbars in either order.
+func NoHScroll() Option { return style{id: sNoHScroll, clear: swt.H_SCROLL} }
+
 // Search makes a Text a search field with a magnifier icon and a clear button.
 func Search() Option {
 	return style{id: sSearch, set: swt.SEARCH | swt.ICON_SEARCH | swt.ICON_CANCEL}

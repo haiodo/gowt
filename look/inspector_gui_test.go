@@ -186,6 +186,57 @@ func TestInspectorPostedDrag(t *testing.T) {
 	}
 }
 
+// SetInspectorFixed keeps the width: the edge sends no resize, also for the arrow keys, and a rebuilt
+// inspector keeps it, while SetInspectorWidth still sets it.
+func TestInspectorFixed(t *testing.T) {
+	inspectorWindow(t, false, func(app *gowt.App, w *gowt.Window, _, content, insp *gowt.Panel) {
+		var changes []string
+		look.OnInspectorChange(w, func(visible bool, width int) { changes = append(changes, fmt.Sprint(visible, width)) })
+		send := func(sash *swt.Sash, typ int32, x int32) {
+			e := swt.NewEvent()
+			e.X, e.Y, e.Button = x, sash.GetBounds().Y, 1
+			sash.NotifyListeners(typ, e)
+		}
+		sash := inspectorSash(w, insp)
+		look.SetInspectorFixed(w, true)
+		app.Flush()
+		if sash.GetVisible() {
+			t.Error("a fixed inspector keeps its sash")
+		}
+		send(sash, swt.MouseDown, 0)
+		send(sash, swt.Selection, sash.GetBounds().X-80)
+		send(sash, swt.MouseUp, 0)
+		app.Flush()
+		if got := look.InspectorWidth(w); got != 260 {
+			t.Errorf("a fixed inspector was dragged to %d, want 260", got)
+		}
+		if len(changes) != 0 {
+			t.Errorf("changes with the inspector fixed: %v", changes)
+		}
+
+		look.SetInspectorWidth(w, 300)
+		app.Flush()
+		if got := look.InspectorWidth(w); got != 300 || insp.Unwrap().GetBounds().Width != 300 {
+			t.Errorf("SetInspectorWidth: width %d, laid out %d, want 300", got, insp.Unwrap().GetBounds().Width)
+		}
+		if want := "[true 300]"; fmt.Sprint(changes) != want {
+			t.Errorf("changes %v, want %s", changes, want)
+		}
+
+		look.SetInspector(w, content, insp, 300)
+		w.Unwrap().Layout()
+		if inspectorSash(w, insp).GetVisible() {
+			t.Error("SetInspector on a fixed inspector built a draggable sash")
+		}
+
+		look.SetInspectorFixed(w, false)
+		app.Flush()
+		if !inspectorSash(w, insp).GetVisible() {
+			t.Error("an unfixed inspector has no sash")
+		}
+	})
+}
+
 // Sidebar, content and inspector side by side: each pane hides on its own, a drag of either edge
 // leaves the content 200 points, and the window minimum counts both panes.
 func TestInspectorWithSidebar(t *testing.T) {

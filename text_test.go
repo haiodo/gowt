@@ -112,6 +112,15 @@ func TestNoBorderClearsDefault(t *testing.T) {
 	}
 }
 
+func TestNoHScrollClearsDefault(t *testing.T) {
+	if got := resolve(swt.V_SCROLL|swt.H_SCROLL, []Option{NoHScroll()}); got != swt.V_SCROLL {
+		t.Errorf("NoHScroll: %#x, want V_SCROLL", got)
+	}
+	if got := resolve(swt.V_SCROLL|swt.H_SCROLL, []Option{Scrollbars(), NoHScroll()}); got != swt.V_SCROLL {
+		t.Errorf("NoHScroll after Scrollbars: %#x, want V_SCROLL", got)
+	}
+}
+
 func TestColAtX(t *testing.T) {
 	widths, order := []int{100, 50, 80}, []int{2, 0, 1} // column 2 is shown first
 	cases := []struct{ scroll, x, want int }{

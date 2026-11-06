@@ -279,7 +279,7 @@ type ScrollView struct {
 }
 
 // Scroll creates a scrolled area whose children stack as in a VBox; Border() draws a frame.
-// Options: Border, Gap, Padding, children.
+// Options: Border, NoHScroll, Gap, Padding, children.
 func Scroll(opts ...Option) Option {
 	return &node{"Scroll", func(h host) Widget {
 		s := swt.NewScrolledComposite(h.into(), resolve(swt.V_SCROLL|swt.H_SCROLL, opts))
@@ -293,7 +293,7 @@ func Scroll(opts ...Option) Option {
 		s.SetExpandVertical(true)
 		w := &ScrollView{base{&s.Control}, s, &Panel{newPanel(body)}}
 		w.watchRows()
-		finish(w, sBorder, opts)
+		finish(w, sBorder|sNoHScroll, opts)
 		w.Fit()
 		return w
 	}}

@@ -204,7 +204,7 @@ jobs:
           if-no-files-found: ignore
 
   checks:
-    name: xcheck, api-check, licence-check and docs-counts
+    name: xcheck, api-check, licence-check, docs-counts and map-check
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -212,7 +212,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
-      - run: make xcheck api-check licence-check docs-counts
+      - run: make xcheck api-check licence-check docs-counts map-check
 
   # Committed swt/, jface/, browser/, tests/ and examples/ equal what make gen produces on all three platforms.
   gen-check:

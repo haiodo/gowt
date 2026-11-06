@@ -50,7 +50,7 @@ QA focus on macOS: first responder of an inactive app's window, FocusIn/FocusOut
 docs/qa.md: actions, dialogs and Eventually
 ```
 
-A body is welcome when the reason is not obvious from the diff. A change to the facade API updates `tooling/apidump/facade-api.txt` (`go run ./tooling/apidump -facade -update`) and the page of [docs/](docs/README.md) that describes it.
+A body is welcome when the reason is not obvious from the diff. A change to the facade API updates `tooling/apidump/facade-api.txt` (`go run ./tooling/apidump -facade -update`) and the page of [docs/](docs/README.md) that describes it. A feature change updates its row - and the `Packages:` list, when it adds a package - in [docs/code-map.md](docs/code-map.md) (`make map-check` verifies the map).
 
 ## Bugs
 

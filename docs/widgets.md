@@ -210,4 +210,3 @@ gowt.VBox(
 ## Known limits
 
 - There is no widget font API yet; use `Unwrap()` ([swt-direct.md](swt-direct.md)).
-- Table and Tree on macOS use the older cell-based NSTableView/NSOutlineView; the view-based kind (custom cell views) is not started, see [view-based-table.md](view-based-table.md).

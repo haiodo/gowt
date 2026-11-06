@@ -16,7 +16,7 @@ BIN  := bin
 
 .DEFAULT_GOAL := help
 
-.PHONY: shot-sizes check-gui check-gui-list docs-counts docs-shots docs-shots-apps vm-docs-shots-windows vm-docs-shots-linux win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% app-monitor help $(CMDS)
+.PHONY: shot-sizes check-gui check-gui-list docs-counts map-check docs-shots docs-shots-apps vm-docs-shots-windows vm-docs-shots-linux win-docs-shots linux-docs-shots gen-check webkit-gen test-webview-linux consumer-check app jfacetest test-jface test-jface-update gtk-gen winmanifest win-build win-testkit win-probe win-hello win-swttest win-swttest-update win-snap-check win-snap-update all gen build release release-sizes-update vet test check xcheck examples-check api-check qa-check licence-check clean test-swt test-swt-update snap-check snap-update run-% app-monitor help $(CMDS)
 
 # Plain make lists the targets; a rule with "## text" gets that text in the list.
 help:
@@ -68,11 +68,16 @@ vet: ## go vet ./...
 test: ## go test ./...
 	go test ./...
 
-check: vet test xcheck examples-check api-check qa-check licence-check docs-counts ## all local gates
+check: vet test xcheck examples-check api-check qa-check licence-check docs-counts map-check ## all local gates
 
 # README.md and docs/platforms.md test tables must equal the counts in tests/expected*.txt (prints the expected row).
 docs-counts: ## check the test tables in README and docs
 	go run ./tooling/doccounts
+
+# docs/code-map.md repository paths, Markdown links and package coverage must hold (map rows and
+# Packages: lists are curated by hand; the tool only checks them).
+map-check: ## validate the feature-to-code map
+	go run ./tooling/mapcheck
 
 # Every catalog sample and every app shot has the same image size on macOS, Windows and Linux (also part of go test with macOS left out).
 shot-sizes:

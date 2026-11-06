@@ -10,10 +10,20 @@ family (`_manual*.go`, `_darwin/_linux/_windows` bases); they do not list genera
 parts. A `*` in a cell marks a glob over one such family. Where a feature has no platform,
 test or example split of its own, the cell says `-`.
 
+Sections that own Go packages of their own name them in a `Packages:` line
+(Layouts, Widgets, Dialogs and menus, Clipboard and drag and drop and Printing
+own none - their code lives in `gowt`, `swt` and `jface`, listed by the owning
+sections). `make map-check` (`tooling/mapcheck`) verifies the paths and links
+of this map and that the curated package lists cover every package of the
+repository (the union of `go list` over darwin, windows and linux). The tool
+only checks the map; rows and package lists stay hand-curated.
+
 ## Facade
 
 Package `gowt`, the hand-written layer documented in [facade.md](facade.md).
 Primary files are in the repository root.
+
+Packages: `.`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
@@ -79,6 +89,8 @@ Facade widget families; the view types end in `View`. SWT widget classes are in
 
 Package `look`: window material, sidebar and inspector layouts, glass, window drag.
 
+Packages: `look`, `internal/fluent` (the Windows look helpers).
+
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Window backdrop, material, corners, dark content | `look/look.go` | `look/look_{darwin,linux,windows,other}.go` | `look/material_*_test.go`, `look/glass*_test.go` | `cmd/glassdemo`, `cmd/backdropdemo`; [cross-platform-look.md](cross-platform-look.md), [theme-look.md](theme-look.md) |
@@ -86,10 +98,13 @@ Package `look`: window material, sidebar and inspector layouts, glass, window dr
 | Inspector controls, fields, search | `look/inspector_flat.go` | - | `look/inspector_*_gui_darwin_test.go` | `examples/catalog` |
 | Window drag by background | `look/windowdrag.go` | `look/windowdrag_{darwin,linux,windows}.go` | `look/toolbar_diag_*_test.go` | [theme-look.md](theme-look.md) |
 | Glass button, icon button, caret | `look/look.go`, `look/toolbar.go` | - | `look/glass*_gui*_test.go`, `look/caret_gui_test.go`, `look/iconbutton_gui_darwin_test.go` | `cmd/glassdemo` |
+| Windows Fluent look helpers | `internal/fluent/` | windows only | `internal/fluent/glass_windows_test.go`, `internal/fluent/palette_windows_test.go` | - |
 
 ## icons
 
 Package `icons`: named system icons plus the embedded Lucide set.
+
+Packages: `icons`, `icons/lucide`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
@@ -100,6 +115,8 @@ Package `icons`: named system icons plus the embedded Lucide set.
 
 Package `svg`: optional SVG rasterizer plugged into `swt.Image`.
 
+Packages: `svg`.
+
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | SVG loading and rasterizing for `swt.Image` | `svg/svg.go`, `swt/graphics_svg_manual.go` | - | `svg/svg_test.go`, `svg/example_test.go` | [icons.md](icons.md) |
@@ -108,6 +125,8 @@ Package `svg`: optional SVG rasterizer plugged into `swt.Image`.
 ## rx
 
 Package `rx`: reactive state (Svelte 5 style).
+
+Packages: `rx`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
@@ -122,9 +141,11 @@ Files keep the Java class name: `widgets_<class>[_<platform>].go`,
 `accessibility_*`, `custom_*`, `browser_*`, `internal_*`. Unsuffixed files are shared;
 `*_manual*.go` are hand-written.
 
+Packages: `swt`, `swt/swtreflect`.
+
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
-| Widget classes (Button, Label, Table, Tree, ToolBar, Shell, Display, ...) | `swt/widgets_<class>_*.go` | the `_darwin/_linux/_windows` part of the same family | `tests/swttests/junit_test_org_eclipse_swt_widgets_*.go` | [swt-direct.md](swt-direct.md), `examples/swtdirect` |
+| Widget classes (Button, Label, Table, Tree, ToolBar, Shell, Display, ...) | `swt/widgets_<class>_*.go` | the per-OS part of the same family | `tests/swttests/junit_test_org_eclipse_swt_widgets_*.go` | [swt-direct.md](swt-direct.md), `examples/swtdirect` |
 | Tree / Table (view-based rewrite, macOS default) | `swt/widgets_tree_*.go`, `swt/widgets_table_*.go` | same families; `swt/widgets_tree_manual_linux.go`, `swt/widgets_table_manual_darwin.go` | `tests/swttests/junit_test_org_eclipse_swt_widgets_{tree,table}*.go` | [view-based-table.md](view-based-table.md) |
 | StyledText and custom widgets | `swt/custom_*.go` | per-platform parts of the same families | `tests/swttests/junit_test_org_eclipse_swt_custom_*.go` | `examples/styledtext` |
 | Graphics classes (Image, GC, TextLayout, Path, Transform, ...) | `swt/graphics_<class>_*.go` | per-platform parts; `swt/graphics_imagecodec_manual.go` (codecs) | `tests/swttests/junit_test_org_eclipse_swt_graphics_*.go` | [graphics.md](graphics.md) |
@@ -140,6 +161,8 @@ Files keep the Java class name: `widgets_<class>[_<platform>].go`,
 `syscall.SyscallN`), `internal/gtk` (GTK 3/GLib/Pango/cairo, purego, GIR-generated),
 `internal/webkit` (WebKitGTK 4.1, GIR-generated). Architecture: [internals.md](internals.md).
 
+Packages: `internal/cocoa`, `internal/win32`, `internal/gtk`, `internal/webkit`, `internal/jrt`, `internal/dbus`.
+
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | AppKit bindings | `internal/cocoa/cocoa_<type>.go`, `internal/cocoa/*_manual.go` | darwin only | per-file `*_test.go` | [internals.md](internals.md) |
@@ -152,6 +175,8 @@ Files keep the Java class name: `widgets_<class>[_<platform>].go`,
 ## gfx
 
 Package `gfx` and subpackages: retained-mode scene graph and renderers.
+
+Packages: `gfx`, `gfx/cg`, `gfx/cairo`, `gfx/d2d`, `gfx/internal/cache`, `gfx/internal/fonttest`, `gfx/internal/pdftest`, `gfx/layout`, `gfx/offscreen`, `gfx/pdf`, `gfx/pen`, `gfx/printing`, `gfx/synth`, `gfx/view`, `internal/pdfcheck`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
@@ -179,6 +204,8 @@ Package `gfx` and subpackages: retained-mode scene graph and renderers.
 
 Hand-written system web view over the native engines ([webview-browser.md](webview-browser.md)).
 
+Packages: `webview`.
+
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | WebView facade API, navigation, scripts | `webview/webview.go`, `webview/optional.go` | `webview/webview_{darwin,linux,windows}.go` | `webview/webview_gui_test.go` | `cmd/webviewdemo`, `cmd/minibrowser` |
@@ -190,6 +217,8 @@ Hand-written system web view over the native engines ([webview-browser.md](webvi
 
 SWT `Browser`, translated; the engine bridge is `browser/webbrowser_manual.go`.
 
+Packages: `browser`.
+
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Browser widget and listeners | `browser/browser_browser.go`, `browser/browser_*listener*.go` | per-engine bridge in `browser/webbrowser_manual.go` | `browser/webbrowser_manual_test.go`, `tests/swttests/junit_test_org_eclipse_swt_browser_browser.go` | [webview-browser.md](webview-browser.md), `examples/browser` |
@@ -198,6 +227,8 @@ SWT `Browser`, translated; the engine bridge is `browser/webbrowser_manual.go`.
 
 Translated slice of JFace: layout factories, widget factories, dialogs.
 One source for every OS; see [jface.md](jface.md).
+
+Packages: `jface`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
@@ -210,6 +241,8 @@ One source for every OS; see [jface.md](jface.md).
 
 The QA driver: server in the app, tree walker, view overlay, test client.
 
+Packages: `qa`, `qa/qatest`, `internal/qatree`, `internal/qaview`.
+
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | QA server, handlers, dialog | `qa/qa.go`, `qa/server.go`, `qa/reg.go`, `qa/dialog.go`, `qa/off.go` | `qa/qatest/` client | `qa/` via `make qa-check`, `qatree_*_gui_test.go` | [qa.md](qa.md), `examples/qa` |
@@ -220,18 +253,22 @@ The QA driver: server in the app, tree walker, view overlay, test client.
 
 Regression gates and translated suites; flow in [internals.md](internals.md).
 
+Packages: `tests/swttests`, `tests/jfacetests`, `internal/shot`, `internal/snapcmp`, `internal/junit`.
+
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | SWT translated suites | `tests/swttests/` | - | `make test-swt` against `tests/expected*.txt` | [internals.md](internals.md), `tests/RESULTS.md` |
 | JFace translated suites | `tests/jfacetests/` | - | `make test-jface` against `tests/expected_jface*.txt` | [internals.md](internals.md) |
 | ControlExample snapshots | `tests/snapshots*/` | per-OS snapshot dirs | `make snap-check` | [internals.md](internals.md) |
-| GUI tests (facade, look, gfx) | `*_gui_test.go` in root, `look/`, `gfx/` | per-OS `_gui_darwin_test.go` etc. | `make check-gui` (GOWT_GUI_TEST=1) | [qa.md](qa.md) |
+| GUI tests (facade, look, gfx) | `*_gui_test.go` in root, `look/`, `gfx/` | per-OS variants such as `look/glass_gui_darwin_test.go` | `make check-gui` (GOWT_GUI_TEST=1) | [qa.md](qa.md) |
 | Window capture, PNG compare | `internal/shot/`, `internal/snapcmp/` | per-OS capture | their `*_test.go` | - |
 
 ## Generators
 
 Everything that writes committed code; rules and flow in [internals.md](internals.md)
 and `tooling/j2go/README.md`.
+
+Packages: `tooling/apidump`, `tooling/assoc`, `tooling/darwin`, `tooling/demovideo`, `tooling/doccounts`, `tooling/fieldreport`, `tooling/girgen`, `tooling/mapcheck`, `tooling/mksyso`, `tooling/testexec`, `tooling/webkitgen`, `winmanifest`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
@@ -242,3 +279,13 @@ and `tooling/j2go/README.md`.
 | Windows manifest objects | `tooling/mksyso/`, `winmanifest/` | windows | `make winmanifest` | [internals.md](internals.md) |
 | Port/test helpers | `tooling/port.sh`, `tooling/testexec/`, `tooling/swtdiff.py`, `tooling/swtvmexpected.py` | - | `make test-swt`, `make test-swt-update` | [internals.md](internals.md) |
 | Doc test-count gate | `tooling/doccounts/` | - | `make docs-counts` | [platforms.md](platforms.md) |
+| Code map gate | `tooling/mapcheck/` | - | `go test ./tooling/mapcheck/`, `make map-check` | this file |
+
+## Commands and example apps
+
+The demo and tool programs in `cmd/` and the sample apps in `examples/`. The
+apps are documented one by one in [apps.md](apps.md); `cmd/fieldcheck` pairs
+with [field-check.md](field-check.md). Feature demos are linked from the
+sections above.
+
+Packages: `cmd/backdropdemo`, `cmd/controlexample`, `cmd/fieldcheck`, `cmd/finderdemo`, `cmd/form`, `cmd/glassdemo`, `cmd/gowtdemo`, `cmd/hello`, `cmd/hellogowt`, `cmd/icondemo`, `cmd/images`, `cmd/jfacedemo`, `cmd/minibrowser`, `cmd/paint`, `cmd/snapcheck`, `cmd/stack`, `cmd/swttest`, `cmd/themecheck`, `cmd/tree`, `cmd/webviewdemo`, `cmd/widgets2`, `cmd/winprobe`, `examples/apps/chat`, `examples/apps/dashboard`, `examples/apps/editor`, `examples/apps/files`, `examples/apps/internal/kit`, `examples/apps/mail`, `examples/apps/monitor`, `examples/apps/monitor/sampler`, `examples/apps/settings`, `examples/apps/tracker`, `examples/boundary`, `examples/browser`, `examples/catalog`, `examples/clipboard`, `examples/controlexample`, `examples/controlexample/res`, `examples/dialogs`, `examples/dnd`, `examples/events`, `examples/gfxcanvas`, `examples/gfxeditor`, `examples/gfxpng`, `examples/graphics`, `examples/hello`, `examples/icons`, `examples/jface`, `examples/layouts`, `examples/materialpanel`, `examples/openfiles`, `examples/print`, `examples/qa`, `examples/quit`, `examples/rows`, `examples/sidebartable`, `examples/styledtext`, `examples/swtdirect`, `examples/theme`, `examples/webview`, `examples/widgets`.

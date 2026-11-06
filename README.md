@@ -180,14 +180,7 @@ JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts a
 
 <img src="docs/img/art/readme-gaps.png" alt="Gopher repairing a bridge with missing planks" width="160" align="right">
 
-- Windows runs on a real Windows 11 arm64 (UTM virtual machine) and under Wine (CrossOver). Not checked: Mica, Acrylic and rounded corners by eye, a machine with two monitors (the VM has one display), the QA driver beyond the `qa/qatest` suite. Per-monitor DPI changes while running are not handled by the port itself; they use upstream SWT code and are untested.
-- CI (GitHub Actions) builds and vets for darwin, linux and windows on amd64 and arm64, and runs the GUI gates (swt, jface, unit and GUI tests) on Linux under Xvfb; Linux was also run on a real GNOME Wayland desktop. Hosted `windows-latest` and `macos-latest` runners build, vet and run the non-GUI tests; their GUI tests are a separate job that is allowed to fail, since a desktop session on those runners is unverified (the workflow has not been run yet). The swt and jface gates for macOS and Windows run locally and on the VM.
-- Linux: GTK 3 only.
-- `Browser` does not support the Authentication event; see [docs/webview-browser.md](docs/webview-browser.md) for the rest.
-- Clipboard, drag and drop and `StyledText` are in the facade (`App.Clipboard`, `DragFrom`/`DropOn`, `StyledText`). Not verified: drag and drop with a real mouse on macOS (checked on Linux and Windows); cross-application clipboard transfer (the peer-process SWT tests are skipped); `StyledText` style rendering on macOS (upstream tests skipped). `Accessible` is a stub on all three OSes.
-- macOS Table and Tree use the cell-based AppKit views.
-
-More: [docs/platforms.md](docs/platforms.md). How the repository and the translator work: [docs/internals.md](docs/internals.md).
+- Known gaps, unverified platform items and how CI covers the three OSes: [docs/platforms.md](docs/platforms.md).
 
 Contributing (build, tests, generated code, DCO sign-off): [CONTRIBUTING.md](CONTRIBUTING.md). To help test on a real Windows, Linux or Mac: [docs/field-check.md](docs/field-check.md).
 

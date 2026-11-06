@@ -1,10 +1,13 @@
 # Changelog
 
-## Unreleased
+## v0.15.4 (2026-11-07)
 
-- Added: a QA build with no `reset` handler logs one line saying so. `qatest.App` ignores the refusal, so
-  an app without `reset` carried its windows and models from test to test with no other sign.
+- Added: a QA build with no `reset` handler logs one line saying so. `qatest.App` ignores the refusal, so an app without `reset` carried its windows and models from test to test with no other sign.
 - New: `look.SetInspectorFixed(w, on)` keeps an inspector's width where it is: the edge does not drag, arrow keys on it do nothing and the pointer keeps its shape there, while `SetInspectorWidth` still sets it. `gowt.NoHScroll()` leaves `gowt.Scroll` a vertical bar only.
+- New: `AccessibleLabel(s)` now reaches native accessibility names on macOS, Windows and Linux. Common controls have native checks for roles, values, focus and actions through AppKit, MSAA/UI Automation and ATK.
+- Changed: `j2go` and `girgen` split generated Cocoa, Win32, SWT, translated-test and GTK bindings into deterministic declaration-aware method and family parts. Public API and generation gates are unchanged.
+- Fixed: PNG encoding uses `PaletteData` channel masks for direct `ImageData`, including native clipboard images with non-RGB channel order.
+- Tests: real OS-pointer drag and drop covers accepted and rejected text and file drops, URLs and cancellation. A separate clipboard process covers copy, paste, clear and ownership loss; Windows, Linux and macOS clipboard suites pass. macOS posted-event drag and drop still needs Accessibility permission.
 
 ## v0.15.3 (2026-11-04)
 

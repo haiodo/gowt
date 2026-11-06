@@ -44,8 +44,13 @@ func TestTreeEditTextCentred(t *testing.T) {
 					t.Errorf("editor %v, row %v: the field must hug the row", bounds, row)
 				}
 				// The dark pixels of the value, in field points: the row's own text is covered by the
-				// editor, so what is left is the editing text.
+				// editor, so what is left is the editing text. No field editor means the edit has not
+				// started (a race), not a geometry defect - say so instead of measuring a settled cell.
 				view := field.View
+				if cocoa.Msg(view.Id, "currentEditor") == 0 {
+					t.Fatal("no field editor yet: the tree edit has not started")
+				}
+				scale := cocoa.BackingScale(view)
 				area := view.Bounds()
 				rep := view.BitmapImageRepForCachingDisplayInRect(area)
 				view.CacheDisplayInRect(area, rep)
@@ -54,8 +59,8 @@ func TestTreeEditTextCentred(t *testing.T) {
 					for x := int64(0); x < rep.PixelsWide(); x++ {
 						c := rep.ColorAtX(x, y)
 						if c.AlphaComponent() > 0.5 && c.RedComponent() < 0.3 && c.GreenComponent() < 0.3 && c.BlueComponent() < 0.3 {
-							top = math.Min(top, float64(y)/2)
-							bottom = math.Max(bottom, float64(y)/2)
+							top = math.Min(top, float64(y)/scale)
+							bottom = math.Max(bottom, float64(y)/scale)
 						}
 					}
 				}

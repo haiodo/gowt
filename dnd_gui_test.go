@@ -119,7 +119,7 @@ type urlSourceListener struct {
 	note func(string, ...any)
 }
 
-func (l urlSourceListener) DragStart(e *swt.DragSourceEvent)    {}
+func (l urlSourceListener) DragStart(e *swt.DragSourceEvent)    { l.note("url start") }
 func (l urlSourceListener) DragSetData(e *swt.DragSourceEvent)  { e.Data = l.url }
 func (l urlSourceListener) DragFinished(e *swt.DragSourceEvent) { l.note("url done %d", e.Detail) }
 
@@ -130,7 +130,10 @@ type urlTargetListener struct {
 	note func(string, ...any)
 }
 
-func (l *urlTargetListener) DragEnter(e *swt.DropTargetEvent)            { urlChooseOp(e) }
+func (l *urlTargetListener) DragEnter(e *swt.DropTargetEvent) {
+	l.note("url enter %d %d", e.Detail, e.Operations)
+	urlChooseOp(e)
+}
 func (l *urlTargetListener) DragOperationChanged(e *swt.DropTargetEvent) { urlChooseOp(e) }
 
 func urlChooseOp(e *swt.DropTargetEvent) {
@@ -147,6 +150,9 @@ func urlChooseOp(e *swt.DropTargetEvent) {
 }
 
 func (l *urlTargetListener) DragOver(e *swt.DropTargetEvent) { l.note("url over") }
+func (l *urlTargetListener) DropAccept(e *swt.DropTargetEvent) {
+	l.note("url accept %d", e.Detail)
+}
 
 func (l *urlTargetListener) Drop(e *swt.DropTargetEvent) {
 	if s, ok := e.Data.(string); ok {
@@ -303,6 +309,8 @@ func TestDndRealMouseScenarios(t *testing.T) {
 				rejectedTo := pointer(app, swt.Point{X: emptyP.X, Y: emptyP.Y})
 				cancelFrom, cancelTo := pointer(app, row(f.src, 1)), pointer(app, row(f.dst, 0))
 				urlFrom, urlTo := pointer(app, center(f.urlSrc)), pointer(app, center(f.urlDst))
+				screenW, screenH := app.ScreenSize()
+				t.Logf("dnd window=%v screen=%dx%d url=%v->%v", f.w.Unwrap().GetBounds(), screenW, screenH, urlFrom, urlTo)
 				go func() {
 					defer app.Async(func() { f.w.Close() })
 					mark := func() {

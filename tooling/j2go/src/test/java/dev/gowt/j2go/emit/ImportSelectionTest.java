@@ -28,6 +28,18 @@ class ImportSelectionTest {
 	}
 
 	@Test
+	void occurrencesInsideLiteralsAndCommentsDoNotKeepTheImport() {
+		assertFalse(Emitter.referencesPackage("jrt.SetProperty(\"org.eclipse.swt.internal.win32.Edge.timeout\", x)", "swt"),
+				"a property-name string is not a package use");
+		assertFalse(Emitter.referencesPackage("\treturn \"swt.DEFAULT\"\n", "swt"), "a string literal is not a package use");
+		assertFalse(Emitter.referencesPackage("// the swt.DEFAULT sentinel\nx := 1\n", "swt"), "a comment is not a package use");
+		assertFalse(Emitter.referencesPackage("\tpath := `org.eclipse.swt` + name\n", "swt"), "a raw literal is not a package use");
+		assertFalse(Emitter.referencesPackage("\tr := 'x' // 'swt.' in a comment\n", "swt"));
+		assertTrue(Emitter.referencesPackage("\tjrt.SetProperty(k, \"x\") /* c */ ; _ = swt.DEFAULT\n", "swt"),
+				"a real selector still matches outside literals");
+	}
+
+	@Test
 	void importSetSelectionDropsFalsePositivesOnly() {
 		Set<String> imps = Emitter.referencedImports(Set.of("os", "fmt"),
 				"r, _, _ := syscall.SyscallN(proc_OSGetCaretPos.addr(), uintptr(p))\n\tfmt.Println(r)\n");

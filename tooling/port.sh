@@ -351,7 +351,10 @@ if [ "$PLATFORM" = gtk ]; then
 fi
 # win32: the vtable base of the COM objects DnD and Accessible subclass; COMObject is translated into package swt with its subclasses (GoTypes.goPackageDir).
 [ "$PLATFORM" != win32 ] || SWT_FILES+=(org/eclipse/swt/internal/ole/win32/COMObject.java)
-"${J2GO[@]}" \
+# SWT classes (shared and platform) join the PI bindings in the declaration-aware layout (roadmap
+# TSK-05): units over --part-target lines split into named method parts, small units stay
+# byte-identical single files.
+"${J2GO[@]}" --part-target 800 \
 	"${SWT_FILES[@]}" \
 	-- \
 	org/eclipse/swt/internal/C.java \
@@ -359,8 +362,8 @@ fi
 
 # gtk: internal/gtk is generated from GIR by tooling/girgen (make gtk-gen), not translated from PI sources.
 if [ "$PLATFORM" != gtk ]; then
-	# The PI bindings are the largest generated files; this is the only invocation that opts into
-	# declaration-aware part files (roadmap TSK-04). SWT/examples/tests stay single-file until their slice.
+	# The PI bindings opted into declaration-aware part files first (roadmap TSK-04); the SWT and
+	# translated-test invocations below join them (TSK-05). Examples/jface/browser stay single-file.
 	"${J2GO[@]}" --part-target 800 \
 		org/eclipse/swt/internal/C.java \
 		"${PI_FILES[@]}"
@@ -391,10 +394,59 @@ CE_OLD='scrollComposite.SetMinSize(this.tabFolder.ComputeSize(r.Width, swt.DEFAU
 grep -qF "$CE_OLD" "$CE_GO" || grep -qF 'ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false)' "$CE_GO" || { echo "port.sh: ControlExample resize listener not found in $CE_GO" >&2; exit 1; }
 CE_OLD="$CE_OLD" perl -0pi -e 's/\Q$ENV{CE_OLD}\E/scrollComposite.SetMinSize(this.tabFolder.ComputeSizeWHintHHintChanged(r.Width, swt.DEFAULT, false))/' "$CE_GO"
 
+# The method-body rewrites below patch generated methods. Declaration-aware splitting (roadmap
+# TSK-05) moves a large class's methods out of the base file into part files
+# (<stem>_<method>[_<goos>].go), so each rewrite resolves the file owning its target declaration
+# instead of naming one file. An anchor is a line-anchored ERE matching the Go declaration (a
+# method's func line, a type decl); an anchor matching zero files or more than one is a hard
+# failure, and each rewrite still counts its insertions (exactly once each).
+# Usage: OWNER=$(swt_owner <shared|platform> <stem> <anchor>) for one declaration, or
+# OWNERS=$(swt_owner <scope> <stem> <anchor>...) + "read -ra A <<<"$OWNERS"" for a rewrite
+# spanning several methods. <scope> selects the file set: shared = the base file and parts without
+# a GOOS suffix (one platform's generation owns them, they build everywhere); platform = the base
+# file and parts ending in _<$GOOS_NAME>.go (swt/ holds every platform's files at once - an
+# unscoped anchor would match them all). Output is space-separated (generated file names contain
+# no whitespace); manual files are never matched.
+swt_owner() { # <shared|platform> <stem> <anchor-ERE>...
+	local scope=$1 stem=$2; shift 2
+	local -a files=()
+	local f a
+	for f in "swt/$stem.go" swt/"$stem"_*.go; do
+		[ -f "$f" ] || continue
+		case "$f" in *_manual*) continue ;; esac
+		case "$scope" in
+			shared) case "$f" in *_darwin.go | *_windows.go | *_linux.go) continue ;; esac ;;
+			*) case "$f" in *_"$GOOS_NAME".go) ;; *) continue ;; esac ;;
+		esac
+		files+=("$f")
+	done
+	[ "${#files[@]}" -gt 0 ] || { echo "port.sh: no $scope generated files for swt/$stem" >&2; return 1; }
+	local -a owners=()
+	for a in "$@"; do
+		local hits
+		hits=$(grep -lE "$a" "${files[@]}" || true)
+		[ "$(printf '%s\n' "$hits" | grep -c .)" = 1 ] || {
+			echo "port.sh: declaration /$a/ in swt/$stem* matched [$(printf '%s ' "$hits")] - not exactly one owner" >&2
+			return 1
+		}
+		owners+=("$hits")
+	done
+	printf '%s\n' "${owners[@]}" | sort -u | paste -sd' ' -
+}
+
+# Matching lines total across the owner files of one rewrite (methods of a split class can land in
+# different parts).
+owner_grep_count() { # <BRE> <file>...
+	local pat=$1; shift
+	grep -h "$pat" "$@" | wc -l | tr -d ' '
+}
+
 # StyledText.reset (setText) places the caret, which lays out the caret's line at the wrap width. A WRAP StyledText not
 # sized yet wraps at 1 pixel, a glyph per line: that layout was half the cost of creating a chat row with a StyledText.
 # handleResize places the caret again once the width is known, so reset leaves it to handleResize while there is no width.
-ST_GO=swt/custom_styledtext.go
+# (void methods carry a double space before the brace in freshly emitted, not yet gofmt'd text:
+# Reset()  { - anchors must not assume gofmt spacing.)
+ST_GO=$(swt_owner shared custom_styledtext '^func \(this \*StyledText\) Reset\(\) +\{')
 perl -0pi -e 's/(\tthis\.ResetCacheFirstLineCount\(0, 0\)\n)\tthis\.SetCaretLocations\(\)\n/$1\tif !this.wordWrap || this.clientAreaWidth > 0 {\n\t\tthis.SetCaretLocations()\n\t}\n/' "$ST_GO"
 [ "$(grep -c 'if !this.wordWrap || this.clientAreaWidth > 0 {' "$ST_GO")" = 1 ] || { echo "port.sh: StyledText.reset caret rewrite did not apply" >&2; exit 1; }
 
@@ -402,15 +454,17 @@ perl -0pi -e 's/(\tthis\.ResetCacheFirstLineCount\(0, 0\)\n)\tthis\.SetCaretLoca
 # canBecomeKeyView, which is NO in a hidden subtree, and print draws through the view: both show such views first
 # (swt/widgets_reveal_manual_darwin.go), so Tab, setFocus and print work as without the hiding.
 if [ "$PLATFORM" = cocoa ]; then
-	RV_GO=swt/widgets_control_darwin.go
-	perl -0pi -e 's/(\tvar focusView \*cocoa\.NSView = this\.impl\.focusView_\(\)\n)(?!\trevealForFocus)(\tif !focusView\.CanBecomeKeyView\(\) \{\n)/$1\trevealForFocus(this)\n$2/; s/(\t\}\n)(?!\tdefer revealForPrint)(\tthis\.View\.DisplayRectIgnoringOpacity\(this\.View\.Bounds\(\), gc\.Handle\)\n\treturn true\n)/$1\tdefer revealForPrint(this)()\n$2/' "$RV_GO"
-	[ "$(grep -c 'revealForFocus(this)' "$RV_GO")" = 1 ] && [ "$(grep -c 'defer revealForPrint(this)()' "$RV_GO")" = 1 ] || { echo "port.sh: Control reveal rewrite did not apply" >&2; exit 1; }
+	RV_FOCUS_GO=$(swt_owner platform widgets_control '^func \(this \*Control\) ForceFocus\(\) bool \{')
+	RV_PRINT_GO=$(swt_owner platform widgets_control '^func \(this \*Control\) print_\(gc \*GC\) bool \{')
+	perl -0pi -e 's/(\tvar focusView \*cocoa\.NSView = this\.impl\.focusView_\(\)\n)(?!\trevealForFocus)(\tif !focusView\.CanBecomeKeyView\(\) \{\n)/$1\trevealForFocus(this)\n$2/' "$RV_FOCUS_GO"
+	perl -0pi -e 's/(\t\}\n)(?!\tdefer revealForPrint)(\tthis\.View\.DisplayRectIgnoringOpacity\(this\.View\.Bounds\(\), gc\.Handle\)\n\treturn true\n)/$1\tdefer revealForPrint(this)()\n$2/' "$RV_PRINT_GO"
+	[ "$(grep -c 'revealForFocus(this)' "$RV_FOCUS_GO")" = 1 ] && [ "$(grep -c 'defer revealForPrint(this)()' "$RV_PRINT_GO")" = 1 ] || { echo "port.sh: Control reveal rewrite did not apply" >&2; exit 1; }
 fi
 
 # Group.computeTrim (cocoa) re-measures the NSBox natively on each layout; swt/widgets_group_manual_darwin.go caches the
 # frame-minus-content offset by title text and font. The Java body cannot be split out via manual.txt, so the block is rewritten.
 if [ "$PLATFORM" = cocoa ]; then
-	GROUP_GO=swt/widgets_group_darwin.go
+	GROUP_GO=$(swt_owner platform widgets_group '^func \(this \*Group\) computeTrim_\(')
 	grep -qF 'newRect = this.frameFromContentFrame(widget, newRect)' "$GROUP_GO" || grep -qF 'widget.SetFrameFromContentFrame(newRect)' "$GROUP_GO" || { echo "port.sh: Group.computeTrim not found in $GROUP_GO" >&2; exit 1; }
 	perl -0pi -e 's/\tvar oldRect cocoa\.NSRect = widget\.Frame\(\)\n\tthis\.ignoreResize = true\n\twidget\.SetFrameFromContentFrame\(newRect\)\n\tnewRect = widget\.Frame\(\)\n\twidget\.SetFrame\(oldRect\)\n\tthis\.ignoreResize = false\n/\tnewRect = this.frameFromContentFrame(widget, newRect)\n/' "$GROUP_GO"
 	grep -qF 'frameFromContentFrame(widget, newRect)' "$GROUP_GO" || { echo "port.sh: Group.computeTrim rewrite did not apply" >&2; exit 1; }
@@ -420,20 +474,27 @@ fi
 # (widgets_visibleregion_manual_darwin.go) keeps visibleRgnHolders, the controls whose subtree may hold a region, so the walk
 # can skip clean subtrees. Every visibleRgn allocation, free and reparent below keeps it in step.
 if [ "$PLATFORM" = cocoa ]; then
-	VR_CTL=swt/widgets_control_darwin.go
-	VR_SHELL=swt/widgets_shell_darwin.go
-	VR_COMP=swt/widgets_composite_darwin.go
-	perl -0pi -e 's/(\tif this\.visibleRgn == 0 \{\n\t\tthis\.visibleRgn = cocoa\.OSNewRgn\(\)\n)(?!\t\tmarkVisibleRgn)/$1\t\tmarkVisibleRgn(this)\n/; s/(func \(this \*Control\) releaseWidget_\(\)\s*\{\n)(?!\tforgetVisibleRgn)/$1\tforgetVisibleRgn(this)\n/; s/(\tthis\.parent = parent\n)(\tthis\.impl\.reskin_\(ALL\)\n)/$1\tmarkVisibleRgnReparent(this)\n$2/; s/(func \(this \*Control\) invalidateVisibleRegion_\(\)\s*\{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(upcastCompositeToControl(this.parent)) {\n\t\treturn\n\t}\n/; s/(\t\tsibling\.impl\.invalidateChildrenVisibleRegion_\(\)\n)(?!\t\tclearVisibleRgn)/$1\t\tclearVisibleRgn(sibling)\n/; s/(\tthis\.parent\.impl\.resetVisibleRegion_\(\)\n)(\}\n\nfunc \(this \*Control\) isActive_)/$1\tif index == 0 {\n\t\tclearVisibleRgn(upcastCompositeToControl(this.parent))\n\t}\n$2/' "$VR_CTL"
-	perl -0pi -e 's/(func \(this \*Shell\) invalidateVisibleRegion_\(\)\s*\{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(upcastShellToControl(this)) {\n\t\treturn\n\t}\n/; s/(\tthis\.impl\.invalidateChildrenVisibleRegion_\(\)\n)(\}\n\nfunc \(this \*Shell\) isDrawing_)/$1\tclearVisibleRgn(upcastShellToControl(this))\n$2/' "$VR_SHELL"
-	perl -0pi -e 's/func \(this \*Composite\) invalidateChildrenVisibleRegion_\(\)\s*\{\n\tvar children \[\]\*Control = this\._getChildren\(\)\n\tfor i := int32\(0\); i < int32\(len\(children\)\); i\+\+ \{\n\t\tvar child \*Control = children\[i\]\n\t\tchild\.impl\.resetVisibleRegion_\(\)\n\t\tchild\.impl\.invalidateChildrenVisibleRegion_\(\)\n\t\}\n\}\n/func (this *Composite) invalidateChildrenVisibleRegion_() {\n\tif visibleRegionsIdle(upcastCompositeToControl(this)) {\n\t\treturn\n\t}\n\tvar children []*Control = this._getChildren()\n\tfor i := int32(0); i < int32(len(children)); i++ {\n\t\tvar child *Control = children[i]\n\t\tif visibleRegionsIdle(child) {\n\t\t\tcontinue\n\t\t}\n\t\tchild.impl.resetVisibleRegion_()\n\t\tchild.impl.invalidateChildrenVisibleRegion_()\n\t\tclearVisibleRgn(child)\n\t}\n}\n/' "$VR_COMP"
-	[ "$(grep -c 'markVisibleRgn(this)' "$VR_CTL")" = 1 ] && [ "$(grep -c 'forgetVisibleRgn' "$VR_CTL")" = 1 ] && [ "$(grep -c 'markVisibleRgnReparent' "$VR_CTL")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_CTL")" = 1 ] && [ "$(grep -c 'clearVisibleRgn' "$VR_CTL")" = 2 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_SHELL")" = 1 ] && [ "$(grep -c 'clearVisibleRgn' "$VR_SHELL")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_COMP")" = 2 ] || { echo "port.sh: visibleRgn holder rewrite did not apply" >&2; exit 1; }
+	VR_OWNERS=$(swt_owner platform widgets_control \
+		'^func \(this \*Control\) invalidateVisibleRegion_\(\)' \
+		'^func \(this \*Control\) releaseWidget_\(\)' \
+		'^func \(this \*Control\) SetParent\(parentLike CompositeLike\) bool')
+	read -ra VR_CTL <<<"$VR_OWNERS"
+	perl -0pi -e 's/(\tif this\.visibleRgn == 0 \{\n\t\tthis\.visibleRgn = cocoa\.OSNewRgn\(\)\n)(?!\t\tmarkVisibleRgn)/$1\t\tmarkVisibleRgn(this)\n/; s/(func \(this \*Control\) releaseWidget_\(\)\s*\{\n)(?!\tforgetVisibleRgn)/$1\tforgetVisibleRgn(this)\n/; s/(\tthis\.parent = parent\n)(\tthis\.impl\.reskin_\(ALL\)\n)/$1\tmarkVisibleRgnReparent(this)\n$2/; s/(func \(this \*Control\) invalidateVisibleRegion_\(\)\s*\{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(upcastCompositeToControl(this.parent)) {\n\t\treturn\n\t}\n/; s/(\t\tsibling\.impl\.invalidateChildrenVisibleRegion_\(\)\n)(?!\t\tclearVisibleRgn)/$1\t\tclearVisibleRgn(sibling)\n/; s/(\tthis\.parent\.impl\.resetVisibleRegion_\(\)\n)(\}\n\nfunc \(this \*Control\) isActive_)/$1\tif index == 0 {\n\t\tclearVisibleRgn(upcastCompositeToControl(this.parent))\n\t}\n$2/' "${VR_CTL[@]}"
+	VR_INV=$(swt_owner platform widgets_control '^func \(this \*Control\) invalidateVisibleRegion_\(\)')
+	VR_REL=$(swt_owner platform widgets_control '^func \(this \*Control\) releaseWidget_\(\)')
+	VR_SETPARENT=$(swt_owner platform widgets_control '^func \(this \*Control\) SetParent\(parentLike CompositeLike\) bool')
+	VR_SHELL_INV=$(swt_owner platform widgets_shell '^func \(this \*Shell\) invalidateVisibleRegion_\(\)')
+	perl -0pi -e 's/(func \(this \*Shell\) invalidateVisibleRegion_\(\)\s*\{\n)(?!\tif visibleRegionsIdle)/$1\tif visibleRegionsIdle(upcastShellToControl(this)) {\n\t\treturn\n\t}\n/; s/(\tthis\.impl\.invalidateChildrenVisibleRegion_\(\)\n)(\}\n\nfunc \(this \*Shell\) isDrawing_)/$1\tclearVisibleRgn(upcastShellToControl(this))\n$2/' "$VR_SHELL_INV"
+	VR_COMP_INV=$(swt_owner platform widgets_composite '^func \(this \*Composite\) invalidateChildrenVisibleRegion_\(\)')
+	perl -0pi -e 's/func \(this \*Composite\) invalidateChildrenVisibleRegion_\(\)\s*\{\n\tvar children \[\]\*Control = this\._getChildren\(\)\n\tfor i := int32\(0\); i < int32\(len\(children\)\); i\+\+ \{\n\t\tvar child \*Control = children\[i\]\n\t\tchild\.impl\.resetVisibleRegion_\(\)\n\t\tchild\.impl\.invalidateChildrenVisibleRegion_\(\)\n\t\}\n\}\n/func (this *Composite) invalidateChildrenVisibleRegion_() {\n\tif visibleRegionsIdle(upcastCompositeToControl(this)) {\n\t\treturn\n\t}\n\tvar children []*Control = this._getChildren()\n\tfor i := int32(0); i < int32(len(children)); i++ {\n\t\tvar child *Control = children[i]\n\t\tif visibleRegionsIdle(child) {\n\t\t\tcontinue\n\t\t}\n\t\tchild.impl.resetVisibleRegion_()\n\t\tchild.impl.invalidateChildrenVisibleRegion_()\n\t\tclearVisibleRgn(child)\n\t}\n}\n/' "$VR_COMP_INV"
+	[ "$(grep -c 'markVisibleRgn(this)' "$VR_INV")" = 1 ] && [ "$(grep -c 'forgetVisibleRgn' "$VR_REL")" = 1 ] && [ "$(grep -c 'markVisibleRgnReparent' "$VR_SETPARENT")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_INV")" = 1 ] && [ "$(grep -c 'clearVisibleRgn' "$VR_INV")" = 2 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_SHELL_INV")" = 1 ] && [ "$(grep -c 'clearVisibleRgn' "$VR_SHELL_INV")" = 1 ] && [ "$(grep -c 'visibleRegionsIdle' "$VR_COMP_INV")" = 2 ] || { echo "port.sh: visibleRgn holder rewrite did not apply" >&2; exit 1; }
 fi
 
 # cocoa Shell.windowDidResize_ runs the layouts deferred by layout(..., DEFER) between marking and updating its own, so the
 # shell is laid out once. They drain only in readAndDispatch, which AppKit's live-resize tracking loop never returns to:
 # one deferred shell layout (a label binding run by asyncExec during the drag) froze the content until the mouse went up.
 if [ "$PLATFORM" = cocoa ]; then
-	LR_SHELL=swt/widgets_shell_darwin.go
+	LR_SHELL=$(swt_owner platform widgets_shell '^func \(this \*Shell\) windowDidResize_\(id int64, sel int64, notification int64\)')
 	perl -0pi -e 's/(func \(this \*Shell\) windowDidResize_\(id int64, sel int64, notification int64\)\s*\{\n(?:.*\n)*?\t\tthis\.impl\.markLayout_\(false, false\)\n)(?!\t\tthis\.display\.RunDeferredLayouts)/$1\t\tthis.display.RunDeferredLayouts()\n/' "$LR_SHELL"
 	[ "$(grep -c 'this.display.RunDeferredLayouts()' "$LR_SHELL")" = 1 ] || { echo "port.sh: windowDidResize deferred layout rewrite did not apply" >&2; exit 1; }
 fi
@@ -442,15 +503,18 @@ fi
 # label is set to the same empty string and a shown NSTabView keeps the old width: a tab added after show stayed zero wide.
 # swt/widgets_tabitem_manual_darwin.go changes the label and back, which makes the tab view measure it again.
 if [ "$PLATFORM" = cocoa ]; then
-	TI_GO=swt/widgets_tabitem_darwin.go
-	perl -0pi -e 's/(\tthis\.Item\.setText_\(string_\)\n\tthis\.UpdateText\(\)\n)(?!\tthis\.remeasureLabel)/$1\tthis.remeasureLabel()\n/; s/(\tthis\.Item\.setImageOnItem_\(image\)\n\tthis\.nsItem\.SetLabel\(cocoa\.NSStringString\(\)\)\n)(?!\tthis\.remeasureLabel)/$1\tthis.remeasureLabel()\n/' "$TI_GO"
-	[ "$(grep -c 'this.remeasureLabel()' "$TI_GO")" = 2 ] || { echo "port.sh: TabItem remeasureLabel rewrite did not apply" >&2; exit 1; }
+	TI_OWNERS=$(swt_owner platform widgets_tabitem \
+		'^func \(this \*TabItem\) setImageOnItem_\(' \
+		'^func \(this \*TabItem\) setText_\(')
+	read -ra TI_GO <<<"$TI_OWNERS"
+	perl -0pi -e 's/(\tthis\.Item\.setText_\(string_\)\n\tthis\.UpdateText\(\)\n)(?!\tthis\.remeasureLabel)/$1\tthis.remeasureLabel()\n/; s/(\tthis\.Item\.setImageOnItem_\(image\)\n\tthis\.nsItem\.SetLabel\(cocoa\.NSStringString\(\)\)\n)(?!\tthis\.remeasureLabel)/$1\tthis.remeasureLabel()\n/' "${TI_GO[@]}"
+	[ "$(owner_grep_count 'this.remeasureLabel()' "${TI_GO[@]}")" = 2 ] || { echo "port.sh: TabItem remeasureLabel rewrite did not apply" >&2; exit 1; }
 fi
 
 # cocoa Label is an NSBox, and AppKit gives it no backing layer. Every text change then made the window
 # server keep 28 x 8 MiB of graphics buffers; wantsLayer: stops the footprint swing (monitor memory).
 if [ "$PLATFORM" = cocoa ]; then
-	LB_GO=swt/widgets_label_darwin.go
+	LB_GO=$(swt_owner platform widgets_label '^func \(this \*Label\) createHandle_\(\)')
 	perl -0pi -e 's/(\t\twidget.SetContentViewMargins\(offsetSize\)\n)(?!\t\tcocoa.LayerBacked)/$1\t\tcocoa.LayerBacked(widget.Id)\n/' "$LB_GO"
 	grep -q 'cocoa.LayerBacked(widget.Id)' "$LB_GO" || { echo "port.sh: Label wantsLayer rewrite did not apply" >&2; exit 1; }
 fi
@@ -459,7 +523,7 @@ fi
 # whenever the button has a background, check boxes included. An alpha-0 background (package look gives one to the
 # controls on a sidebar or inspector glass) came out as a black bar over the box and its text; it now leaves the bezel to AppKit.
 if [ "$PLATFORM" = cocoa ]; then
-	BZ_GO=swt/widgets_button_darwin.go
+	BZ_GO=$(swt_owner platform widgets_button '^func \(this \*Button\) drawBezelWithFrame_inView_\(id int64, sel int64, cellFrame cocoa\.NSRect, viewid int64\)')
 	perl -0pi -e 's/(func \(this \*Button\) drawBezelWithFrame_inView_\(id int64, sel int64, cellFrame cocoa\.NSRect, viewid int64\)\s*\{\n\tif this\.background != \(nil\))( \{\n)/$1 \&\& this.background[3] != 0$2/' "$BZ_GO"
 	[ "$(grep -c 'this.background != (nil) && this.background\[3\] != 0 {' "$BZ_GO")" = 1 ] || { echo "port.sh: Button transparent bezel rewrite did not apply" >&2; exit 1; }
 fi
@@ -467,14 +531,18 @@ fi
 # cocoa Button.setBounds and setFont put the push bezel back on every layout, which erased the glass and circular bezels that
 # look.GlassButton and gowt.Circle set. They now touch only the two push bezels (Button.ownBezel, widgets_button_manual_darwin.go).
 if [ "$PLATFORM" = cocoa ]; then
-	perl -0pi -e 's/(if \(this\.style \& \(PUSH \| TOGGLE\)\) != 0 \&\& \(this\.style \& \(FLAT \| WRAP\)\) == 0)( \{\n\t\t(?:var heightThreshold|var cond171))/$1 \&\& this.ownBezel()$2/g' "$BZ_GO"
-	[ "$(grep -c 'this.ownBezel()' "$BZ_GO")" = 2 ] || { echo "port.sh: Button ownBezel rewrite did not apply" >&2; exit 1; }
+	BZ_OWNERS=$(swt_owner platform widgets_button \
+		'^func \(this \*Button\) setBoundsXYWidthHeightMoveResize_\(' \
+		'^func \(this \*Button\) setFontFont_\(')
+	read -ra BZ_ARR <<<"$BZ_OWNERS"
+	perl -0pi -e 's/(if \(this\.style \& \(PUSH \| TOGGLE\)\) != 0 \&\& \(this\.style \& \(FLAT \| WRAP\)\) == 0)( \{\n\t\t(?:var heightThreshold|var cond171))/$1 \&\& this.ownBezel()$2/g' "${BZ_ARR[@]}"
+	[ "$(owner_grep_count 'this.ownBezel()' "${BZ_ARR[@]}")" = 2 ] || { echo "port.sh: Button ownBezel rewrite did not apply" >&2; exit 1; }
 fi
 
 # macOS 26 draws the glass bezel of an NSButton only when its class does not override drawRect: and its cell is a plain
 # NSButtonCell. The Display class setup also registers SWTGlassButton (widgets_button_manual_darwin.go) for cocoa.SetGlassButton.
 if [ "$PLATFORM" = cocoa ]; then
-	DS_GO=swt/widgets_display_darwin.go
+	DS_GO=$(swt_owner platform widgets_display '^func \(this \*Display\) InitClasses\(\)')
 	perl -0pi -e 's/(\tclassName = "SWTButton"\n)/\tthis.registerGlassButtonClass(proc2, proc3, hitTestProc, setNeedsDisplayInRectProc, setFrameOriginProc, setFrameSizeProc)\n$1/' "$DS_GO"
 	[ "$(grep -c 'this.registerGlassButtonClass(' "$DS_GO")" = 1 ] || { echo "port.sh: SWTGlassButton registration did not apply" >&2; exit 1; }
 fi
@@ -483,7 +551,7 @@ fi
 # and GC fills ignore a colour's alpha: a StyledText with an alpha-0 background (look.SetGlass) painted its lines opaque black.
 # A fully transparent GC background fills nothing.
 if [ "$PLATFORM" = cocoa ]; then
-	DB_GO=swt/widgets_composite_darwin.go
+	DB_GO=$(swt_owner platform widgets_composite '^func \(this \*Composite\) drawBackground_\(id int64, context \*cocoa\.NSGraphicsContext, rect cocoa\.NSRect\)')
 	perl -0pi -e 's/(\t\t\}\n\t\} else )\{\n\t\tgc\.FillRectangle\(x, y, width, height\)\n\t\}\n\}\n\nfunc \(this \*Composite\) drawBackground_/$1if bg := gc.GetGCData().Background; bg == nil || bg[3] != 0 {\n\t\tgc.FillRectangle(x, y, width, height)\n\t}\n}\n\nfunc (this *Composite) drawBackground_/' "$DB_GO"
 	[ "$(grep -c 'bg == nil || bg\[3\] != 0' "$DB_GO")" = 1 ] || { echo "port.sh: Composite.drawBackground rewrite did not apply" >&2; exit 1; }
 fi
@@ -492,7 +560,7 @@ fi
 # StyledText with an alpha-0 background (gowt.NoBackground) they are transparent, and the caret came out plain white,
 # unseen on a light material. Canvas.caretFill (widgets_canvas_manual_darwin.go) draws it in the text colour there.
 if [ "$PLATFORM" = cocoa ]; then
-	CV_GO=swt/widgets_canvas_darwin.go
+	CV_GO=$(swt_owner platform widgets_canvas '^func \(this \*Canvas\) drawWidget_\(id int64, context \*cocoa\.NSGraphicsContext, rect cocoa\.NSRect\)')
 	perl -0pi -e 's/cocoa\.OSCGContextSetFillColor\(ctx, \[\]float64\{float64\(1\), float64\(1\), float64\(1\), float64\(1\)\}\)/cocoa.OSCGContextSetFillColor(ctx, this.caretFill(ctx))/' "$CV_GO"
 	[ "$(grep -c 'this.caretFill(ctx)' "$CV_GO")" = 1 ] || { echo "port.sh: Canvas caretFill rewrite did not apply" >&2; exit 1; }
 fi
@@ -501,7 +569,7 @@ fi
 # window without a list so), and nothing moved the focus: SWT traverses from a focused control only.
 # swt/widgets_shell_manual_darwin.go sends it to the first or last tab group.
 if [ "$PLATFORM" = cocoa ]; then
-	TW_GO=swt/widgets_shell_darwin.go
+	TW_GO=$(swt_owner platform widgets_shell '^func \(this \*Shell\) windowSendEvent_\(id int64, sel int64, event int64\)')
 	perl -0pi -e 's/(\tcase cocoa\.OSNSKeyDown:\n)(\t\tif this\.display\.escAsAcceleratorPresent )/$1\t\tif this.tabFromWindow(nsEvent) {\n\t\t\treturn\n\t\t}\n$2/' "$TW_GO"
 	[ "$(grep -c 'this.tabFromWindow(nsEvent)' "$TW_GO")" = 1 ] || { echo "port.sh: Shell tabFromWindow rewrite did not apply" >&2; exit 1; }
 fi
@@ -509,7 +577,7 @@ fi
 # cocoa applicationDidFinishLaunching activates a non-bundled binary, which steals the focus on every launch. A QA build
 # (-tags gowtqa, GOWT_QA_SOCKET set) skips it, see swt/qa_manual_on_darwin.go.
 if [ "$PLATFORM" = cocoa ]; then
-	DS_GO=swt/widgets_display_darwin.go
+	DS_GO=$(swt_owner platform widgets_display '^func \(this \*Display\) ApplicationDidFinishLaunching\(id int64, sel int64, notification int64\)')
 	perl -0pi -e 's/(SetActivationPolicy\(int64\(cocoa\.OSNSApplicationActivationPolicyRegular\)\)\n)\t\t(this\.application\.ActivateIgnoringOtherApps\(true\)\n)/$1\t\tif !qaNoActivate() {\n\t\t\t$2\t\t}\n/' "$DS_GO"
 	[ "$(grep -c 'qaNoActivate()' "$DS_GO")" = 1 ] || { echo "port.sh: Display qaNoActivate rewrite did not apply" >&2; exit 1; }
 fi
@@ -518,12 +586,14 @@ fi
 # Apple event. A gowt program has no launcher: applicationWillFinishLaunching installs that Apple event handler itself
 # (swt/widgets_display_url_manual_darwin.go), where AppKit wants it so the link of a launch is not missed.
 if [ "$PLATFORM" = cocoa ]; then
+	DS_GO=$(swt_owner platform widgets_display '^func \(this \*Display\) ApplicationWillFinishLaunching\(id int64, sel int64, notification int64\)')
 	perl -0pi -e 's/(func \(this \*Display\) ApplicationWillFinishLaunching\(id int64, sel int64, notification int64\)\s*\{\n)/$1\tthis.hookGetURL()\n/' "$DS_GO"
 	[ "$(grep -c 'this.hookGetURL()' "$DS_GO")" = 1 ] || { echo "port.sh: Display hookGetURL rewrite did not apply" >&2; exit 1; }
 fi
 
 # GetFocusControl reads the first responder of the key window, and an inactive QA app has none (see qa_manual_on_darwin.go).
 if [ "$PLATFORM" = cocoa ]; then
+	DS_GO=$(swt_owner platform widgets_display '^func \(this \*Display\) GetFocusControl\(\) \*Control')
 	perl -0pi -e 's/(func \(this \*Display\) GetFocusControl\(\) \*Control \{.*?\t\twindow = )this\.application\.KeyWindow\(\)/$1this.keyWindowQA()/s' "$DS_GO"
 	[ "$(grep -c 'keyWindowQA()' "$DS_GO")" = 1 ] || { echo "port.sh: Display keyWindowQA rewrite did not apply" >&2; exit 1; }
 fi
@@ -537,21 +607,28 @@ win32) CB_GO=swt/dnd_clipboard_windows.go ;;
 *) CB_GO= ;;
 esac
 if [ -n "$CB_GO" ]; then
+	CB_OWNERS=$(swt_owner platform dnd_clipboard \
+		'^func \(this \*Clipboard\) GetContentsTransferClipboards\(' \
+		'^func \(this \*Clipboard\) SetContentsDataDataTypesClipboards\(' \
+		'^func \(this \*Clipboard\) ClearContentsClipboards\(' \
+		'^func \(this \*Clipboard\) GetAvailableTypesClipboards\(' \
+		'^func \(this \*Clipboard\) GetAvailableTypeNames\(\)')
+	read -ra CB_ARR <<<"$CB_OWNERS"
 	perl -0pi -e '
 		s/(func \(this \*Clipboard\) GetContentsTransferClipboards\(transferLike TransferLike, clipboards int32\) any \{\n)/$1\tif qaClipboardPath() != "" {\n\t\treturn this.qaGet(transferLike, clipboards)\n\t}\n/;
 		s/(func \(this \*Clipboard\) SetContentsDataDataTypesClipboards\(data \[\]any, dataTypes \[\]\*Transfer, clipboards int32\)\s*\{\n)/$1\tif qaClipboardPath() != "" {\n\t\tthis.qaSet(data, dataTypes, clipboards)\n\t\treturn\n\t}\n/;
 		s/(func \(this \*Clipboard\) ClearContentsClipboards\(clipboards int32\)\s*\{\n)/$1\tif qaClipboardPath() != "" {\n\t\tthis.qaClear(clipboards)\n\t\treturn\n\t}\n/;
 		s/(func \(this \*Clipboard\) GetAvailableTypesClipboards\(clipboards int32\) \[\]\*TransferData \{\n)/$1\tif qaClipboardPath() != "" {\n\t\treturn this.qaTypes(clipboards)\n\t}\n/;
 		s/(func \(this \*Clipboard\) GetAvailableTypeNames\(\) \[\]string \{\n)/$1\tif qaClipboardPath() != "" {\n\t\treturn this.qaTypeNames()\n\t}\n/;
-	' "$CB_GO"
-	[ "$(grep -c 'qaClipboardPath()' "$CB_GO")" = 5 ] || { echo "port.sh: Clipboard qa rewrite did not apply to $CB_GO" >&2; exit 1; }
+	' "${CB_ARR[@]}"
+	[ "$(owner_grep_count 'qaClipboardPath()' "${CB_ARR[@]}")" = 5 ] || { echo "port.sh: Clipboard qa rewrite did not apply to $CB_GO" >&2; exit 1; }
 fi
 
 # gtk TabFolder sizes the selected page's control from the notebook page's allocation. A page that GTK has not allocated
 # yet (added after show, or selected before the first allocation) reports 1x1, and the control stayed 1x1: an empty page.
 # swt/widgets_tabfolder_manual_linux.go sizes the control again when GTK allocates its page.
 if [ "$PLATFORM" = gtk ]; then
-	TF_GO=swt/widgets_tabfolder_linux.go
+	TF_GO=$(swt_owner platform widgets_tabfolder '^func \(this \*TabFolder\) CreateItem\(')
 	perl -0pi -e 's/(\titem\.pageHandle = pageHandle\n)(?!\tthis\.hookPage)/$1\tthis.hookPage(pageHandle)\n/' "$TF_GO"
 	[ "$(grep -c 'this.hookPage(pageHandle)' "$TF_GO")" = 1 ] || { echo "port.sh: TabFolder hookPage rewrite did not apply" >&2; exit 1; }
 fi
@@ -560,7 +637,7 @@ fi
 # expanded again, and counts the rows itself only when GtkTreeView reports the header height. It takes the larger of the
 # two, with every visible row counted (visibleRowCount, swt/widgets_tree_manual_linux.go).
 if [ "$PLATFORM" = gtk ]; then
-	TR_GO=swt/widgets_tree_linux.go
+	TR_GO=$(swt_owner platform widgets_tree '^func \(this \*Tree\) computeSizeInPixelsWHintHHintChanged_\(')
 	perl -0pi -e 's/\tif hHint == DEFAULT && size\.Y == this\.GetHeaderHeight\(\) \{\n\t\tvar itemHeight int32 = this\.GetItemHeight\(\)\n\t\tsize\.Y = this\.GetItemCount\(\) \* itemHeight \+ this\.GetHeaderHeight\(\)\n\t\tfor _, item := range this\.items \{\n\t\t\tif item != \(nil\) && item\.isExpanded \{\n\t\t\t\tsize\.Y \+= gtk\.GTKGtk_tree_model_iter_n_children\(this\.modelHandle, item\.Handle\) \* itemHeight\n\t\t\t\}\n\t\t\}\n\t\}\n/\tif hHint == DEFAULT {\n\t\tsize.Y = max(size.Y, this.visibleRowCount(0)*this.GetItemHeight()+this.GetHeaderHeight())\n\t}\n/' "$TR_GO"
 	[ "$(grep -c 'this.visibleRowCount(0)' "$TR_GO")" = 1 ] || { echo "port.sh: Tree visibleRowCount rewrite did not apply" >&2; exit 1; }
 fi
@@ -570,20 +647,42 @@ fi
 # count stale (rowsPending); syncRows (widgets_table_manual_darwin.go) catches the view up when redraw comes back and before
 # each call that hands NSTableView a row index. Inserts before the end keep the immediate update: fixSelection needs it.
 if [ "$PLATFORM" = cocoa ]; then
-	TB_GO=swt/widgets_table_darwin.go
-	TI_GO=swt/widgets_tableitem_darwin.go
-	perl -0pi -e 's/(type Table struct \{\n\tComposite\n)(?!\trowsPending)/$1\trowsPending bool\n/; s/(\tthis\.items\[index\] = item\n)(\tthis\.UpdateRowCount\(\)\n\tif index != this\.itemCount \{\n)/$1\tif !this.impl.getDrawing_() && index == this.itemCount-1 {\n\t\tthis.rowsPending = true\n\t\treturn\n\t}\n$2/; s/(func \(this \*Table\) UpdateRowCount\(\)\s*\{\n)(?!\tthis\.rowsPending)/$1\tthis.rowsPending = false\n/; s/(func \(this \*Table\) setRedraw_\(redraw bool\)\s*\{\n\tthis\.CheckWidget\(\)\n\tthis\.Composite\.setRedraw_\(redraw\)\n\tif redraw && this\.drawCount == 0 \{\n)(?!\t\tthis\.syncRows)/$1\t\tthis.syncRows()\n/; s/(func \(this \*Table\) (?:Deselect|DeselectStartEnd|DeselectIndices|GetItemPoint|Select|SelectStartEnd|SelectIndices|SelectIndicesCountClear|SelectAll|SetTopIndex|ShowIndex)\([^)]*\)[^{\n]*\{\n)(?!\tthis\.syncRows)/$1\tthis.syncRows()\n/g' "$TB_GO"
-	perl -0pi -e 's/(func \(this \*TableItem\) (?:GetBounds|GetBoundsIndex|GetImageBounds|GetTextBounds)\([^)]*\)[^{\n]*\{\n)(?!\tthis\.parent\.syncRows)/$1\tthis.parent.syncRows()\n/g' "$TI_GO"
-	[ "$(grep -c 'rowsPending' "$TB_GO")" = 3 ] && [ "$(grep -c 'this.syncRows()' "$TB_GO")" = 12 ] && [ "$(grep -c 'this.parent.syncRows()' "$TI_GO")" = 4 ] || { echo "port.sh: Table rowsPending rewrite did not apply" >&2; exit 1; }
+	TB_OWNERS=$(swt_owner platform widgets_table \
+		'^type Table struct \{' \
+		'^func \(this \*Table\) CreateItemItemIndex\(' \
+		'^func \(this \*Table\) UpdateRowCount\(\)' \
+		'^func \(this \*Table\) setRedraw_\(' \
+		'^func \(this \*Table\) Deselect\(' \
+		'^func \(this \*Table\) DeselectStartEnd\(' \
+		'^func \(this \*Table\) DeselectIndices\(' \
+		'^func \(this \*Table\) GetItemPoint\(' \
+		'^func \(this \*Table\) Select\(' \
+		'^func \(this \*Table\) SelectStartEnd\(' \
+		'^func \(this \*Table\) SelectIndices\(' \
+		'^func \(this \*Table\) SelectIndicesCountClear\(' \
+		'^func \(this \*Table\) SelectAll\(' \
+		'^func \(this \*Table\) SetTopIndex\(' \
+		'^func \(this \*Table\) ShowIndex\(')
+	read -ra TB_ARR <<<"$TB_OWNERS"
+	TI_OWNERS=$(swt_owner platform widgets_tableitem \
+		'^func \(this \*TableItem\) GetBounds\(' \
+		'^func \(this \*TableItem\) GetBoundsIndex\(' \
+		'^func \(this \*TableItem\) GetImageBounds\(' \
+		'^func \(this \*TableItem\) GetTextBounds\(')
+	read -ra TI_ARR <<<"$TI_OWNERS"
+	perl -0pi -e 's/(type Table struct \{\n\tComposite\n)(?!\trowsPending)/$1\trowsPending bool\n/; s/(\tthis\.items\[index\] = item\n)(\tthis\.UpdateRowCount\(\)\n\tif index != this\.itemCount \{\n)/$1\tif !this.impl.getDrawing_() && index == this.itemCount-1 {\n\t\tthis.rowsPending = true\n\t\treturn\n\t}\n$2/; s/(func \(this \*Table\) UpdateRowCount\(\)\s*\{\n)(?!\tthis\.rowsPending)/$1\tthis.rowsPending = false\n/; s/(func \(this \*Table\) setRedraw_\(redraw bool\)\s*\{\n\tthis\.CheckWidget\(\)\n\tthis\.Composite\.setRedraw_\(redraw\)\n\tif redraw && this\.drawCount == 0 \{\n)(?!\t\tthis\.syncRows)/$1\t\tthis.syncRows()\n/; s/(func \(this \*Table\) (?:Deselect|DeselectStartEnd|DeselectIndices|GetItemPoint|Select|SelectStartEnd|SelectIndices|SelectIndicesCountClear|SelectAll|SetTopIndex|ShowIndex)\([^)]*\)[^{\n]*\{\n)(?!\tthis\.syncRows)/$1\tthis.syncRows()\n/g' "${TB_ARR[@]}"
+	perl -0pi -e 's/(func \(this \*TableItem\) (?:GetBounds|GetBoundsIndex|GetImageBounds|GetTextBounds)\([^)]*\)[^{\n]*\{\n)(?!\tthis\.parent\.syncRows)/$1\tthis.parent.syncRows()\n/g' "${TI_ARR[@]}"
+	[ "$(owner_grep_count 'rowsPending' "${TB_ARR[@]}")" = 3 ] && [ "$(owner_grep_count 'this.syncRows()' "${TB_ARR[@]}")" = 12 ] && [ "$(owner_grep_count 'this.parent.syncRows()' "${TI_ARR[@]}")" = 4 ] || { echo "port.sh: Table rowsPending rewrite did not apply" >&2; exit 1; }
 fi
 
 # cocoa Table/Tree.setHeaderVisible tiles the scroll view, which moves the clip view's top inset by the header height and
 # keeps its bounds origin, so a table shown with rows added before layout started a header height down. The scroll offset
 # from the top is restored after the tile (widgets_table_manual_darwin.go).
 if [ "$PLATFORM" = cocoa ]; then
-	for HV_GO in swt/widgets_table_darwin.go swt/widgets_tree_darwin.go; do
-		perl -0pi -e 's/(\) SetHeaderVisible\(show bool\)\s*\{\n\tthis\.CheckWidget\(\)\n)(?!\ty := headerScroll)/$1\ty := headerScroll(this.scrollView)\n/; s/(\.SetHeaderView\(cond\d+\)\n\tthis\.scrollView\.Tile\(\)\n)(?!\trestoreHeaderScroll)/$1\trestoreHeaderScroll(this.scrollView, this.View, y)\n/' "$HV_GO"
-		grep -qF 'y := headerScroll(this.scrollView)' "$HV_GO" && grep -qF 'restoreHeaderScroll(this.scrollView, this.View, y)' "$HV_GO" || { echo "port.sh: setHeaderVisible rewrite did not apply in $HV_GO" >&2; exit 1; }
+	for HV_OWNERS in "$(swt_owner platform widgets_table '^func \(this \*Table\) SetHeaderVisible\(')" "$(swt_owner platform widgets_tree '^func \(this \*Tree\) SetHeaderVisible\(')"; do
+		read -ra HV_ARR <<<"$HV_OWNERS"
+		perl -0pi -e 's/(\) SetHeaderVisible\(show bool\)\s*\{\n\tthis\.CheckWidget\(\)\n)(?!\ty := headerScroll)/$1\ty := headerScroll(this.scrollView)\n/; s/(\.SetHeaderView\(cond\d+\)\n\tthis\.scrollView\.Tile\(\)\n)(?!\trestoreHeaderScroll)/$1\trestoreHeaderScroll(this.scrollView, this.View, y)\n/' "${HV_ARR[@]}"
+		grep -qF 'y := headerScroll(this.scrollView)' "${HV_ARR[@]}" && grep -qF 'restoreHeaderScroll(this.scrollView, this.View, y)' "${HV_ARR[@]}" || { echo "port.sh: setHeaderVisible rewrite did not apply in ${HV_ARR[*]}" >&2; exit 1; }
 	done
 fi
 
@@ -591,9 +690,10 @@ fi
 # both row ends, so columns sized to the client area ran past the visible width: the padding is left out (stylePadding,
 # widgets_table_manual_darwin.go).
 if [ "$PLATFORM" = cocoa ]; then
-	for CA_GO in swt/widgets_table_darwin.go swt/widgets_tree_darwin.go; do
-		perl -0pi -e 's/(\) getClientArea_\(\) \*Rectangle \{\n\tthis\.CheckWidget\(\)\n\tvar rect \*Rectangle = this\.Composite\.getClientArea_\(\)\n)(?!\trect\.Width)/$1\trect.Width = max(0, rect.Width-stylePadding(this.View))\n/' "$CA_GO"
-		grep -qF 'rect.Width = max(0, rect.Width-stylePadding(this.View))' "$CA_GO" || { echo "port.sh: getClientArea_ rewrite did not apply in $CA_GO" >&2; exit 1; }
+	for CA_OWNERS in "$(swt_owner platform widgets_table '^func \(this \*Table\) getClientArea_\(\)')" "$(swt_owner platform widgets_tree '^func \(this \*Tree\) getClientArea_\(\)')"; do
+		read -ra CA_ARR <<<"$CA_OWNERS"
+		perl -0pi -e 's/(\) getClientArea_\(\) \*Rectangle \{\n\tthis\.CheckWidget\(\)\n\tvar rect \*Rectangle = this\.Composite\.getClientArea_\(\)\n)(?!\trect\.Width)/$1\trect.Width = max(0, rect.Width-stylePadding(this.View))\n/' "${CA_ARR[@]}"
+		grep -qF 'rect.Width = max(0, rect.Width-stylePadding(this.View))' "${CA_ARR[@]}" || { echo "port.sh: getClientArea_ rewrite did not apply in ${CA_ARR[*]}" >&2; exit 1; }
 	done
 fi
 
@@ -720,7 +820,9 @@ TEST_FILES=(
 	$TJ/ConsistencyUtility.java
 	org/eclipse/swt/tests/graphics/ImageDataTestHelper.java
 )
-"${J2GO[@]}" --classpath "$JUNIT_CP" "${BR_SRC[@]}" --src "$SWT_REPO/tests/org.eclipse.swt.tests/data" \
+# Translated JUnit classes split the same way (TSK-05): large suites (StyledText, Browser) become
+# a base file (type decls, junit.Register init) plus method-named parts.
+"${J2GO[@]}" --classpath "$JUNIT_CP" --part-target 800 "${BR_SRC[@]}" --src "$SWT_REPO/tests/org.eclipse.swt.tests/data" \
 	"${TEST_FILES[@]}" \
 	-- \
 	"${BR_STUB[@]}" "${BR_FILES[@]}" \

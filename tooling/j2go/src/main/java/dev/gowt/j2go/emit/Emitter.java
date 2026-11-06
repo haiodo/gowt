@@ -218,8 +218,11 @@ public class Emitter {
 	// appears anywhere (text.contains(pkg + ".")); on per-part imports that misfires when an
 	// identifier merely ends in the package name - CaretPos.addr() keeps "os". A reference
 	// counts only with an identifier boundary before the package name; real selectors
-	// (os.Getenv, fmt.Fprintln(os.Stderr, ...)) still match. The legacy unsplit path keeps the
-	// old substring check, so single-file output stays byte-identical.
+	// (os.Getenv, fmt.Fprintln(os.Stderr, ...)) still match. Matches inside string/rune/raw
+	// literals and comments do not count either: "org.eclipse.swt." as a property name is not
+	// a use of package swt, and a part that keeps the import for only such a literal fails to
+	// compile with an unused import. The legacy unsplit path keeps the old substring check,
+	// so single-file output stays byte-identical.
 	static Set<String> referencedImports(Set<String> imports, String text) {
 		Set<String> imps = new LinkedHashSet<>(imports);
 		imps.removeIf(imp -> !referencesPackage(text, imp.substring(imp.lastIndexOf('/') + 1)));
@@ -228,7 +231,46 @@ public class Emitter {
 
 	static boolean referencesPackage(String text, String pkg) {
 		String boundary = "(?<![A-Za-z0-9_$])" + java.util.regex.Pattern.quote(pkg) + "\\.";
-		return java.util.regex.Pattern.compile(boundary).matcher(text).find();
+		return java.util.regex.Pattern.compile(boundary).matcher(maskLiteralsAndComments(text)).find();
+	}
+
+	/** The text with the contents of "..." / '...' / `...` literals and // and /* comments
+	 *  replaced by spaces (newlines kept): a package reference can only be real code. */
+	static String maskLiteralsAndComments(String text) {
+		StringBuilder b = new StringBuilder(text.length());
+		int i = 0, n = text.length();
+		while (i < n) {
+			char c = text.charAt(i);
+			if (c == '/' && i + 1 < n && text.charAt(i + 1) == '/') {
+				while (i < n && text.charAt(i) != '\n') { b.append(' '); i++; }
+				continue;
+			}
+			if (c == '/' && i + 1 < n && text.charAt(i + 1) == '*') {
+				b.append("  "); i += 2;
+				while (i < n) {
+					if (text.charAt(i) == '*' && i + 1 < n && text.charAt(i + 1) == '/') { b.append("  "); i += 2; break; }
+					b.append(text.charAt(i) == '\n' ? '\n' : ' ');
+					i++;
+				}
+				continue;
+			}
+			if (c == '"' || c == '\'' || c == '`') {
+				char quote = c;
+				b.append(' '); i++;
+				while (i < n) {
+					char d = text.charAt(i);
+					if (d == '\n' && quote != '`') break; // unterminated: leave the rest of the line to the code scanner
+					b.append(d == '\n' ? '\n' : ' ');
+					i++;
+					if (d == '\\' && quote != '`' && i < n) { b.append(' '); i++; continue; }
+					if (d == quote) break;
+				}
+				continue;
+			}
+			b.append(c);
+			i++;
+		}
+		return b.toString();
 	}
 
 	private static int lineCount(String s) {

@@ -100,7 +100,8 @@ it, never directly. Where to add a new construct:
 A compilation unit whose generated text exceeds `--part-target` lines (ceiling `--part-max`,
 default 1200) is written as a base file plus method-named part files. Splitting is opt-in: a run
 without `--part-target` keeps the legacy single-file layout byte-identical, so each migration
-slice (port.sh's PI invocation today) opts in explicitly. The base
+slice opts in explicitly: port.sh's PI invocation (TSK-04), then the SWT and translated-test
+invocations (TSK-05). The base
 file keeps the current name (`widgets_button.go`) and holds type declarations, fields, static
 field initializers, `static {}` blocks (the deferred `func init()`), `<T>Static()` lazy blocks,
 shared helpers, test-registration `init()` and declarations that must stay together (impl

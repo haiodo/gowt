@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.15.5 (2026-11-07)
+
+- Fixed: macOS fields with a prefix keep the value and caret on the prefix's line after a click-drag outside the field, typing, Return, focus loss and another click. Borderless fields and the inline tree editor centre their text vertically.
+- Changed: hosted CI uses three platform workers. Linux reuses one Docker image for all gates; Windows and macOS each run build, vet, unit and GUI checks in one worker with crash artifacts.
+- Tests: native drag fixtures fit the 1024x768 CI display and log window coordinates and URL events. Tree editor text measurement uses the native backing scale on both 1x and 2x displays.
+
 ## v0.15.4 (2026-11-07)
 
 - Added: a QA build with no `reset` handler logs one line saying so. `qatest.App` ignores the refusal, so an app without `reset` carried its windows and models from test to test with no other sign.

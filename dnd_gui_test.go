@@ -310,14 +310,14 @@ func TestDndRealMouseScenarios(t *testing.T) {
 					}
 					ok := dragPointer(app, f, filesFrom, filesTo, "files over")
 					mark()
+					if runtime.GOOS != "darwin" {
+						ok = ok && dragPointer(app, f, urlFrom, urlTo, "url over")
+					}
+					mark()
 					ok = ok && dragPointer(app, f, rejectedFrom, rejectedTo, "")
 					mark()
 					app.Sync(func() { f.cancelNext = true })
 					ok = ok && dragPointer(app, f, cancelFrom, cancelTo, "")
-					mark()
-					if runtime.GOOS != "darwin" {
-						ok = ok && dragPointer(app, f, urlFrom, urlTo, "url over")
-					}
 					mark()
 					if !ok {
 						app.Sync(func() { skip = "the mouse events could not be posted" })
@@ -341,10 +341,10 @@ func TestDndRealMouseScenarios(t *testing.T) {
 	}
 	t.Logf("log: %q", f.log)
 	checkDrag(t, "files drop", slice(0), "files over", "files 2 ")
-	checkRejected(t, slice(1))
-	checkCancelled(t, slice(2))
+	checkRejected(t, slice(2))
+	checkCancelled(t, slice(3))
 	if runtime.GOOS != "darwin" {
-		checkURLDrop(t, slice(3))
+		checkURLDrop(t, slice(1))
 	} else {
 		t.Log("url drop: not run, URLTransfer is disabled upstream on macOS (deprecated pasteboard type, eclipse-platform/eclipse.platform.swt#2669)")
 	}

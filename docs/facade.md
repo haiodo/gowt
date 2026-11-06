@@ -229,7 +229,7 @@ type Drop struct {
 - Lifetime: swt `DragSource`/`DropTarget` are widgets registered on the control and disposed with it; the handle only exposes `Unwrap()`. At most one `DropTarget` and one `DragSource` per control: a second call panics with `DNDERROR_CANNOT_INIT_DROP` (an error), returned by `Run`.
 - Works on any `Widget` the facade has; whether the native widget accepts drops (Table rows, Tree items, text caret) is the platform's business. Item-level targets (`event.Item`) are not exposed.
 - Not covered -> `Unwrap()` and plain `swt`: custom `Transfer` types, RTF/HTML/URL transfers, effects (`DropTargetEffect`, `DragSourceEffect`), drag images (`DragSourceEvent.Image`), `Feedback` flags, `DragOperationChanged`/`DropAccept`, moving data between processes with custom formats.
-- Platform caveats (`tests/expected*.txt`): `TestDndRealMouse` drags Tree to Tree and Tree to a canvas with the OS pointer on Linux (Xvfb, xdotool) and Windows 11 arm64 (SendInput); macOS was not run because CGEventPost needs the Accessibility permission, and drags from or to other apps are unverified everywhere. Cross-process transfer tests are skipped ("no remote clipboard peer: the Swing/RMI process is not ported"), including `FileTransfer`, `HTMLTransfer`, `ImageTransfer`, `RTFTransfer`, `TextTransfer`. `URLTransfer` tests are disabled on macOS, so URLs are left out. `FileTransfer.nativeToJava` is disabled on Windows and macOS in the upstream suite.
+- Platform caveats (`tests/expected*.txt`): `TestDndRealMouse` and `TestDndRealMouseScenarios` drag with the OS pointer on Linux (Xvfb, xdotool), Windows (SendInput) and macOS (CGEventPost, which needs the Accessibility permission): text and files drops that are accepted, a drop the target refuses, a drag the source cancels in `OnStart`, and a URL drop through the plain swt `URLTransfer` (not wrapped by the facade; not run on macOS, where `URLTransfer` is disabled upstream, eclipse-platform/eclipse.platform.swt#2669). Drags from or to other applications are unverified everywhere. Cross-application clipboard tests run against a real second process: `RemoteClipboard` (in `tests/swttests/clipboard_manual.go`) spawns `tests/clipboardpeer`, a peer with its own `Display` and `Clipboard` driven over JSON on stdio, so copy, paste, clear and ownership change between processes are covered (same-process round trips are not the acceptance path). `FileTransfer.nativeToJava` is disabled on Windows and macOS in the upstream suite, `ByteArrayTransfer.javaToNative` on macOS.
 
 ### StyledText
 
@@ -274,7 +274,7 @@ type StyleSpan struct { Start, Length int; Style TextStyle }
 
 ### Open points
 
-- `TestDndRealMouse` has not run on macOS (needs the Accessibility permission for the test binary); no test drags from or to another application.
+- The real-mouse drag scenarios have not run on macOS (the test binary needs the Accessibility permission for CGEventPost); no test drags from or to another application.
 - `Styles()` does not report `TextStyle.Font`; `SetStyle` fonts are cached per widget by `Font` value until the widget is disposed.
 
 ## Boundary (TSK-2026-10-03-product-40)

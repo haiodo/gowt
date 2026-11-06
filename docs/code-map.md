@@ -82,8 +82,9 @@ Facade widget families; the view types end in `View`. SWT widget classes are in
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Facade clipboard | `clipboard.go` | platform transfer code in `swt/` DnD classes | - | `examples/clipboard` |
-| Facade drag and drop | `dnd.go` | `swt/dnd_dragsource_{darwin,linux,windows}.go`, `swt/dnd_droptarget_*.go` | `dnd_gui_test.go`, `dnd_post_*_test.go` | `examples/dnd` |
+| Facade drag and drop | `dnd.go` | `swt/dnd_dragsource_{darwin,linux,windows}.go`, `swt/dnd_droptarget_*.go` | `dnd_gui_test.go` (`TestDndRealMouse`, `TestDndRealMouseScenarios`), `dnd_post_*_test.go` | `examples/dnd` |
 | SWT DnD framework | `swt/dnd_*.go` | per-platform `swt/dnd_*_{darwin,linux,windows}.go` | `tests/swttests/junit_test_org_eclipse_swt_dnd_*.go` | `examples/dnd` |
+| Cross-application clipboard peer | `tests/clipboardpeer/main.go` | one source, a second process with its own `Display`/`Clipboard` over JSON on stdio | `tests/swttests/clipboard_manual.go` (`RemoteClipboard`, `Test_org_eclipse_swt_dnd_ClipboardPeer`) | - |
 
 ## look
 
@@ -253,7 +254,7 @@ Packages: `qa`, `qa/qatest`, `internal/qatree`, `internal/qaview`.
 
 Regression gates and translated suites; flow in [internals.md](internals.md).
 
-Packages: `tests/swttests`, `tests/jfacetests`, `internal/shot`, `internal/snapcmp`, `internal/junit`.
+Packages: `tests/swttests`, `tests/jfacetests`, `tests/clipboardpeer`, `internal/shot`, `internal/snapcmp`, `internal/junit`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|

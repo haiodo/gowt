@@ -307,10 +307,10 @@ func imageDataToImage(d *ImageData) image.Image {
 	img := image.NewNRGBA(image.Rect(0, 0, w, h))
 	for y := 0; y < h; y++ {
 		for x := 0; x < w; x++ {
-			pixel := d.GetPixel(int32(x), int32(y))
+			rgb := d.Palette.GetRGB(d.GetPixel(int32(x), int32(y)))
 			a := d.GetAlpha(int32(x), int32(y))
 			img.SetNRGBA(x, y, color.NRGBA{
-				R: uint8((pixel >> 16) & 0xFF), G: uint8((pixel >> 8) & 0xFF), B: uint8(pixel & 0xFF), A: uint8(a),
+				R: uint8(rgb.Red), G: uint8(rgb.Green), B: uint8(rgb.Blue), A: uint8(a),
 			})
 		}
 	}

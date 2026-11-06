@@ -167,7 +167,7 @@ Packages: `internal/cocoa`, `internal/win32`, `internal/gtk`, `internal/webkit`,
 |---|---|---|---|---|
 | AppKit bindings | `internal/cocoa/cocoa_<type>.go`, `internal/cocoa/*_manual.go` | darwin only | per-file `*_test.go` | [internals.md](internals.md) |
 | Win32 bindings | `internal/win32/win32_<type>.go`, `internal/win32/*_manual.go` | windows only | `internal/win32/*_test.go` | [internals.md](internals.md) |
-| GTK 3 bindings | `internal/gtk/gen_funcs.go`, `internal/gtk/gen_consts.go`, `internal/gtk/glue_*.go` | linux only | `internal/gtk/*_test.go` | [internals.md](internals.md) |
+| GTK 3 bindings | `internal/gtk/gen_funcs.go`, `internal/gtk/gen_funcs_<family>.go`, `internal/gtk/gen_consts.go`, `internal/gtk/glue_*.go` | linux only | `internal/gtk/*_test.go` | [internals.md](internals.md) |
 | WebKitGTK bindings | `internal/webkit/gen_funcs.go`, `internal/webkit/{load,signals,view,window}.go` | linux only | driven by `webview` GUI tests in the Linux stand | [webview-browser.md](webview-browser.md) |
 | Java runtime subset | `internal/jrt/` | all platforms | `internal/jrt/*_test.go` | - |
 | D-Bus helpers | `internal/dbus/` | linux | `internal/dbus/*_test.go` | - |
@@ -268,13 +268,14 @@ Packages: `tests/swttests`, `tests/jfacetests`, `internal/shot`, `internal/snapc
 Everything that writes committed code; rules and flow in [internals.md](internals.md)
 and `tooling/j2go/README.md`.
 
-Packages: `tooling/apidump`, `tooling/assoc`, `tooling/darwin`, `tooling/demovideo`, `tooling/doccounts`, `tooling/fieldreport`, `tooling/girgen`, `tooling/mapcheck`, `tooling/mksyso`, `tooling/testexec`, `tooling/webkitgen`, `winmanifest`.
+Packages: `tooling/apidump`, `tooling/assoc`, `tooling/darwin`, `tooling/demovideo`, `tooling/doccounts`, `tooling/fieldreport`, `tooling/genplan`, `tooling/girgen`, `tooling/mapcheck`, `tooling/mksyso`, `tooling/testexec`, `tooling/webkitgen`, `winmanifest`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Java-to-Go translator (SWT, JFace, tests) | `tooling/j2go/` | runs per platform via `tooling/port.sh` | `tooling/j2go/` tests, `make gen-check` | [internals.md](internals.md), `tooling/j2go/README.md` |
 | GIR generator (GTK) | `tooling/girgen/` | linux GIR files in the Linux stand | `make gtk-gen`, `make gen-check` | [internals.md](internals.md) |
 | GIR generator (WebKitGTK) | `tooling/webkitgen/` | linux | `make webkit-gen`, `make gen-check` | [internals.md](internals.md) |
+| Generated-code part planner (girgen, webkitgen) | `tooling/genplan/` | - | `go test ./tooling/genplan/` | [internals.md](internals.md) |
 | API snapshot gates | `tooling/apidump/` | per-OS exports | `make api-check` | [internals.md](internals.md) |
 | Windows manifest objects | `tooling/mksyso/`, `winmanifest/` | windows | `make winmanifest` | [internals.md](internals.md) |
 | Port/test helpers | `tooling/port.sh`, `tooling/testexec/`, `tooling/swtdiff.py`, `tooling/swtvmexpected.py` | - | `make test-swt`, `make test-swt-update` | [internals.md](internals.md) |

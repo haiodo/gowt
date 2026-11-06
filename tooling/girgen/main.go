@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/haiodo/gowt/tooling/genplan"
 )
 
 var base3 = []string{"Gtk-3.0", "Gdk-3.0", "GdkX11-3.0", "GObject-2.0", "GLib-2.0", "Gio-2.0", "Pango-1.0", "PangoCairo-1.0", "cairo-1.0", "Atk-1.0", "GdkPixbuf-2.0"}
@@ -136,12 +138,33 @@ func main() {
 	if *report {
 		return
 	}
-	funcs, consts, types := g.emitAll()
+	base, chunks, consts, types := g.emitAll()
+	// Drop the previous generation's files first: the part layout moves with the symbol
+	// set, and a stale part file would otherwise shadow a new one or duplicate its decls.
+	stale, err := filepath.Glob(filepath.Join(*out, "gen_*.go"))
+	if err != nil {
+		fatal(err)
+	}
+	for _, p := range stale {
+		if err := os.Remove(p); err != nil {
+			fatal(err)
+		}
+	}
 	files := map[string]string{
-		"gen_funcs.go":       header + "import \"unsafe\"\n\n" + funcs,
 		"gen_consts.go":      header + consts,
 		"gen_layout_test.go": g.layoutTest(g.emitted),
 		"gen_types.go":       header + "import \"unsafe\"\n\nvar _ unsafe.Pointer\n\n" + types,
+	}
+	// The base file keeps the historical gen_funcs.go name for the helper declarations
+	// (memmove, gtype, is-a, sizeof); the bound functions pack into family-named parts.
+	files["gen_funcs.go"] = header + base
+	for _, part := range genplan.Plan(chunks, 800, 1200) {
+		body := part.Body()
+		src := header
+		if needsUnsafe(body) {
+			src += "import \"unsafe\"\n\n"
+		}
+		files["gen_funcs_"+part.Name+".go"] = src + body
 	}
 	for n, c := range files {
 		src, err := format.Source([]byte(c))

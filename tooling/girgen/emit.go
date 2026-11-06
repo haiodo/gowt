@@ -5,6 +5,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/haiodo/gowt/tooling/genplan"
 )
 
 type gen struct {
@@ -112,9 +114,13 @@ func constLit(v string) string {
 	return strconv.Quote(v)
 }
 
-func (g *gen) emitAll() (funcs, consts, types string) {
+// emitAll renders the bindings: the base file text (the small helper declarations:
+// memmove, gtype, is-a and sizeof functions), the func/explicit symbol chunks for the
+// part planner, and the consts and types file bodies. Every order is a sort over unique
+// names, so the output is identical across runs.
+func (g *gen) emitAll() (base string, chunks []genplan.Chunk, consts, types string) {
 	g.collectUnpacks()
-	var fw, cw, tw strings.Builder
+	var bw, cw, tw strings.Builder
 	syms := append([]*Sym(nil), g.syms...)
 	sort.Slice(syms, func(i, j int) bool { return syms[i].Go < syms[j].Go })
 	recs := map[string]*Record{}
@@ -129,16 +135,16 @@ func (g *gen) emitAll() (funcs, consts, types string) {
 		switch s.Kind {
 		case "func":
 			sig, csym := g.sigFor(s)
-			g.emitFunc(&fw, s.Go, csym, sig)
+			chunks = append(chunks, g.funcChunk(s.Go, csym, sig))
 		case "memmove":
-			fmt.Fprintf(&fw, "func %s(dst, src any, n ...int64) { memmove(dst, src, n...) }\n\n", s.Go)
+			fmt.Fprintf(&bw, "func %s(dst, src any, n ...int64) { memmove(dst, src, n...) }\n\n", s.Go)
 		case "explicit":
 			e := g.shapes.Func[s.Go]
-			g.emitFunc(&fw, s.Go, e.CSym, g.overrides(s.Go, e.Sig))
+			chunks = append(chunks, g.funcChunk(s.Go, e.CSym, g.overrides(s.Go, e.Sig)))
 		case "typefn":
-			fmt.Fprintf(&fw, "func %s() int64 { return gtypeOf(%q) }\n\n", s.Go, s.CName)
+			fmt.Fprintf(&bw, "func %s() int64 { return gtypeOf(%q) }\n\n", s.Go, s.CName)
 		case "isfn":
-			fmt.Fprintf(&fw, "func %s(obj int64) bool { return isA(obj, gtypeOf(%q)) }\n\n", s.Go, s.CName)
+			fmt.Fprintf(&bw, "func %s(obj int64) bool { return isA(obj, gtypeOf(%q)) }\n\n", s.Go, s.CName)
 		case "const":
 			fmt.Fprintf(&cw, "const %s = %s\n", s.Go, constLit(s.Value))
 		case "str":
@@ -167,10 +173,18 @@ func (g *gen) emitAll() (funcs, consts, types string) {
 		case "size":
 			fmt.Fprintf(&cw, "const %s = %d\n", s.Go, g.layoutOf(g.res.ix3, s.Rec).Size)
 		case "sizefn":
-			fmt.Fprintf(&fw, "func %s() int32 { return %d }\n\n", s.Go, g.layoutOf(g.res.ix3, s.Rec).Size)
+			fmt.Fprintf(&bw, "func %s() int32 { return %d }\n\n", s.Go, g.layoutOf(g.res.ix3, s.Rec).Size)
 		}
 	}
-	return fw.String(), cw.String(), tw.String()
+	return bw.String(), chunks, cw.String(), tw.String()
+}
+
+// funcChunk renders one bound function: the lazy symbol variable and its wrapper. It is
+// one planner chunk, grouped by family so a widget's functions stay in one file.
+func (g *gen) funcChunk(name, csym string, sig Sig) genplan.Chunk {
+	var w strings.Builder
+	g.emitFunc(&w, name, csym, sig)
+	return genplan.Chunk{Group: familyOf(name), Owner: ownerOf(name), Text: w.String()}
 }
 
 // collectUnpacks notes which structs get an unpack(): the wrappers call it after C filled one in.

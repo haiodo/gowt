@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	"log"
 	"net"
 	"os"
 	"path/filepath"
@@ -52,6 +53,9 @@ type response struct {
 	Result any    `json:"result,omitempty"`
 	Error  string `json:"error,omitempty"`
 }
+
+// resetMissing makes the warning about a missing reset handler appear once.
+var resetMissing sync.Once
 
 const (
 	cmdTimeout    = 10 * time.Second
@@ -534,6 +538,13 @@ func (s *server) state(raw json.RawMessage) (any, error) {
 	}
 	fn := handler(a.Name)
 	if fn == nil {
+		// qatest ignores the error of "reset", so an app without one would silently carry its state
+		// from test to test: say so in the log.
+		if a.Name == "reset" {
+			resetMissing.Do(func() {
+				log.Print("qa: no \"reset\" handler: each test starts from the state the previous one left")
+			})
+		}
 		return nil, fmt.Errorf("state: no handler %q", a.Name)
 	}
 	args, err := NewArgs(a.Args)

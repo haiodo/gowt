@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added: a QA build with no `reset` handler logs one line saying so. `qatest.App` ignores the refusal, so
+  an app without `reset` carried its windows and models from test to test with no other sign.
+
 ## v0.15.3 (2026-11-04)
 
 - Fixed: Windows WebView2 reports browser and renderer process failures through `OnNavigationFailed`. Renderer and frame-renderer exits abort only the operations in flight, so later navigation and evaluation can recover; a browser-process exit remains fatal.

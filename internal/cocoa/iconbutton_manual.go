@@ -118,12 +118,12 @@ func ButtonBorderShape(view *NSView) int {
 
 // SetAccessibilityLabel is what VoiceOver reads for a control without text, such as an icon button.
 func SetAccessibilityLabel(view *NSView, s string) {
-	msg(uintptr(view.Id), "setAccessibilityLabel:", nsString(s))
+	msg(axHandle(view), "setAccessibilityLabel:", nsString(s))
 }
 
 // AccessibilityLabel returns the label set by SetAccessibilityLabel.
 func AccessibilityLabel(view *NSView) string {
-	return goString(msg(uintptr(view.Id), "accessibilityLabel"))
+	return goString(msg(axHandle(view), "accessibilityLabel"))
 }
 
 // SetGlassButton gives a push NSButton the macOS 26 glass bezel; older systems and borderless

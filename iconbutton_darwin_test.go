@@ -7,7 +7,7 @@ import (
 )
 
 // Circle and Borderless set the AppKit bezel, which stays through the layout pass that sizes the
-// button (SWT used to put the push bezel back there); the accessibility label reaches the view.
+// button (SWT used to put the push bezel back there); the accessibility label reaches the cell.
 func TestIconButtonBezel(t *testing.T) {
 	guiRun(t, func(app *App, w *Window) {
 		circle := put[*ButtonView](w, Button("", Circle(), Size(40, 40), AccessibleLabel("Attach")))

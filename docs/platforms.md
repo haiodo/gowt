@@ -20,7 +20,7 @@ Same Go program, three native back ends. What differs:
 | Dark mode | whole UI | title bar; content with `look.SetDarkContent` | from the portal; not verified live |
 | Menu bar | application menu bar | window menu bar | window menu bar |
 
-Not in the facade on any OS: `Accessible` (a stub on all three OSes). Clipboard, drag and drop and `StyledText` are wrapped; see the caveats under Known gaps. On Windows the facade brings the manifest (visual styles, DPI awareness) itself, see [install.md](install.md).
+Not in the facade on any OS: `Accessible` (a no-op stub on Linux; translated but not fully wired on macOS, see Known gaps). Clipboard, drag and drop and `StyledText` are wrapped; see the caveats under Known gaps. On Windows the facade brings the manifest (visual styles, DPI awareness) itself, see [install.md](install.md).
 
 ## Test numbers
 
@@ -55,7 +55,7 @@ Counted from the reasons in `tests/expected*.txt` and from the task notes. "Not 
 **All platforms**
 - `Browser` (over package `webview`) does not support the Authentication event; the other events, `setUrl` with post data or headers, `setJavascriptEnabled` and the cookie statics are implemented (Browser tests that fail: macOS 2, Windows 61 plus 5 flaky, Linux none and 1 flaky). 16 Browser tests are skipped on macOS and 8 on Linux (mostly SWT assumptions for other engines).
 - `CoolItem`: 4 tests (`getBounds`, `getPreferredSize`, `setControl`, `setSize`) are skipped everywhere: upstream comments the class out of `AllWidgetTests` ("Failing test"), and the emulated CoolBar gives a lone item the whole bar width.
-- `Accessible` is a stub.
+- `Accessible` on Linux is a no-op stub: no accessibility tree is built and the listeners are dropped (`swt/widgets_stubs2_manual_linux.go`); standard GTK controls still carry their native ATK identity (role, name, value, focus, actions), and `AccessibleLabel` sets the ATK name. On macOS and Windows the SWT `Accessible` is translated, but on macOS its delegate is never attached to the accessible cell or view, so listeners registered there reach no native accessibility query; common controls do not need it - AppKit exposes their accessibility natively and `AccessibleLabel` sets `accessibilityLabel` on the accessible cell, or on the view when there is no cell. On Windows the translated COM object answers `WM_GETOBJECT` (`CreateStdAccessibleObject` plus the listener dispatch) and `AccessibleLabel` overrides the MSAA name through it; roles, values and actions of the standard control classes come through the same object; keyboard focus is checked through UI Automation `HasKeyboardFocus`. The native-API checks are in `accessibility_gui_{darwin,windows,linux}_test.go` (run with `GOWT_GUI_TEST=1`).
 - Drag and drop was never driven with a real mouse (no test does); `FileTransfer` and `URLTransfer` native-to-Java tests are disabled on macOS, `URLTransfer` is not wrapped. Cross-process clipboard tests are skipped (no peer process), so only same-process round trips are tested.
 - `StyledText`: style rendering tests are skipped on macOS (upstream bugs 553090, 536588).
 

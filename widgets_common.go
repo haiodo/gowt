@@ -297,7 +297,7 @@ func Circle() Option {
 }
 
 // AccessibleLabel names a widget for screen readers, which an icon-only Button has no text for.
-// macOS: accessibilityLabel; GTK: the ATK name; Windows has no accessibility in the toolkit.
+// macOS: accessibilityLabel; GTK: the ATK name; Windows: the MSAA name through the toolkit Accessible.
 func AccessibleLabel(s string) Option {
 	return hook(func(w Widget) error {
 		setAccessibleLabel(w.control(), s)

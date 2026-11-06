@@ -42,8 +42,13 @@ func styleSegment(b *swt.Button, i, n int) {
 	}
 }
 
-// Accessible is a stub in the toolkit on Windows.
-func setAccessibleLabel(*swt.Control, string) {}
+// setAccessibleLabel overrides the MSAA name through the toolkit Accessible: the COM object
+// answers WM_GETOBJECT and get_accName consults the AccessibleListeners before the default proxy.
+func setAccessibleLabel(c *swt.Control, s string) {
+	c.GetAccessible().AddAccessibleListener(swt.AccessibleListenerGetNameAdapter(func(e *swt.AccessibleEvent) {
+		e.Result = s
+	}))
+}
 
 func setButtonKind(b *swt.Button, kind int) {
 	fluent.ButtonKind(b, kind&buttonPrimary != 0, kind&buttonDestructive != 0)

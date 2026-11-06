@@ -26,7 +26,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Momentary()` | Segmented: the segments are buttons that run `OnSelect` and do not stay selected |
 | `Collapsed()`, `Trailing(children...)` | Disclosure: start folded; widgets at the right end of the header |
 | `Disabled()`, `Tooltip(s)`, `Background(RGB)` | any widget |
-| `AccessibleLabel(s)` | any widget: the name a screen reader says for a control with no text, an icon-only Button. macOS `accessibilityLabel`, Linux the ATK name, Windows nothing (`Accessible` is a stub) |
+| `AccessibleLabel(s)` | any widget: the name a screen reader says for a control with no text, an icon-only Button. macOS `accessibilityLabel` on the accessible cell or view, Linux the ATK name, Windows the MSAA name through the toolkit `Accessible` |
 | `ID(id)` | any widget, a Panel or a Window: names it for the QA driver, which picks controls by it. Stored in the data key `gowt.id` in every build, it changes nothing on screen. Rows made by `Each` pass an id from their row data |
 | `Gap(n)`, `Padding(n)` | containers: space between children and from the edge, see [windows-layouts.md](windows-layouts.md) |
 | `Ref(&x)`, `Init(f)` | store the created widget in `x`; run `f` on it once it and its children exist |
@@ -40,6 +40,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `BindText(r)`, `BindEnabled(r)`, `BindVisible(r)` | Label, Button, Link text; enabled and visible state of any widget, see [events.md](events.md) |
 | `NoBorder()` | drops the frame of List, Table, Tree, and the one `Border()` gives a Text or StyledText (it wins over `Border()` in either order) |
 | `NoBackground()` | StyledText paints no background of its own: a `look.SetMaterial` pane or a coloured panel under it shows through; selected text and `TextStyle` backgrounds are still drawn |
+| `NoHScroll()` | `Scroll`: no horizontal bar, the content scrolls vertically only |
 | `CellSelect()` | Tree selects only the node text instead of the whole row |
 | `Search()` | Text as a search field with a magnifier icon and a clear button |
 | `Grow()`, `GrowX()`, `GrowY()`, `Span(n)`, `Size(w, h)`, `Place(h, v)`, `Cell(GridCell)`, `Anchor(FormCell)` | position in the parent's layout, see [windows-layouts.md](windows-layouts.md) |

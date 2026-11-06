@@ -190,17 +190,28 @@ func TestSidebarIconTable(t *testing.T) {
 					w.Close()
 					return
 				}
-				for _, k := range []int32{swt.ARROW_DOWN, swt.ARROW_DOWN, swt.ARROW_UP} {
+				keys := []int32{swt.ARROW_DOWN, swt.ARROW_DOWN, swt.ARROW_UP}
+				var postArrow func(int)
+				postArrow = func(i int) {
+					if i == len(keys) {
+						app.After(500*time.Millisecond, func() {
+							sel = append(sel, table.Index())
+							w.Close()
+						})
+						return
+					}
 					ev := swt.NewEvent()
-					ev.Type, ev.KeyCode = swt.KeyDown, k
-					app.Unwrap().Post(ev)
+					ev.Type, ev.KeyCode = swt.KeyDown, keys[i]
+					if !app.Unwrap().Post(ev) {
+						t.Errorf("post key down %d failed", keys[i])
+					}
 					ev.Type = swt.KeyUp
-					app.Unwrap().Post(ev)
+					if !app.Unwrap().Post(ev) {
+						t.Errorf("post key up %d failed", keys[i])
+					}
+					app.After(100*time.Millisecond, func() { postArrow(i + 1) })
 				}
-				app.After(500*time.Millisecond, func() {
-					sel = append(sel, table.Index())
-					w.Close()
-				})
+				postArrow(0)
 			})
 		})
 	})

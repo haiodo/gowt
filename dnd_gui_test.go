@@ -19,7 +19,7 @@ type dndFixture struct {
 	w              *Window
 	src, dst       *TreeView
 	src2, dst2     *ListView
-	urlSrc, urlDst *LabelView
+	urlSrc, urlDst *CanvasView
 	cv             *CanvasView
 	files          []string   // dragged by src2
 	cancelNext     bool       // the next OnStart cancels its drag
@@ -49,8 +49,8 @@ func newDndFixture(app *App, files []string) *dndFixture {
 			Canvas(func(g *GC) {}, Ref(&f.cv), Size(110, 120)),
 			List([]string{"one.txt", "two.txt"}, Ref(&f.src2), Size(110, 120)),
 			List(nil, Ref(&f.dst2), Size(110, 120)),
-			Label("url source", Ref(&f.urlSrc), Size(160, 120)),
-			Label("url target", Ref(&f.urlDst), Size(160, 120))))
+			Canvas(func(g *GC) {}, Ref(&f.urlSrc), Size(160, 120)),
+			Canvas(func(g *GC) {}, Ref(&f.urlDst), Size(160, 120))))
 	note := func(format string, a ...any) {
 		f.mu.Lock()
 		f.log = append(f.log, fmt.Sprintf(format, a...))

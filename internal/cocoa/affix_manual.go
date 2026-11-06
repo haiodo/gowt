@@ -52,6 +52,7 @@ var (
 	affixConvertRect           func(self, sel uintptr, r NSRect, view uintptr) NSRect
 	affixDeltaX                func(self, sel uintptr) float64
 	affixWithAlpha             func(self, sel uintptr, a float64) uintptr
+	superAutoscroll            func(self, sel, event uintptr) uintptr
 	affixTransparency          func(cg, aux uintptr)
 	affixEndTransparency       func(cg uintptr)
 	affixSetAlpha              func(cg uintptr, a float64)
@@ -184,6 +185,26 @@ func affixInit() {
 	addMethod(scrubClass, sel("mouseDragged:"), dragged, "v@:@")
 	addMethod(scrubClass, sel("mouseUp:"), up, "v@:@")
 	registerClass(scrubClass)
+
+	// A drag with the mouse down autoscrolls the clip of the field editor; a one-line clip that
+	// scrolled draws the value off the prefix's line and stays there after the mouse is released.
+	// Re-place the editor after the scroll, keeping the horizontal follow of the caret.
+	clip := class("NSClipView")
+	autoscroll := sel("autoscroll:")
+	purego.RegisterFunc(&superAutoscroll, uintptr(OSClass_getMethodImplementation(int64(clip), int64(autoscroll))))
+	restore := NewCallback(func(self, cmd, event uintptr) uintptr {
+		out := superAutoscroll(self, cmd, event)
+		field := msg(self, "superview")
+		if affixes[field] != nil {
+			if doc := msg(self, "documentView"); doc != 0 {
+				placeFieldEditor(field, doc)
+			}
+		}
+		return out
+	})
+	if !OSClass_addMethod(int64(clip), int64(autoscroll), int64(restore), "c@:@") {
+		OSMethod_setImplementation(OSClass_getInstanceMethod(int64(clip), int64(autoscroll)), int64(restore))
+	}
 }
 
 // affixStateOf is the state of the field v, with the cell class installed on first use.
@@ -234,6 +255,16 @@ func SetFieldAffix(view *NSView, a FieldAffix) {
 
 // ReleaseFieldAffix forgets the affixes of view; the cell keeps its class and draws as a plain field.
 func ReleaseFieldAffix(view *NSView) { delete(affixes, uintptr(view.Id)) }
+
+// CentreFieldText centres the text of a single-line field vertically in its frame: AppKit draws a
+// borderless field's text at the top of the frame, which shows in an editor as tall as a table row.
+// Unlike SetFieldAffix it draws no affixes and adds no inset or handle; only the title rect moves.
+func CentreFieldText(view *NSView) {
+	affixInit()
+	v := uintptr(view.Id)
+	affixStateOf(v)
+	msg(v, "setNeedsDisplay:", 1)
+}
 
 // FieldAffixHandle returns the scrub handle view of a field with a Drag, 0 without one.
 func FieldAffixHandle(view *NSView) uintptr {

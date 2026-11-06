@@ -1,6 +1,7 @@
 package gowt
 
 import (
+	"math"
 	"os"
 	"structs"
 	"testing"
@@ -10,6 +11,67 @@ import (
 	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/swt"
 )
+
+// The editor of an inline tree rename is as tall as its row; AppKit puts the text of a borderless
+// field at the top of the frame, so the value must be drawn on the line in the middle of the row.
+func TestTreeEditTextCentred(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	onMain(func() {
+		err := Run(func(app *App) {
+			app.OnError(func(err error) { t.Error(err) })
+			w := app.Window("Tree editing")
+			var tree *TreeView
+			w.Add(Tree(Ref(&tree), Grow()))
+			w.SetSize(400, 300)
+			node := tree.Node("Bars")
+			w.Show()
+			app.After(200*time.Millisecond, func() {
+				defer w.Close()
+				tree.Edit(node, nil, nil)
+				var field *swt.Text
+				for _, child := range tree.t.GetChildren() {
+					if text, ok := child.Impl().(*swt.Text); ok && !text.IsDisposed() {
+						field = text
+					}
+				}
+				if field == nil {
+					t.Fatal("no tree editor")
+				}
+				row, bounds := node.it.GetBoundsIndex(0), field.GetBounds()
+				if bounds.Y != row.Y || bounds.Height != row.Height {
+					t.Errorf("editor %v, row %v: the field must hug the row", bounds, row)
+				}
+				// The dark pixels of the value, in field points: the row's own text is covered by the
+				// editor, so what is left is the editing text.
+				view := field.View
+				area := view.Bounds()
+				rep := view.BitmapImageRepForCachingDisplayInRect(area)
+				view.CacheDisplayInRect(area, rep)
+				top, bottom := area.Height, 0.0
+				for y := int64(0); y < rep.PixelsHigh(); y++ {
+					for x := int64(0); x < rep.PixelsWide(); x++ {
+						c := rep.ColorAtX(x, y)
+						if c.AlphaComponent() > 0.5 && c.RedComponent() < 0.3 && c.GreenComponent() < 0.3 && c.BlueComponent() < 0.3 {
+							top = math.Min(top, float64(y)/2)
+							bottom = math.Max(bottom, float64(y)/2)
+						}
+					}
+				}
+				if bottom <= top {
+					t.Fatal("no text in the tree editor")
+				}
+				if centre := (top + bottom) / 2; math.Abs(centre-float64(bounds.Height)/2) > 1.5 {
+					t.Errorf("text rows %v..%v (centre %v) in a row of %v: not centred", top, bottom, centre, bounds.Height)
+				}
+			})
+		})
+		if err != nil {
+			t.Error(err)
+		}
+	})
+}
 
 func TestTreeEditNativeKeys(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {

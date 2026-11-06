@@ -114,6 +114,11 @@ func fieldLook(t *TextView, noBorder bool) {
 	if styled {
 		t.t.AddListener(swt.FocusIn, listenerFunc(func(*swt.Event) { placeFieldEditor(t.t) }))
 	}
+	if noBorder && t.t.GetStyle()&swt.MULTI == 0 && t.t.GetDataKey("gowt.fieldAffix") == nil {
+		// A borderless field keeps the text on its line even in a frame taller than one line; the
+		// affix cell is installed without affixes, so nothing is drawn and no inset is added.
+		centreField(t.t)
+	}
 }
 
 func (t *TextView) repaintField(dark bool) {

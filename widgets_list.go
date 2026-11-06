@@ -572,6 +572,7 @@ func (t *TreeView) Edit(n *Node, onCommit func(string), onCancel func()) {
 	text := swt.NewText(t.t, swt.SINGLE)
 	text.SetText(n.Text())
 	text.SetFont(t.t.GetFont())
+	centreField(text)
 	setAccessibleLabel(&text.Control, "Edit "+n.Text())
 	editor := swt.NewTreeEditor(t.t)
 	editor.HorizontalAlignment = swt.LEFT

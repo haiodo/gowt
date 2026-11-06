@@ -44,11 +44,11 @@ func newDndFixture(app *App, files []string) *dndFixture {
 	f := &dndFixture{files: files}
 	f.w = app.Window("dnd",
 		HBox(Gap(10),
-			Tree(Ref(&f.src), Size(160, 120), Init(func(t *TreeView) { t.Node("apple"); t.Node("pear") })),
-			Tree(Ref(&f.dst), Size(160, 120), Init(func(t *TreeView) { t.Node("basket"); t.Node("crate") })),
-			Canvas(func(g *GC) {}, Ref(&f.cv), Size(160, 120)),
-			List([]string{"one.txt", "two.txt"}, Ref(&f.src2), Size(160, 120)),
-			List(nil, Ref(&f.dst2), Size(160, 120)),
+			Tree(Ref(&f.src), Size(110, 120), Init(func(t *TreeView) { t.Node("apple"); t.Node("pear") })),
+			Tree(Ref(&f.dst), Size(110, 120), Init(func(t *TreeView) { t.Node("basket"); t.Node("crate") })),
+			Canvas(func(g *GC) {}, Ref(&f.cv), Size(110, 120)),
+			List([]string{"one.txt", "two.txt"}, Ref(&f.src2), Size(110, 120)),
+			List(nil, Ref(&f.dst2), Size(110, 120)),
 			Label("url source", Ref(&f.urlSrc), Size(160, 120)),
 			Label("url target", Ref(&f.urlDst), Size(160, 120))))
 	note := func(format string, a ...any) {
@@ -108,7 +108,7 @@ func newDndFixture(app *App, files []string) *dndFixture {
 	urlDrop := swt.NewDropTarget(f.urlDst.Unwrap(), swt.DNDDROP_COPY|swt.DNDDROP_DEFAULT)
 	urlDrop.SetTransfer([]*swt.Transfer{urlTransfer.AsTransfer()})
 	urlDrop.AddDropListener(&urlTargetListener{DropTargetAdapter: swt.NewDropTargetAdapter(), note: note})
-	f.w.SetSize(1250, 300)
+	f.w.SetSize(980, 300)
 	return f
 }
 
@@ -163,7 +163,7 @@ func row(tv *TreeView, i int32) swt.Point {
 
 // dragPointer presses at from, moves in steps to to, hovers there and releases. It waits, 3 s at most
 // each, for the drag to start before it leaves the source and, when over is not empty, for that log
-// line at the target; with over == "" it hovers a fixed count of moves (rejected drops and cancelled
+// line at the target and always hovers ten moves before mouse-up (rejected drops and cancelled
 // drags log no over line). It waits, again 3 s at most, for the end: on a slow machine the first drag
 // session of a process started late, and the pointer had reached the target before it, so no DragOver ran.
 func dragPointer(app *App, f *dndFixture, from, to swt.Point, over string) bool {
@@ -185,10 +185,7 @@ func dragPointer(app *App, f *dndFixture, from, to swt.Point, over string) bool 
 			time.Sleep(60 * time.Millisecond)
 		}
 	}
-	min := int32(4) // hover moves at the target: an accepted drop waits for its over line, others wait fixed
-	if over == "" {
-		min = 10
-	}
+	min := int32(10) // let the native target finish DragEnter before mouse-up
 	wait := time.Now().Add(3 * time.Second)
 	for i := int32(0); ok && (i < min || over != "" && !f.seen(n, over) && time.Now().Before(wait)); i++ {
 		ok = postMouse(app, swt.MouseMove, to.X+i%2, to.Y)
@@ -302,7 +299,7 @@ func TestDndRealMouseScenarios(t *testing.T) {
 				filesFrom := pointer(app, swt.Point{X: fileStart.X, Y: fileStart.Y})
 				filesTo := pointer(app, center(f.dst2))
 				rejectedFrom := pointer(app, row(f.src, 0))
-				emptyP := f.dst.Unwrap().ToDisplay(100, 112)
+				emptyP := f.dst.Unwrap().ToDisplay(80, 112)
 				rejectedTo := pointer(app, swt.Point{X: emptyP.X, Y: emptyP.Y})
 				cancelFrom, cancelTo := pointer(app, row(f.src, 1)), pointer(app, row(f.dst, 0))
 				urlFrom, urlTo := pointer(app, center(f.urlSrc)), pointer(app, center(f.urlDst))

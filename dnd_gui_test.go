@@ -109,6 +109,7 @@ func newDndFixture(app *App, files []string) *dndFixture {
 	urlDrop.SetTransfer([]*swt.Transfer{urlTransfer.AsTransfer()})
 	urlDrop.AddDropListener(&urlTargetListener{DropTargetAdapter: swt.NewDropTargetAdapter(), note: note})
 	f.w.SetSize(980, 300)
+	f.w.Unwrap().SetLocation(0, 0)
 	return f
 }
 

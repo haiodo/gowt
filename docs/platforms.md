@@ -36,7 +36,7 @@ SWT's translated JUnit tests, `make test-swt`, counted from `tests/expected*.txt
 
 3894 tests in all. JFace tests (`expected_jface*.txt`): 86 pass, 1 skip on macOS; 85 pass, 1 fail, 1 skip on Linux and Windows.
 
-CI (GitHub Actions) cross-builds and vets darwin, linux and windows on amd64 and arm64, runs `gen-check` and `xcheck`/`api-check`/`licence-check`/`docs-counts`/`map-check`, and runs the GUI gates in Linux Docker under Xvfb: swt tests, jface tests, unit tests, and the GUI tests of every package that has them (`make check-gui`, `GOWT_GUI_TEST=1`, webview and the `qa/qatest` e2e among them). The hosted `windows-latest` and `macos-latest` runners build, vet and run the unit tests too, and run the GUI tests of their OS in a separate job that collects crash artifacts. The swt and jface gates for macOS and Windows run locally and on the VMs. Every non-pass line in the expected files has a reason; none is `UNDESCRIBED` now.
+CI (GitHub Actions) uses three workers. The Linux worker builds and vets linux on amd64 and arm64, runs `gen-check` and `xcheck`/`api-check`/`licence-check`/`docs-counts`/`map-check`, and runs all gates in one Docker image under Xvfb: swt tests, jface tests, unit tests, the GUI tests of every package that has them (`make check-gui`, `GOWT_GUI_TEST=1`, webview and the `qa/qatest` e2e among them), and DCO for pull requests. The hosted `windows-latest` and `macos-latest` workers each build and vet both architectures, run unit tests, and run the GUI tests of their OS in the same worker with crash artifacts. The swt and jface gates for macOS and Windows run locally and on the VMs. Every non-pass line in the expected files has a reason; none is `UNDESCRIBED` now.
 
 ## How the ports differ
 

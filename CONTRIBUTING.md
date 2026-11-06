@@ -17,7 +17,7 @@ Go 1.27 or newer (see `go.mod`). No C compiler, no Java.
 
 The tests that open windows skip unless `GOWT_GUI_TEST=1` is set. With it, the tests in the facade, `look`, `icons`, `swt`, `webview`, `qa/qatest` and `examples/qa` open real windows on your desktop. Without a display on Linux, use `xvfb-run`.
 
-Hosted CI builds and vets every OS and runs the Linux gates under Xvfb. The macOS and Windows window tests are not run there.
+Hosted CI uses three workers. Linux runs repository-wide checks and all Linux gates under Xvfb with one Docker image. macOS and Windows each build and vet both architectures, run unit tests, and run native GUI tests with crash artifacts.
 
 ## Generated code
 

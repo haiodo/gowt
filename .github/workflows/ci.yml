@@ -15,37 +15,13 @@ permissions:
 env:
   CGO_ENABLED: "0"
 
-# On the Linux runner the GUI gates run in the Docker stand under Xvfb. On the hosted Windows and macOS runners
-# the native jobs build, vet and run the non-GUI tests; their required GUI job runs separately.
-# The translated SWT and JFace gates run in the Linux stand below.
+# Three workers: Linux runs every Linux and repository-wide gate; Windows and macOS each run their
+# native build, unit and GUI checks. Gates within a worker share checkout, toolchain and Docker image.
 jobs:
-  build-vet:
-    name: build and vet ${{ matrix.goos }}/${{ matrix.goarch }}
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        goos: [darwin, linux, windows]
-        goarch: [amd64, arm64]
-    env:
-      GOOS: ${{ matrix.goos }}
-      GOARCH: ${{ matrix.goarch }}
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-go@v7
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
-      # Pure Go (CGO_ENABLED=0), so every target cross-builds on one runner.
-      - run: go build ./...
-      # vet type-checks the test files too.
-      - run: go vet ./...
-
-  # The code was only cross-built for Windows and macOS here, so a crash that exists on windows/amd64 alone went unseen.
   native:
-    name: ${{ matrix.os }} build, vet and test
+    name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 40
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -62,9 +38,14 @@ jobs:
           exe="$(pwd -W 2>/dev/null || pwd)/testexec.exe"
           go build -o "$exe" ./tooling/testexec
           echo "GOFLAGS='-exec=\"$exe\"'" >> "$GITHUB_ENV"
-      - run: go build ./...
-      - run: go vet ./...
-      # No GOWT_GUI_TEST: the tests that open windows skip themselves.
+      - name: Build and vet amd64 and arm64
+        shell: bash
+        run: |
+          for arch in amd64 arm64; do
+            GOARCH=$arch go build ./... || exit 1
+            GOARCH=$arch go vet ./... || exit 1
+          done
+      # No GOWT_GUI_TEST yet: tests that open windows skip themselves here.
       - name: Tests
         shell: bash
         run: |
@@ -77,36 +58,8 @@ jobs:
           name: test-logs-${{ matrix.os }}
           path: test-logs
           if-no-files-found: ignore
-
-  # Real windows. Packages with GOWT_GUI_TEST tests run one after another (-p 1), as make check-gui does; bash so
-  # that one package list works on both runners (make is not assumed on Windows).
-  native-gui:
-    name: ${{ matrix.os }} gui tests
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 40
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, macos-latest]
-    env:
-      GOWT_GUI_TEST: "1"
-      GOWT_SHOT_TRACE: "1"
-      GOWT_TRACE_LIFECYCLE: "1"
-      GOTRACEBACK: system
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-go@v7
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
-      - name: Test process diagnostics
-        shell: bash
-        run: |
-          exe="$(pwd -W 2>/dev/null || pwd)/testexec.exe"
-          go build -o "$exe" ./tooling/testexec
-          echo "GOFLAGS='-exec=\"$exe\"'" >> "$GITHUB_ENV"
       - name: Windows crash dumps
-        if: runner.os == 'Windows'
+        if: ${{ !cancelled() && runner.os == 'Windows' }}
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -120,7 +73,7 @@ jobs:
           $procdump = (Get-Item (Join-Path $procdumpFolder 'procdump64.exe')).FullName
           "GOWT_PROCDUMP=$procdump" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           "GOWT_CRASH_DIR=$dumpFolder" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-          $key = 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps'
+          $key = 'HKLM:\SOFTWARE\Microsoft\Windows Error Reporting\LocalDumps'
           New-Item -Path $key -Force | Out-Null
           New-ItemProperty -Path $key -Name DumpFolder -PropertyType ExpandString -Value $dumpFolder -Force | Out-Null
           New-ItemProperty -Path $key -Name DumpCount -PropertyType DWord -Value 5 -Force | Out-Null
@@ -133,7 +86,7 @@ jobs:
             Get-ItemProperty 'HKCU:\Control Panel\Desktop' | Select-Object LogPixels, Win8DpiScaling | Format-List
           } | Out-File -FilePath (Join-Path $dumpFolder 'runner-settings.txt') -Encoding utf8
       - name: Runner settings the GUI tests depend on
-        if: runner.os == 'macOS'
+        if: ${{ !cancelled() && runner.os == 'macOS' }}
         shell: bash
         run: |
           sw_vers
@@ -143,14 +96,22 @@ jobs:
             echo "$k: $(defaults read $k 2>&1)"
           done
           system_profiler SPDisplaysDataType | grep -E 'Chipset|Metal|Resolution' || true
-      - name: GUI artifact directories
+      - name: GUI test settings and artifact directories
+        if: ${{ !cancelled() }}
         shell: bash
         run: |
           art="$(pwd -W 2>/dev/null || pwd)/gui-artifacts"
-          echo "GOWT_QA_ARTIFACTS=$art/qa" >> "$GITHUB_ENV"
-          echo "GOWT_PIXELS_DIR=$art/pixels" >> "$GITHUB_ENV"
-          echo "GOWT_TEST_SHOTS=$art/shots" >> "$GITHUB_ENV"
+          {
+            echo "GOWT_QA_ARTIFACTS=$art/qa"
+            echo "GOWT_PIXELS_DIR=$art/pixels"
+            echo "GOWT_TEST_SHOTS=$art/shots"
+            echo "GOWT_GUI_TEST=1"
+            echo "GOWT_SHOT_TRACE=1"
+            echo "GOWT_TRACE_LIFECYCLE=1"
+            echo "GOTRACEBACK=system"
+          } >> "$GITHUB_ENV"
           mkdir -p "$art/qa" "$art/pixels" "$art/shots"
+      # Packages with GUI tests run serially because they share the desktop and focus.
       - name: Packages with GOWT_GUI_TEST tests
         if: ${{ !cancelled() }}
         shell: bash
@@ -203,26 +164,26 @@ jobs:
           path: gui-artifacts
           if-no-files-found: ignore
 
-  checks:
-    name: xcheck, api-check, licence-check, docs-counts and map-check
+  linux:
+    name: linux
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
-      - run: make xcheck api-check licence-check docs-counts map-check
-
-  # Committed swt/, jface/, browser/, tests/ and examples/ equal what make gen produces on all three platforms.
-  gen-check:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-go@v7
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
+      - name: Build and vet amd64 and arm64
+        run: |
+          for arch in amd64 arm64; do
+            GOARCH=$arch go build ./... || exit 1
+            GOARCH=$arch go vet ./... || exit 1
+          done
+      - name: xcheck, api-check, licence-check, docs-counts and map-check
+        run: make xcheck api-check licence-check docs-counts map-check
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
@@ -247,37 +208,8 @@ jobs:
           }
           fetch eclipse.platform.swt https://github.com/eclipse-platform/eclipse.platform.swt.git "$SWT_SHA"
           fetch eclipse.platform.ui https://github.com/eclipse-platform/eclipse.platform.ui.git "$UI_SHA"
-      - run: SWT_REPO="$HOME/upstream/eclipse.platform.swt" UI_REPO="$HOME/upstream/eclipse.platform.ui" make gen-check
-
-  # The Linux GUI stand (tooling/linux/Dockerfile): the gtk port under Xvfb. Each gate builds the image from the shared layer cache.
-  linux-gates:
-    name: linux ${{ matrix.gate }}
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # tests/expected_linux.txt: the translated SWT JUnit tests on the gtk port.
-          - gate: swt tests
-            cmd: >-
-              go build -o /tmp/swttest ./cmd/swttest &&
-              /tmp/swttest -expected tests/expected_linux.txt
-          - gate: jface tests
-            cmd: >-
-              go build -tags jface -o /tmp/jfacetest ./cmd/swttest &&
-              /tmp/jfacetest -expected tests/expected_jface_linux.txt
-          # Unit tests (the one that needs a display, swt TestApplyAccent, runs against Xvfb).
-          - gate: unit tests
-            cmd: go test -v -count=1 ./...
-          # Every package with GOWT_GUI_TEST tests (facade, look, icons, qa/qatest e2e, examples/qa, webview), one package at a time.
-          - gate: gui tests
-            cmd: GOWT_GUI_TEST=1 go test -v -count=1 -p 1 $(make -s check-gui-list)
-          - gate: qa tree focus
-            cmd: GOWT_GUI_TEST=1 go test -v -count=1 -tags gowtqa -run TestQATreeFocus .
-          - gate: qa sidebar and inspector focus
-            cmd: GOWT_GUI_TEST=1 go test -v -count=1 -tags gowtqa -run "^(TestSidebarFocus|TestInspectorFocus)$" ./look
-    steps:
-      - uses: actions/checkout@v7
+      - name: gen-check
+        run: SWT_REPO="$HOME/upstream/eclipse.platform.swt" UI_REPO="$HOME/upstream/eclipse.platform.ui" make gen-check
       - uses: docker/setup-buildx-action@v4
       - uses: docker/build-push-action@v7
         with:
@@ -294,35 +226,52 @@ jobs:
           key: linux-go-${{ hashFiles('go.sum') }}-${{ github.sha }}
           restore-keys: |
             linux-go-${{ hashFiles('go.sum') }}-
-      - name: Run the gate in the image
-        # stand.sh starts Xvfb :99 first; the container runs as root, so the cache dirs are handed back afterwards.
-        shell: bash
+      # stand.sh starts Xvfb :99. Every gate uses the same image and continues after an earlier gate failure.
+      - name: linux swt tests
+        if: ${{ !cancelled() }}
         run: |
           set -o pipefail
-          mkdir -p test-logs
-          mkdir -p ~/.cache/gowt-gocache ~/.cache/gowt-gomod
+          mkdir -p test-logs ~/.cache/gowt-gocache ~/.cache/gowt-gomod
           docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
-            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS="$GOFLAGS -exec=/tmp/testexec" GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && ${{ matrix.cmd }}' 2>&1 | tee test-logs/gate.log
-      - uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: test-logs-linux-${{ matrix.gate }}
-          path: test-logs
-          if-no-files-found: ignore
-      - name: Return cache ownership
-        if: always()
-        run: sudo chown -R "$(id -u):$(id -g)" ~/.cache/gowt-gocache ~/.cache/gowt-gomod
-
-  # Developer Certificate of Origin: every commit of a pull request carries a Signed-off-by line (git commit -s).
-  dco:
-    name: DCO sign-off
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - name: Check Signed-off-by
+            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS="$GOFLAGS -exec=/tmp/testexec" GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && go build -o /tmp/swttest ./cmd/swttest && /tmp/swttest -expected tests/expected_linux.txt' 2>&1 | tee test-logs/swt.log
+      - name: linux jface tests
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          mkdir -p test-logs ~/.cache/gowt-gocache ~/.cache/gowt-gomod
+          docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
+            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS="$GOFLAGS -exec=/tmp/testexec" GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && go build -tags jface -o /tmp/jfacetest ./cmd/swttest && /tmp/jfacetest -expected tests/expected_jface_linux.txt' 2>&1 | tee test-logs/jface.log
+      - name: linux unit tests
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          mkdir -p test-logs ~/.cache/gowt-gocache ~/.cache/gowt-gomod
+          docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
+            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS="$GOFLAGS -exec=/tmp/testexec" GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && go test -v -count=1 ./...' 2>&1 | tee test-logs/unit.log
+      - name: linux gui tests
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          mkdir -p test-logs ~/.cache/gowt-gocache ~/.cache/gowt-gomod
+          docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
+            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS="$GOFLAGS -exec=/tmp/testexec" GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && GOWT_GUI_TEST=1 go test -v -count=1 -p 1 $(make -s check-gui-list)' 2>&1 | tee test-logs/gui.log
+      - name: linux qa tree focus
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          mkdir -p test-logs ~/.cache/gowt-gocache ~/.cache/gowt-gomod
+          docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
+            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS="$GOFLAGS -exec=/tmp/testexec" GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && GOWT_GUI_TEST=1 go test -v -count=1 -tags gowtqa -run TestQATreeFocus .' 2>&1 | tee test-logs/qa-tree.log
+      - name: linux qa sidebar and inspector focus
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          mkdir -p test-logs ~/.cache/gowt-gocache ~/.cache/gowt-gomod
+          docker run --rm -v "$PWD":/src -v ~/.cache/gowt-gocache:/gocache -v ~/.cache/gowt-gomod:/gomod \
+            gowt-linux:ci stand.sh sh -c 'cd /src && go build -o /tmp/testexec ./tooling/testexec && export GOFLAGS="$GOFLAGS -exec=/tmp/testexec" GOWT_TRACE_LIFECYCLE=1 GOTRACEBACK=system && GOWT_GUI_TEST=1 go test -v -count=1 -tags gowtqa -run "^(TestSidebarFocus|TestInspectorFocus)$" ./look' 2>&1 | tee test-logs/qa-panes.log
+      # Developer Certificate of Origin: every commit of a pull request carries a Signed-off-by line.
+      - name: DCO sign-off
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
@@ -338,3 +287,12 @@ jobs:
             echo "Add it with git commit -s, or git rebase --signoff $BASE for several commits. See CONTRIBUTING.md." >&2
             exit 1
           fi
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: test-logs-linux
+          path: test-logs
+          if-no-files-found: ignore
+      - name: Return cache ownership
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" ~/.cache/gowt-gocache ~/.cache/gowt-gomod

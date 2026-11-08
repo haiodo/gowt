@@ -23,793 +23,793 @@ import (
 var OSObjc_msgSendOverload10_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 NSRange, arg2 int64, arg3 []int64) int64]
 
 func OSObjc_msgSendOverload10(id int64, sel int64, arg0 NSRange, arg1 NSRange, arg2 int64, arg3 []int64) int64 {
-	return OSObjc_msgSendOverload10_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload10_lazy.get("OSObjc_msgSendOverload10", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendOverload11_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64) int64]
 
 func OSObjc_msgSendOverload11(id int64, sel int64, arg0 NSRange, arg1 int64) int64 {
-	return OSObjc_msgSendOverload11_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload11_lazy.get("OSObjc_msgSendOverload11", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload12_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 []int8) int64]
 
 func OSObjc_msgSendOverload12(id int64, sel int64, arg0 NSRange, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 []int8) int64 {
-	return OSObjc_msgSendOverload12_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
+	return OSObjc_msgSendOverload12_lazy.get("OSObjc_msgSendOverload12", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
 }
 
 var OSObjc_msgSendOverload13_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect) int64]
 
 func OSObjc_msgSendOverload13(id int64, sel int64, arg0 NSRect) int64 {
-	return OSObjc_msgSendOverload13_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload13_lazy.get("OSObjc_msgSendOverload13", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload14_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 NSPoint) int64]
 
 func OSObjc_msgSendOverload14(id int64, sel int64, arg0 NSRect, arg1 NSPoint) int64 {
-	return OSObjc_msgSendOverload14_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload14_lazy.get("OSObjc_msgSendOverload14", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload15_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 NSRect, arg2 int64, arg3 float64) int64]
 
 func OSObjc_msgSendOverload15(id int64, sel int64, arg0 NSRect, arg1 NSRect, arg2 int64, arg3 float64) int64 {
-	return OSObjc_msgSendOverload15_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload15_lazy.get("OSObjc_msgSendOverload15", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendOverload16_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 NSSize) int64]
 
 func OSObjc_msgSendOverload16(id int64, sel int64, arg0 NSRect, arg1 NSSize) int64 {
-	return OSObjc_msgSendOverload16_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload16_lazy.get("OSObjc_msgSendOverload16", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload17_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 bool) int64]
 
 func OSObjc_msgSendOverload17(id int64, sel int64, arg0 NSRect, arg1 bool) int64 {
-	return OSObjc_msgSendOverload17_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload17_lazy.get("OSObjc_msgSendOverload17", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload18_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 bool, arg2 bool) int64]
 
 func OSObjc_msgSendOverload18(id int64, sel int64, arg0 NSRect, arg1 bool, arg2 bool) int64 {
-	return OSObjc_msgSendOverload18_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload18_lazy.get("OSObjc_msgSendOverload18", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload19_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 float64) int64]
 
 func OSObjc_msgSendOverload19(id int64, sel int64, arg0 NSRect, arg1 float64) int64 {
-	return OSObjc_msgSendOverload19_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload19_lazy.get("OSObjc_msgSendOverload19", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload1_lazy lazyFunc[func(id int64, sel int64, arg0 NSAffineTransformStruct) int64]
 
 func OSObjc_msgSendOverload1(id int64, sel int64, arg0 NSAffineTransformStruct) int64 {
-	return OSObjc_msgSendOverload1_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload1_lazy.get("OSObjc_msgSendOverload1", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload20_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 float64, arg2 float64) int64]
 
 func OSObjc_msgSendOverload20(id int64, sel int64, arg0 NSRect, arg1 float64, arg2 float64) int64 {
-	return OSObjc_msgSendOverload20_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload20_lazy.get("OSObjc_msgSendOverload20", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload21_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64) int64]
 
 func OSObjc_msgSendOverload21(id int64, sel int64, arg0 NSRect, arg1 int64) int64 {
-	return OSObjc_msgSendOverload21_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload21_lazy.get("OSObjc_msgSendOverload21", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload22_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 bool, arg3 int64) int64]
 
 func OSObjc_msgSendOverload22(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 bool, arg3 int64) int64 {
-	return OSObjc_msgSendOverload22_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload22_lazy.get("OSObjc_msgSendOverload22", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendOverload23_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64) int64]
 
 func OSObjc_msgSendOverload23(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64) int64 {
-	return OSObjc_msgSendOverload23_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload23_lazy.get("OSObjc_msgSendOverload23", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload24_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool) int64]
 
 func OSObjc_msgSendOverload24(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool) int64 {
-	return OSObjc_msgSendOverload24_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload24_lazy.get("OSObjc_msgSendOverload24", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendOverload25_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool, arg4 int64) int64]
 
 func OSObjc_msgSendOverload25(id int64, sel int64, arg0 NSRect, arg1 int64, arg2 int64, arg3 bool, arg4 int64) int64 {
-	return OSObjc_msgSendOverload25_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
+	return OSObjc_msgSendOverload25_lazy.get("OSObjc_msgSendOverload25", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
 
 var OSObjc_msgSendOverload26_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize) int64]
 
 func OSObjc_msgSendOverload26(id int64, sel int64, arg0 NSSize) int64 {
-	return OSObjc_msgSendOverload26_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload26_lazy.get("OSObjc_msgSendOverload26", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload27_lazy lazyFunc[func(id int64, sel int64, arg0 bool) int64]
 
 func OSObjc_msgSendOverload27(id int64, sel int64, arg0 bool) int64 {
-	return OSObjc_msgSendOverload27_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload27_lazy.get("OSObjc_msgSendOverload27", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload28_lazy lazyFunc[func(id int64, sel int64, arg0 bool, arg1 NSRect) int64]
 
 func OSObjc_msgSendOverload28(id int64, sel int64, arg0 bool, arg1 NSRect) int64 {
-	return OSObjc_msgSendOverload28_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload28_lazy.get("OSObjc_msgSendOverload28", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload29_lazy lazyFunc[func(id int64, sel int64, arg0 bool, arg1 int64) int64]
 
 func OSObjc_msgSendOverload29(id int64, sel int64, arg0 bool, arg1 int64) int64 {
-	return OSObjc_msgSendOverload29_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload29_lazy.get("OSObjc_msgSendOverload29", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload2_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint) int64]
 
 func OSObjc_msgSendOverload2(id int64, sel int64, arg0 NSPoint) int64 {
-	return OSObjc_msgSendOverload2_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload2_lazy.get("OSObjc_msgSendOverload2", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload30_lazy lazyFunc[func(id int64, sel int64, arg0 []int8) int64]
 
 func OSObjc_msgSendOverload30(id int64, sel int64, arg0 []int8) int64 {
-	return OSObjc_msgSendOverload30_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload30_lazy.get("OSObjc_msgSendOverload30", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload31_lazy lazyFunc[func(id int64, sel int64, arg0 []int8, arg1 int64) int64]
 
 func OSObjc_msgSendOverload31(id int64, sel int64, arg0 []int8, arg1 int64) int64 {
-	return OSObjc_msgSendOverload31_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload31_lazy.get("OSObjc_msgSendOverload31", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload32_lazy lazyFunc[func(id int64, sel int64, arg0 []uint16) int64]
 
 func OSObjc_msgSendOverload32(id int64, sel int64, arg0 []uint16) int64 {
-	return OSObjc_msgSendOverload32_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload32_lazy.get("OSObjc_msgSendOverload32", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload33_lazy lazyFunc[func(id int64, sel int64, arg0 []uint16, arg1 NSRange) int64]
 
 func OSObjc_msgSendOverload33(id int64, sel int64, arg0 []uint16, arg1 NSRange) int64 {
-	return OSObjc_msgSendOverload33_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload33_lazy.get("OSObjc_msgSendOverload33", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload34_lazy lazyFunc[func(id int64, sel int64, arg0 []uint16, arg1 int64) int64]
 
 func OSObjc_msgSendOverload34(id int64, sel int64, arg0 []uint16, arg1 int64) int64 {
-	return OSObjc_msgSendOverload34_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload34_lazy.get("OSObjc_msgSendOverload34", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload35_lazy lazyFunc[func(id int64, sel int64, arg0 float64) int64]
 
 func OSObjc_msgSendOverload35(id int64, sel int64, arg0 float64) int64 {
-	return OSObjc_msgSendOverload35_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload35_lazy.get("OSObjc_msgSendOverload35", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload36_lazy lazyFunc[func(id int64, sel int64, arg0 float64, arg1 float64) int64]
 
 func OSObjc_msgSendOverload36(id int64, sel int64, arg0 float64, arg1 float64) int64 {
-	return OSObjc_msgSendOverload36_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload36_lazy.get("OSObjc_msgSendOverload36", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload37_lazy lazyFunc[func(id int64, sel int64, arg0 float64, arg1 float64, arg2 float64, arg3 float64) int64]
 
 func OSObjc_msgSendOverload37(id int64, sel int64, arg0 float64, arg1 float64, arg2 float64, arg3 float64) int64 {
-	return OSObjc_msgSendOverload37_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload37_lazy.get("OSObjc_msgSendOverload37", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendOverload38_lazy lazyFunc[func(id int64, sel int64, arg0 float64, arg1 int64, arg2 int64, arg3 int64, arg4 bool) int64]
 
 func OSObjc_msgSendOverload38(id int64, sel int64, arg0 float64, arg1 int64, arg2 int64, arg3 int64, arg4 bool) int64 {
-	return OSObjc_msgSendOverload38_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
+	return OSObjc_msgSendOverload38_lazy.get("OSObjc_msgSendOverload38", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
 
 var OSObjc_msgSendOverload39_lazy lazyFunc[func(id int64, sel int64, arg0 []float64) int64]
 
 func OSObjc_msgSendOverload39(id int64, sel int64, arg0 []float64) int64 {
-	return OSObjc_msgSendOverload39_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload39_lazy.get("OSObjc_msgSendOverload39", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload3_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 NSPoint) int64]
 
 func OSObjc_msgSendOverload3(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 NSPoint) int64 {
-	return OSObjc_msgSendOverload3_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload3_lazy.get("OSObjc_msgSendOverload3", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload40_lazy lazyFunc[func(id int64, sel int64, arg0 []float64, arg1 int64, arg2 float64) int64]
 
 func OSObjc_msgSendOverload40(id int64, sel int64, arg0 []float64, arg1 int64, arg2 float64) int64 {
-	return OSObjc_msgSendOverload40_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload40_lazy.get("OSObjc_msgSendOverload40", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload41_lazy lazyFunc[func(id int64, sel int64, arg0 int32) int64]
 
 func OSObjc_msgSendOverload41(id int64, sel int64, arg0 int32) int64 {
-	return OSObjc_msgSendOverload41_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload41_lazy.get("OSObjc_msgSendOverload41", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload42_lazy lazyFunc[func(id int64, sel int64, arg0 []int32) int64]
 
 func OSObjc_msgSendOverload42(id int64, sel int64, arg0 []int32) int64 {
-	return OSObjc_msgSendOverload42_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload42_lazy.get("OSObjc_msgSendOverload42", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload43_lazy lazyFunc[func(id int64, sel int64, arg0 []int32, arg1 int64) int64]
 
 func OSObjc_msgSendOverload43(id int64, sel int64, arg0 []int32, arg1 int64) int64 {
-	return OSObjc_msgSendOverload43_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload43_lazy.get("OSObjc_msgSendOverload43", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload44_lazy lazyFunc[func(id int64, sel int64, arg0 int64) int64]
 
 func OSObjc_msgSendOverload44(id int64, sel int64, arg0 int64) int64 {
-	return OSObjc_msgSendOverload44_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload44_lazy.get("OSObjc_msgSendOverload44", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload45_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint) int64]
 
 func OSObjc_msgSendOverload45(id int64, sel int64, arg0 int64, arg1 NSPoint) int64 {
-	return OSObjc_msgSendOverload45_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload45_lazy.get("OSObjc_msgSendOverload45", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload46_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 NSSize, arg3 int64, arg4 int64, arg5 int64, arg6 bool) int64]
 
 func OSObjc_msgSendOverload46(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 NSSize, arg3 int64, arg4 int64, arg5 int64, arg6 bool) int64 {
-	return OSObjc_msgSendOverload46_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+	return OSObjc_msgSendOverload46_lazy.get("OSObjc_msgSendOverload46", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 }
 
 var OSObjc_msgSendOverload47_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64]
 
 func OSObjc_msgSendOverload47(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64 {
-	return OSObjc_msgSendOverload47_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload47_lazy.get("OSObjc_msgSendOverload47", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload48_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int64, arg7 int64, arg8 int64) int64]
 
 func OSObjc_msgSendOverload48(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int64, arg7 int64, arg8 int64) int64 {
-	return OSObjc_msgSendOverload48_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
+	return OSObjc_msgSendOverload48_lazy.get("OSObjc_msgSendOverload48", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 }
 
 var OSObjc_msgSendOverload49_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int16, arg7 int64, arg8 int64) int64]
 
 func OSObjc_msgSendOverload49(id int64, sel int64, arg0 int64, arg1 NSPoint, arg2 int64, arg3 float64, arg4 int64, arg5 int64, arg6 int16, arg7 int64, arg8 int64) int64 {
-	return OSObjc_msgSendOverload49_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
+	return OSObjc_msgSendOverload49_lazy.get("OSObjc_msgSendOverload49", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 }
 
 var OSObjc_msgSendOverload4_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 int64) int64]
 
 func OSObjc_msgSendOverload4(id int64, sel int64, arg0 NSPoint, arg1 NSPoint, arg2 int64) int64 {
-	return OSObjc_msgSendOverload4_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload4_lazy.get("OSObjc_msgSendOverload4", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload50_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSRange) int64]
 
 func OSObjc_msgSendOverload50(id int64, sel int64, arg0 int64, arg1 NSRange) int64 {
-	return OSObjc_msgSendOverload50_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload50_lazy.get("OSObjc_msgSendOverload50", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload51_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64]
 
 func OSObjc_msgSendOverload51(id int64, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64 {
-	return OSObjc_msgSendOverload51_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload51_lazy.get("OSObjc_msgSendOverload51", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload52_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 bool) int64]
 
 func OSObjc_msgSendOverload52(id int64, sel int64, arg0 int64, arg1 bool) int64 {
-	return OSObjc_msgSendOverload52_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload52_lazy.get("OSObjc_msgSendOverload52", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload53_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 float64) int64]
 
 func OSObjc_msgSendOverload53(id int64, sel int64, arg0 int64, arg1 float64) int64 {
-	return OSObjc_msgSendOverload53_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload53_lazy.get("OSObjc_msgSendOverload53", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload54_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64) int64]
 
 func OSObjc_msgSendOverload54(id int64, sel int64, arg0 int64, arg1 int64) int64 {
-	return OSObjc_msgSendOverload54_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload54_lazy.get("OSObjc_msgSendOverload54", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload55_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 NSRange) int64]
 
 func OSObjc_msgSendOverload55(id int64, sel int64, arg0 int64, arg1 int64, arg2 NSRange) int64 {
-	return OSObjc_msgSendOverload55_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload55_lazy.get("OSObjc_msgSendOverload55", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload56_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 bool) int64]
 
 func OSObjc_msgSendOverload56(id int64, sel int64, arg0 int64, arg1 int64, arg2 bool) int64 {
-	return OSObjc_msgSendOverload56_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload56_lazy.get("OSObjc_msgSendOverload56", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload57_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 float64, arg3 int64) int64]
 
 func OSObjc_msgSendOverload57(id int64, sel int64, arg0 int64, arg1 int64, arg2 float64, arg3 int64) int64 {
-	return OSObjc_msgSendOverload57_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload57_lazy.get("OSObjc_msgSendOverload57", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendOverload58_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) int64]
 
 func OSObjc_msgSendOverload58(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) int64 {
-	return OSObjc_msgSendOverload58_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload58_lazy.get("OSObjc_msgSendOverload58", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload59_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64]
 
 func OSObjc_msgSendOverload59(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64 {
-	return OSObjc_msgSendOverload59_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload59_lazy.get("OSObjc_msgSendOverload59", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendOverload5_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 float64, arg2 float64, arg3 float64, arg4 bool) int64]
 
 func OSObjc_msgSendOverload5(id int64, sel int64, arg0 NSPoint, arg1 float64, arg2 float64, arg3 float64, arg4 bool) int64 {
-	return OSObjc_msgSendOverload5_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
+	return OSObjc_msgSendOverload5_lazy.get("OSObjc_msgSendOverload5", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
 
 var OSObjc_msgSendOverload60_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64]
 
 func OSObjc_msgSendOverload60(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64 {
-	return OSObjc_msgSendOverload60_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendOverload60_lazy.get("OSObjc_msgSendOverload60", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendOverload61_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) int64]
 
 func OSObjc_msgSendOverload61(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) int64 {
-	return OSObjc_msgSendOverload61_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
+	return OSObjc_msgSendOverload61_lazy.get("OSObjc_msgSendOverload61", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
 
 var OSObjc_msgSendOverload62_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 bool, arg6 bool, arg7 int64, arg8 int64, arg9 int64, arg10 int64) int64]
 
 func OSObjc_msgSendOverload62(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 bool, arg6 bool, arg7 int64, arg8 int64, arg9 int64, arg10 int64) int64 {
-	return OSObjc_msgSendOverload62_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
+	return OSObjc_msgSendOverload62_lazy.get("OSObjc_msgSendOverload62", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
 }
 
 var OSObjc_msgSendOverload63_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64) int64]
 
 func OSObjc_msgSendOverload63(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64) int64 {
-	return OSObjc_msgSendOverload63_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
+	return OSObjc_msgSendOverload63_lazy.get("OSObjc_msgSendOverload63", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
 }
 
 var OSObjc_msgSendOverload64_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64, arg6 int64) int64]
 
 func OSObjc_msgSendOverload64(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64, arg6 int64) int64 {
-	return OSObjc_msgSendOverload64_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+	return OSObjc_msgSendOverload64_lazy.get("OSObjc_msgSendOverload64", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 }
 
 var OSObjc_msgSendOverload65_lazy lazyFunc[func(id int64, sel int64, arg0 []int64, arg1 int32, arg2 int32) int64]
 
 func OSObjc_msgSendOverload65(id int64, sel int64, arg0 []int64, arg1 int32, arg2 int32) int64 {
-	return OSObjc_msgSendOverload65_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload65_lazy.get("OSObjc_msgSendOverload65", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload66_lazy lazyFunc[func(id int64, sel int64, arg0 []int64, arg1 int64, arg2 int64) int64]
 
 func OSObjc_msgSendOverload66(id int64, sel int64, arg0 []int64, arg1 int64, arg2 int64) int64 {
-	return OSObjc_msgSendOverload66_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload66_lazy.get("OSObjc_msgSendOverload66", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload6_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 int64) int64]
 
 func OSObjc_msgSendOverload6(id int64, sel int64, arg0 NSPoint, arg1 int64) int64 {
-	return OSObjc_msgSendOverload6_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload6_lazy.get("OSObjc_msgSendOverload6", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendOverload7_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 int64, arg2 []float64) int64]
 
 func OSObjc_msgSendOverload7(id int64, sel int64, arg0 NSPoint, arg1 int64, arg2 []float64) int64 {
-	return OSObjc_msgSendOverload7_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendOverload7_lazy.get("OSObjc_msgSendOverload7", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendOverload8_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange) int64]
 
 func OSObjc_msgSendOverload8(id int64, sel int64, arg0 NSRange) int64 {
-	return OSObjc_msgSendOverload8_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSendOverload8_lazy.get("OSObjc_msgSendOverload8", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSendOverload9_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 NSPoint) int64]
 
 func OSObjc_msgSendOverload9(id int64, sel int64, arg0 NSRange, arg1 NSPoint) int64 {
-	return OSObjc_msgSendOverload9_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSendOverload9_lazy.get("OSObjc_msgSendOverload9", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_lazy lazyFunc[func(id int64, sel int64) int64]
 
 func OSObjc_msgSend(id int64, sel int64) int64 {
-	return OSObjc_msgSend_lazy.get("objc_msgSend")(id, sel)
+	return OSObjc_msgSend_lazy.get("OSObjc_msgSend", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_msgSendSuperOverload10_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64]
 
 func OSObjc_msgSendSuperOverload10(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) int64 {
-	return OSObjc_msgSendSuperOverload10_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendSuperOverload10_lazy.get("OSObjc_msgSendSuperOverload10", "objc_msgSendSuper")(superId, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendSuperOverload11_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 bool) int64]
 
 func OSObjc_msgSendSuperOverload11(superId *objc_super, sel int64, arg0 int64, arg1 bool) int64 {
-	return OSObjc_msgSendSuperOverload11_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload11_lazy.get("OSObjc_msgSendSuperOverload11", "objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendSuperOverload12_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 int64) int64]
 
 func OSObjc_msgSendSuperOverload12(superId *objc_super, sel int64, arg0 int64, arg1 int64) int64 {
-	return OSObjc_msgSendSuperOverload12_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload12_lazy.get("OSObjc_msgSendSuperOverload12", "objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendSuperOverload13_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64]
 
 func OSObjc_msgSendSuperOverload13(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 bool) int64 {
-	return OSObjc_msgSendSuperOverload13_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendSuperOverload13_lazy.get("OSObjc_msgSendSuperOverload13", "objc_msgSendSuper")(superId, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendSuperOverload14_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64]
 
 func OSObjc_msgSendSuperOverload14(superId *objc_super, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) int64 {
-	return OSObjc_msgSendSuperOverload14_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSendSuperOverload14_lazy.get("OSObjc_msgSendSuperOverload14", "objc_msgSendSuper")(superId, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSendSuperOverload1_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSPoint) int64]
 
 func OSObjc_msgSendSuperOverload1(superId *objc_super, sel int64, arg0 NSPoint) int64 {
-	return OSObjc_msgSendSuperOverload1_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload1_lazy.get("OSObjc_msgSendSuperOverload1", "objc_msgSendSuper")(superId, sel, arg0)
 }
 
 var OSObjc_msgSendSuperOverload2_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect) int64]
 
 func OSObjc_msgSendSuperOverload2(superId *objc_super, sel int64, arg0 NSRect) int64 {
-	return OSObjc_msgSendSuperOverload2_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload2_lazy.get("OSObjc_msgSendSuperOverload2", "objc_msgSendSuper")(superId, sel, arg0)
 }
 
 var OSObjc_msgSendSuperOverload3_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) int64]
 
 func OSObjc_msgSendSuperOverload3(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) int64 {
-	return OSObjc_msgSendSuperOverload3_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload3_lazy.get("OSObjc_msgSendSuperOverload3", "objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendSuperOverload4_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSSize) int64]
 
 func OSObjc_msgSendSuperOverload4(superId *objc_super, sel int64, arg0 NSSize) int64 {
-	return OSObjc_msgSendSuperOverload4_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload4_lazy.get("OSObjc_msgSendSuperOverload4", "objc_msgSendSuper")(superId, sel, arg0)
 }
 
 var OSObjc_msgSendSuperOverload5_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 bool) int64]
 
 func OSObjc_msgSendSuperOverload5(superId *objc_super, sel int64, arg0 bool) int64 {
-	return OSObjc_msgSendSuperOverload5_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload5_lazy.get("OSObjc_msgSendSuperOverload5", "objc_msgSendSuper")(superId, sel, arg0)
 }
 
 var OSObjc_msgSendSuperOverload6_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 bool, arg1 NSRect) int64]
 
 func OSObjc_msgSendSuperOverload6(superId *objc_super, sel int64, arg0 bool, arg1 NSRect) int64 {
-	return OSObjc_msgSendSuperOverload6_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload6_lazy.get("OSObjc_msgSendSuperOverload6", "objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendSuperOverload7_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64) int64]
 
 func OSObjc_msgSendSuperOverload7(superId *objc_super, sel int64, arg0 int64) int64 {
-	return OSObjc_msgSendSuperOverload7_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
+	return OSObjc_msgSendSuperOverload7_lazy.get("OSObjc_msgSendSuperOverload7", "objc_msgSendSuper")(superId, sel, arg0)
 }
 
 var OSObjc_msgSendSuperOverload8_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) int64]
 
 func OSObjc_msgSendSuperOverload8(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) int64 {
-	return OSObjc_msgSendSuperOverload8_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuperOverload8_lazy.get("OSObjc_msgSendSuperOverload8", "objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendSuperOverload9_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64]
 
 func OSObjc_msgSendSuperOverload9(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint, arg2 int64) int64 {
-	return OSObjc_msgSendSuperOverload9_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2)
+	return OSObjc_msgSendSuperOverload9_lazy.get("OSObjc_msgSendSuperOverload9", "objc_msgSendSuper")(superId, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendSuper_lazy lazyFunc[func(superId *objc_super, sel int64) int64]
 
 func OSObjc_msgSendSuper(superId *objc_super, sel int64) int64 {
-	return OSObjc_msgSendSuper_lazy.get("objc_msgSendSuper")(superId, sel)
+	return OSObjc_msgSendSuper_lazy.get("OSObjc_msgSendSuper", "objc_msgSendSuper")(superId, sel)
 }
 
 var OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) bool]
 
 func OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1(superId *objc_super, sel int64, arg0 int64, arg1 NSPoint) bool {
-	return OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1_lazy.get("OSObjc_msgSendSuper_boolSuperIdSelArg0Arg1", "objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendSuper_bool_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRange, arg1 int64) bool]
 
 func OSObjc_msgSendSuper_bool(superId *objc_super, sel int64, arg0 NSRange, arg1 int64) bool {
-	return OSObjc_msgSendSuper_bool_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
+	return OSObjc_msgSendSuper_bool_lazy.get("OSObjc_msgSendSuper_bool", "objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendSuper_stretOverload1_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect, arg1 int64) NSRect]
 
 func OSObjc_msgSendSuper_stretOverload1(result *NSRect, superId *objc_super, sel int64, arg0 NSRect, arg1 int64) {
-	*result = OSObjc_msgSendSuper_stretOverload1_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1)
+	*result = OSObjc_msgSendSuper_stretOverload1_lazy.get("OSObjc_msgSendSuper_stretOverload1", "objc_msgSendSuper")(superId, sel, arg0, arg1)
 }
 
 var OSObjc_msgSendSuper_stretOverload2_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64) NSRect]
 
 func OSObjc_msgSendSuper_stretOverload2(result *NSRect, superId *objc_super, sel int64, arg0 int64) {
-	*result = OSObjc_msgSendSuper_stretOverload2_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
+	*result = OSObjc_msgSendSuper_stretOverload2_lazy.get("OSObjc_msgSendSuper_stretOverload2", "objc_msgSendSuper")(superId, sel, arg0)
 }
 
 var OSObjc_msgSendSuper_stretOverload3_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) NSRect]
 
 func OSObjc_msgSendSuper_stretOverload3(result *NSRect, superId *objc_super, sel int64, arg0 int64, arg1 NSRect, arg2 int64) {
-	*result = OSObjc_msgSendSuper_stretOverload3_lazy.get("objc_msgSendSuper")(superId, sel, arg0, arg1, arg2)
+	*result = OSObjc_msgSendSuper_stretOverload3_lazy.get("OSObjc_msgSendSuper_stretOverload3", "objc_msgSendSuper")(superId, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSendSuper_stretOverload4_lazy lazyFunc[func(superId *objc_super, sel int64) NSSize]
 
 func OSObjc_msgSendSuper_stretOverload4(result *NSSize, superId *objc_super, sel int64) {
-	*result = OSObjc_msgSendSuper_stretOverload4_lazy.get("objc_msgSendSuper")(superId, sel)
+	*result = OSObjc_msgSendSuper_stretOverload4_lazy.get("OSObjc_msgSendSuper_stretOverload4", "objc_msgSendSuper")(superId, sel)
 }
 
 var OSObjc_msgSendSuper_stretOverload5_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect) NSSize]
 
 func OSObjc_msgSendSuper_stretOverload5(result *NSSize, superId *objc_super, sel int64, arg0 NSRect) {
-	*result = OSObjc_msgSendSuper_stretOverload5_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
+	*result = OSObjc_msgSendSuper_stretOverload5_lazy.get("OSObjc_msgSendSuper_stretOverload5", "objc_msgSendSuper")(superId, sel, arg0)
 }
 
 var OSObjc_msgSendSuper_stretOverload6_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 bool) NSSize]
 
 func OSObjc_msgSendSuper_stretOverload6(result *NSSize, superId *objc_super, sel int64, arg0 bool) {
-	*result = OSObjc_msgSendSuper_stretOverload6_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
+	*result = OSObjc_msgSendSuper_stretOverload6_lazy.get("OSObjc_msgSendSuper_stretOverload6", "objc_msgSendSuper")(superId, sel, arg0)
 }
 
 var OSObjc_msgSendSuper_stret_lazy lazyFunc[func(superId *objc_super, sel int64, arg0 NSRect) NSRect]
 
 func OSObjc_msgSendSuper_stret(result *NSRect, superId *objc_super, sel int64, arg0 NSRect) {
-	*result = OSObjc_msgSendSuper_stret_lazy.get("objc_msgSendSuper")(superId, sel, arg0)
+	*result = OSObjc_msgSendSuper_stret_lazy.get("OSObjc_msgSendSuper_stret", "objc_msgSendSuper")(superId, sel, arg0)
 }
 
 var OSObjc_msgSend_boolOverload10_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) bool]
 
 func OSObjc_msgSend_boolOverload10(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64) bool {
-	return OSObjc_msgSend_boolOverload10_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	return OSObjc_msgSend_boolOverload10_lazy.get("OSObjc_msgSend_boolOverload10", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSend_boolOverload11_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) bool]
 
 func OSObjc_msgSend_boolOverload11(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64, arg3 int64, arg4 int64) bool {
-	return OSObjc_msgSend_boolOverload11_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
+	return OSObjc_msgSend_boolOverload11_lazy.get("OSObjc_msgSend_boolOverload11", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4)
 }
 
 var OSObjc_msgSend_boolOverload1_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint) bool]
 
 func OSObjc_msgSend_boolOverload1(id int64, sel int64, arg0 NSPoint) bool {
-	return OSObjc_msgSend_boolOverload1_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSend_boolOverload1_lazy.get("OSObjc_msgSend_boolOverload1", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_boolOverload2_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 NSRect) bool]
 
 func OSObjc_msgSend_boolOverload2(id int64, sel int64, arg0 NSPoint, arg1 NSRect) bool {
-	return OSObjc_msgSend_boolOverload2_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSend_boolOverload2_lazy.get("OSObjc_msgSend_boolOverload2", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_boolOverload3_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64) bool]
 
 func OSObjc_msgSend_boolOverload3(id int64, sel int64, arg0 NSRange, arg1 int64) bool {
-	return OSObjc_msgSend_boolOverload3_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSend_boolOverload3_lazy.get("OSObjc_msgSend_boolOverload3", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_boolOverload4_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect) bool]
 
 func OSObjc_msgSend_boolOverload4(id int64, sel int64, arg0 NSRect) bool {
-	return OSObjc_msgSend_boolOverload4_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSend_boolOverload4_lazy.get("OSObjc_msgSend_boolOverload4", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_boolOverload5_lazy lazyFunc[func(id int64, sel int64, arg0 int64) bool]
 
 func OSObjc_msgSend_boolOverload5(id int64, sel int64, arg0 int64) bool {
-	return OSObjc_msgSend_boolOverload5_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSend_boolOverload5_lazy.get("OSObjc_msgSend_boolOverload5", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_boolOverload6_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSPoint) bool]
 
 func OSObjc_msgSend_boolOverload6(id int64, sel int64, arg0 int64, arg1 NSPoint) bool {
-	return OSObjc_msgSend_boolOverload6_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSend_boolOverload6_lazy.get("OSObjc_msgSend_boolOverload6", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_boolOverload7_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSSize, arg2 bool) bool]
 
 func OSObjc_msgSend_boolOverload7(id int64, sel int64, arg0 int64, arg1 NSSize, arg2 bool) bool {
-	return OSObjc_msgSend_boolOverload7_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSend_boolOverload7_lazy.get("OSObjc_msgSend_boolOverload7", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSend_boolOverload8_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64) bool]
 
 func OSObjc_msgSend_boolOverload8(id int64, sel int64, arg0 int64, arg1 int64) bool {
-	return OSObjc_msgSend_boolOverload8_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSend_boolOverload8_lazy.get("OSObjc_msgSend_boolOverload8", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_boolOverload9_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool]
 
 func OSObjc_msgSend_boolOverload9(id int64, sel int64, arg0 int64, arg1 int64, arg2 int64) bool {
-	return OSObjc_msgSend_boolOverload9_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	return OSObjc_msgSend_boolOverload9_lazy.get("OSObjc_msgSend_boolOverload9", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSend_bool_lazy lazyFunc[func(id int64, sel int64) bool]
 
 func OSObjc_msgSend_bool(id int64, sel int64) bool {
-	return OSObjc_msgSend_bool_lazy.get("objc_msgSend")(id, sel)
+	return OSObjc_msgSend_bool_lazy.get("OSObjc_msgSend_bool", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_msgSend_floatret_lazy lazyFunc[func(id int64, sel int64) float32]
 
 func OSObjc_msgSend_floatret(id int64, sel int64) float32 {
-	return OSObjc_msgSend_floatret_lazy.get("objc_msgSend")(id, sel)
+	return OSObjc_msgSend_floatret_lazy.get("OSObjc_msgSend_floatret", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_msgSend_fpretIdSelArg0Arg1_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64) float64]
 
 func OSObjc_msgSend_fpretIdSelArg0Arg1(id int64, sel int64, arg0 int64, arg1 int64) float64 {
-	return OSObjc_msgSend_fpretIdSelArg0Arg1_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	return OSObjc_msgSend_fpretIdSelArg0Arg1_lazy.get("OSObjc_msgSend_fpretIdSelArg0Arg1", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_fpretIdSelArg0_lazy lazyFunc[func(id int64, sel int64, arg0 int64) float64]
 
 func OSObjc_msgSend_fpretIdSelArg0(id int64, sel int64, arg0 int64) float64 {
-	return OSObjc_msgSend_fpretIdSelArg0_lazy.get("objc_msgSend")(id, sel, arg0)
+	return OSObjc_msgSend_fpretIdSelArg0_lazy.get("OSObjc_msgSend_fpretIdSelArg0", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_fpret_lazy lazyFunc[func(id int64, sel int64) float64]
 
 func OSObjc_msgSend_fpret(id int64, sel int64) float64 {
-	return OSObjc_msgSend_fpret_lazy.get("objc_msgSend")(id, sel)
+	return OSObjc_msgSend_fpret_lazy.get("OSObjc_msgSend_fpret", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_msgSend_stretOverload10_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64) NSRect]
 
 func OSObjc_msgSend_stretOverload10(result *NSRect, id int64, sel int64, arg0 NSRange, arg1 int64) {
-	*result = OSObjc_msgSend_stretOverload10_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	*result = OSObjc_msgSend_stretOverload10_lazy.get("OSObjc_msgSend_stretOverload10", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_stretOverload11_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect) NSRect]
 
 func OSObjc_msgSend_stretOverload11(result *NSRect, id int64, sel int64, arg0 NSRect) {
-	*result = OSObjc_msgSend_stretOverload11_lazy.get("objc_msgSend")(id, sel, arg0)
+	*result = OSObjc_msgSend_stretOverload11_lazy.get("OSObjc_msgSend_stretOverload11", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_stretOverload12_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect, arg1 int64) NSRect]
 
 func OSObjc_msgSend_stretOverload12(result *NSRect, id int64, sel int64, arg0 NSRect, arg1 int64) {
-	*result = OSObjc_msgSend_stretOverload12_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	*result = OSObjc_msgSend_stretOverload12_lazy.get("OSObjc_msgSend_stretOverload12", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_stretOverload13_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize, arg1 int64) NSRect]
 
 func OSObjc_msgSend_stretOverload13(result *NSRect, id int64, sel int64, arg0 NSSize, arg1 int64) {
-	*result = OSObjc_msgSend_stretOverload13_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	*result = OSObjc_msgSend_stretOverload13_lazy.get("OSObjc_msgSend_stretOverload13", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_stretOverload14_lazy lazyFunc[func(id int64, sel int64, arg0 int64) NSRect]
 
 func OSObjc_msgSend_stretOverload14(result *NSRect, id int64, sel int64, arg0 int64) {
-	*result = OSObjc_msgSend_stretOverload14_lazy.get("objc_msgSend")(id, sel, arg0)
+	*result = OSObjc_msgSend_stretOverload14_lazy.get("OSObjc_msgSend_stretOverload14", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_stretOverload15_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 NSRect, arg2 int64) NSRect]
 
 func OSObjc_msgSend_stretOverload15(result *NSRect, id int64, sel int64, arg0 int64, arg1 NSRect, arg2 int64) {
-	*result = OSObjc_msgSend_stretOverload15_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	*result = OSObjc_msgSend_stretOverload15_lazy.get("OSObjc_msgSend_stretOverload15", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSend_stretOverload16_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64) NSRect]
 
 func OSObjc_msgSend_stretOverload16(result *NSRect, id int64, sel int64, arg0 int64, arg1 int64) {
-	*result = OSObjc_msgSend_stretOverload16_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	*result = OSObjc_msgSend_stretOverload16_lazy.get("OSObjc_msgSend_stretOverload16", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_stretOverload17_lazy lazyFunc[func(id int64, sel int64, arg0 int64, arg1 int64, arg2 bool) NSRect]
 
 func OSObjc_msgSend_stretOverload17(result *NSRect, id int64, sel int64, arg0 int64, arg1 int64, arg2 bool) {
-	*result = OSObjc_msgSend_stretOverload17_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2)
+	*result = OSObjc_msgSend_stretOverload17_lazy.get("OSObjc_msgSend_stretOverload17", "objc_msgSend")(id, sel, arg0, arg1, arg2)
 }
 
 var OSObjc_msgSend_stretOverload18_lazy lazyFunc[func(id int64, sel int64) NSSize]
 
 func OSObjc_msgSend_stretOverload18(result *NSSize, id int64, sel int64) {
-	*result = OSObjc_msgSend_stretOverload18_lazy.get("objc_msgSend")(id, sel)
+	*result = OSObjc_msgSend_stretOverload18_lazy.get("OSObjc_msgSend_stretOverload18", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_msgSend_stretOverload19_lazy lazyFunc[func(id int64, sel int64, arg0 NSRect) NSSize]
 
 func OSObjc_msgSend_stretOverload19(result *NSSize, id int64, sel int64, arg0 NSRect) {
-	*result = OSObjc_msgSend_stretOverload19_lazy.get("objc_msgSend")(id, sel, arg0)
+	*result = OSObjc_msgSend_stretOverload19_lazy.get("OSObjc_msgSend_stretOverload19", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_stretOverload1_lazy lazyFunc[func(id int64, sel int64) NSOperatingSystemVersion]
 
 func OSObjc_msgSend_stretOverload1(result *NSOperatingSystemVersion, id int64, sel int64) {
-	*result = OSObjc_msgSend_stretOverload1_lazy.get("objc_msgSend")(id, sel)
+	*result = OSObjc_msgSend_stretOverload1_lazy.get("OSObjc_msgSend_stretOverload1", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_msgSend_stretOverload20_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize) NSSize]
 
 func OSObjc_msgSend_stretOverload20(result *NSSize, id int64, sel int64, arg0 NSSize) {
-	*result = OSObjc_msgSend_stretOverload20_lazy.get("objc_msgSend")(id, sel, arg0)
+	*result = OSObjc_msgSend_stretOverload20_lazy.get("OSObjc_msgSend_stretOverload20", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_stretOverload21_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize, arg1 bool, arg2 bool, arg3 int64) NSSize]
 
 func OSObjc_msgSend_stretOverload21(result *NSSize, id int64, sel int64, arg0 NSSize, arg1 bool, arg2 bool, arg3 int64) {
-	*result = OSObjc_msgSend_stretOverload21_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
+	*result = OSObjc_msgSend_stretOverload21_lazy.get("OSObjc_msgSend_stretOverload21", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3)
 }
 
 var OSObjc_msgSend_stretOverload22_lazy lazyFunc[func(id int64, sel int64, arg0 NSSize, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64) NSSize]
 
 func OSObjc_msgSend_stretOverload22(result *NSSize, id int64, sel int64, arg0 NSSize, arg1 int64, arg2 int64, arg3 int64, arg4 int64, arg5 int64) {
-	*result = OSObjc_msgSend_stretOverload22_lazy.get("objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
+	*result = OSObjc_msgSend_stretOverload22_lazy.get("OSObjc_msgSend_stretOverload22", "objc_msgSend")(id, sel, arg0, arg1, arg2, arg3, arg4, arg5)
 }
 
 var OSObjc_msgSend_stretOverload23_lazy lazyFunc[func(id int64, sel int64, arg0 bool) NSSize]
 
 func OSObjc_msgSend_stretOverload23(result *NSSize, id int64, sel int64, arg0 bool) {
-	*result = OSObjc_msgSend_stretOverload23_lazy.get("objc_msgSend")(id, sel, arg0)
+	*result = OSObjc_msgSend_stretOverload23_lazy.get("OSObjc_msgSend_stretOverload23", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_stretOverload2_lazy lazyFunc[func(id int64, sel int64) NSPoint]
 
 func OSObjc_msgSend_stretOverload2(result *NSPoint, id int64, sel int64) {
-	*result = OSObjc_msgSend_stretOverload2_lazy.get("objc_msgSend")(id, sel)
+	*result = OSObjc_msgSend_stretOverload2_lazy.get("OSObjc_msgSend_stretOverload2", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_msgSend_stretOverload3_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint) NSPoint]
 
 func OSObjc_msgSend_stretOverload3(result *NSPoint, id int64, sel int64, arg0 NSPoint) {
-	*result = OSObjc_msgSend_stretOverload3_lazy.get("objc_msgSend")(id, sel, arg0)
+	*result = OSObjc_msgSend_stretOverload3_lazy.get("OSObjc_msgSend_stretOverload3", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_stretOverload4_lazy lazyFunc[func(id int64, sel int64, arg0 NSPoint, arg1 int64) NSPoint]
 
 func OSObjc_msgSend_stretOverload4(result *NSPoint, id int64, sel int64, arg0 NSPoint, arg1 int64) {
-	*result = OSObjc_msgSend_stretOverload4_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	*result = OSObjc_msgSend_stretOverload4_lazy.get("OSObjc_msgSend_stretOverload4", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_stretOverload5_lazy lazyFunc[func(id int64, sel int64, arg0 int64) NSPoint]
 
 func OSObjc_msgSend_stretOverload5(result *NSPoint, id int64, sel int64, arg0 int64) {
-	*result = OSObjc_msgSend_stretOverload5_lazy.get("objc_msgSend")(id, sel, arg0)
+	*result = OSObjc_msgSend_stretOverload5_lazy.get("OSObjc_msgSend_stretOverload5", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_stretOverload6_lazy lazyFunc[func(id int64, sel int64) NSRange]
 
 func OSObjc_msgSend_stretOverload6(result *NSRange, id int64, sel int64) {
-	*result = OSObjc_msgSend_stretOverload6_lazy.get("objc_msgSend")(id, sel)
+	*result = OSObjc_msgSend_stretOverload6_lazy.get("OSObjc_msgSend_stretOverload6", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_msgSend_stretOverload7_lazy lazyFunc[func(id int64, sel int64, arg0 NSRange, arg1 int64) NSRange]
 
 func OSObjc_msgSend_stretOverload7(result *NSRange, id int64, sel int64, arg0 NSRange, arg1 int64) {
-	*result = OSObjc_msgSend_stretOverload7_lazy.get("objc_msgSend")(id, sel, arg0, arg1)
+	*result = OSObjc_msgSend_stretOverload7_lazy.get("OSObjc_msgSend_stretOverload7", "objc_msgSend")(id, sel, arg0, arg1)
 }
 
 var OSObjc_msgSend_stretOverload8_lazy lazyFunc[func(id int64, sel int64, arg0 int64) NSRange]
 
 func OSObjc_msgSend_stretOverload8(result *NSRange, id int64, sel int64, arg0 int64) {
-	*result = OSObjc_msgSend_stretOverload8_lazy.get("objc_msgSend")(id, sel, arg0)
+	*result = OSObjc_msgSend_stretOverload8_lazy.get("OSObjc_msgSend_stretOverload8", "objc_msgSend")(id, sel, arg0)
 }
 
 var OSObjc_msgSend_stretOverload9_lazy lazyFunc[func(id int64, sel int64) NSRect]
 
 func OSObjc_msgSend_stretOverload9(result *NSRect, id int64, sel int64) {
-	*result = OSObjc_msgSend_stretOverload9_lazy.get("objc_msgSend")(id, sel)
+	*result = OSObjc_msgSend_stretOverload9_lazy.get("OSObjc_msgSend_stretOverload9", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_msgSend_stret_lazy lazyFunc[func(id int64, sel int64) NSAffineTransformStruct]
 
 func OSObjc_msgSend_stret(result *NSAffineTransformStruct, id int64, sel int64) {
-	*result = OSObjc_msgSend_stret_lazy.get("objc_msgSend")(id, sel)
+	*result = OSObjc_msgSend_stret_lazy.get("OSObjc_msgSend_stret", "objc_msgSend")(id, sel)
 }
 
 var OSObjc_registerClassPair_lazy lazyFunc[func(cls int64)]
 
 func OSObjc_registerClassPair(cls int64) {
-	OSObjc_registerClassPair_lazy.get("objc_registerClassPair")(cls)
+	OSObjc_registerClassPair_lazy.get("OSObjc_registerClassPair", "objc_registerClassPair")(cls)
 }
 
 func OSObjc_super_sizeof() int32 { return int32(unsafe.Sizeof(objc_super{})) }

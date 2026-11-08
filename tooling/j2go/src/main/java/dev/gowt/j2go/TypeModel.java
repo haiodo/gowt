@@ -181,12 +181,19 @@ public class TypeModel {
 	// Method binding key -> declaration, every method and constructor of every parsed unit
 	// (hand-written Manual classes included: their Java source is still the guard reference).
 	private final Map<String, MethodDeclaration> declarations = new HashMap<>();
+	// Type binding key -> declaration, for AST-order struct field enumeration (NativeEmitter's
+	// cgo struct typedefs must mirror the Go struct's field order for cgo's by-value conversion).
+	private final Map<String, AbstractTypeDeclaration> typeDeclarations = new HashMap<>();
 	public final MutatedStructParams mutatedParams = new MutatedStructParams(this);
 	public final NullableStrings nullableStrings = new NullableStrings(this);
 
 	Collection<MethodDeclaration> allDeclarations() { return declarations.values(); }
 
 	MethodDeclaration declarationOf(IMethodBinding mb) { return declarations.get(mb.getMethodDeclaration().getKey()); }
+
+	public AbstractTypeDeclaration typeDeclarationOf(ITypeBinding type) {
+		return typeDeclarations.get(type.getTypeDeclaration().getKey());
+	}
 
 	/** Declarations of mb plus same-signature ones up the superclass chain and below (overrides). */
 	public List<MethodDeclaration> relatedDeclarations(IMethodBinding mb) {
@@ -250,6 +257,13 @@ public class TypeModel {
 				collect((AbstractTypeDeclaration) t, names);
 			}
 			cu.accept(new ASTVisitor() {
+				@Override
+				public boolean visit(TypeDeclaration node) {
+					ITypeBinding b = node.resolveBinding();
+					if (b != null) typeDeclarations.put(b.getTypeDeclaration().getKey(), node);
+					return true;
+				}
+
 				@Override
 				public boolean visit(MethodDeclaration node) {
 					IMethodBinding mb = node.resolveBinding();

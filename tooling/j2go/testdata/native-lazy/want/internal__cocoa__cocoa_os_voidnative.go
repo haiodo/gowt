@@ -6,5 +6,5 @@ package cocoa
 
 var OSVoidNative_lazy lazyFunc[func(value int64) ]
 func OSVoidNative(value int64)  {
-	OSVoidNative_lazy.get("VoidNative")(value)
+	OSVoidNative_lazy.get("OSVoidNative", "VoidNative")(value)
 }

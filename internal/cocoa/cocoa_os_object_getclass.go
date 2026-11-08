@@ -19,37 +19,37 @@ package cocoa
 var OSObject_getClass_lazy lazyFunc[func(obj int64) int64]
 
 func OSObject_getClass(obj int64) int64 {
-	return OSObject_getClass_lazy.get("object_getClass")(obj)
+	return OSObject_getClass_lazy.get("OSObject_getClass", "object_getClass")(obj)
 }
 
 var OSObject_getClassName_lazy lazyFunc[func(obj int64) int64]
 
 func OSObject_getClassName(obj int64) int64 {
-	return OSObject_getClassName_lazy.get("object_getClassName")(obj)
+	return OSObject_getClassName_lazy.get("OSObject_getClassName", "object_getClassName")(obj)
 }
 
 var OSObject_getInstanceVariable_lazy lazyFunc[func(obj int64, name []int8, outValue []int64) int64]
 
 func OSObject_getInstanceVariable(obj int64, name []int8, outValue []int64) int64 {
-	return OSObject_getInstanceVariable_lazy.get("object_getInstanceVariable")(obj, name, outValue)
+	return OSObject_getInstanceVariable_lazy.get("OSObject_getInstanceVariable", "object_getInstanceVariable")(obj, name, outValue)
 }
 
 var OSObject_setClass_lazy lazyFunc[func(obj int64, clazz int64) int64]
 
 func OSObject_setClass(obj int64, clazz int64) int64 {
-	return OSObject_setClass_lazy.get("object_setClass")(obj, clazz)
+	return OSObject_setClass_lazy.get("OSObject_setClass", "object_setClass")(obj, clazz)
 }
 
 var OSObject_setInstanceVariable_lazy lazyFunc[func(obj int64, name []int8, value int64) int64]
 
 func OSObject_setInstanceVariable(obj int64, name []int8, value int64) int64 {
-	return OSObject_setInstanceVariable_lazy.get("object_setInstanceVariable")(obj, name, value)
+	return OSObject_setInstanceVariable_lazy.get("OSObject_setInstanceVariable", "object_setInstanceVariable")(obj, name, value)
 }
 
 var OSSel_registerName_lazy lazyFunc[func(selectorName string) int64]
 
 func OSSel_registerName(selectorName string) int64 {
-	return OSSel_registerName_lazy.get("sel_registerName")(selectorName)
+	return OSSel_registerName_lazy.get("OSSel_registerName", "sel_registerName")(selectorName)
 }
 
 func OSSetTheme(isDarkTheme bool) {

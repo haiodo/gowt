@@ -6,5 +6,5 @@ package cocoa
 
 var OSSimpleNative_lazy lazyFunc[func(code int32) int64]
 func OSSimpleNative(code int32) int64 {
-	return OSSimpleNative_lazy.get("SimpleNative")(code)
+	return OSSimpleNative_lazy.get("OSSimpleNative", "SimpleNative")(code)
 }

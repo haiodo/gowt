@@ -132,6 +132,12 @@ public class Emitter {
 		helperTags.add(openChunkIndex);
 	}
 
+	/** The opt-in cgo backend's registry file (build tag gowtcgo) for this unit's lazy natives,
+	 *  or null when the unit has none (see NativeEmitter.cgoFileText). */
+	public String cgoCompanionFile() {
+		return nativeEmitter.cgoFileText(currentGoPackage);
+	}
+
 	public EmitResult emitCompilationUnit(CompilationUnit cu) {
 		currentJavaPackage = cu.getPackage().getName().getFullyQualifiedName();
 		currentGoPackage = dev.gowt.j2go.GoTypes.goPackageOf(currentJavaPackage, ((AbstractTypeDeclaration) cu.types().get(0)).getName().getIdentifier());
@@ -139,6 +145,7 @@ public class Emitter {
 		fileHelperSource = new ArrayList<>();
 		helperTags.clear();
 		methodChunks.clear();
+		nativeEmitter.clearCgoNatives();
 		deferredStaticInits = new ArrayList<>();
 		deferredStaticInitLabels = new ArrayList<>();
 		lazyStaticBlocks.clear();

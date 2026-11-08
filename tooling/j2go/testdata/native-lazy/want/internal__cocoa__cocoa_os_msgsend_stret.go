@@ -6,5 +6,5 @@ package cocoa
 
 var OSMsgSend_stret_lazy lazyFunc[func(id int64, sel int64, flag bool) WidgetStruct]
 func OSMsgSend_stret(result *WidgetStruct, id int64, sel int64, flag bool) {
-	*result = OSMsgSend_stret_lazy.get("msgSend")(id, sel, flag)
+	*result = OSMsgSend_stret_lazy.get("OSMsgSend_stret", "msgSend")(id, sel, flag)
 }

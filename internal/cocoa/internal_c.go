@@ -43,133 +43,133 @@ func (this *C) initC() {
 var CFree_lazy lazyFunc[func(ptr int64)]
 
 func CFree(ptr int64) {
-	CFree_lazy.get("free")(ptr)
+	CFree_lazy.get("CFree", "free")(ptr)
 }
 
 var CGetenv_lazy lazyFunc[func(env []int8) int64]
 
 func CGetenv(env []int8) int64 {
-	return CGetenv_lazy.get("getenv")(env)
+	return CGetenv_lazy.get("CGetenv", "getenv")(env)
 }
 
 var CSetenv_lazy lazyFunc[func(env []int8, value []int8, overwrite int32) int32]
 
 func CSetenv(env []int8, value []int8, overwrite int32) int32 {
-	return CSetenv_lazy.get("setenv")(env, value, overwrite)
+	return CSetenv_lazy.get("CSetenv", "setenv")(env, value, overwrite)
 }
 
 var CMalloc_lazy lazyFunc[func(size int64) int64]
 
 func CMalloc(size int64) int64 {
-	return CMalloc_lazy.get("malloc")(size)
+	return CMalloc_lazy.get("CMalloc", "malloc")(size)
 }
 
 var CMemmove_lazy lazyFunc[func(dest int64, src []int8, size int64)]
 
 func CMemmove(dest int64, src []int8, size int64) {
-	CMemmove_lazy.get("memmove")(dest, src, size)
+	CMemmove_lazy.get("CMemmove", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload1_lazy lazyFunc[func(dest int64, src []uint16, size int64)]
 
 func CMemmoveOverload1(dest int64, src []uint16, size int64) {
-	CMemmoveOverload1_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload1_lazy.get("CMemmoveOverload1", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload2_lazy lazyFunc[func(dest int64, src []float64, size int64)]
 
 func CMemmoveOverload2(dest int64, src []float64, size int64) {
-	CMemmoveOverload2_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload2_lazy.get("CMemmoveOverload2", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload3_lazy lazyFunc[func(dest int64, src []float32, size int64)]
 
 func CMemmoveOverload3(dest int64, src []float32, size int64) {
-	CMemmoveOverload3_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload3_lazy.get("CMemmoveOverload3", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload4_lazy lazyFunc[func(dest int64, src []int32, size int64)]
 
 func CMemmoveOverload4(dest int64, src []int32, size int64) {
-	CMemmoveOverload4_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload4_lazy.get("CMemmoveOverload4", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload5_lazy lazyFunc[func(dest int64, src []int64, size int64)]
 
 func CMemmoveOverload5(dest int64, src []int64, size int64) {
-	CMemmoveOverload5_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload5_lazy.get("CMemmoveOverload5", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload6_lazy lazyFunc[func(dest int64, src []int16, size int64)]
 
 func CMemmoveOverload6(dest int64, src []int16, size int64) {
-	CMemmoveOverload6_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload6_lazy.get("CMemmoveOverload6", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload7_lazy lazyFunc[func(dest []int8, src []uint16, size int64)]
 
 func CMemmoveOverload7(dest []int8, src []uint16, size int64) {
-	CMemmoveOverload7_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload7_lazy.get("CMemmoveOverload7", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload8_lazy lazyFunc[func(dest []int8, src int64, size int64)]
 
 func CMemmoveOverload8(dest []int8, src int64, size int64) {
-	CMemmoveOverload8_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload8_lazy.get("CMemmoveOverload8", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload9_lazy lazyFunc[func(dest int64, src int64, size int64)]
 
 func CMemmoveOverload9(dest int64, src int64, size int64) {
-	CMemmoveOverload9_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload9_lazy.get("CMemmoveOverload9", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload10_lazy lazyFunc[func(dest []uint16, src int64, size int64)]
 
 func CMemmoveOverload10(dest []uint16, src int64, size int64) {
-	CMemmoveOverload10_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload10_lazy.get("CMemmoveOverload10", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload11_lazy lazyFunc[func(dest []float64, src int64, size int64)]
 
 func CMemmoveOverload11(dest []float64, src int64, size int64) {
-	CMemmoveOverload11_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload11_lazy.get("CMemmoveOverload11", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload12_lazy lazyFunc[func(dest []float32, src int64, size int64)]
 
 func CMemmoveOverload12(dest []float32, src int64, size int64) {
-	CMemmoveOverload12_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload12_lazy.get("CMemmoveOverload12", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload13_lazy lazyFunc[func(dest []int32, src []int8, size int64)]
 
 func CMemmoveOverload13(dest []int32, src []int8, size int64) {
-	CMemmoveOverload13_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload13_lazy.get("CMemmoveOverload13", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload14_lazy lazyFunc[func(dest []int16, src int64, size int64)]
 
 func CMemmoveOverload14(dest []int16, src int64, size int64) {
-	CMemmoveOverload14_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload14_lazy.get("CMemmoveOverload14", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload15_lazy lazyFunc[func(dest []int32, src int64, size int64)]
 
 func CMemmoveOverload15(dest []int32, src int64, size int64) {
-	CMemmoveOverload15_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload15_lazy.get("CMemmoveOverload15", "memmove")(dest, src, size)
 }
 
 var CMemmoveOverload16_lazy lazyFunc[func(dest []int64, src int64, size int64)]
 
 func CMemmoveOverload16(dest []int64, src int64, size int64) {
-	CMemmoveOverload16_lazy.get("memmove")(dest, src, size)
+	CMemmoveOverload16_lazy.get("CMemmoveOverload16", "memmove")(dest, src, size)
 }
 
 var CMemset_lazy lazyFunc[func(buffer int64, c int32, num int64) int64]
 
 func CMemset(buffer int64, c int32, num int64) int64 {
-	return CMemset_lazy.get("memset")(buffer, c, num)
+	return CMemset_lazy.get("CMemset", "memset")(buffer, c, num)
 }
 
 func CPTR_sizeof() int32 { return int32(unsafe.Sizeof(uintptr(0))) }
@@ -177,7 +177,7 @@ func CPTR_sizeof() int32 { return int32(unsafe.Sizeof(uintptr(0))) }
 var CStrlen_lazy lazyFunc[func(s int64) int32]
 
 func CStrlen(s int64) int32 {
-	return CStrlen_lazy.get("strlen")(s)
+	return CStrlen_lazy.get("CStrlen", "strlen")(s)
 }
 
 func init() {

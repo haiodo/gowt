@@ -166,7 +166,7 @@ Packages: `internal/cocoa`, `internal/win32`, `internal/gtk`, `internal/webkit`,
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
-| AppKit bindings | `internal/cocoa/cocoa_<type>.go`, `internal/cocoa/*_manual.go` | darwin only | per-file `*_test.go` | [internals.md](internals.md) |
+| AppKit bindings | `internal/cocoa/cocoa_<type>.go`, `internal/cocoa/*_manual.go` | darwin; purego by default, generated `internal/cocoa/*_cgo.go` with `CGO_ENABLED=1 -tags gowtcgo` | per-file `*_test.go`, `internal/cocoa/cgobench/` | [internals.md](internals.md) |
 | Win32 bindings | `internal/win32/win32_<type>.go`, `internal/win32/*_manual.go` | windows only | `internal/win32/*_test.go` | [internals.md](internals.md) |
 | GTK 3 bindings | `internal/gtk/gen_funcs.go`, `internal/gtk/gen_funcs_<family>.go`, `internal/gtk/gen_consts.go`, `internal/gtk/glue_*.go` | linux only | `internal/gtk/*_test.go` | [internals.md](internals.md) |
 | WebKitGTK bindings | `internal/webkit/gen_funcs.go`, `internal/webkit/{load,signals,view,window}.go` | linux only | driven by `webview` GUI tests in the Linux stand | [webview-browser.md](webview-browser.md) |
@@ -182,7 +182,7 @@ Packages: `gfx`, `gfx/cg`, `gfx/cairo`, `gfx/d2d`, `gfx/internal/cache`, `gfx/in
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Scene graph, paths, paints, effects (shadow in `gfx/picture.go`) | `gfx/scene.go`, `gfx/path.go`, `gfx/paint.go`, `gfx/comp.go`, `gfx/picture.go`, `gfx/curve.go` | - | `gfx/*_test.go` (`scene`, `path`, `svg`, `curve`, `shadow*`) | [gfx.md](gfx.md), `examples/gfxcanvas`, `examples/gfxeditor` |
-| CoreGraphics renderer (macOS) | `gfx/cg/` | darwin (`gfx/cg/bind_darwin.go`) | `gfx/cg/*_darwin_test.go` | [gfx.md](gfx.md) |
+| CoreGraphics renderer (macOS) | `gfx/cg/` | darwin; `gfx/cg/bind_darwin.go` (purego), `gfx/cg/bind_cgo_darwin.go` and `gfx/cg/host_cgo_darwin.go` (`gowtcgo`) | `gfx/cg/*_darwin_test.go` | [gfx.md](gfx.md) |
 | cairo/Pango renderer (Linux) | `gfx/cairo/` | linux (`gfx/cairo/bind_linux.go`) | `gfx/cairo/*_linux_test.go` | [gfx.md](gfx.md) |
 | Direct2D renderer (Windows) | `gfx/d2d/` | windows (`gfx/d2d/call_windows_*.go`) | `gfx/d2d/*_windows_test.go` | [gfx.md](gfx.md) |
 | Offscreen buffers, HUD | `gfx/offscreen/`, `gfx/hud.go` | per-OS backends in `gfx/offscreen/` | `gfx/offscreen/*_test.go`, `gfx/hud_test.go` | [gfx.md](gfx.md) |

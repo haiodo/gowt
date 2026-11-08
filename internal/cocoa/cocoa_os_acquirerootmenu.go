@@ -24,7 +24,7 @@ import (
 var OSAcquireRootMenu_lazy lazyFunc[func() int64]
 
 func OSAcquireRootMenu() int64 {
-	return OSAcquireRootMenu_lazy.get("AcquireRootMenu")()
+	return OSAcquireRootMenu_lazy.get("OSAcquireRootMenu", "AcquireRootMenu")()
 }
 
 func OSCALLBACK_NSTextAttachmentCell_attachment(a0 int64) int64 {
@@ -392,49 +392,49 @@ func OSCALLBACK_webView_setFrame_(a0 int64) int64 {
 var OSCFDataGetBytePtr_lazy lazyFunc[func(theData int64) int64]
 
 func OSCFDataGetBytePtr(theData int64) int64 {
-	return OSCFDataGetBytePtr_lazy.get("CFDataGetBytePtr")(theData)
+	return OSCFDataGetBytePtr_lazy.get("OSCFDataGetBytePtr", "CFDataGetBytePtr")(theData)
 }
 
 var OSCFDataGetLength_lazy lazyFunc[func(theData int64) int64]
 
 func OSCFDataGetLength(theData int64) int64 {
-	return OSCFDataGetLength_lazy.get("CFDataGetLength")(theData)
+	return OSCFDataGetLength_lazy.get("OSCFDataGetLength", "CFDataGetLength")(theData)
 }
 
 var OSCFRelease_lazy lazyFunc[func(cf int64)]
 
 func OSCFRelease(cf int64) {
-	OSCFRelease_lazy.get("CFRelease")(cf)
+	OSCFRelease_lazy.get("OSCFRelease", "CFRelease")(cf)
 }
 
 var OSCFRunLoopAddObserver_lazy lazyFunc[func(rl int64, observer int64, mode int64)]
 
 func OSCFRunLoopAddObserver(rl int64, observer int64, mode int64) {
-	OSCFRunLoopAddObserver_lazy.get("CFRunLoopAddObserver")(rl, observer, mode)
+	OSCFRunLoopAddObserver_lazy.get("OSCFRunLoopAddObserver", "CFRunLoopAddObserver")(rl, observer, mode)
 }
 
 var OSCFRunLoopGetCurrent_lazy lazyFunc[func() int64]
 
 func OSCFRunLoopGetCurrent() int64 {
-	return OSCFRunLoopGetCurrent_lazy.get("CFRunLoopGetCurrent")()
+	return OSCFRunLoopGetCurrent_lazy.get("OSCFRunLoopGetCurrent", "CFRunLoopGetCurrent")()
 }
 
 var OSCFRunLoopObserverCreate_lazy lazyFunc[func(allocator int64, activities int64, repeats bool, order int64, callout int64, context int64) int64]
 
 func OSCFRunLoopObserverCreate(allocator int64, activities int64, repeats bool, order int64, callout int64, context int64) int64 {
-	return OSCFRunLoopObserverCreate_lazy.get("CFRunLoopObserverCreate")(allocator, activities, repeats, order, callout, context)
+	return OSCFRunLoopObserverCreate_lazy.get("OSCFRunLoopObserverCreate", "CFRunLoopObserverCreate")(allocator, activities, repeats, order, callout, context)
 }
 
 var OSCFRunLoopObserverInvalidate_lazy lazyFunc[func(observer int64)]
 
 func OSCFRunLoopObserverInvalidate(observer int64) {
-	OSCFRunLoopObserverInvalidate_lazy.get("CFRunLoopObserverInvalidate")(observer)
+	OSCFRunLoopObserverInvalidate_lazy.get("OSCFRunLoopObserverInvalidate", "CFRunLoopObserverInvalidate")(observer)
 }
 
 var OSCFURLCreateStringByAddingPercentEscapes_lazy lazyFunc[func(allocator int64, originalString int64, charactersToLeaveUnescaped int64, legalURLCharactersToBeEscaped int64, encoding int32) int64]
 
 func OSCFURLCreateStringByAddingPercentEscapes(allocator int64, originalString int64, charactersToLeaveUnescaped int64, legalURLCharactersToBeEscaped int64, encoding int32) int64 {
-	return OSCFURLCreateStringByAddingPercentEscapes_lazy.get("CFURLCreateStringByAddingPercentEscapes")(allocator, originalString, charactersToLeaveUnescaped, legalURLCharactersToBeEscaped, encoding)
+	return OSCFURLCreateStringByAddingPercentEscapes_lazy.get("OSCFURLCreateStringByAddingPercentEscapes", "CFURLCreateStringByAddingPercentEscapes")(allocator, originalString, charactersToLeaveUnescaped, legalURLCharactersToBeEscaped, encoding)
 }
 
 func OSCGAffineTransform_sizeof() int32 { return int32(unsafe.Sizeof(CGAffineTransform{})) }
@@ -442,295 +442,295 @@ func OSCGAffineTransform_sizeof() int32 { return int32(unsafe.Sizeof(CGAffineTra
 var OSCGBitmapContextCreate_lazy lazyFunc[func(data int64, width int64, height int64, bitsPerComponent int64, bytesPerRow int64, space int64, bitmapInfo int32) int64]
 
 func OSCGBitmapContextCreate(data int64, width int64, height int64, bitsPerComponent int64, bytesPerRow int64, space int64, bitmapInfo int32) int64 {
-	return OSCGBitmapContextCreate_lazy.get("CGBitmapContextCreate")(data, width, height, bitsPerComponent, bytesPerRow, space, bitmapInfo)
+	return OSCGBitmapContextCreate_lazy.get("OSCGBitmapContextCreate", "CGBitmapContextCreate")(data, width, height, bitsPerComponent, bytesPerRow, space, bitmapInfo)
 }
 
 var OSCGColorCreate_lazy lazyFunc[func(space int64, components []float64) int64]
 
 func OSCGColorCreate(space int64, components []float64) int64 {
-	return OSCGColorCreate_lazy.get("CGColorCreate")(space, components)
+	return OSCGColorCreate_lazy.get("OSCGColorCreate", "CGColorCreate")(space, components)
 }
 
 var OSCGColorRelease_lazy lazyFunc[func(color int64)]
 
 func OSCGColorRelease(color int64) {
-	OSCGColorRelease_lazy.get("CGColorRelease")(color)
+	OSCGColorRelease_lazy.get("OSCGColorRelease", "CGColorRelease")(color)
 }
 
 var OSCGColorSpaceCreateDeviceRGB_lazy lazyFunc[func() int64]
 
 func OSCGColorSpaceCreateDeviceRGB() int64 {
-	return OSCGColorSpaceCreateDeviceRGB_lazy.get("CGColorSpaceCreateDeviceRGB")()
+	return OSCGColorSpaceCreateDeviceRGB_lazy.get("OSCGColorSpaceCreateDeviceRGB", "CGColorSpaceCreateDeviceRGB")()
 }
 
 var OSCGColorSpaceRelease_lazy lazyFunc[func(space int64)]
 
 func OSCGColorSpaceRelease(space int64) {
-	OSCGColorSpaceRelease_lazy.get("CGColorSpaceRelease")(space)
+	OSCGColorSpaceRelease_lazy.get("OSCGColorSpaceRelease", "CGColorSpaceRelease")(space)
 }
 
 var OSCGContextAddPath_lazy lazyFunc[func(context int64, path int64)]
 
 func OSCGContextAddPath(context int64, path int64) {
-	OSCGContextAddPath_lazy.get("CGContextAddPath")(context, path)
+	OSCGContextAddPath_lazy.get("OSCGContextAddPath", "CGContextAddPath")(context, path)
 }
 
 var OSCGContextBeginTransparencyLayerWithRect_lazy lazyFunc[func(context int64, rect CGRect, auxiliaryInfo int64)]
 
 func OSCGContextBeginTransparencyLayerWithRect(context int64, rect CGRect, auxiliaryInfo int64) {
-	OSCGContextBeginTransparencyLayerWithRect_lazy.get("CGContextBeginTransparencyLayerWithRect")(context, rect, auxiliaryInfo)
+	OSCGContextBeginTransparencyLayerWithRect_lazy.get("OSCGContextBeginTransparencyLayerWithRect", "CGContextBeginTransparencyLayerWithRect")(context, rect, auxiliaryInfo)
 }
 
 var OSCGContextCopyPath_lazy lazyFunc[func(context int64) int64]
 
 func OSCGContextCopyPath(context int64) int64 {
-	return OSCGContextCopyPath_lazy.get("CGContextCopyPath")(context)
+	return OSCGContextCopyPath_lazy.get("OSCGContextCopyPath", "CGContextCopyPath")(context)
 }
 
 var OSCGContextDrawImage_lazy lazyFunc[func(c int64, rect CGRect, image int64)]
 
 func OSCGContextDrawImage(c int64, rect CGRect, image int64) {
-	OSCGContextDrawImage_lazy.get("CGContextDrawImage")(c, rect, image)
+	OSCGContextDrawImage_lazy.get("OSCGContextDrawImage", "CGContextDrawImage")(c, rect, image)
 }
 
 var OSCGContextEndTransparencyLayer_lazy lazyFunc[func(context int64)]
 
 func OSCGContextEndTransparencyLayer(context int64) {
-	OSCGContextEndTransparencyLayer_lazy.get("CGContextEndTransparencyLayer")(context)
+	OSCGContextEndTransparencyLayer_lazy.get("OSCGContextEndTransparencyLayer", "CGContextEndTransparencyLayer")(context)
 }
 
 var OSCGContextFillRect_lazy lazyFunc[func(c int64, rect CGRect)]
 
 func OSCGContextFillRect(c int64, rect CGRect) {
-	OSCGContextFillRect_lazy.get("CGContextFillRect")(c, rect)
+	OSCGContextFillRect_lazy.get("OSCGContextFillRect", "CGContextFillRect")(c, rect)
 }
 
 var OSCGContextRelease_lazy lazyFunc[func(c int64)]
 
 func OSCGContextRelease(c int64) {
-	OSCGContextRelease_lazy.get("CGContextRelease")(c)
+	OSCGContextRelease_lazy.get("OSCGContextRelease", "CGContextRelease")(c)
 }
 
 var OSCGContextReplacePathWithStrokedPath_lazy lazyFunc[func(c int64)]
 
 func OSCGContextReplacePathWithStrokedPath(c int64) {
-	OSCGContextReplacePathWithStrokedPath_lazy.get("CGContextReplacePathWithStrokedPath")(c)
+	OSCGContextReplacePathWithStrokedPath_lazy.get("OSCGContextReplacePathWithStrokedPath", "CGContextReplacePathWithStrokedPath")(c)
 }
 
 var OSCGContextRestoreGState_lazy lazyFunc[func(c int64)]
 
 func OSCGContextRestoreGState(c int64) {
-	OSCGContextRestoreGState_lazy.get("CGContextRestoreGState")(c)
+	OSCGContextRestoreGState_lazy.get("OSCGContextRestoreGState", "CGContextRestoreGState")(c)
 }
 
 var OSCGContextSaveGState_lazy lazyFunc[func(c int64)]
 
 func OSCGContextSaveGState(c int64) {
-	OSCGContextSaveGState_lazy.get("CGContextSaveGState")(c)
+	OSCGContextSaveGState_lazy.get("OSCGContextSaveGState", "CGContextSaveGState")(c)
 }
 
 var OSCGContextScaleCTM_lazy lazyFunc[func(c int64, sx float64, sy float64)]
 
 func OSCGContextScaleCTM(c int64, sx float64, sy float64) {
-	OSCGContextScaleCTM_lazy.get("CGContextScaleCTM")(c, sx, sy)
+	OSCGContextScaleCTM_lazy.get("OSCGContextScaleCTM", "CGContextScaleCTM")(c, sx, sy)
 }
 
 var OSCGContextSetBlendMode_lazy lazyFunc[func(context int64, mode int32)]
 
 func OSCGContextSetBlendMode(context int64, mode int32) {
-	OSCGContextSetBlendMode_lazy.get("CGContextSetBlendMode")(context, mode)
+	OSCGContextSetBlendMode_lazy.get("OSCGContextSetBlendMode", "CGContextSetBlendMode")(context, mode)
 }
 
 var OSCGContextSetFillColor_lazy lazyFunc[func(context int64, components []float64)]
 
 func OSCGContextSetFillColor(context int64, components []float64) {
-	OSCGContextSetFillColor_lazy.get("CGContextSetFillColor")(context, components)
+	OSCGContextSetFillColor_lazy.get("OSCGContextSetFillColor", "CGContextSetFillColor")(context, components)
 }
 
 var OSCGContextSetFillColorSpace_lazy lazyFunc[func(context int64, space int64)]
 
 func OSCGContextSetFillColorSpace(context int64, space int64) {
-	OSCGContextSetFillColorSpace_lazy.get("CGContextSetFillColorSpace")(context, space)
+	OSCGContextSetFillColorSpace_lazy.get("OSCGContextSetFillColorSpace", "CGContextSetFillColorSpace")(context, space)
 }
 
 var OSCGContextSetLineCap_lazy lazyFunc[func(c int64, cap int32)]
 
 func OSCGContextSetLineCap(c int64, cap int32) {
-	OSCGContextSetLineCap_lazy.get("CGContextSetLineCap")(c, cap)
+	OSCGContextSetLineCap_lazy.get("OSCGContextSetLineCap", "CGContextSetLineCap")(c, cap)
 }
 
 var OSCGContextSetLineDash_lazy lazyFunc[func(c int64, phase float64, lengths []float64, count int64)]
 
 func OSCGContextSetLineDash(c int64, phase float64, lengths []float64, count int64) {
-	OSCGContextSetLineDash_lazy.get("CGContextSetLineDash")(c, phase, lengths, count)
+	OSCGContextSetLineDash_lazy.get("OSCGContextSetLineDash", "CGContextSetLineDash")(c, phase, lengths, count)
 }
 
 var OSCGContextSetLineJoin_lazy lazyFunc[func(c int64, join int32)]
 
 func OSCGContextSetLineJoin(c int64, join int32) {
-	OSCGContextSetLineJoin_lazy.get("CGContextSetLineJoin")(c, join)
+	OSCGContextSetLineJoin_lazy.get("OSCGContextSetLineJoin", "CGContextSetLineJoin")(c, join)
 }
 
 var OSCGContextSetLineWidth_lazy lazyFunc[func(c int64, width float64)]
 
 func OSCGContextSetLineWidth(c int64, width float64) {
-	OSCGContextSetLineWidth_lazy.get("CGContextSetLineWidth")(c, width)
+	OSCGContextSetLineWidth_lazy.get("OSCGContextSetLineWidth", "CGContextSetLineWidth")(c, width)
 }
 
 var OSCGContextSetMiterLimit_lazy lazyFunc[func(c int64, limit float64)]
 
 func OSCGContextSetMiterLimit(c int64, limit float64) {
-	OSCGContextSetMiterLimit_lazy.get("CGContextSetMiterLimit")(c, limit)
+	OSCGContextSetMiterLimit_lazy.get("OSCGContextSetMiterLimit", "CGContextSetMiterLimit")(c, limit)
 }
 
 var OSCGContextStrokePath_lazy lazyFunc[func(c int64)]
 
 func OSCGContextStrokePath(c int64) {
-	OSCGContextStrokePath_lazy.get("CGContextStrokePath")(c)
+	OSCGContextStrokePath_lazy.get("OSCGContextStrokePath", "CGContextStrokePath")(c)
 }
 
 var OSCGContextTranslateCTM_lazy lazyFunc[func(c int64, tx float64, ty float64)]
 
 func OSCGContextTranslateCTM(c int64, tx float64, ty float64) {
-	OSCGContextTranslateCTM_lazy.get("CGContextTranslateCTM")(c, tx, ty)
+	OSCGContextTranslateCTM_lazy.get("OSCGContextTranslateCTM", "CGContextTranslateCTM")(c, tx, ty)
 }
 
 var OSCGDataProviderCreateWithData_lazy lazyFunc[func(info int64, data int64, size int64, releaseData int64) int64]
 
 func OSCGDataProviderCreateWithData(info int64, data int64, size int64, releaseData int64) int64 {
-	return OSCGDataProviderCreateWithData_lazy.get("CGDataProviderCreateWithData")(info, data, size, releaseData)
+	return OSCGDataProviderCreateWithData_lazy.get("OSCGDataProviderCreateWithData", "CGDataProviderCreateWithData")(info, data, size, releaseData)
 }
 
 var OSCGDataProviderRelease_lazy lazyFunc[func(provider int64)]
 
 func OSCGDataProviderRelease(provider int64) {
-	OSCGDataProviderRelease_lazy.get("CGDataProviderRelease")(provider)
+	OSCGDataProviderRelease_lazy.get("OSCGDataProviderRelease", "CGDataProviderRelease")(provider)
 }
 
 var OSCGDisplayCreateImage_lazy lazyFunc[func(displayID int32) int64]
 
 func OSCGDisplayCreateImage(displayID int32) int64 {
-	return OSCGDisplayCreateImage_lazy.get("CGDisplayCreateImage")(displayID)
+	return OSCGDisplayCreateImage_lazy.get("OSCGDisplayCreateImage", "CGDisplayCreateImage")(displayID)
 }
 
 var OSCGEventCreateKeyboardEvent_lazy lazyFunc[func(source int64, virtualKey int16, keyDown bool) int64]
 
 func OSCGEventCreateKeyboardEvent(source int64, virtualKey int16, keyDown bool) int64 {
-	return OSCGEventCreateKeyboardEvent_lazy.get("CGEventCreateKeyboardEvent")(source, virtualKey, keyDown)
+	return OSCGEventCreateKeyboardEvent_lazy.get("OSCGEventCreateKeyboardEvent", "CGEventCreateKeyboardEvent")(source, virtualKey, keyDown)
 }
 
 var OSCGEventCreateMouseEvent_lazy lazyFunc[func(source int64, mouseType int32, mouseCursorPosition CGPoint, mouseButton int32) int64]
 
 func OSCGEventCreateMouseEvent(source int64, mouseType int32, mouseCursorPosition CGPoint, mouseButton int32) int64 {
-	return OSCGEventCreateMouseEvent_lazy.get("CGEventCreateMouseEvent")(source, mouseType, mouseCursorPosition, mouseButton)
+	return OSCGEventCreateMouseEvent_lazy.get("OSCGEventCreateMouseEvent", "CGEventCreateMouseEvent")(source, mouseType, mouseCursorPosition, mouseButton)
 }
 
 var OSCGEventCreateScrollWheelEvent_lazy lazyFunc[func(source int64, units int32, wheelCount int32, wheel1 int32) int64]
 
 func OSCGEventCreateScrollWheelEvent(source int64, units int32, wheelCount int32, wheel1 int32) int64 {
-	return OSCGEventCreateScrollWheelEvent_lazy.get("CGEventCreateScrollWheelEvent")(source, units, wheelCount, wheel1)
+	return OSCGEventCreateScrollWheelEvent_lazy.get("OSCGEventCreateScrollWheelEvent", "CGEventCreateScrollWheelEvent")(source, units, wheelCount, wheel1)
 }
 
 var OSCGEventGetIntegerValueField_lazy lazyFunc[func(event int64, field int32) int64]
 
 func OSCGEventGetIntegerValueField(event int64, field int32) int64 {
-	return OSCGEventGetIntegerValueField_lazy.get("CGEventGetIntegerValueField")(event, field)
+	return OSCGEventGetIntegerValueField_lazy.get("OSCGEventGetIntegerValueField", "CGEventGetIntegerValueField")(event, field)
 }
 
 var OSCGEventPost_lazy lazyFunc[func(tap int32, event int64)]
 
 func OSCGEventPost(tap int32, event int64) {
-	OSCGEventPost_lazy.get("CGEventPost")(tap, event)
+	OSCGEventPost_lazy.get("OSCGEventPost", "CGEventPost")(tap, event)
 }
 
 var OSCGEventSourceCreate_lazy lazyFunc[func(stateID int32) int64]
 
 func OSCGEventSourceCreate(stateID int32) int64 {
-	return OSCGEventSourceCreate_lazy.get("CGEventSourceCreate")(stateID)
+	return OSCGEventSourceCreate_lazy.get("OSCGEventSourceCreate", "CGEventSourceCreate")(stateID)
 }
 
 var OSCGGetDisplaysWithRect_lazy lazyFunc[func(rect CGRect, maxDisplays int32, displays int64, matchingDisplayCount int64) int32]
 
 func OSCGGetDisplaysWithRect(rect CGRect, maxDisplays int32, displays int64, matchingDisplayCount int64) int32 {
-	return OSCGGetDisplaysWithRect_lazy.get("CGGetDisplaysWithRect")(rect, maxDisplays, displays, matchingDisplayCount)
+	return OSCGGetDisplaysWithRect_lazy.get("OSCGGetDisplaysWithRect", "CGGetDisplaysWithRect")(rect, maxDisplays, displays, matchingDisplayCount)
 }
 
 var OSCGImageCreate_lazy lazyFunc[func(width int64, height int64, bitsPerComponent int64, bitsPerPixel int64, bytesPerRow int64, space int64, bitmapInfo int32, provider int64, decode int64, shouldInterpolate bool, intent int32) int64]
 
 func OSCGImageCreate(width int64, height int64, bitsPerComponent int64, bitsPerPixel int64, bytesPerRow int64, space int64, bitmapInfo int32, provider int64, decode int64, shouldInterpolate bool, intent int32) int64 {
-	return OSCGImageCreate_lazy.get("CGImageCreate")(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, space, bitmapInfo, provider, decode, shouldInterpolate, intent)
+	return OSCGImageCreate_lazy.get("OSCGImageCreate", "CGImageCreate")(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, space, bitmapInfo, provider, decode, shouldInterpolate, intent)
 }
 
 var OSCGImageGetHeight_lazy lazyFunc[func(image int64) int64]
 
 func OSCGImageGetHeight(image int64) int64 {
-	return OSCGImageGetHeight_lazy.get("CGImageGetHeight")(image)
+	return OSCGImageGetHeight_lazy.get("OSCGImageGetHeight", "CGImageGetHeight")(image)
 }
 
 var OSCGImageGetWidth_lazy lazyFunc[func(image int64) int64]
 
 func OSCGImageGetWidth(image int64) int64 {
-	return OSCGImageGetWidth_lazy.get("CGImageGetWidth")(image)
+	return OSCGImageGetWidth_lazy.get("OSCGImageGetWidth", "CGImageGetWidth")(image)
 }
 
 var OSCGImageRelease_lazy lazyFunc[func(image int64)]
 
 func OSCGImageRelease(image int64) {
-	OSCGImageRelease_lazy.get("CGImageRelease")(image)
+	OSCGImageRelease_lazy.get("OSCGImageRelease", "CGImageRelease")(image)
 }
 
 var OSCGPDFContextBeginPage_lazy lazyFunc[func(context int64, pageInfo int64)]
 
 func OSCGPDFContextBeginPage(context int64, pageInfo int64) {
-	OSCGPDFContextBeginPage_lazy.get("CGPDFContextBeginPage")(context, pageInfo)
+	OSCGPDFContextBeginPage_lazy.get("OSCGPDFContextBeginPage", "CGPDFContextBeginPage")(context, pageInfo)
 }
 
 var OSCGPDFContextClose_lazy lazyFunc[func(context int64)]
 
 func OSCGPDFContextClose(context int64) {
-	OSCGPDFContextClose_lazy.get("CGPDFContextClose")(context)
+	OSCGPDFContextClose_lazy.get("OSCGPDFContextClose", "CGPDFContextClose")(context)
 }
 
 var OSCGPDFContextCreateWithURL_lazy lazyFunc[func(url int64, mediaBox *CGRect, auxiliaryInfo int64) int64]
 
 func OSCGPDFContextCreateWithURL(url int64, mediaBox *CGRect, auxiliaryInfo int64) int64 {
-	return OSCGPDFContextCreateWithURL_lazy.get("CGPDFContextCreateWithURL")(url, mediaBox, auxiliaryInfo)
+	return OSCGPDFContextCreateWithURL_lazy.get("OSCGPDFContextCreateWithURL", "CGPDFContextCreateWithURL")(url, mediaBox, auxiliaryInfo)
 }
 
 var OSCGPDFContextEndPage_lazy lazyFunc[func(context int64)]
 
 func OSCGPDFContextEndPage(context int64) {
-	OSCGPDFContextEndPage_lazy.get("CGPDFContextEndPage")(context)
+	OSCGPDFContextEndPage_lazy.get("OSCGPDFContextEndPage", "CGPDFContextEndPage")(context)
 }
 
 var OSCGPathAddCurveToPoint_lazy lazyFunc[func(path int64, m int64, cp1x float64, cp1y float64, cp2x float64, cp2y float64, x float64, y float64)]
 
 func OSCGPathAddCurveToPoint(path int64, m int64, cp1x float64, cp1y float64, cp2x float64, cp2y float64, x float64, y float64) {
-	OSCGPathAddCurveToPoint_lazy.get("CGPathAddCurveToPoint")(path, m, cp1x, cp1y, cp2x, cp2y, x, y)
+	OSCGPathAddCurveToPoint_lazy.get("OSCGPathAddCurveToPoint", "CGPathAddCurveToPoint")(path, m, cp1x, cp1y, cp2x, cp2y, x, y)
 }
 
 var OSCGPathAddLineToPoint_lazy lazyFunc[func(path int64, m int64, x float64, y float64)]
 
 func OSCGPathAddLineToPoint(path int64, m int64, x float64, y float64) {
-	OSCGPathAddLineToPoint_lazy.get("CGPathAddLineToPoint")(path, m, x, y)
+	OSCGPathAddLineToPoint_lazy.get("OSCGPathAddLineToPoint", "CGPathAddLineToPoint")(path, m, x, y)
 }
 
 var OSCGPathApply_lazy lazyFunc[func(path int64, info int64, function int64)]
 
 func OSCGPathApply(path int64, info int64, function int64) {
-	OSCGPathApply_lazy.get("CGPathApply")(path, info, function)
+	OSCGPathApply_lazy.get("OSCGPathApply", "CGPathApply")(path, info, function)
 }
 
 var OSCGPathCloseSubpath_lazy lazyFunc[func(path int64)]
 
 func OSCGPathCloseSubpath(path int64) {
-	OSCGPathCloseSubpath_lazy.get("CGPathCloseSubpath")(path)
+	OSCGPathCloseSubpath_lazy.get("OSCGPathCloseSubpath", "CGPathCloseSubpath")(path)
 }
 
 var OSCGPathCreateMutable_lazy lazyFunc[func() int64]
 
 func OSCGPathCreateMutable() int64 {
-	return OSCGPathCreateMutable_lazy.get("CGPathCreateMutable")()
+	return OSCGPathCreateMutable_lazy.get("OSCGPathCreateMutable", "CGPathCreateMutable")()
 }
 
 func OSCGPathElement_sizeof() int32 { return int32(unsafe.Sizeof(CGPathElement{})) }
@@ -738,13 +738,13 @@ func OSCGPathElement_sizeof() int32 { return int32(unsafe.Sizeof(CGPathElement{}
 var OSCGPathMoveToPoint_lazy lazyFunc[func(path int64, m int64, x float64, y float64)]
 
 func OSCGPathMoveToPoint(path int64, m int64, x float64, y float64) {
-	OSCGPathMoveToPoint_lazy.get("CGPathMoveToPoint")(path, m, x, y)
+	OSCGPathMoveToPoint_lazy.get("OSCGPathMoveToPoint", "CGPathMoveToPoint")(path, m, x, y)
 }
 
 var OSCGPathRelease_lazy lazyFunc[func(path int64)]
 
 func OSCGPathRelease(path int64) {
-	OSCGPathRelease_lazy.get("CGPathRelease")(path)
+	OSCGPathRelease_lazy.get("OSCGPathRelease", "CGPathRelease")(path)
 }
 
 func OSCGPoint_sizeof() int32 { return int32(unsafe.Sizeof(CGPoint{})) }
@@ -756,17 +756,17 @@ func OSCGSize_sizeof() int32 { return int32(unsafe.Sizeof(CGSize{})) }
 var OSCPSSetProcessName_lazy lazyFunc[func(psn []int32, name int64) int32]
 
 func OSCPSSetProcessName(psn []int32, name int64) int32 {
-	return OSCPSSetProcessName_lazy.get("CPSSetProcessName")(psn, name)
+	return OSCPSSetProcessName_lazy.get("OSCPSSetProcessName", "CPSSetProcessName")(psn, name)
 }
 
 var OSCTFontManagerRegisterFontsForURL_lazy lazyFunc[func(fontURL int64, scope int32, error_ int64) bool]
 
 func OSCTFontManagerRegisterFontsForURL(fontURL int64, scope int32, error_ int64) bool {
-	return OSCTFontManagerRegisterFontsForURL_lazy.get("CTFontManagerRegisterFontsForURL")(fontURL, scope, error_)
+	return OSCTFontManagerRegisterFontsForURL_lazy.get("OSCTFontManagerRegisterFontsForURL", "CTFontManagerRegisterFontsForURL")(fontURL, scope, error_)
 }
 
 var OSCancelMenuTracking_lazy lazyFunc[func(inRootMenu int64, inImmediate bool, inDismissalReason int32) int32]
 
 func OSCancelMenuTracking(inRootMenu int64, inImmediate bool, inDismissalReason int32) int32 {
-	return OSCancelMenuTracking_lazy.get("CancelMenuTracking")(inRootMenu, inImmediate, inDismissalReason)
+	return OSCancelMenuTracking_lazy.get("OSCancelMenuTracking", "CancelMenuTracking")(inRootMenu, inImmediate, inDismissalReason)
 }

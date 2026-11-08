@@ -309,6 +309,16 @@ public class Main {
 				Files.writeString(outPath, file.toString(), StandardCharsets.UTF_8);
 				System.out.println("wrote " + outPath);
 			}
+
+			// Opt-in cgo backend (darwin && gowtcgo && cgo): one registry file per unit that
+			// declares lazy natives, alongside the unit's own generated files.
+			String cgoFile = emitter.cgoCompanionFile();
+			if (cgoFile != null) {
+				Path outPath = Path.of(outDir, outDirName, baseStem + "_cgo.go");
+				Files.createDirectories(outPath.getParent());
+				Files.writeString(outPath, cgoFile, StandardCharsets.UTF_8);
+				System.out.println("wrote " + outPath);
+			}
 		}
 
 		if (!reference && Profile.active == null && emittedSwtPlatformFile) {

@@ -4,7 +4,7 @@
 
 How the repository is laid out and how the SWT port is built. To use gowt see [README.md](README.md). Platform status and test numbers: [platforms.md](platforms.md).
 
-gowt is Eclipse SWT translated from Java to Go by a translator in this repository (`tooling/j2go`, built on Eclipse JDT), with hand-written code where translation does not apply. The generated Go is committed, so users need neither Java nor the SWT sources. Three platform ports exist: macOS (SWT's `cocoa`), Windows (`win32`) and Linux (`gtk`, GTK 3). Everything builds with `CGO_ENABLED=0`; the OS libraries are loaded at run time.
+gowt is Eclipse SWT translated from Java to Go by a translator in this repository (`tooling/j2go`, built on Eclipse JDT), with hand-written code where translation does not apply. The generated Go is committed, so users need neither Java nor the SWT sources. Three platform ports exist: macOS (SWT's `cocoa`), Windows (`win32`) and Linux (`gtk`, GTK 3). Everything builds with `CGO_ENABLED=0` by default; the OS libraries are loaded at run time. On macOS, `CGO_ENABLED=1 -tags gowtcgo` selects direct cgo for the generated AppKit calls and the CoreGraphics renderer; callbacks and the remaining hand-written bindings still use purego.
 
 <br clear="right">
 

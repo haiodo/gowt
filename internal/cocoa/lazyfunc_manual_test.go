@@ -1,4 +1,4 @@
-//go:build darwin
+//go:build darwin && (!gowtcgo || !cgo)
 
 package cocoa
 
@@ -12,7 +12,7 @@ import (
 // the first call must resolve a real libSystem symbol through RTLD_DEFAULT and be callable.
 func TestLazyFuncRealNative(t *testing.T) {
 	var getpid lazyFunc[func() int32]
-	if got, want := getpid.get("getpid")(), int32(os.Getpid()); got != want {
+	if got, want := getpid.get("testGetpid", "getpid")(), int32(os.Getpid()); got != want {
 		t.Fatalf("getpid() = %d, want %d", got, want)
 	}
 }
@@ -28,7 +28,7 @@ func TestLazyFuncConcurrentFirstCall(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			pids[i] = getppid.get("getppid")()
+			pids[i] = getppid.get("testGetppid", "getppid")()
 		}()
 	}
 	wg.Wait()

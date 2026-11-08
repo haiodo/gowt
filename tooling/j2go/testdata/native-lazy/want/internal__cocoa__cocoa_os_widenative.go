@@ -10,5 +10,5 @@ import (
 
 var OSWideNative_lazy lazyFunc[func(a int64, b int32, c int64, d int32, e int64, f int32, g int64, h int32, i int64, data *int32) int64]
 func OSWideNative(a int64, b int32, c int64, d int32, e int64, f int32, g int64, h int32, i int64, data []int32) int64 {
-	return OSWideNative_lazy.get("WideNative")(a, b, c, d, e, f, g, h, i, unsafe.SliceData(data))
+	return OSWideNative_lazy.get("OSWideNative", "WideNative")(a, b, c, d, e, f, g, h, i, unsafe.SliceData(data))
 }

@@ -88,145 +88,145 @@ func OSNSWindowWillCloseNotification() int64 {
 var OSNewRgn_lazy lazyFunc[func() int64]
 
 func OSNewRgn() int64 {
-	return OSNewRgn_lazy.get("NewRgn")()
+	return OSNewRgn_lazy.get("OSNewRgn", "NewRgn")()
 }
 
 var OSOffsetRgn_lazy lazyFunc[func(rgnHandle int64, dh int16, dv int16)]
 
 func OSOffsetRgn(rgnHandle int64, dh int16, dv int16) {
-	OSOffsetRgn_lazy.get("OffsetRgn")(rgnHandle, dh, dv)
+	OSOffsetRgn_lazy.get("OSOffsetRgn", "OffsetRgn")(rgnHandle, dh, dv)
 }
 
 var OSOpenRgn_lazy lazyFunc[func()]
 
 func OSOpenRgn() {
-	OSOpenRgn_lazy.get("OpenRgn")()
+	OSOpenRgn_lazy.get("OSOpenRgn", "OpenRgn")()
 }
 
 var OSPMGetDuplex_lazy lazyFunc[func(printSettings int64, outDuplexSetting []int32) int64]
 
 func OSPMGetDuplex(printSettings int64, outDuplexSetting []int32) int64 {
-	return OSPMGetDuplex_lazy.get("PMGetDuplex")(printSettings, outDuplexSetting)
+	return OSPMGetDuplex_lazy.get("OSPMGetDuplex", "PMGetDuplex")(printSettings, outDuplexSetting)
 }
 
 var OSPMPrinterGetIndexedPrinterResolution_lazy lazyFunc[func(pmPrinter int64, index int32, outResolution *PMResolution) int64]
 
 func OSPMPrinterGetIndexedPrinterResolution(pmPrinter int64, index int32, outResolution *PMResolution) int64 {
-	return OSPMPrinterGetIndexedPrinterResolution_lazy.get("PMPrinterGetIndexedPrinterResolution")(pmPrinter, index, outResolution)
+	return OSPMPrinterGetIndexedPrinterResolution_lazy.get("OSPMPrinterGetIndexedPrinterResolution", "PMPrinterGetIndexedPrinterResolution")(pmPrinter, index, outResolution)
 }
 
 var OSPMPrinterGetOutputResolution_lazy lazyFunc[func(pmPrinter int64, pmPrintSettings int64, outResolution *PMResolution) int64]
 
 func OSPMPrinterGetOutputResolution(pmPrinter int64, pmPrintSettings int64, outResolution *PMResolution) int64 {
-	return OSPMPrinterGetOutputResolution_lazy.get("PMPrinterGetOutputResolution")(pmPrinter, pmPrintSettings, outResolution)
+	return OSPMPrinterGetOutputResolution_lazy.get("OSPMPrinterGetOutputResolution", "PMPrinterGetOutputResolution")(pmPrinter, pmPrintSettings, outResolution)
 }
 
 var OSPMPrinterGetPrinterResolutionCount_lazy lazyFunc[func(pmPrinter int64, outNumResolutions []int32) int64]
 
 func OSPMPrinterGetPrinterResolutionCount(pmPrinter int64, outNumResolutions []int32) int64 {
-	return OSPMPrinterGetPrinterResolutionCount_lazy.get("PMPrinterGetPrinterResolutionCount")(pmPrinter, outNumResolutions)
+	return OSPMPrinterGetPrinterResolutionCount_lazy.get("OSPMPrinterGetPrinterResolutionCount", "PMPrinterGetPrinterResolutionCount")(pmPrinter, outNumResolutions)
 }
 
 var OSPMSessionGetCurrentPrinter_lazy lazyFunc[func(pmSessionInfo int64, outPMPrinter []int64) int64]
 
 func OSPMSessionGetCurrentPrinter(pmSessionInfo int64, outPMPrinter []int64) int64 {
-	return OSPMSessionGetCurrentPrinter_lazy.get("PMSessionGetCurrentPrinter")(pmSessionInfo, outPMPrinter)
+	return OSPMSessionGetCurrentPrinter_lazy.get("OSPMSessionGetCurrentPrinter", "PMSessionGetCurrentPrinter")(pmSessionInfo, outPMPrinter)
 }
 
 var OSPMSessionGetDestinationType_lazy lazyFunc[func(pmSessionInfo int64, pmPrintSettings int64, outDestinationType []int16) int64]
 
 func OSPMSessionGetDestinationType(pmSessionInfo int64, pmPrintSettings int64, outDestinationType []int16) int64 {
-	return OSPMSessionGetDestinationType_lazy.get("PMSessionGetDestinationType")(pmSessionInfo, pmPrintSettings, outDestinationType)
+	return OSPMSessionGetDestinationType_lazy.get("OSPMSessionGetDestinationType", "PMSessionGetDestinationType")(pmSessionInfo, pmPrintSettings, outDestinationType)
 }
 
 var OSPMSetDuplex_lazy lazyFunc[func(printSettings int64, duplexSetting int32) int64]
 
 func OSPMSetDuplex(printSettings int64, duplexSetting int32) int64 {
-	return OSPMSetDuplex_lazy.get("PMSetDuplex")(printSettings, duplexSetting)
+	return OSPMSetDuplex_lazy.get("OSPMSetDuplex", "PMSetDuplex")(printSettings, duplexSetting)
 }
 
 var OSQDRegionToRects_lazy lazyFunc[func(rgn int64, dir int32, proc int64, userData int64) int32]
 
 func OSQDRegionToRects(rgn int64, dir int32, proc int64, userData int64) int32 {
-	return OSQDRegionToRects_lazy.get("QDRegionToRects")(rgn, dir, proc, userData)
+	return OSQDRegionToRects_lazy.get("OSQDRegionToRects", "QDRegionToRects")(rgn, dir, proc, userData)
 }
 
 var OSRectInRgn_lazy lazyFunc[func(rect []int16, rgnHandle int64) bool]
 
 func OSRectInRgn(rect []int16, rgnHandle int64) bool {
-	return OSRectInRgn_lazy.get("RectInRgn")(rect, rgnHandle)
+	return OSRectInRgn_lazy.get("OSRectInRgn", "RectInRgn")(rect, rgnHandle)
 }
 
 var OSRectRgn_lazy lazyFunc[func(rgnHandle int64, rect []int16)]
 
 func OSRectRgn(rgnHandle int64, rect []int16) {
-	OSRectRgn_lazy.get("RectRgn")(rgnHandle, rect)
+	OSRectRgn_lazy.get("OSRectRgn", "RectRgn")(rgnHandle, rect)
 }
 
 var OSSecPolicySearchCopyNext_lazy lazyFunc[func(searchRef int64, policyRef []int64) int32]
 
 func OSSecPolicySearchCopyNext(searchRef int64, policyRef []int64) int32 {
-	return OSSecPolicySearchCopyNext_lazy.get("SecPolicySearchCopyNext")(searchRef, policyRef)
+	return OSSecPolicySearchCopyNext_lazy.get("OSSecPolicySearchCopyNext", "SecPolicySearchCopyNext")(searchRef, policyRef)
 }
 
 var OSSecPolicySearchCreate_lazy lazyFunc[func(certType int64, policyOID int64, value int64, policySearch []int64) int32]
 
 func OSSecPolicySearchCreate(certType int64, policyOID int64, value int64, policySearch []int64) int32 {
-	return OSSecPolicySearchCreate_lazy.get("SecPolicySearchCreate")(certType, policyOID, value, policySearch)
+	return OSSecPolicySearchCreate_lazy.get("OSSecPolicySearchCreate", "SecPolicySearchCreate")(certType, policyOID, value, policySearch)
 }
 
 var OSSecTrustCreateWithCertificates_lazy lazyFunc[func(certificates int64, policies int64, trustRef []int64) int32]
 
 func OSSecTrustCreateWithCertificates(certificates int64, policies int64, trustRef []int64) int32 {
-	return OSSecTrustCreateWithCertificates_lazy.get("SecTrustCreateWithCertificates")(certificates, policies, trustRef)
+	return OSSecTrustCreateWithCertificates_lazy.get("OSSecTrustCreateWithCertificates", "SecTrustCreateWithCertificates")(certificates, policies, trustRef)
 }
 
 var OSSectRgn_lazy lazyFunc[func(srcRgnA int64, srcRgnB int64, dstRgn int64)]
 
 func OSSectRgn(srcRgnA int64, srcRgnB int64, dstRgn int64) {
-	OSSectRgn_lazy.get("SectRgn")(srcRgnA, srcRgnB, dstRgn)
+	OSSectRgn_lazy.get("OSSectRgn", "SectRgn")(srcRgnA, srcRgnB, dstRgn)
 }
 
 var OSSetRect_lazy lazyFunc[func(r []int16, left int16, top int16, right int16, bottom int16)]
 
 func OSSetRect(r []int16, left int16, top int16, right int16, bottom int16) {
-	OSSetRect_lazy.get("SetRect")(r, left, top, right, bottom)
+	OSSetRect_lazy.get("OSSetRect", "SetRect")(r, left, top, right, bottom)
 }
 
 var OSSetSystemUIMode_lazy lazyFunc[func(inMode int32, inOptions int32) int32]
 
 func OSSetSystemUIMode(inMode int32, inOptions int32) int32 {
-	return OSSetSystemUIMode_lazy.get("SetSystemUIMode")(inMode, inOptions)
+	return OSSetSystemUIMode_lazy.get("OSSetSystemUIMode", "SetSystemUIMode")(inMode, inOptions)
 }
 
 var OSTISCopyCurrentKeyboardInputSource_lazy lazyFunc[func() int64]
 
 func OSTISCopyCurrentKeyboardInputSource() int64 {
-	return OSTISCopyCurrentKeyboardInputSource_lazy.get("TISCopyCurrentKeyboardInputSource")()
+	return OSTISCopyCurrentKeyboardInputSource_lazy.get("OSTISCopyCurrentKeyboardInputSource", "TISCopyCurrentKeyboardInputSource")()
 }
 
 var OSTISGetInputSourceProperty_lazy lazyFunc[func(inputSource int64, propertyKey int64) int64]
 
 func OSTISGetInputSourceProperty(inputSource int64, propertyKey int64) int64 {
-	return OSTISGetInputSourceProperty_lazy.get("TISGetInputSourceProperty")(inputSource, propertyKey)
+	return OSTISGetInputSourceProperty_lazy.get("OSTISGetInputSourceProperty", "TISGetInputSourceProperty")(inputSource, propertyKey)
 }
 
 var OSUCKeyTranslate_lazy lazyFunc[func(keyLayoutPtr int64, virtualKeyCode int16, keyAction int16, modifierKeyState int32, keyboardType int32, keyTranslateOptions int32, deadKeyState *int32, maxStringLength int32, actualStringLength *int64, unicodeString *uint16) int32]
 
 func OSUCKeyTranslate(keyLayoutPtr int64, virtualKeyCode int16, keyAction int16, modifierKeyState int32, keyboardType int32, keyTranslateOptions int32, deadKeyState []int32, maxStringLength int32, actualStringLength []int64, unicodeString []uint16) int32 {
-	return OSUCKeyTranslate_lazy.get("UCKeyTranslate")(keyLayoutPtr, virtualKeyCode, keyAction, modifierKeyState, keyboardType, keyTranslateOptions, unsafe.SliceData(deadKeyState), maxStringLength, unsafe.SliceData(actualStringLength), unsafe.SliceData(unicodeString))
+	return OSUCKeyTranslate_lazy.get("OSUCKeyTranslate", "UCKeyTranslate")(keyLayoutPtr, virtualKeyCode, keyAction, modifierKeyState, keyboardType, keyTranslateOptions, unsafe.SliceData(deadKeyState), maxStringLength, unsafe.SliceData(actualStringLength), unsafe.SliceData(unicodeString))
 }
 
 var OSUTTypeEqual_lazy lazyFunc[func(inUTI1 int64, inUTI2 int64) bool]
 
 func OSUTTypeEqual(inUTI1 int64, inUTI2 int64) bool {
-	return OSUTTypeEqual_lazy.get("UTTypeEqual")(inUTI1, inUTI2)
+	return OSUTTypeEqual_lazy.get("OSUTTypeEqual", "UTTypeEqual")(inUTI1, inUTI2)
 }
 
 var OSUnionRgn_lazy lazyFunc[func(srcRgnA int64, srcRgnB int64, dstRgn int64)]
 
 func OSUnionRgn(srcRgnA int64, srcRgnB int64, dstRgn int64) {
-	OSUnionRgn_lazy.get("UnionRgn")(srcRgnA, srcRgnB, dstRgn)
+	OSUnionRgn_lazy.get("OSUnionRgn", "UnionRgn")(srcRgnA, srcRgnB, dstRgn)
 }
 
 func OSVERSION(major int32, minor int32, bugfix int32) int32 {
@@ -246,73 +246,73 @@ func OSBeginSheetModalForWindowIdWindowHandler(id *NSObject, window *NSWindow, h
 var OSBeginSheetModalForWindow_lazy lazyFunc[func(id int64, sel int64, window int64, handler int64)]
 
 func OSBeginSheetModalForWindow(id int64, sel int64, window int64, handler int64) {
-	OSBeginSheetModalForWindow_lazy.get("beginSheetModalForWindow")(id, sel, window, handler)
+	OSBeginSheetModalForWindow_lazy.get("OSBeginSheetModalForWindow", "beginSheetModalForWindow")(id, sel, window, handler)
 }
 
 var OSClass_addIvar_lazy lazyFunc[func(cls int64, name []int8, size int64, alignment int8, types []int8) bool]
 
 func OSClass_addIvar(cls int64, name []int8, size int64, alignment int8, types []int8) bool {
-	return OSClass_addIvar_lazy.get("class_addIvar")(cls, name, size, alignment, types)
+	return OSClass_addIvar_lazy.get("OSClass_addIvar", "class_addIvar")(cls, name, size, alignment, types)
 }
 
 var OSClass_addMethod_lazy lazyFunc[func(cls int64, name int64, imp int64, types string) bool]
 
 func OSClass_addMethod(cls int64, name int64, imp int64, types string) bool {
-	return OSClass_addMethod_lazy.get("class_addMethod")(cls, name, imp, types)
+	return OSClass_addMethod_lazy.get("OSClass_addMethod", "class_addMethod")(cls, name, imp, types)
 }
 
 var OSClass_addProtocol_lazy lazyFunc[func(cls int64, protocol int64) bool]
 
 func OSClass_addProtocol(cls int64, protocol int64) bool {
-	return OSClass_addProtocol_lazy.get("class_addProtocol")(cls, protocol)
+	return OSClass_addProtocol_lazy.get("OSClass_addProtocol", "class_addProtocol")(cls, protocol)
 }
 
 var OSClass_createInstance_lazy lazyFunc[func(cls int64, extraBytes int64) int64]
 
 func OSClass_createInstance(cls int64, extraBytes int64) int64 {
-	return OSClass_createInstance_lazy.get("class_createInstance")(cls, extraBytes)
+	return OSClass_createInstance_lazy.get("OSClass_createInstance", "class_createInstance")(cls, extraBytes)
 }
 
 var OSClass_getClassMethod_lazy lazyFunc[func(aClass int64, aSelector int64) int64]
 
 func OSClass_getClassMethod(aClass int64, aSelector int64) int64 {
-	return OSClass_getClassMethod_lazy.get("class_getClassMethod")(aClass, aSelector)
+	return OSClass_getClassMethod_lazy.get("OSClass_getClassMethod", "class_getClassMethod")(aClass, aSelector)
 }
 
 var OSClass_getInstanceMethod_lazy lazyFunc[func(cls int64, name int64) int64]
 
 func OSClass_getInstanceMethod(cls int64, name int64) int64 {
-	return OSClass_getInstanceMethod_lazy.get("class_getInstanceMethod")(cls, name)
+	return OSClass_getInstanceMethod_lazy.get("OSClass_getInstanceMethod", "class_getInstanceMethod")(cls, name)
 }
 
 var OSClass_getMethodImplementation_lazy lazyFunc[func(cls int64, name int64) int64]
 
 func OSClass_getMethodImplementation(cls int64, name int64) int64 {
-	return OSClass_getMethodImplementation_lazy.get("class_getMethodImplementation")(cls, name)
+	return OSClass_getMethodImplementation_lazy.get("OSClass_getMethodImplementation", "class_getMethodImplementation")(cls, name)
 }
 
 var OSClass_getName_lazy lazyFunc[func(cls int64) string]
 
 func OSClass_getName(cls int64) string {
-	return OSClass_getName_lazy.get("class_getName")(cls)
+	return OSClass_getName_lazy.get("OSClass_getName", "class_getName")(cls)
 }
 
 var OSClass_getSuperclass_lazy lazyFunc[func(cls int64) int64]
 
 func OSClass_getSuperclass(cls int64) int64 {
-	return OSClass_getSuperclass_lazy.get("class_getSuperclass")(cls)
+	return OSClass_getSuperclass_lazy.get("OSClass_getSuperclass", "class_getSuperclass")(cls)
 }
 
 var OSGetpid_lazy lazyFunc[func() int32]
 
 func OSGetpid() int32 {
-	return OSGetpid_lazy.get("getpid")()
+	return OSGetpid_lazy.get("OSGetpid", "getpid")()
 }
 
 var OSInstrumentObjcMessageSends_lazy lazyFunc[func(val bool)]
 
 func OSInstrumentObjcMessageSends(val bool) {
-	OSInstrumentObjcMessageSends_lazy.get("instrumentObjcMessageSends")(val)
+	OSInstrumentObjcMessageSends_lazy.get("OSInstrumentObjcMessageSends", "instrumentObjcMessageSends")(val)
 }
 
 func OSIsAppDarkAppearance() bool {
@@ -371,101 +371,101 @@ func OSKUTTypeURL() int64 {
 var OSMemmoveOverload1_lazy lazyFunc[func(dest *CGPathElement, src int64, size int64)]
 
 func OSMemmoveOverload1(dest *CGPathElement, src int64, size int64) {
-	OSMemmoveOverload1_lazy.get("memmove")(dest, src, size)
+	OSMemmoveOverload1_lazy.get("OSMemmoveOverload1", "memmove")(dest, src, size)
 }
 
 var OSMemmoveOverload2_lazy lazyFunc[func(dest int64, src *NSPoint, size int64)]
 
 func OSMemmoveOverload2(dest int64, src *NSPoint, size int64) {
-	OSMemmoveOverload2_lazy.get("memmove")(dest, src, size)
+	OSMemmoveOverload2_lazy.get("OSMemmoveOverload2", "memmove")(dest, src, size)
 }
 
 var OSMemmoveOverload3_lazy lazyFunc[func(dest *NSPoint, src int64, size int64)]
 
 func OSMemmoveOverload3(dest *NSPoint, src int64, size int64) {
-	OSMemmoveOverload3_lazy.get("memmove")(dest, src, size)
+	OSMemmoveOverload3_lazy.get("OSMemmoveOverload3", "memmove")(dest, src, size)
 }
 
 var OSMemmoveOverload4_lazy lazyFunc[func(dest int64, src *NSRange, size int64)]
 
 func OSMemmoveOverload4(dest int64, src *NSRange, size int64) {
-	OSMemmoveOverload4_lazy.get("memmove")(dest, src, size)
+	OSMemmoveOverload4_lazy.get("OSMemmoveOverload4", "memmove")(dest, src, size)
 }
 
 var OSMemmoveOverload5_lazy lazyFunc[func(dest *NSRange, src int64, size int64)]
 
 func OSMemmoveOverload5(dest *NSRange, src int64, size int64) {
-	OSMemmoveOverload5_lazy.get("memmove")(dest, src, size)
+	OSMemmoveOverload5_lazy.get("OSMemmoveOverload5", "memmove")(dest, src, size)
 }
 
 var OSMemmoveOverload6_lazy lazyFunc[func(dest int64, src *NSRect, size int64)]
 
 func OSMemmoveOverload6(dest int64, src *NSRect, size int64) {
-	OSMemmoveOverload6_lazy.get("memmove")(dest, src, size)
+	OSMemmoveOverload6_lazy.get("OSMemmoveOverload6", "memmove")(dest, src, size)
 }
 
 var OSMemmoveOverload7_lazy lazyFunc[func(dest *NSRect, src int64, size int64)]
 
 func OSMemmoveOverload7(dest *NSRect, src int64, size int64) {
-	OSMemmoveOverload7_lazy.get("memmove")(dest, src, size)
+	OSMemmoveOverload7_lazy.get("OSMemmoveOverload7", "memmove")(dest, src, size)
 }
 
 var OSMemmoveOverload8_lazy lazyFunc[func(dest int64, src *NSSize, size int64)]
 
 func OSMemmoveOverload8(dest int64, src *NSSize, size int64) {
-	OSMemmoveOverload8_lazy.get("memmove")(dest, src, size)
+	OSMemmoveOverload8_lazy.get("OSMemmoveOverload8", "memmove")(dest, src, size)
 }
 
 var OSMemmoveOverload9_lazy lazyFunc[func(dest *NSSize, src int64, size int64)]
 
 func OSMemmoveOverload9(dest *NSSize, src int64, size int64) {
-	OSMemmoveOverload9_lazy.get("memmove")(dest, src, size)
+	OSMemmoveOverload9_lazy.get("OSMemmoveOverload9", "memmove")(dest, src, size)
 }
 
 var OSMemmove_lazy lazyFunc[func(dest int64, src *CGPathElement, size int64)]
 
 func OSMemmove(dest int64, src *CGPathElement, size int64) {
-	OSMemmove_lazy.get("memmove")(dest, src, size)
+	OSMemmove_lazy.get("OSMemmove", "memmove")(dest, src, size)
 }
 
 var OSMethod_setImplementation_lazy lazyFunc[func(method int64, imp int64) int64]
 
 func OSMethod_setImplementation(method int64, imp int64) int64 {
-	return OSMethod_setImplementation_lazy.get("method_setImplementation")(method, imp)
+	return OSMethod_setImplementation_lazy.get("OSMethod_setImplementation", "method_setImplementation")(method, imp)
 }
 
 var OSObjc_allocateClassPair_lazy lazyFunc[func(superclass int64, name string, extraBytes int64) int64]
 
 func OSObjc_allocateClassPair(superclass int64, name string, extraBytes int64) int64 {
-	return OSObjc_allocateClassPair_lazy.get("objc_allocateClassPair")(superclass, name, extraBytes)
+	return OSObjc_allocateClassPair_lazy.get("OSObjc_allocateClassPair", "objc_allocateClassPair")(superclass, name, extraBytes)
 }
 
 var OSObjc_disposeClassPair_lazy lazyFunc[func(klass int64)]
 
 func OSObjc_disposeClassPair(klass int64) {
-	OSObjc_disposeClassPair_lazy.get("objc_disposeClassPair")(klass)
+	OSObjc_disposeClassPair_lazy.get("OSObjc_disposeClassPair", "objc_disposeClassPair")(klass)
 }
 
 var OSObjc_getClass_lazy lazyFunc[func(className string) int64]
 
 func OSObjc_getClass(className string) int64 {
-	return OSObjc_getClass_lazy.get("objc_getClass")(className)
+	return OSObjc_getClass_lazy.get("OSObjc_getClass", "objc_getClass")(className)
 }
 
 var OSObjc_getMetaClass_lazy lazyFunc[func(name string) int64]
 
 func OSObjc_getMetaClass(name string) int64 {
-	return OSObjc_getMetaClass_lazy.get("objc_getMetaClass")(name)
+	return OSObjc_getMetaClass_lazy.get("OSObjc_getMetaClass", "objc_getMetaClass")(name)
 }
 
 var OSObjc_getProtocol_lazy lazyFunc[func(name string) int64]
 
 func OSObjc_getProtocol(name string) int64 {
-	return OSObjc_getProtocol_lazy.get("objc_getProtocol")(name)
+	return OSObjc_getProtocol_lazy.get("OSObjc_getProtocol", "objc_getProtocol")(name)
 }
 
 var OSObjc_lookUpClass_lazy lazyFunc[func(className string) int64]
 
 func OSObjc_lookUpClass(className string) int64 {
-	return OSObjc_lookUpClass_lazy.get("objc_lookUpClass")(className)
+	return OSObjc_lookUpClass_lazy.get("OSObjc_lookUpClass", "objc_lookUpClass")(className)
 }

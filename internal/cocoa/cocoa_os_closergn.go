@@ -24,103 +24,103 @@ import (
 var OSCloseRgn_lazy lazyFunc[func(dstRgn int64)]
 
 func OSCloseRgn(dstRgn int64) {
-	OSCloseRgn_lazy.get("CloseRgn")(dstRgn)
+	OSCloseRgn_lazy.get("OSCloseRgn", "CloseRgn")(dstRgn)
 }
 
 var OSCopyRgn_lazy lazyFunc[func(srcRgnHandle int64, dstRgnHandle int64)]
 
 func OSCopyRgn(srcRgnHandle int64, dstRgnHandle int64) {
-	OSCopyRgn_lazy.get("CopyRgn")(srcRgnHandle, dstRgnHandle)
+	OSCopyRgn_lazy.get("OSCopyRgn", "CopyRgn")(srcRgnHandle, dstRgnHandle)
 }
 
 var OSDiffRgn_lazy lazyFunc[func(srcRgnA int64, srcRgnB int64, dstRgn int64)]
 
 func OSDiffRgn(srcRgnA int64, srcRgnB int64, dstRgn int64) {
-	OSDiffRgn_lazy.get("DiffRgn")(srcRgnA, srcRgnB, dstRgn)
+	OSDiffRgn_lazy.get("OSDiffRgn", "DiffRgn")(srcRgnA, srcRgnB, dstRgn)
 }
 
 var OSDisposeRgn_lazy lazyFunc[func(rgnHandle int64)]
 
 func OSDisposeRgn(rgnHandle int64) {
-	OSDisposeRgn_lazy.get("DisposeRgn")(rgnHandle)
+	OSDisposeRgn_lazy.get("OSDisposeRgn", "DisposeRgn")(rgnHandle)
 }
 
 var OSEmptyRgn_lazy lazyFunc[func(rgnHandle int64) bool]
 
 func OSEmptyRgn(rgnHandle int64) bool {
-	return OSEmptyRgn_lazy.get("EmptyRgn")(rgnHandle)
+	return OSEmptyRgn_lazy.get("OSEmptyRgn", "EmptyRgn")(rgnHandle)
 }
 
 var OSGetCurrentProcess_lazy lazyFunc[func(psn []int32) int32]
 
 func OSGetCurrentProcess(psn []int32) int32 {
-	return OSGetCurrentProcess_lazy.get("GetCurrentProcess")(psn)
+	return OSGetCurrentProcess_lazy.get("OSGetCurrentProcess", "GetCurrentProcess")(psn)
 }
 
 var OSGetIconRefFromTypeInfo_lazy lazyFunc[func(inCreator int32, inType int32, inExtension int64, inMIMEType int64, inUsageFlags int32, outIconRef []int64) int32]
 
 func OSGetIconRefFromTypeInfo(inCreator int32, inType int32, inExtension int64, inMIMEType int64, inUsageFlags int32, outIconRef []int64) int32 {
-	return OSGetIconRefFromTypeInfo_lazy.get("GetIconRefFromTypeInfo")(inCreator, inType, inExtension, inMIMEType, inUsageFlags, outIconRef)
+	return OSGetIconRefFromTypeInfo_lazy.get("OSGetIconRefFromTypeInfo", "GetIconRefFromTypeInfo")(inCreator, inType, inExtension, inMIMEType, inUsageFlags, outIconRef)
 }
 
 var OSGetRegionBounds_lazy lazyFunc[func(rgnHandle int64, bounds []int16)]
 
 func OSGetRegionBounds(rgnHandle int64, bounds []int16) {
-	OSGetRegionBounds_lazy.get("GetRegionBounds")(rgnHandle, bounds)
+	OSGetRegionBounds_lazy.get("OSGetRegionBounds", "GetRegionBounds")(rgnHandle, bounds)
 }
 
 var OSGetSystemUIMode_lazy lazyFunc[func(outMode []int32, outOptions []int32) int32]
 
 func OSGetSystemUIMode(outMode []int32, outOptions []int32) int32 {
-	return OSGetSystemUIMode_lazy.get("GetSystemUIMode")(outMode, outOptions)
+	return OSGetSystemUIMode_lazy.get("OSGetSystemUIMode", "GetSystemUIMode")(outMode, outOptions)
 }
 
 var OSGetThemeMetric_lazy lazyFunc[func(themeConstant int32, metric []int32)]
 
 func OSGetThemeMetric(themeConstant int32, metric []int32) {
-	OSGetThemeMetric_lazy.get("GetThemeMetric")(themeConstant, metric)
+	OSGetThemeMetric_lazy.get("OSGetThemeMetric", "GetThemeMetric")(themeConstant, metric)
 }
 
 var OSHIThemeDrawFocusRect_lazy lazyFunc[func(inRect *CGRect, inHasFocus bool, inContext int64, inOrientation int32) int32]
 
 func OSHIThemeDrawFocusRect(inRect *CGRect, inHasFocus bool, inContext int64, inOrientation int32) int32 {
-	return OSHIThemeDrawFocusRect_lazy.get("HIThemeDrawFocusRect")(inRect, inHasFocus, inContext, inOrientation)
+	return OSHIThemeDrawFocusRect_lazy.get("OSHIThemeDrawFocusRect", "HIThemeDrawFocusRect")(inRect, inHasFocus, inContext, inOrientation)
 }
 
 var OSJSEvaluateScript_lazy lazyFunc[func(ctx int64, script int64, thisObject int64, sourceURL int64, startingLineNumber int32, exception []int64) int64]
 
 func OSJSEvaluateScript(ctx int64, script int64, thisObject int64, sourceURL int64, startingLineNumber int32, exception []int64) int64 {
-	return OSJSEvaluateScript_lazy.get("JSEvaluateScript")(ctx, script, thisObject, sourceURL, startingLineNumber, exception)
+	return OSJSEvaluateScript_lazy.get("OSJSEvaluateScript", "JSEvaluateScript")(ctx, script, thisObject, sourceURL, startingLineNumber, exception)
 }
 
 var OSJSStringCreateWithUTF8CString_lazy lazyFunc[func(string_ []int8) int64]
 
 func OSJSStringCreateWithUTF8CString(string_ []int8) int64 {
-	return OSJSStringCreateWithUTF8CString_lazy.get("JSStringCreateWithUTF8CString")(string_)
+	return OSJSStringCreateWithUTF8CString_lazy.get("OSJSStringCreateWithUTF8CString", "JSStringCreateWithUTF8CString")(string_)
 }
 
 var OSJSStringRelease_lazy lazyFunc[func(string_ int64)]
 
 func OSJSStringRelease(string_ int64) {
-	OSJSStringRelease_lazy.get("JSStringRelease")(string_)
+	OSJSStringRelease_lazy.get("OSJSStringRelease", "JSStringRelease")(string_)
 }
 
 var OSLMGetKbdType_lazy lazyFunc[func() int8]
 
 func OSLMGetKbdType() int8 {
-	return OSLMGetKbdType_lazy.get("LMGetKbdType")()
+	return OSLMGetKbdType_lazy.get("OSLMGetKbdType", "LMGetKbdType")()
 }
 
 var OSLineTo_lazy lazyFunc[func(h int16, v int16)]
 
 func OSLineTo(h int16, v int16) {
-	OSLineTo_lazy.get("LineTo")(h, v)
+	OSLineTo_lazy.get("OSLineTo", "LineTo")(h, v)
 }
 
 var OSMoveTo_lazy lazyFunc[func(h int16, v int16)]
 
 func OSMoveTo(h int16, v int16) {
-	OSMoveTo_lazy.get("MoveTo")(h, v)
+	OSMoveTo_lazy.get("OSMoveTo", "MoveTo")(h, v)
 }
 
 func OSNSAccessibilityAttributedStringForRangeParameterizedAttribute() int64 {
@@ -526,7 +526,7 @@ func OSNSAccessibilityPositionAttribute() int64 {
 var OSNSAccessibilityPostNotification_lazy lazyFunc[func(element int64, notification int64)]
 
 func OSNSAccessibilityPostNotification(element int64, notification int64) {
-	OSNSAccessibilityPostNotification_lazy.get("NSAccessibilityPostNotification")(element, notification)
+	OSNSAccessibilityPostNotification_lazy.get("OSNSAccessibilityPostNotification", "NSAccessibilityPostNotification")(element, notification)
 }
 
 func OSNSAccessibilityPressAction() int64 {
@@ -596,7 +596,7 @@ func OSNSAccessibilityRoleAttribute() int64 {
 var OSNSAccessibilityRoleDescription_lazy lazyFunc[func(role int64, subrole int64) int64]
 
 func OSNSAccessibilityRoleDescription(role int64, subrole int64) int64 {
-	return OSNSAccessibilityRoleDescription_lazy.get("NSAccessibilityRoleDescription")(role, subrole)
+	return OSNSAccessibilityRoleDescription_lazy.get("OSNSAccessibilityRoleDescription", "NSAccessibilityRoleDescription")(role, subrole)
 }
 
 func OSNSAccessibilityRoleDescriptionAttribute() int64 {

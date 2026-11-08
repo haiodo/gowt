@@ -200,13 +200,13 @@ func OSNSAccessibilityUnderlineTextAttribute() int64 {
 var OSNSAccessibilityUnignoredAncestor_lazy lazyFunc[func(element int64) int64]
 
 func OSNSAccessibilityUnignoredAncestor(element int64) int64 {
-	return OSNSAccessibilityUnignoredAncestor_lazy.get("NSAccessibilityUnignoredAncestor")(element)
+	return OSNSAccessibilityUnignoredAncestor_lazy.get("OSNSAccessibilityUnignoredAncestor", "NSAccessibilityUnignoredAncestor")(element)
 }
 
 var OSNSAccessibilityUnignoredChildren_lazy lazyFunc[func(originalChildren int64) int64]
 
 func OSNSAccessibilityUnignoredChildren(originalChildren int64) int64 {
-	return OSNSAccessibilityUnignoredChildren_lazy.get("NSAccessibilityUnignoredChildren")(originalChildren)
+	return OSNSAccessibilityUnignoredChildren_lazy.get("OSNSAccessibilityUnignoredChildren", "NSAccessibilityUnignoredChildren")(originalChildren)
 }
 
 func OSNSAccessibilityUnknownRole() int64 {
@@ -342,13 +342,13 @@ func OSNSBaselineOffsetAttributeName() int64 {
 var OSNSBeep_lazy lazyFunc[func()]
 
 func OSNSBeep() {
-	OSNSBeep_lazy.get("NSBeep")()
+	OSNSBeep_lazy.get("OSNSBeep", "NSBeep")()
 }
 
 var OSNSBitsPerPixelFromDepth_lazy lazyFunc[func(depth int32) int64]
 
 func OSNSBitsPerPixelFromDepth(depth int32) int64 {
-	return OSNSBitsPerPixelFromDepth_lazy.get("NSBitsPerPixelFromDepth")(depth)
+	return OSNSBitsPerPixelFromDepth_lazy.get("OSNSBitsPerPixelFromDepth", "NSBitsPerPixelFromDepth")(depth)
 }
 
 func OSNSCursorAttributeName() int64 {
@@ -394,7 +394,7 @@ func OSNSDragPboard() int64 {
 var OSNSEqualRects_lazy lazyFunc[func(aRect NSRect, bRect NSRect) bool]
 
 func OSNSEqualRects(aRect NSRect, bRect NSRect) bool {
-	return OSNSEqualRects_lazy.get("NSEqualRects")(aRect, bRect)
+	return OSNSEqualRects_lazy.get("OSNSEqualRects", "NSEqualRects")(aRect, bRect)
 }
 
 func OSNSEventTrackingRunLoopMode() int64 {
@@ -532,7 +532,7 @@ func OSNSPasteboardTypeString() int64 {
 var OSNSPointInRect_lazy lazyFunc[func(aPoint NSPoint, aRect NSRect) bool]
 
 func OSNSPointInRect(aPoint NSPoint, aRect NSRect) bool {
-	return OSNSPointInRect_lazy.get("NSPointInRect")(aPoint, aRect)
+	return OSNSPointInRect_lazy.get("OSNSPointInRect", "NSPointInRect")(aPoint, aRect)
 }
 
 func OSNSPoint_sizeof() int32 { return int32(unsafe.Sizeof(NSPoint{})) }
@@ -630,7 +630,7 @@ func OSNSRange_sizeof() int32 { return int32(unsafe.Sizeof(NSRange{})) }
 var OSNSRectFillUsingOperation_lazy lazyFunc[func(aRect NSRect, op int64)]
 
 func OSNSRectFillUsingOperation(aRect NSRect, op int64) {
-	OSNSRectFillUsingOperation_lazy.get("NSRectFillUsingOperation")(aRect, op)
+	OSNSRectFillUsingOperation_lazy.get("OSNSRectFillUsingOperation", "NSRectFillUsingOperation")(aRect, op)
 }
 
 func OSNSRect_sizeof() int32 { return int32(unsafe.Sizeof(NSRect{})) }
@@ -638,7 +638,7 @@ func OSNSRect_sizeof() int32 { return int32(unsafe.Sizeof(NSRect{})) }
 var OSNSSearchPathForDirectoriesInDomains_lazy lazyFunc[func(directory int64, domainMask int64, expandTilde bool) int64]
 
 func OSNSSearchPathForDirectoriesInDomains(directory int64, domainMask int64, expandTilde bool) int64 {
-	return OSNSSearchPathForDirectoriesInDomains_lazy.get("NSSearchPathForDirectoriesInDomains")(directory, domainMask, expandTilde)
+	return OSNSSearchPathForDirectoriesInDomains_lazy.get("OSNSSearchPathForDirectoriesInDomains", "NSSearchPathForDirectoriesInDomains")(directory, domainMask, expandTilde)
 }
 
 func OSNSSize_sizeof() int32 { return int32(unsafe.Sizeof(NSSize{})) }

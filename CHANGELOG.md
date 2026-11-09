@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.15.6 (2026-11-09)
+
+- Added: `CGO_ENABLED=1 -tags gowtcgo` selects direct cgo for generated AppKit, Win32 and GTK bindings and for the CoreGraphics, Direct2D and cairo renderers on all three operating systems. The default backends and cross-compilation remain unchanged, as do callbacks and the remaining hand-written bindings.
+- Performance: macOS native calls and the cairo hot path are about eight times faster, with per-call Go allocations eliminated. Windows native calls keep their existing speed and zero allocations; the D2D dispatcher adds about 2 ns per call.
+- Tests: native unit, vet, GUI, SWT, JFace, QA, WebView and snapshot checks ran in both modes on macOS, Windows 11 arm64 and Linux arm64. Full cocoa/gtk/win32 regeneration reproduces the committed code exactly.
+
 ## v0.15.5 (2026-11-07)
 
 - Fixed: macOS fields with a prefix keep the value and caret on the prefix's line after a click-drag outside the field, typing, Return, focus loss and another click. Borderless fields and the inline tree editor centre their text vertically.

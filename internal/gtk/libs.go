@@ -1,7 +1,7 @@
 //go:build linux
 
-// Package gtk binds GTK 3, GLib, Pango and cairo through purego (no cgo): gen_*.go come from GIR
-// via tooling/girgen, glue_*.go are hand-written from the public GTK/GLib documentation.
+// Package gtk binds GTK 3, GLib, Pango and cairo through purego by default, with opt-in direct cgo:
+// gen_*.go come from GIR via tooling/girgen, glue_*.go are hand-written from the public GTK/GLib documentation.
 package gtk
 
 import (
@@ -88,39 +88,29 @@ func sym(name string) (uintptr, bool) {
 }
 
 // lz is a C function bound on first use, so symbols missing from this GTK (the GTK 4 only ones)
-// cost nothing until called; calling one panics.
+// cost nothing until called; calling one panics. Generated wrappers carry a unique name next to
+// the symbol: the default backend (lazyget_purego_manual.go) ignores it and binds the symbol via
+// purego; the opt-in cgo backend (lazyget_cgo_manual.go, build tag gowtcgo) resolves the name in
+// the generated registry of typed C wrappers (gen_*_cgo.go). Hand-written glue natives have no
+// name and bind through purego in both backends.
 type lz[F any] struct {
-	sym string
-	f   F
-	ok  bool
+	name string
+	sym  string
+	f    F
+	ok   bool
 }
 
-func (l *lz[F]) get() F {
-	if l.ok {
-		return l.f
-	}
-	if missing() {
-		var f F
-		t := reflect.TypeOf(f)
-		reflect.ValueOf(&f).Elem().Set(reflect.MakeFunc(t, func([]reflect.Value) []reflect.Value {
-			out := make([]reflect.Value, t.NumOut())
-			for i := range out {
-				out[i] = reflect.Zero(t.Out(i))
-			}
-			return out
-		}))
-		return f
-	}
-	if a, found := sym(l.sym); found {
-		purego.RegisterFunc(&l.f, a)
-	} else {
-		name := l.sym
-		reflect.ValueOf(&l.f).Elem().Set(reflect.MakeFunc(reflect.TypeOf(l.f), func([]reflect.Value) []reflect.Value {
-			panic(fmt.Sprintf("gowt/internal/gtk: %s is not in the loaded GTK", name))
-		}))
-	}
-	l.ok = true
-	return l.f
+func zeroFunc[F any]() F {
+	var f F
+	t := reflect.TypeOf(f)
+	reflect.ValueOf(&f).Elem().Set(reflect.MakeFunc(t, func([]reflect.Value) []reflect.Value {
+		out := make([]reflect.Value, t.NumOut())
+		for i := range out {
+			out[i] = reflect.Zero(t.Out(i))
+		}
+		return out
+	}))
+	return f
 }
 
 func b2i(b bool) int32 {

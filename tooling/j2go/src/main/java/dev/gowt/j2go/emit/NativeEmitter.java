@@ -253,6 +253,27 @@ final class NativeEmitter {
 
 	void clearCgoNatives() {
 		cgoNatives.clear();
+		win.clear();
+	}
+
+	// ---- Opt-in cgo backend for win32 (build tag windows && gowtcgo && cgo), parallel to the
+	// darwin one above: the default backend's SyscallN wrappers go to <unit>_native.go, the
+	// typed C wrappers to <unit>_cgo.go; Main writes both next to the unit's own files.
+
+	boolean winHasNatives() {
+		return win.hasNatives();
+	}
+
+	java.util.Set<String> winNativeImports() {
+		return win.nativeImports();
+	}
+
+	String winNativeFileBody() {
+		return win.nativeFileBody();
+	}
+
+	String winCgoFileText(String goPackage) {
+		return win.cgoFileText(goPackage);
 	}
 
 	private void registerCgo(String binding, String symbol, List<String> names, List<String> types, String ret) {

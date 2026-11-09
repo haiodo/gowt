@@ -54,7 +54,7 @@ Packages:
 | `gfx` | paths and curve geometry, `Picture`, `Scene`, `Compositor`, animations, SVG, offscreen rendering |
 | `gfx/cg` | macOS: `Renderer` (CoreGraphics + CoreText), `Host` (CALayer), `DisplayLink` (CVDisplayLink) |
 | `gfx/cairo` | Linux: `Renderer` (cairo image surfaces, Pango text), `Host` (CPU compositing into a cairo context); no GTK, no display needed |
-| `gfx/d2d` | Windows: `Renderer` (Direct2D 1.1 on a D3D11 WARP device, DirectWrite text, WIC PNG), `Host` (flip-model swap chain), `FrameClock` (DwmFlush); COM by hand, no cgo |
+| `gfx/d2d` | Windows: `Renderer` (Direct2D 1.1 on a D3D11 WARP device, DirectWrite text, WIC PNG), `Host` (flip-model swap chain), `FrameClock` (DwmFlush); COM by hand with `syscall.SyscallN` by default or direct cgo with `gowtcgo` |
 | `gfx/offscreen` | `offscreen.New`: the headless `gfx.Renderer` of the running OS (cg on macOS, cairo on Linux, d2d on Windows, an error elsewhere), no build tags for the caller |
 | `gfx/view` | the gowt widget: `view.New(scene, init, opts...)` |
 | `gfx/layout` | auto-layout: row/column, gap, padding, align, justify, wrap, hug/fill/fixed with min/max, absolute children; `layout.Apply` moves scene nodes |

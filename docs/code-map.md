@@ -158,17 +158,17 @@ Packages: `swt`, `swt/swtreflect`.
 
 ## Native bindings
 
-`internal/cocoa` (AppKit, purego), `internal/win32` (Win32/GDI+/WebView2 COM,
-`syscall.SyscallN`), `internal/gtk` (GTK 3/GLib/Pango/cairo, purego, GIR-generated),
-`internal/webkit` (WebKitGTK 4.1, GIR-generated). Architecture: [internals.md](internals.md).
+`internal/cocoa` (AppKit, purego by default), `internal/win32` (Win32/GDI+/WebView2 COM,
+`syscall.SyscallN` by default), `internal/gtk` (GTK 3/GLib/Pango/cairo, purego by default, GIR-generated),
+all with opt-in direct cgo. `internal/webkit` (WebKitGTK 4.1, GIR-generated). Architecture: [internals.md](internals.md).
 
 Packages: `internal/cocoa`, `internal/win32`, `internal/gtk`, `internal/webkit`, `internal/jrt`, `internal/dbus`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | AppKit bindings | `internal/cocoa/cocoa_<type>.go`, `internal/cocoa/*_manual.go` | darwin; purego by default, generated `internal/cocoa/*_cgo.go` with `CGO_ENABLED=1 -tags gowtcgo` | per-file `*_test.go`, `internal/cocoa/cgobench/` | [internals.md](internals.md) |
-| Win32 bindings | `internal/win32/win32_<type>.go`, `internal/win32/*_manual.go` | windows only | `internal/win32/*_test.go` | [internals.md](internals.md) |
-| GTK 3 bindings | `internal/gtk/gen_funcs.go`, `internal/gtk/gen_funcs_<family>.go`, `internal/gtk/gen_consts.go`, `internal/gtk/glue_*.go` | linux only | `internal/gtk/*_test.go` | [internals.md](internals.md) |
+| Win32 bindings | `internal/win32/win32_<type>.go`, `internal/win32/*_manual.go` | windows; `syscall.SyscallN` by default, generated `internal/win32/*_cgo.go` with `CGO_ENABLED=1 -tags gowtcgo` | `internal/win32/*_test.go` | [internals.md](internals.md) |
+| GTK 3 bindings | `internal/gtk/gen_funcs.go`, `internal/gtk/gen_funcs_<family>.go`, `internal/gtk/gen_consts.go`, `internal/gtk/glue_*.go` | linux; purego by default, generated `internal/gtk/gen_funcs_<family>_cgo.go` with `CGO_ENABLED=1 -tags gowtcgo` | `internal/gtk/*_test.go` | [internals.md](internals.md) |
 | WebKitGTK bindings | `internal/webkit/gen_funcs.go`, `internal/webkit/{load,signals,view,window}.go` | linux only | driven by `webview` GUI tests in the Linux stand | [webview-browser.md](webview-browser.md) |
 | Java runtime subset | `internal/jrt/` | all platforms | `internal/jrt/*_test.go` | - |
 | D-Bus helpers | `internal/dbus/` | linux | `internal/dbus/*_test.go` | - |
@@ -183,8 +183,8 @@ Packages: `gfx`, `gfx/cg`, `gfx/cairo`, `gfx/d2d`, `gfx/internal/cache`, `gfx/in
 |---|---|---|---|---|
 | Scene graph, paths, paints, effects (shadow in `gfx/picture.go`) | `gfx/scene.go`, `gfx/path.go`, `gfx/paint.go`, `gfx/comp.go`, `gfx/picture.go`, `gfx/curve.go` | - | `gfx/*_test.go` (`scene`, `path`, `svg`, `curve`, `shadow*`) | [gfx.md](gfx.md), `examples/gfxcanvas`, `examples/gfxeditor` |
 | CoreGraphics renderer (macOS) | `gfx/cg/` | darwin; `gfx/cg/bind_darwin.go` (purego), `gfx/cg/bind_cgo_darwin.go` and `gfx/cg/host_cgo_darwin.go` (`gowtcgo`) | `gfx/cg/*_darwin_test.go` | [gfx.md](gfx.md) |
-| cairo/Pango renderer (Linux) | `gfx/cairo/` | linux (`gfx/cairo/bind_linux.go`) | `gfx/cairo/*_linux_test.go` | [gfx.md](gfx.md) |
-| Direct2D renderer (Windows) | `gfx/d2d/` | windows (`gfx/d2d/call_windows_*.go`) | `gfx/d2d/*_windows_test.go` | [gfx.md](gfx.md) |
+| cairo/Pango renderer (Linux) | `gfx/cairo/` | linux; `gfx/cairo/bind_linux.go` (purego), `gfx/cairo/bind_cgo_linux.go` (`gowtcgo`) | `gfx/cairo/*_linux_test.go` | [gfx.md](gfx.md) |
+| Direct2D renderer (Windows) | `gfx/d2d/` | windows; `gfx/d2d/call_windows_{amd64,arm64}.go` (default), `gfx/d2d/call_cgo_windows.go` (`gowtcgo`) | `gfx/d2d/*_windows_test.go` | [gfx.md](gfx.md) |
 | Offscreen buffers, HUD | `gfx/offscreen/`, `gfx/hud.go` | per-OS backends in `gfx/offscreen/` | `gfx/offscreen/*_test.go`, `gfx/hud_test.go` | [gfx.md](gfx.md) |
 | Layout engine (cassowary-style) | `gfx/layout/` | - | `gfx/layout/*_test.go` | `examples/gfxeditor` |
 | PDF backend | `gfx/pdf/`, `gfx/pdf.go` | - | `gfx/pdf_test.go`, `gfx/pdf/*_test.go` | `examples/print` |

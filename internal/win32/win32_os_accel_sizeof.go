@@ -17,34 +17,12 @@
 package win32
 
 import (
-	"syscall"
 	"unsafe"
 )
 
 func OSACCEL_sizeof() int32 { return 6 }
 
 func OSACTCTX_sizeof() int32 { return 56 }
-
-var proc_OSAbortDoc = newProc("AbortDoc")
-
-func OSAbortDoc(hdc int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSAbortDoc.addr(), uintptr(hdc))
-	return int32(r)
-}
-
-var proc_OSActivateActCtx = newProc("ActivateActCtx")
-
-func OSActivateActCtx(hActCtx int64, lpCookie []int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSActivateActCtx.addr(), uintptr(hActCtx), uintptr(unsafe.Pointer(unsafe.SliceData(lpCookie))))
-	return r&0xff != 0
-}
-
-var proc_OSActivateKeyboardLayout = newProc("ActivateKeyboardLayout")
-
-func OSActivateKeyboardLayout(hkl int64, Flags int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSActivateKeyboardLayout.addr(), uintptr(hkl), uintptr(Flags))
-	return int64(r)
-}
 
 func OSAddFontResourceEx(lpszFilename *TCHAR, fl int32, pdv int64) int64 {
 	var lpszFilename1 []uint16
@@ -56,65 +34,8 @@ func OSAddFontResourceEx(lpszFilename *TCHAR, fl int32, pdv int64) int64 {
 	return int64(OSAddFontResourceExLpszFilenameFlPdv(lpszFilename1, fl, pdv))
 }
 
-var proc_OSAddFontResourceExLpszFilenameFlPdv = newProc("AddFontResourceEx")
-
-func OSAddFontResourceExLpszFilenameFlPdv(lpszFilename []uint16, fl int32, pdv int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSAddFontResourceExLpszFilenameFlPdv.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(lpszFilename))), uintptr(fl), uintptr(pdv))
-	return int32(r)
-}
-
-var proc_OSAdjustWindowRectExForDpi = newProc("AdjustWindowRectExForDpi")
-
-func OSAdjustWindowRectExForDpi(lpRect *RECT, dwStyle int32, bMenu bool, dwExStyle int32, dpi int32) bool {
-	var b_lpRect [2]uint64
-	var p_lpRect unsafe.Pointer
-	if lpRect != nil {
-		p_lpRect = unsafe.Pointer(&b_lpRect)
-		lpRect.toC(p_lpRect)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSAdjustWindowRectExForDpi.addr(), uintptr(p_lpRect), uintptr(dwStyle), boolToUintptr(bMenu), uintptr(dwExStyle), uintptr(dpi))
-	if lpRect != nil {
-		lpRect.fromC(p_lpRect)
-	}
-	return r&0xff != 0
-}
-
 func OSAllowDarkModeForWindow(hWnd int64, allow bool) bool {
 	return custom_AllowDarkModeForWindow(hWnd, allow)
-}
-
-var proc_OSAllowSetForegroundWindow = newProc("AllowSetForegroundWindow")
-
-func OSAllowSetForegroundWindow(dwProcessId int32) bool {
-	r, _, _ := syscall.SyscallN(proc_OSAllowSetForegroundWindow.addr(), uintptr(dwProcessId))
-	return r&0xff != 0
-}
-
-var proc_OSAlphaBlend = newProc("AlphaBlend")
-
-func OSAlphaBlend(hdcDest int64, nXOriginDest int32, nYOriginDest int32, nWidthDest int32, nHeightDest int32, hdcSrc int64, nXOriginSrc int32, nYOriginSrc int32, nWidthSrc int32, nHeightSrc int32, blendFunction *BLENDFUNCTION) bool {
-	var b_blendFunction [1]uint64
-	var p_blendFunction unsafe.Pointer
-	if blendFunction != nil {
-		p_blendFunction = unsafe.Pointer(&b_blendFunction)
-		blendFunction.toC(p_blendFunction)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSAlphaBlend.addr(), uintptr(hdcDest), uintptr(nXOriginDest), uintptr(nYOriginDest), uintptr(nWidthDest), uintptr(nHeightDest), uintptr(hdcSrc), uintptr(nXOriginSrc), uintptr(nYOriginSrc), uintptr(nWidthSrc), uintptr(nHeightSrc), structArg(p_blendFunction, 4))
-	return r&0xff != 0
-}
-
-var proc_OSArc = newProc("Arc")
-
-func OSArc(hdc int64, nLeftRect int32, nTopRect int32, nRightRect int32, nBottomRect int32, nXStartArc int32, nYStartArc int32, nXEndArc int32, nYEndArc int32) bool {
-	r, _, _ := syscall.SyscallN(proc_OSArc.addr(), uintptr(hdc), uintptr(nLeftRect), uintptr(nTopRect), uintptr(nRightRect), uintptr(nBottomRect), uintptr(nXStartArc), uintptr(nYStartArc), uintptr(nXEndArc), uintptr(nYEndArc))
-	return r&0xff != 0
-}
-
-var proc_OSAreDpiAwarenessContextsEqual = newProc("AreDpiAwarenessContextsEqual", true)
-
-func OSAreDpiAwarenessContextsEqual(dpiContextA int64, dpiContextB int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSAreDpiAwarenessContextsEqual.addr(), uintptr(dpiContextA), uintptr(dpiContextB))
-	return r&0xff != 0
 }
 
 func OSAssocQueryString(flags int32, str int32, pszAssoc *TCHAR, pszExtra *TCHAR, pszOut *TCHAR, pcchOut []int32) int32 {
@@ -139,13 +60,6 @@ func OSAssocQueryString(flags int32, str int32, pszAssoc *TCHAR, pszExtra *TCHAR
 	return OSAssocQueryStringFlagsStrPszAssocPszExtraPszOutPcchOut(flags, str, pszAssoc1, pszExtra1, pszOut1, pcchOut)
 }
 
-var proc_OSAssocQueryStringFlagsStrPszAssocPszExtraPszOutPcchOut = newProc("AssocQueryString")
-
-func OSAssocQueryStringFlagsStrPszAssocPszExtraPszOutPcchOut(flags int32, str int32, pszAssoc []uint16, pszExtra []uint16, pszOut []uint16, pcchOut []int32) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSAssocQueryStringFlagsStrPszAssocPszExtraPszOutPcchOut.addr(), uintptr(flags), uintptr(str), uintptr(unsafe.Pointer(unsafe.SliceData(pszAssoc))), uintptr(unsafe.Pointer(unsafe.SliceData(pszExtra))), uintptr(unsafe.Pointer(unsafe.SliceData(pszOut))), uintptr(unsafe.Pointer(unsafe.SliceData(pcchOut))))
-	return int32(r)
-}
-
 func OSBITMAPINFOHEADER_sizeof() int32 { return 40 }
 
 func OSBITMAP_sizeof() int32 { return 32 }
@@ -155,78 +69,6 @@ func OSBLENDFUNCTION_sizeof() int32 { return 4 }
 func OSBP_PAINTPARAMS_sizeof() int32 { return 24 }
 
 func OSBUTTON_IMAGELIST_sizeof() int32 { return 32 }
-
-var proc_OSBeginBufferedPaint = newProc("BeginBufferedPaint")
-
-func OSBeginBufferedPaint(hdcTarget int64, prcTarget *RECT, dwFormat int32, pPaintParams *BP_PAINTPARAMS, phdc []int64) int64 {
-	var b_prcTarget [2]uint64
-	var p_prcTarget unsafe.Pointer
-	if prcTarget != nil {
-		p_prcTarget = unsafe.Pointer(&b_prcTarget)
-		prcTarget.toC(p_prcTarget)
-	}
-	var b_pPaintParams [3]uint64
-	var p_pPaintParams unsafe.Pointer
-	if pPaintParams != nil {
-		p_pPaintParams = unsafe.Pointer(&b_pPaintParams)
-		pPaintParams.toC(p_pPaintParams)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSBeginBufferedPaint.addr(), uintptr(hdcTarget), uintptr(p_prcTarget), uintptr(dwFormat), uintptr(p_pPaintParams), uintptr(unsafe.Pointer(unsafe.SliceData(phdc))))
-	if pPaintParams != nil {
-		pPaintParams.fromC(p_pPaintParams)
-	}
-	return int64(r)
-}
-
-var proc_OSBeginDeferWindowPos = newProc("BeginDeferWindowPos")
-
-func OSBeginDeferWindowPos(nNumWindows int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSBeginDeferWindowPos.addr(), uintptr(nNumWindows))
-	return int64(r)
-}
-
-var proc_OSBeginPaint = newProc("BeginPaint")
-
-func OSBeginPaint(hWnd int64, lpPaint *PAINTSTRUCT) int64 {
-	var b_lpPaint [9]uint64
-	var p_lpPaint unsafe.Pointer
-	if lpPaint != nil {
-		p_lpPaint = unsafe.Pointer(&b_lpPaint)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSBeginPaint.addr(), uintptr(hWnd), uintptr(p_lpPaint))
-	if lpPaint != nil {
-		lpPaint.fromC(p_lpPaint)
-	}
-	return int64(r)
-}
-
-var proc_OSBitBlt = newProc("BitBlt")
-
-func OSBitBlt(hdcDest int64, nXDest int32, nYDest int32, nWidth int32, nHeight int32, hdcSrc int64, nXSrc int32, nYSrc int32, dwRop int32) bool {
-	r, _, _ := syscall.SyscallN(proc_OSBitBlt.addr(), uintptr(hdcDest), uintptr(nXDest), uintptr(nYDest), uintptr(nWidth), uintptr(nHeight), uintptr(hdcSrc), uintptr(nXSrc), uintptr(nYSrc), uintptr(dwRop))
-	return r&0xff != 0
-}
-
-var proc_OSBringWindowToTop = newProc("BringWindowToTop")
-
-func OSBringWindowToTop(hWnd int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSBringWindowToTop.addr(), uintptr(hWnd))
-	return r&0xff != 0
-}
-
-var proc_OSBufferedPaintInit = newProc("BufferedPaintInit")
-
-func OSBufferedPaintInit() int32 {
-	r, _, _ := syscall.SyscallN(proc_OSBufferedPaintInit.addr())
-	return int32(r)
-}
-
-var proc_OSBufferedPaintUnInit = newProc("BufferedPaintUnInit")
-
-func OSBufferedPaintUnInit() int32 {
-	r, _, _ := syscall.SyscallN(proc_OSBufferedPaintUnInit.addr())
-	return int32(r)
-}
 
 func OSCANDIDATEFORM_sizeof() int32 { return 32 }
 
@@ -241,240 +83,6 @@ func OSCOMBOBOXINFO_sizeof() int32 { return 64 }
 func OSCOMPOSITIONFORM_sizeof() int32 { return 28 }
 
 func OSCREATESTRUCT_sizeof() int32 { return 80 }
-
-var proc_OSCallNextHookEx = newProc("CallNextHookEx")
-
-func OSCallNextHookEx(hhk int64, nCode int32, wParam int64, lParam int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCallNextHookEx.addr(), uintptr(hhk), uintptr(nCode), uintptr(wParam), uintptr(lParam))
-	return int64(r)
-}
-
-var proc_OSCallWindowProc = newProc("CallWindowProc")
-
-func OSCallWindowProc(lpPrevWndFunc int64, hWnd int64, Msg int32, wParam int64, lParam int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCallWindowProc.addr(), uintptr(lpPrevWndFunc), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(lParam))
-	return int64(r)
-}
-
-var proc_OSCharLower = newProc("CharLower")
-
-func OSCharLower(ch int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCharLower.addr(), uintptr(ch))
-	return int64(r)
-}
-
-var proc_OSCharUpper = newProc("CharUpper")
-
-func OSCharUpper(ch int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCharUpper.addr(), uintptr(ch))
-	return int64(r)
-}
-
-var proc_OSChildWindowFromPointEx = newProc("ChildWindowFromPointEx")
-
-func OSChildWindowFromPointEx(hWndParent int64, pt *POINT, flags int32) int64 {
-	var b_pt [1]uint64
-	var p_pt unsafe.Pointer
-	if pt != nil {
-		p_pt = unsafe.Pointer(&b_pt)
-		pt.toC(p_pt)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSChildWindowFromPointEx.addr(), uintptr(hWndParent), structArg(p_pt, 8), uintptr(flags))
-	return int64(r)
-}
-
-var proc_OSChooseColor = newProc("ChooseColor")
-
-func OSChooseColor(lpcc *CHOOSECOLOR) bool {
-	var b_lpcc [9]uint64
-	var p_lpcc unsafe.Pointer
-	if lpcc != nil {
-		p_lpcc = unsafe.Pointer(&b_lpcc)
-		lpcc.toC(p_lpcc)
-	}
-	r, _, _ := syscallEscaping(proc_OSChooseColor.addr(), uintptr(p_lpcc))
-	if lpcc != nil {
-		lpcc.fromC(p_lpcc)
-	}
-	return r&0xff != 0
-}
-
-var proc_OSChooseFont = newProc("ChooseFont")
-
-func OSChooseFont(chooseFont *CHOOSEFONT) bool {
-	var b_chooseFont [13]uint64
-	var p_chooseFont unsafe.Pointer
-	if chooseFont != nil {
-		p_chooseFont = unsafe.Pointer(&b_chooseFont)
-		chooseFont.toC(p_chooseFont)
-	}
-	r, _, _ := syscallEscaping(proc_OSChooseFont.addr(), uintptr(p_chooseFont))
-	if chooseFont != nil {
-		chooseFont.fromC(p_chooseFont)
-	}
-	return r&0xff != 0
-}
-
-var proc_OSClientToScreen = newProc("ClientToScreen")
-
-func OSClientToScreen(hWnd int64, lpPoint *POINT) bool {
-	var b_lpPoint [1]uint64
-	var p_lpPoint unsafe.Pointer
-	if lpPoint != nil {
-		p_lpPoint = unsafe.Pointer(&b_lpPoint)
-		lpPoint.toC(p_lpPoint)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSClientToScreen.addr(), uintptr(hWnd), uintptr(p_lpPoint))
-	if lpPoint != nil {
-		lpPoint.fromC(p_lpPoint)
-	}
-	return r&0xff != 0
-}
-
-var proc_OSCloseClipboard = newProc("CloseClipboard")
-
-func OSCloseClipboard() bool {
-	r, _, _ := syscall.SyscallN(proc_OSCloseClipboard.addr())
-	return r&0xff != 0
-}
-
-var proc_OSCloseEnhMetaFile = newProc("CloseEnhMetaFile")
-
-func OSCloseEnhMetaFile(hdc int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCloseEnhMetaFile.addr(), uintptr(hdc))
-	return int64(r)
-}
-
-var proc_OSCloseGestureInfoHandle = newProc("CloseGestureInfoHandle")
-
-func OSCloseGestureInfoHandle(hGesture int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCloseGestureInfoHandle.addr(), uintptr(hGesture))
-	return int64(r)
-}
-
-var proc_OSCloseHandle = newProc("CloseHandle")
-
-func OSCloseHandle(hObject int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSCloseHandle.addr(), uintptr(hObject))
-	return r&0xff != 0
-}
-
-var proc_OSClosePrinter = newProc("ClosePrinter")
-
-func OSClosePrinter(hPrinter int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSClosePrinter.addr(), uintptr(hPrinter))
-	return r&0xff != 0
-}
-
-var proc_OSCloseThemeData = newProc("CloseThemeData")
-
-func OSCloseThemeData(hTheme int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSCloseThemeData.addr(), uintptr(hTheme))
-	return int32(r)
-}
-
-var proc_OSCloseTouchInputHandle = newProc("CloseTouchInputHandle")
-
-func OSCloseTouchInputHandle(hTouchInput int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSCloseTouchInputHandle.addr(), uintptr(hTouchInput))
-	return r&0xff != 0
-}
-
-var proc_OSCoInternetIsFeatureEnabled = newProc("CoInternetIsFeatureEnabled")
-
-func OSCoInternetIsFeatureEnabled(FeatureEntry int32, dwFlags int32) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSCoInternetIsFeatureEnabled.addr(), uintptr(FeatureEntry), uintptr(dwFlags))
-	return int32(r)
-}
-
-var proc_OSCoInternetSetFeatureEnabled = newProc("CoInternetSetFeatureEnabled")
-
-func OSCoInternetSetFeatureEnabled(FeatureEntry int32, dwFlags int32, fEnable bool) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSCoInternetSetFeatureEnabled.addr(), uintptr(FeatureEntry), uintptr(dwFlags), boolToUintptr(fEnable))
-	return int32(r)
-}
-
-var proc_OSCoTaskMemAlloc = newProc("CoTaskMemAlloc")
-
-func OSCoTaskMemAlloc(cb int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCoTaskMemAlloc.addr(), uintptr(cb))
-	return int64(r)
-}
-
-var proc_OSCoTaskMemFree = newProc("CoTaskMemFree")
-
-func OSCoTaskMemFree(pv int64) {
-	syscall.SyscallN(proc_OSCoTaskMemFree.addr(), uintptr(pv))
-}
-
-var proc_OSCombineRgn = newProc("CombineRgn")
-
-func OSCombineRgn(hrgnDest int64, hrgnSrc1 int64, hrgnSrc2 int64, fnCombineMode int32) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSCombineRgn.addr(), uintptr(hrgnDest), uintptr(hrgnSrc1), uintptr(hrgnSrc2), uintptr(fnCombineMode))
-	return int32(r)
-}
-
-var proc_OSCopyImage = newProc("CopyImage")
-
-func OSCopyImage(hImage int64, uType int32, cxDesired int32, cyDesired int32, fuFlags int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCopyImage.addr(), uintptr(hImage), uintptr(uType), uintptr(cxDesired), uintptr(cyDesired), uintptr(fuFlags))
-	return int64(r)
-}
-
-var proc_OSCreateAcceleratorTable = newProc("CreateAcceleratorTable")
-
-func OSCreateAcceleratorTable(lpaccl []int8, cEntries int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateAcceleratorTable.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(lpaccl))), uintptr(cEntries))
-	return int64(r)
-}
-
-var proc_OSCreateActCtx = newProc("CreateActCtx")
-
-func OSCreateActCtx(pActCtx *ACTCTX) int64 {
-	var b_pActCtx [7]uint64
-	var p_pActCtx unsafe.Pointer
-	if pActCtx != nil {
-		p_pActCtx = unsafe.Pointer(&b_pActCtx)
-		pActCtx.toC(p_pActCtx)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSCreateActCtx.addr(), uintptr(p_pActCtx))
-	return int64(r)
-}
-
-var proc_OSCreateBitmap = newProc("CreateBitmap")
-
-func OSCreateBitmap(nWidth int32, nHeight int32, cPlanes int32, cBitsPerPel int32, lpvBits []int8) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateBitmap.addr(), uintptr(nWidth), uintptr(nHeight), uintptr(cPlanes), uintptr(cBitsPerPel), uintptr(unsafe.Pointer(unsafe.SliceData(lpvBits))))
-	return int64(r)
-}
-
-var proc_OSCreateCaret = newProc("CreateCaret")
-
-func OSCreateCaret(hWnd int64, hBitmap int64, nWidth int32, nHeight int32) bool {
-	r, _, _ := syscall.SyscallN(proc_OSCreateCaret.addr(), uintptr(hWnd), uintptr(hBitmap), uintptr(nWidth), uintptr(nHeight))
-	return r&0xff != 0
-}
-
-var proc_OSCreateCompatibleBitmap = newProc("CreateCompatibleBitmap")
-
-func OSCreateCompatibleBitmap(hdc int64, nWidth int32, nHeight int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateCompatibleBitmap.addr(), uintptr(hdc), uintptr(nWidth), uintptr(nHeight))
-	return int64(r)
-}
-
-var proc_OSCreateCompatibleDC = newProc("CreateCompatibleDC")
-
-func OSCreateCompatibleDC(hdc int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateCompatibleDC.addr(), uintptr(hdc))
-	return int64(r)
-}
-
-var proc_OSCreateCursor = newProc("CreateCursor")
-
-func OSCreateCursor(hInst int64, xHotSpot int32, yHotSpot int32, nWidth int32, nHeight int32, pvANDPlane []int8, pvXORPlane []int8) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateCursor.addr(), uintptr(hInst), uintptr(xHotSpot), uintptr(yHotSpot), uintptr(nWidth), uintptr(nHeight), uintptr(unsafe.Pointer(unsafe.SliceData(pvANDPlane))), uintptr(unsafe.Pointer(unsafe.SliceData(pvXORPlane))))
-	return int64(r)
-}
 
 func OSCreateDC(lpszDriver *TCHAR, lpszDevice *TCHAR, lpszOutput int64, lpInitData int64) int64 {
 	var lpszDriver1 []uint16
@@ -492,150 +100,6 @@ func OSCreateDC(lpszDriver *TCHAR, lpszDevice *TCHAR, lpszOutput int64, lpInitDa
 	return OSCreateDCLpszDriverLpszDeviceLpszOutputLpInitData(lpszDriver1, lpszDevice1, lpszOutput, lpInitData)
 }
 
-var proc_OSCreateDCLpszDriverLpszDeviceLpszOutputLpInitData = newProc("CreateDC")
-
-func OSCreateDCLpszDriverLpszDeviceLpszOutputLpInitData(lpszDriver []uint16, lpszDevice []uint16, lpszOutput int64, lpInitData int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateDCLpszDriverLpszDeviceLpszOutputLpInitData.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(lpszDriver))), uintptr(unsafe.Pointer(unsafe.SliceData(lpszDevice))), uintptr(lpszOutput), uintptr(lpInitData))
-	return int64(r)
-}
-
-var proc_OSCreateDIBSection = newProc("CreateDIBSection")
-
-func OSCreateDIBSection(hdc int64, pbmi []int8, iUsage int32, ppvBits []int64, hSection int64, dwOffset int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateDIBSection.addr(), uintptr(hdc), uintptr(unsafe.Pointer(unsafe.SliceData(pbmi))), uintptr(iUsage), uintptr(unsafe.Pointer(unsafe.SliceData(ppvBits))), uintptr(hSection), uintptr(dwOffset))
-	return int64(r)
-}
-
-var proc_OSCreateDIBSectionHdcPbmiIUsagePpvBitsHSectionDwOffset = newProc("CreateDIBSection")
-
-func OSCreateDIBSectionHdcPbmiIUsagePpvBitsHSectionDwOffset(hdc int64, pbmi int64, iUsage int32, ppvBits []int64, hSection int64, dwOffset int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateDIBSectionHdcPbmiIUsagePpvBitsHSectionDwOffset.addr(), uintptr(hdc), uintptr(pbmi), uintptr(iUsage), uintptr(unsafe.Pointer(unsafe.SliceData(ppvBits))), uintptr(hSection), uintptr(dwOffset))
-	return int64(r)
-}
-
-var proc_OSCreateEnhMetaFile = newProc("CreateEnhMetaFile")
-
-func OSCreateEnhMetaFile(hdcRef int64, lpFilename []uint16, lpRect *RECT, lpDescription []uint16) int64 {
-	var b_lpRect [2]uint64
-	var p_lpRect unsafe.Pointer
-	if lpRect != nil {
-		p_lpRect = unsafe.Pointer(&b_lpRect)
-		lpRect.toC(p_lpRect)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSCreateEnhMetaFile.addr(), uintptr(hdcRef), uintptr(unsafe.Pointer(unsafe.SliceData(lpFilename))), uintptr(p_lpRect), uintptr(unsafe.Pointer(unsafe.SliceData(lpDescription))))
-	return int64(r)
-}
-
-var proc_OSCreateFontIndirect = newProc("CreateFontIndirect")
-
-func OSCreateFontIndirect(lplf int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateFontIndirect.addr(), uintptr(lplf))
-	return int64(r)
-}
-
-var proc_OSCreateFontIndirectLplf = newProc("CreateFontIndirect")
-
-func OSCreateFontIndirectLplf(lplf *LOGFONT) int64 {
-	var b_lplf [12]uint64
-	var p_lplf unsafe.Pointer
-	if lplf != nil {
-		p_lplf = unsafe.Pointer(&b_lplf)
-		lplf.toC(p_lplf)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSCreateFontIndirectLplf.addr(), uintptr(p_lplf))
-	return int64(r)
-}
-
-var proc_OSCreateIconIndirect = newProc("CreateIconIndirect")
-
-func OSCreateIconIndirect(lplf *ICONINFO) int64 {
-	var b_lplf [4]uint64
-	var p_lplf unsafe.Pointer
-	if lplf != nil {
-		p_lplf = unsafe.Pointer(&b_lplf)
-		lplf.toC(p_lplf)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSCreateIconIndirect.addr(), uintptr(p_lplf))
-	return int64(r)
-}
-
-var proc_OSCreateMenu = newProc("CreateMenu")
-
-func OSCreateMenu() int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateMenu.addr())
-	return int64(r)
-}
-
-var proc_OSCreatePatternBrush = newProc("CreatePatternBrush")
-
-func OSCreatePatternBrush(hbmp int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreatePatternBrush.addr(), uintptr(hbmp))
-	return int64(r)
-}
-
-var proc_OSCreatePen = newProc("CreatePen")
-
-func OSCreatePen(fnPenStyle int32, nWidth int32, crColor int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreatePen.addr(), uintptr(fnPenStyle), uintptr(nWidth), uintptr(crColor))
-	return int64(r)
-}
-
-var proc_OSCreatePolygonRgn = newProc("CreatePolygonRgn")
-
-func OSCreatePolygonRgn(lppt []int32, cPoints int32, fnPolyFillMode int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreatePolygonRgn.addr(), uintptr(unsafe.Pointer(unsafe.SliceData(lppt))), uintptr(cPoints), uintptr(fnPolyFillMode))
-	return int64(r)
-}
-
-var proc_OSCreatePopupMenu = newProc("CreatePopupMenu")
-
-func OSCreatePopupMenu() int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreatePopupMenu.addr())
-	return int64(r)
-}
-
-var proc_OSCreateProcess = newProc("CreateProcess")
-
-func OSCreateProcess(lpApplicationName int64, lpCommandLine int64, lpProcessAttributes int64, lpThreadAttributes int64, bInheritHandles bool, dwCreationFlags int32, lpEnvironment int64, lpCurrentDirectory int64, lpStartupInfo *STARTUPINFO, lpProcessInformation *PROCESS_INFORMATION) bool {
-	var b_lpStartupInfo [13]uint64
-	var p_lpStartupInfo unsafe.Pointer
-	if lpStartupInfo != nil {
-		p_lpStartupInfo = unsafe.Pointer(&b_lpStartupInfo)
-		lpStartupInfo.toC(p_lpStartupInfo)
-	}
-	var b_lpProcessInformation [3]uint64
-	var p_lpProcessInformation unsafe.Pointer
-	if lpProcessInformation != nil {
-		p_lpProcessInformation = unsafe.Pointer(&b_lpProcessInformation)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSCreateProcess.addr(), uintptr(lpApplicationName), uintptr(lpCommandLine), uintptr(lpProcessAttributes), uintptr(lpThreadAttributes), boolToUintptr(bInheritHandles), uintptr(dwCreationFlags), uintptr(lpEnvironment), uintptr(lpCurrentDirectory), uintptr(p_lpStartupInfo), uintptr(p_lpProcessInformation))
-	if lpProcessInformation != nil {
-		lpProcessInformation.fromC(p_lpProcessInformation)
-	}
-	return r&0xff != 0
-}
-
-var proc_OSCreateRectRgn = newProc("CreateRectRgn")
-
-func OSCreateRectRgn(left int32, top int32, right int32, bottom int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateRectRgn.addr(), uintptr(left), uintptr(top), uintptr(right), uintptr(bottom))
-	return int64(r)
-}
-
-var proc_OSCreateSolidBrush = newProc("CreateSolidBrush")
-
-func OSCreateSolidBrush(colorRef int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateSolidBrush.addr(), uintptr(colorRef))
-	return int64(r)
-}
-
-var proc_OSCreateStreamOnHGlobal = newProc("CreateStreamOnHGlobal")
-
-func OSCreateStreamOnHGlobal(hGlobal int64, fDeleteOnRelease bool, ppstm []int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSCreateStreamOnHGlobal.addr(), uintptr(hGlobal), boolToUintptr(fDeleteOnRelease), uintptr(unsafe.Pointer(unsafe.SliceData(ppstm))))
-	return int32(r)
-}
-
 func OSCreateWindowEx(dwExStyle int32, lpClassName *TCHAR, lpWindowName *TCHAR, dwStyle int32, X int32, Y int32, nWidth int32, nHeight int32, hWndParent int64, hMenu int64, hInstance int64, lpParam *CREATESTRUCT) int64 {
 	var lpClassName1 []uint16
 	if lpClassName == (nil) {
@@ -650,22 +114,6 @@ func OSCreateWindowEx(dwExStyle int32, lpClassName *TCHAR, lpWindowName *TCHAR, 
 		lpWindowName1 = lpWindowName.Chars
 	}
 	return OSCreateWindowExDwExStyleLpClassNameLpWindowNameDwStyleXYNWidthNHeightHWndParentHMenuHInstanceLpParam(dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
-}
-
-var proc_OSCreateWindowExDwExStyleLpClassNameLpWindowNameDwStyleXYNWidthNHeightHWndParentHMenuHInstanceLpParam = newProc("CreateWindowEx")
-
-func OSCreateWindowExDwExStyleLpClassNameLpWindowNameDwStyleXYNWidthNHeightHWndParentHMenuHInstanceLpParam(dwExStyle int32, lpClassName []uint16, lpWindowName []uint16, dwStyle int32, X int32, Y int32, nWidth int32, nHeight int32, hWndParent int64, hMenu int64, hInstance int64, lpParam *CREATESTRUCT) int64 {
-	var b_lpParam [10]uint64
-	var p_lpParam unsafe.Pointer
-	if lpParam != nil {
-		p_lpParam = unsafe.Pointer(&b_lpParam)
-		lpParam.toC(p_lpParam)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSCreateWindowExDwExStyleLpClassNameLpWindowNameDwStyleXYNWidthNHeightHWndParentHMenuHInstanceLpParam.addr(), uintptr(dwExStyle), uintptr(unsafe.Pointer(unsafe.SliceData(lpClassName))), uintptr(unsafe.Pointer(unsafe.SliceData(lpWindowName))), uintptr(dwStyle), uintptr(X), uintptr(Y), uintptr(nWidth), uintptr(nHeight), uintptr(hWndParent), uintptr(hMenu), uintptr(hInstance), uintptr(p_lpParam))
-	if lpParam != nil {
-		lpParam.fromC(p_lpParam)
-	}
-	return int64(r)
 }
 
 func OSDEVMODE_sizeof() int32 { return 220 }
@@ -690,100 +138,305 @@ func OSDRAWITEMSTRUCT_sizeof() int32 { return 64 }
 
 func OSDROPFILES_sizeof() int32 { return 20 }
 
-var proc_OSDefFrameProc = newProc("DefFrameProc")
-
-func OSDefFrameProc(hWnd int64, hWndMDIClient int64, Msg int32, wParam int64, lParam int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSDefFrameProc.addr(), uintptr(hWnd), uintptr(hWndMDIClient), uintptr(Msg), uintptr(wParam), uintptr(lParam))
-	return int64(r)
+func OSDocumentProperties(hWnd int64, hPrinter int64, pDeviceName *TCHAR, pDevModeOutput int64, pDevModeInput int64, fMode int32) int32 {
+	var pDeviceName1 []uint16
+	if pDeviceName == (nil) {
+		pDeviceName1 = nil
+	} else {
+		pDeviceName1 = pDeviceName.Chars
+	}
+	return OSDocumentPropertiesHWndHPrinterPDeviceNamePDevModeOutputPDevModeInputFMode(hWnd, hPrinter, pDeviceName1, pDevModeOutput, pDevModeInput, fMode)
 }
 
-var proc_OSDefMDIChildProc = newProc("DefMDIChildProc")
-
-func OSDefMDIChildProc(hWnd int64, Msg int32, wParam int64, lParam int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSDefMDIChildProc.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(lParam))
-	return int64(r)
+func OSDrawText(hDC int64, lpString *TCHAR, nCount int32, lpRect *RECT, uFormat int32) int32 {
+	var lpString1 []uint16
+	if lpString == (nil) {
+		lpString1 = nil
+	} else {
+		lpString1 = lpString.Chars
+	}
+	return OSDrawTextHDCLpStringNCountLpRectUFormat(hDC, lpString1, nCount, lpRect, uFormat)
 }
 
-var proc_OSDefWindowProc = newProc("DefWindowProc")
+func OSEMREXTCREATEFONTINDIRECTW_sizeof() int32 { return 332 }
 
-func OSDefWindowProc(hWnd int64, Msg int32, wParam int64, lParam int64) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSDefWindowProc.addr(), uintptr(hWnd), uintptr(Msg), uintptr(wParam), uintptr(lParam))
-	return int64(r)
+func OSEMR_sizeof() int32 { return 8 }
+
+func OSEXTLOGFONTW_sizeof() int32 { return 320 }
+
+func OSExpandEnvironmentStrings(lpSrc *TCHAR, lpDst *TCHAR, nSize int32) int32 {
+	var lpSrc1 []uint16
+	if lpSrc == (nil) {
+		lpSrc1 = nil
+	} else {
+		lpSrc1 = lpSrc.Chars
+	}
+	var lpDst1 []uint16
+	if lpDst == (nil) {
+		lpDst1 = nil
+	} else {
+		lpDst1 = lpDst.Chars
+	}
+	return OSExpandEnvironmentStringsLpSrcLsDstNSize(lpSrc1, lpDst1, nSize)
 }
 
-var proc_OSDeferWindowPos = newProc("DeferWindowPos")
-
-func OSDeferWindowPos(hWinPosInfo int64, hWnd int64, hWndInsertAfter int64, X int32, Y int32, cx int32, cy int32, uFlags int32) int64 {
-	r, _, _ := syscall.SyscallN(proc_OSDeferWindowPos.addr(), uintptr(hWinPosInfo), uintptr(hWnd), uintptr(hWndInsertAfter), uintptr(X), uintptr(Y), uintptr(cx), uintptr(cy), uintptr(uFlags))
-	return int64(r)
+func OSExtractIconEx(lpszFile *TCHAR, nIconIndex int32, phiconLarge []int64, phiconSmall []int64, nIcons int32) int32 {
+	var lpszFile1 []uint16
+	if lpszFile == (nil) {
+		lpszFile1 = nil
+	} else {
+		lpszFile1 = lpszFile.Chars
+	}
+	return OSExtractIconExLpszFileNIconIndexPhiconLargePhiconSmallNIcons(lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons)
 }
 
-var proc_OSDeleteDC = newProc("DeleteDC")
+func OSFLICK_DATA_sizeof() int32 { return int32(unsafe.Sizeof(FLICK_DATA{})) }
 
-func OSDeleteDC(hdc int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSDeleteDC.addr(), uintptr(hdc))
-	return r&0xff != 0
+func OSFLICK_POINT_sizeof() int32 { return int32(unsafe.Sizeof(FLICK_POINT{})) }
+
+func OSGCP_RESULTS_sizeof() int32 { return 64 }
+
+func OSGESTURECONFIG_sizeof() int32 { return 12 }
+
+func OSGESTUREINFO_sizeof() int32 { return 56 }
+
+func OSGET_WHEEL_DELTA_WPARAM(wParam int64) int32 {
+	return int32(int16(OSHIWORD(wParam)))
 }
 
-var proc_OSDeleteEnhMetaFile = newProc("DeleteEnhMetaFile")
-
-func OSDeleteEnhMetaFile(hemf int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSDeleteEnhMetaFile.addr(), uintptr(hemf))
-	return r&0xff != 0
+func OSGET_X_LPARAM(lp int64) int32 {
+	return int32(int16(OSLOWORD(lp)))
 }
 
-var proc_OSDeleteMenu = newProc("DeleteMenu")
-
-func OSDeleteMenu(hMenu int64, uPosition int32, uFlags int32) bool {
-	r, _, _ := syscall.SyscallN(proc_OSDeleteMenu.addr(), uintptr(hMenu), uintptr(uPosition), uintptr(uFlags))
-	return r&0xff != 0
+func OSGET_Y_LPARAM(lp int64) int32 {
+	return int32(int16(OSHIWORD(lp)))
 }
 
-var proc_OSDeleteObject = newProc("DeleteObject")
-
-func OSDeleteObject(hGdiObj int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSDeleteObject.addr(), uintptr(hGdiObj))
-	return r&0xff != 0
+func OSGID_ROTATE_ANGLE_FROM_ARGUMENT(dwArgument int64) float64 {
+	return custom_GID_ROTATE_ANGLE_FROM_ARGUMENT(dwArgument)
 }
 
-var proc_OSDestroyAcceleratorTable = newProc("DestroyAcceleratorTable")
+func OSGRADIENT_RECT_sizeof() int32 { return 8 }
 
-func OSDestroyAcceleratorTable(hAccel int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSDestroyAcceleratorTable.addr(), uintptr(hAccel))
-	return r&0xff != 0
+func OSGUITHREADINFO_sizeof() int32 { return 72 }
+
+func OSGetClassInfo(hInstance int64, lpClassName *TCHAR, lpWndClass *WNDCLASS) bool {
+	var result bool
+	var lpClassName1 []uint16
+	if lpClassName == (nil) {
+		lpClassName1 = nil
+	} else {
+		lpClassName1 = lpClassName.Chars
+	}
+	result = OSGetClassInfoHInstanceLpClassNameLpWndClass(hInstance, lpClassName1, lpWndClass)
+	lpWndClass.LpszClassName = int64(0)
+	return result
 }
 
-var proc_OSDestroyCaret = newProc("DestroyCaret")
+func OSGetLibraryHandle() int64 { return custom_GetLibraryHandle() }
 
-func OSDestroyCaret() bool {
-	r, _, _ := syscall.SyscallN(proc_OSDestroyCaret.addr())
-	return r&0xff != 0
+func OSGetLocaleInfo(Locale int32, LCType int32, lpLCData *TCHAR, cchData int32) int32 {
+	var lpLCData1 []uint16
+	if lpLCData == (nil) {
+		lpLCData1 = nil
+	} else {
+		lpLCData1 = lpLCData.Chars
+	}
+	return OSGetLocaleInfoLocaleLCTypeLpLCDataCchData(Locale, LCType, lpLCData1, cchData)
 }
 
-var proc_OSDestroyCursor = newProc("DestroyCursor")
-
-func OSDestroyCursor(hCursor int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSDestroyCursor.addr(), uintptr(hCursor))
-	return r&0xff != 0
+func OSGetModuleFileName(hModule int64, lpFilename *TCHAR, inSize int32) int32 {
+	var lpFilename1 []uint16
+	if lpFilename == (nil) {
+		lpFilename1 = nil
+	} else {
+		lpFilename1 = lpFilename.Chars
+	}
+	return OSGetModuleFileNameHModuleLpFilenameInSize(hModule, lpFilename1, inSize)
 }
 
-var proc_OSDestroyIcon = newProc("DestroyIcon")
-
-func OSDestroyIcon(hIcon int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSDestroyIcon.addr(), uintptr(hIcon))
-	return r&0xff != 0
+func OSGetProfileString(lpAppName *TCHAR, lpKeyName *TCHAR, lpDefault *TCHAR, lpReturnedString *TCHAR, nSize int32) int32 {
+	var lpAppName1 []uint16
+	if lpAppName == (nil) {
+		lpAppName1 = nil
+	} else {
+		lpAppName1 = lpAppName.Chars
+	}
+	var lpKeyName1 []uint16
+	if lpKeyName == (nil) {
+		lpKeyName1 = nil
+	} else {
+		lpKeyName1 = lpKeyName.Chars
+	}
+	var lpDefault1 []uint16
+	if lpDefault == (nil) {
+		lpDefault1 = nil
+	} else {
+		lpDefault1 = lpDefault.Chars
+	}
+	var lpReturnedString1 []uint16
+	if lpReturnedString == (nil) {
+		lpReturnedString1 = nil
+	} else {
+		lpReturnedString1 = lpReturnedString.Chars
+	}
+	return OSGetProfileStringLpAppNameLpKeyNameLpDefaultLpReturnedStringNSize(lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize)
 }
 
-var proc_OSDestroyMenu = newProc("DestroyMenu")
-
-func OSDestroyMenu(hMenu int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSDestroyMenu.addr(), uintptr(hMenu))
-	return r&0xff != 0
+func OSGetWindowText(hWnd int64, lpString *TCHAR, nMaxCount int32) int32 {
+	var lpString1 []uint16
+	if lpString == (nil) {
+		lpString1 = nil
+	} else {
+		lpString1 = lpString.Chars
+	}
+	return OSGetWindowTextHWndLpStringNMaxCount(hWnd, lpString1, nMaxCount)
 }
 
-var proc_OSDestroyWindow = newProc("DestroyWindow")
-
-func OSDestroyWindow(hWnd int64) bool {
-	r, _, _ := syscall.SyscallN(proc_OSDestroyWindow.addr(), uintptr(hWnd))
-	return r&0xff != 0
+func OSGlobalAddAtom(lpString *TCHAR) int32 {
+	var lpString1 []uint16
+	if lpString == (nil) {
+		lpString1 = nil
+	} else {
+		lpString1 = lpString.Chars
+	}
+	return OSGlobalAddAtomLpString(lpString1)
 }
+
+func OSHDHITTESTINFO_sizeof() int32 { return 16 }
+
+func OSHDITEM_sizeof() int32 { return 72 }
+
+func OSHDLAYOUT_sizeof() int32 { return 16 }
+
+func OSHELPINFO_sizeof() int32 { return 40 }
+
+func OSHIGHCONTRAST_sizeof() int32 { return 16 }
+
+func OSHIWORD(l int64) int32 {
+	return int32(uint32(int32(l)) >> (16))
+}
+
+func OSHRESULT_FROM_WIN32(x int32) int32 {
+	var cond23 int32
+	if x <= 0 {
+		cond23 = x
+	} else {
+		cond23 = ((x & 0x0000FFFF) | -2147024896)
+	}
+	return cond23
+}
+
+func OSICONINFO_sizeof() int32 { return 32 }
+
+func OSINITCOMMONCONTROLSEX_sizeof() int32 { return 8 }
+
+func OSINPUT_sizeof() int32 { return 40 }
+
+func OSImmEscape(hKL int64, hIMC int64, uEscape int32, lpData *TCHAR) int64 {
+	var lpData1 []uint16
+	if lpData == (nil) {
+		lpData1 = nil
+	} else {
+		lpData1 = lpData.Chars
+	}
+	return OSImmEscapeHKLHIMCUEscapeLpData(hKL, hIMC, uEscape, lpData1)
+}
+
+func OSInternetGetCookie(lpszUrl *TCHAR, lpszCookieName *TCHAR, lpszCookieData *TCHAR, lpdwSize []int32) bool {
+	var url []uint16
+	if lpszUrl == (nil) {
+		url = nil
+	} else {
+		url = lpszUrl.Chars
+	}
+	var cookieName []uint16
+	if lpszCookieName == (nil) {
+		cookieName = nil
+	} else {
+		cookieName = lpszCookieName.Chars
+	}
+	var cookieData []uint16
+	if lpszCookieData == (nil) {
+		cookieData = nil
+	} else {
+		cookieData = lpszCookieData.Chars
+	}
+	return OSInternetGetCookieLpszUrlLpszCookieNameLpszCookieDataLpdwSize(url, cookieName, cookieData, lpdwSize)
+}
+
+func OSInternetSetCookie(lpszUrl *TCHAR, lpszCookieName *TCHAR, lpszCookieData *TCHAR) bool {
+	var url []uint16
+	if lpszUrl == (nil) {
+		url = nil
+	} else {
+		url = lpszUrl.Chars
+	}
+	var cookieName []uint16
+	if lpszCookieName == (nil) {
+		cookieName = nil
+	} else {
+		cookieName = lpszCookieName.Chars
+	}
+	var cookieData []uint16
+	if lpszCookieData == (nil) {
+		cookieData = nil
+	} else {
+		cookieData = lpszCookieData.Chars
+	}
+	return OSInternetSetCookieLpszUrlLpszCookieNameLpszCookieData(url, cookieName, cookieData)
+}
+
+func OSIsDarkModeAvailable() bool { return custom_IsDarkModeAvailable() }
+
+func OSKEYBDINPUT_sizeof() int32 { return 24 }
+
+func OSLITEM_sizeof() int32 { return 4280 }
+
+func OSLOGBRUSH_sizeof() int32 { return 16 }
+
+func OSLOGFONT_sizeof() int32 { return 92 }
+
+func OSLOGPEN_sizeof() int32 { return 16 }
+
+func OSLOWORD(l int64) int32 {
+	return int32(l) & 0xffff
+}
+
+func OSLVCOLUMN_sizeof() int32 { return 56 }
+
+func OSLVHITTESTINFO_sizeof() int32 { return 24 }
+
+func OSLVINSERTMARK_sizeof() int32 { return 16 }
+
+func OSLVITEM_sizeof() int32 { return 88 }
+
+func OSMAKELPARAM(l int32, h int32) int64 {
+	return int64(((l & 0xffff) | (h << 16))) & 0xffffffff
+}
+
+func OSMAKELRESULT(l int32, h int32) int64 {
+	return OSMAKELPARAM(l, h)
+}
+
+func OSMAKEWORD(l int32, h int32) int32 {
+	return (l & 0xff) | ((h & 0xff) << 8)
+}
+
+func OSMAKEWPARAM(l int32, h int32) int64 {
+	return OSMAKELPARAM(l, h)
+}
+
+func OSMARGINS_sizeof() int32 { return 16 }
+
+func OSMCHITTESTINFO_sizeof() int32 { return 60 }
+
+func OSMEASUREITEMSTRUCT_sizeof() int32 { return 32 }
+
+func OSMENUBARINFO_sizeof() int32 { return 48 }
+
+func OSMENUINFO_sizeof() int32 { return 40 }
+
+func OSMENUITEMINFO_sizeof() int32 { return 80 }
+
+func OSMINMAXINFO_sizeof() int32 { return 40 }

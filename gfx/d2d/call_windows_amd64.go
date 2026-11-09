@@ -1,4 +1,4 @@
-//go:build windows && amd64
+//go:build windows && amd64 && (!cgo || !gowtcgo)
 
 package d2d
 

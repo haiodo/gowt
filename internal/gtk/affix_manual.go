@@ -48,7 +48,9 @@ func lookOf(entry int64, changed func()) *entryLook {
 		l.changed = changed
 	} else {
 		l = &entryLook{changed: changed}
-		GTK3Gtk_style_context_get_padding(GTKGtk_widget_get_style_context(entry), GTKGtk_widget_get_state_flags(entry), &l.pad)
+		var pad GtkBorder
+		GTK3Gtk_style_context_get_padding(GTKGtk_widget_get_style_context(entry), GTKGtk_widget_get_state_flags(entry), &pad)
+		l.pad = pad
 		entryLooks[entry] = l
 		l.styled = NewCallbackN(2, func(args []int64) int64 {
 			if l := entryLooks[args[0]]; l != nil && l.changed != nil {

@@ -15,8 +15,6 @@ package win32
 import (
 	"fmt"
 	"os"
-	"syscall"
-	"unsafe"
 )
 
 type OsVersion struct {
@@ -59,22 +57,6 @@ func OsVersionGetCurrentOsVersion() int32 {
 }
 
 func OsVersionOSVERSIONINFOEX_sizeof() int32 { return 284 }
-
-var proc_OsVersionRtlGetVersion = newProc("RtlGetVersion", true)
-
-func OsVersionRtlGetVersion(lpVersionInformation *OSVERSIONINFOEX) int32 {
-	var b_lpVersionInformation [36]uint64
-	var p_lpVersionInformation unsafe.Pointer
-	if lpVersionInformation != nil {
-		p_lpVersionInformation = unsafe.Pointer(&b_lpVersionInformation)
-		lpVersionInformation.toC(p_lpVersionInformation)
-	}
-	r, _, _ := syscall.SyscallN(proc_OsVersionRtlGetVersion.addr(), uintptr(p_lpVersionInformation))
-	if lpVersionInformation != nil {
-		lpVersionInformation.fromC(p_lpVersionInformation)
-	}
-	return int32(r)
-}
 
 func init() {
 	func() {

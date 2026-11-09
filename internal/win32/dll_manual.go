@@ -44,6 +44,13 @@ func newProc(name string, dynamic ...bool) *Proc {
 	return p
 }
 
+// registerProcMeta records a generated native's DLL export for Probe in the gowtcgo build,
+// where the generated <unit>_native.go files (and their newProc vars) are excluded. Metadata
+// only: no binding happens here, the cgo wrappers resolve exports via gowt_find.
+func registerProcMeta(name string, dynamic bool) {
+	allProcs = append(allProcs, &Proc{name: name, dynamic: dynamic})
+}
+
 // Probe resolves every proc of the bindings and returns the names no DLL exports (dynamic ones are optional).
 func Probe() (total int, missing, optional []string) {
 	for _, n := range gdipNames {

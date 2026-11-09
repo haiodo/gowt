@@ -1,4 +1,4 @@
-//go:build windows && arm64
+//go:build windows && arm64 && (!cgo || !gowtcgo)
 
 #include "textflag.h"
 

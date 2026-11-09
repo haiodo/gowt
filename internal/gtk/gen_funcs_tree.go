@@ -5,733 +5,733 @@ package gtk
 
 import "unsafe"
 
-var r_GTKGtk_tree_model_get = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{sym: "gtk_tree_model_get"}
+var r_GTKGtk_tree_model_get = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{name: "GTKGtk_tree_model_get", sym: "gtk_tree_model_get"}
 
 func GTKGtk_tree_model_get(tree_model int64, iter int64, column int32, value []int64, terminator int32) {
 	r_GTKGtk_tree_model_get.get()(uintptr(tree_model), uintptr(iter), column, sp(value), terminator)
 }
 
-var r_GTKGtk_tree_model_getTree_modelIterColumnValueTerminator = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{sym: "gtk_tree_model_get"}
+var r_GTKGtk_tree_model_getTree_modelIterColumnValueTerminator = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{name: "GTKGtk_tree_model_getTree_modelIterColumnValueTerminator", sym: "gtk_tree_model_get"}
 
 func GTKGtk_tree_model_getTree_modelIterColumnValueTerminator(tree_model int64, iter int64, column int32, value []int32, terminator int32) {
 	r_GTKGtk_tree_model_getTree_modelIterColumnValueTerminator.get()(uintptr(tree_model), uintptr(iter), column, sp(value), terminator)
 }
 
-var r_GTKGtk_tree_model_get_iter = lz[func(uintptr, uintptr, uintptr) int32]{sym: "gtk_tree_model_get_iter"}
+var r_GTKGtk_tree_model_get_iter = lz[func(uintptr, uintptr, uintptr) int32]{name: "GTKGtk_tree_model_get_iter", sym: "gtk_tree_model_get_iter"}
 
 func GTKGtk_tree_model_get_iter(tree_model int64, iter int64, path int64) bool {
 	return r_GTKGtk_tree_model_get_iter.get()(uintptr(tree_model), uintptr(iter), uintptr(path)) != 0
 }
 
-var r_GTKGtk_tree_model_get_iter_first = lz[func(uintptr, uintptr) int32]{sym: "gtk_tree_model_get_iter_first"}
+var r_GTKGtk_tree_model_get_iter_first = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_tree_model_get_iter_first", sym: "gtk_tree_model_get_iter_first"}
 
 func GTKGtk_tree_model_get_iter_first(tree_model int64, iter int64) bool {
 	return r_GTKGtk_tree_model_get_iter_first.get()(uintptr(tree_model), uintptr(iter)) != 0
 }
 
-var r_GTKGtk_tree_model_get_n_columns = lz[func(uintptr) int32]{sym: "gtk_tree_model_get_n_columns"}
+var r_GTKGtk_tree_model_get_n_columns = lz[func(uintptr) int32]{name: "GTKGtk_tree_model_get_n_columns", sym: "gtk_tree_model_get_n_columns"}
 
 func GTKGtk_tree_model_get_n_columns(tree_model int64) int32 {
 	return r_GTKGtk_tree_model_get_n_columns.get()(uintptr(tree_model))
 }
 
-var r_GTKGtk_tree_model_get_path = lz[func(uintptr, uintptr) uintptr]{sym: "gtk_tree_model_get_path"}
+var r_GTKGtk_tree_model_get_path = lz[func(uintptr, uintptr) uintptr]{name: "GTKGtk_tree_model_get_path", sym: "gtk_tree_model_get_path"}
 
 func GTKGtk_tree_model_get_path(tree_model int64, iter int64) int64 {
 	return int64(r_GTKGtk_tree_model_get_path.get()(uintptr(tree_model), uintptr(iter)))
 }
 
-var r_GTKGtk_tree_model_get_value = lz[func(uintptr, uintptr, int32, uintptr)]{sym: "gtk_tree_model_get_value"}
+var r_GTKGtk_tree_model_get_value = lz[func(uintptr, uintptr, int32, uintptr)]{name: "GTKGtk_tree_model_get_value", sym: "gtk_tree_model_get_value"}
 
 func GTKGtk_tree_model_get_value(tree_model int64, iter int64, column int32, value int64) {
 	r_GTKGtk_tree_model_get_value.get()(uintptr(tree_model), uintptr(iter), column, uintptr(value))
 }
 
-var r_GTKGtk_tree_model_iter_children = lz[func(uintptr, uintptr, uintptr) int32]{sym: "gtk_tree_model_iter_children"}
+var r_GTKGtk_tree_model_iter_children = lz[func(uintptr, uintptr, uintptr) int32]{name: "GTKGtk_tree_model_iter_children", sym: "gtk_tree_model_iter_children"}
 
 func GTKGtk_tree_model_iter_children(tree_model int64, iter int64, parent int64) bool {
 	return r_GTKGtk_tree_model_iter_children.get()(uintptr(tree_model), uintptr(iter), uintptr(parent)) != 0
 }
 
-var r_GTKGtk_tree_model_iter_n_children = lz[func(uintptr, uintptr) int32]{sym: "gtk_tree_model_iter_n_children"}
+var r_GTKGtk_tree_model_iter_n_children = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_tree_model_iter_n_children", sym: "gtk_tree_model_iter_n_children"}
 
 func GTKGtk_tree_model_iter_n_children(tree_model int64, iter int64) int32 {
 	return r_GTKGtk_tree_model_iter_n_children.get()(uintptr(tree_model), uintptr(iter))
 }
 
-var r_GTKGtk_tree_model_iter_next = lz[func(uintptr, uintptr) int32]{sym: "gtk_tree_model_iter_next"}
+var r_GTKGtk_tree_model_iter_next = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_tree_model_iter_next", sym: "gtk_tree_model_iter_next"}
 
 func GTKGtk_tree_model_iter_next(tree_model int64, iter int64) bool {
 	return r_GTKGtk_tree_model_iter_next.get()(uintptr(tree_model), uintptr(iter)) != 0
 }
 
-var r_GTKGtk_tree_model_iter_nth_child = lz[func(uintptr, uintptr, uintptr, int32) int32]{sym: "gtk_tree_model_iter_nth_child"}
+var r_GTKGtk_tree_model_iter_nth_child = lz[func(uintptr, uintptr, uintptr, int32) int32]{name: "GTKGtk_tree_model_iter_nth_child", sym: "gtk_tree_model_iter_nth_child"}
 
 func GTKGtk_tree_model_iter_nth_child(tree_model int64, iter int64, parent int64, n int32) bool {
 	return r_GTKGtk_tree_model_iter_nth_child.get()(uintptr(tree_model), uintptr(iter), uintptr(parent), n) != 0
 }
 
-var r_GTKGtk_tree_path_append_index = lz[func(uintptr, int32)]{sym: "gtk_tree_path_append_index"}
+var r_GTKGtk_tree_path_append_index = lz[func(uintptr, int32)]{name: "GTKGtk_tree_path_append_index", sym: "gtk_tree_path_append_index"}
 
 func GTKGtk_tree_path_append_index(path int64, index_ int32) {
 	r_GTKGtk_tree_path_append_index.get()(uintptr(path), index_)
 }
 
-var r_GTKGtk_tree_path_compare = lz[func(uintptr, uintptr) int32]{sym: "gtk_tree_path_compare"}
+var r_GTKGtk_tree_path_compare = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_tree_path_compare", sym: "gtk_tree_path_compare"}
 
 func GTKGtk_tree_path_compare(a int64, b int64) int32 {
 	return r_GTKGtk_tree_path_compare.get()(uintptr(a), uintptr(b))
 }
 
-var r_GTKGtk_tree_path_free = lz[func(uintptr)]{sym: "gtk_tree_path_free"}
+var r_GTKGtk_tree_path_free = lz[func(uintptr)]{name: "GTKGtk_tree_path_free", sym: "gtk_tree_path_free"}
 
 func GTKGtk_tree_path_free(path int64) {
 	r_GTKGtk_tree_path_free.get()(uintptr(path))
 }
 
-var r_GTKGtk_tree_path_get_depth = lz[func(uintptr) int32]{sym: "gtk_tree_path_get_depth"}
+var r_GTKGtk_tree_path_get_depth = lz[func(uintptr) int32]{name: "GTKGtk_tree_path_get_depth", sym: "gtk_tree_path_get_depth"}
 
 func GTKGtk_tree_path_get_depth(path int64) int32 {
 	return r_GTKGtk_tree_path_get_depth.get()(uintptr(path))
 }
 
-var r_GTKGtk_tree_path_get_indices = lz[func(uintptr) uintptr]{sym: "gtk_tree_path_get_indices"}
+var r_GTKGtk_tree_path_get_indices = lz[func(uintptr) uintptr]{name: "GTKGtk_tree_path_get_indices", sym: "gtk_tree_path_get_indices"}
 
 func GTKGtk_tree_path_get_indices(path int64) int64 {
 	return int64(r_GTKGtk_tree_path_get_indices.get()(uintptr(path)))
 }
 
-var r_GTKGtk_tree_path_new = lz[func() uintptr]{sym: "gtk_tree_path_new"}
+var r_GTKGtk_tree_path_new = lz[func() uintptr]{name: "GTKGtk_tree_path_new", sym: "gtk_tree_path_new"}
 
 func GTKGtk_tree_path_new() int64 {
 	return int64(r_GTKGtk_tree_path_new.get()())
 }
 
-var r_GTKGtk_tree_path_new_from_string = lz[func(unsafe.Pointer) uintptr]{sym: "gtk_tree_path_new_from_string"}
+var r_GTKGtk_tree_path_new_from_string = lz[func(unsafe.Pointer) uintptr]{name: "GTKGtk_tree_path_new_from_string", sym: "gtk_tree_path_new_from_string"}
 
 func GTKGtk_tree_path_new_from_string(path []int8) int64 {
 	return int64(r_GTKGtk_tree_path_new_from_string.get()(sp(path)))
 }
 
-var r_GTKGtk_tree_path_new_from_stringPath = lz[func(uintptr) uintptr]{sym: "gtk_tree_path_new_from_string"}
+var r_GTKGtk_tree_path_new_from_stringPath = lz[func(uintptr) uintptr]{name: "GTKGtk_tree_path_new_from_stringPath", sym: "gtk_tree_path_new_from_string"}
 
 func GTKGtk_tree_path_new_from_stringPath(path int64) int64 {
 	return int64(r_GTKGtk_tree_path_new_from_stringPath.get()(uintptr(path)))
 }
 
-var r_GTKGtk_tree_path_next = lz[func(uintptr)]{sym: "gtk_tree_path_next"}
+var r_GTKGtk_tree_path_next = lz[func(uintptr)]{name: "GTKGtk_tree_path_next", sym: "gtk_tree_path_next"}
 
 func GTKGtk_tree_path_next(path int64) {
 	r_GTKGtk_tree_path_next.get()(uintptr(path))
 }
 
-var r_GTKGtk_tree_path_prev = lz[func(uintptr) int32]{sym: "gtk_tree_path_prev"}
+var r_GTKGtk_tree_path_prev = lz[func(uintptr) int32]{name: "GTKGtk_tree_path_prev", sym: "gtk_tree_path_prev"}
 
 func GTKGtk_tree_path_prev(path int64) bool {
 	return r_GTKGtk_tree_path_prev.get()(uintptr(path)) != 0
 }
 
-var r_GTKGtk_tree_path_up = lz[func(uintptr) int32]{sym: "gtk_tree_path_up"}
+var r_GTKGtk_tree_path_up = lz[func(uintptr) int32]{name: "GTKGtk_tree_path_up", sym: "gtk_tree_path_up"}
 
 func GTKGtk_tree_path_up(path int64) bool {
 	return r_GTKGtk_tree_path_up.get()(uintptr(path)) != 0
 }
 
-var r_GTKGtk_tree_selection_count_selected_rows = lz[func(uintptr) int32]{sym: "gtk_tree_selection_count_selected_rows"}
+var r_GTKGtk_tree_selection_count_selected_rows = lz[func(uintptr) int32]{name: "GTKGtk_tree_selection_count_selected_rows", sym: "gtk_tree_selection_count_selected_rows"}
 
 func GTKGtk_tree_selection_count_selected_rows(selection int64) int32 {
 	return r_GTKGtk_tree_selection_count_selected_rows.get()(uintptr(selection))
 }
 
-var r_GTKGtk_tree_selection_get_selected_rows = lz[func(uintptr, unsafe.Pointer) uintptr]{sym: "gtk_tree_selection_get_selected_rows"}
+var r_GTKGtk_tree_selection_get_selected_rows = lz[func(uintptr, unsafe.Pointer) uintptr]{name: "GTKGtk_tree_selection_get_selected_rows", sym: "gtk_tree_selection_get_selected_rows"}
 
 func GTKGtk_tree_selection_get_selected_rows(selection int64, model []int64) int64 {
 	return int64(r_GTKGtk_tree_selection_get_selected_rows.get()(uintptr(selection), sp(model)))
 }
 
-var r_GTKGtk_tree_selection_path_is_selected = lz[func(uintptr, uintptr) int32]{sym: "gtk_tree_selection_path_is_selected"}
+var r_GTKGtk_tree_selection_path_is_selected = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_tree_selection_path_is_selected", sym: "gtk_tree_selection_path_is_selected"}
 
 func GTKGtk_tree_selection_path_is_selected(selection int64, path int64) bool {
 	return r_GTKGtk_tree_selection_path_is_selected.get()(uintptr(selection), uintptr(path)) != 0
 }
 
-var r_GTKGtk_tree_selection_select_all = lz[func(uintptr)]{sym: "gtk_tree_selection_select_all"}
+var r_GTKGtk_tree_selection_select_all = lz[func(uintptr)]{name: "GTKGtk_tree_selection_select_all", sym: "gtk_tree_selection_select_all"}
 
 func GTKGtk_tree_selection_select_all(selection int64) {
 	r_GTKGtk_tree_selection_select_all.get()(uintptr(selection))
 }
 
-var r_GTKGtk_tree_selection_select_iter = lz[func(uintptr, uintptr)]{sym: "gtk_tree_selection_select_iter"}
+var r_GTKGtk_tree_selection_select_iter = lz[func(uintptr, uintptr)]{name: "GTKGtk_tree_selection_select_iter", sym: "gtk_tree_selection_select_iter"}
 
 func GTKGtk_tree_selection_select_iter(selection int64, iter int64) {
 	r_GTKGtk_tree_selection_select_iter.get()(uintptr(selection), uintptr(iter))
 }
 
-var r_GTKGtk_tree_selection_set_mode = lz[func(uintptr, int32)]{sym: "gtk_tree_selection_set_mode"}
+var r_GTKGtk_tree_selection_set_mode = lz[func(uintptr, int32)]{name: "GTKGtk_tree_selection_set_mode", sym: "gtk_tree_selection_set_mode"}
 
 func GTKGtk_tree_selection_set_mode(selection int64, a1 int32) {
 	r_GTKGtk_tree_selection_set_mode.get()(uintptr(selection), a1)
 }
 
-var r_GTKGtk_tree_selection_set_select_function = lz[func(uintptr, uintptr, uintptr, uintptr)]{sym: "gtk_tree_selection_set_select_function"}
+var r_GTKGtk_tree_selection_set_select_function = lz[func(uintptr, uintptr, uintptr, uintptr)]{name: "GTKGtk_tree_selection_set_select_function", sym: "gtk_tree_selection_set_select_function"}
 
 func GTKGtk_tree_selection_set_select_function(selection int64, a1 int64, data int64, destroy int64) {
 	r_GTKGtk_tree_selection_set_select_function.get()(uintptr(selection), uintptr(a1), uintptr(data), uintptr(destroy))
 }
 
-var r_GTKGtk_tree_selection_unselect_all = lz[func(uintptr)]{sym: "gtk_tree_selection_unselect_all"}
+var r_GTKGtk_tree_selection_unselect_all = lz[func(uintptr)]{name: "GTKGtk_tree_selection_unselect_all", sym: "gtk_tree_selection_unselect_all"}
 
 func GTKGtk_tree_selection_unselect_all(selection int64) {
 	r_GTKGtk_tree_selection_unselect_all.get()(uintptr(selection))
 }
 
-var r_GTKGtk_tree_selection_unselect_iter = lz[func(uintptr, uintptr)]{sym: "gtk_tree_selection_unselect_iter"}
+var r_GTKGtk_tree_selection_unselect_iter = lz[func(uintptr, uintptr)]{name: "GTKGtk_tree_selection_unselect_iter", sym: "gtk_tree_selection_unselect_iter"}
 
 func GTKGtk_tree_selection_unselect_iter(selection int64, iter int64) {
 	r_GTKGtk_tree_selection_unselect_iter.get()(uintptr(selection), uintptr(iter))
 }
 
-var r_GTKGtk_tree_selection_unselect_path = lz[func(uintptr, uintptr)]{sym: "gtk_tree_selection_unselect_path"}
+var r_GTKGtk_tree_selection_unselect_path = lz[func(uintptr, uintptr)]{name: "GTKGtk_tree_selection_unselect_path", sym: "gtk_tree_selection_unselect_path"}
 
 func GTKGtk_tree_selection_unselect_path(selection int64, path int64) {
 	r_GTKGtk_tree_selection_unselect_path.get()(uintptr(selection), uintptr(path))
 }
 
-var r_GTKGtk_tree_store_append = lz[func(uintptr, uintptr, uintptr)]{sym: "gtk_tree_store_append"}
+var r_GTKGtk_tree_store_append = lz[func(uintptr, uintptr, uintptr)]{name: "GTKGtk_tree_store_append", sym: "gtk_tree_store_append"}
 
 func GTKGtk_tree_store_append(tree_store int64, iter int64, parent int64) {
 	r_GTKGtk_tree_store_append.get()(uintptr(tree_store), uintptr(iter), uintptr(parent))
 }
 
-var r_GTKGtk_tree_store_clear = lz[func(uintptr)]{sym: "gtk_tree_store_clear"}
+var r_GTKGtk_tree_store_clear = lz[func(uintptr)]{name: "GTKGtk_tree_store_clear", sym: "gtk_tree_store_clear"}
 
 func GTKGtk_tree_store_clear(tree_store int64) {
 	r_GTKGtk_tree_store_clear.get()(uintptr(tree_store))
 }
 
-var r_GTKGtk_tree_store_insert = lz[func(uintptr, uintptr, uintptr, int32)]{sym: "gtk_tree_store_insert"}
+var r_GTKGtk_tree_store_insert = lz[func(uintptr, uintptr, uintptr, int32)]{name: "GTKGtk_tree_store_insert", sym: "gtk_tree_store_insert"}
 
 func GTKGtk_tree_store_insert(tree_store int64, iter int64, parent int64, position int32) {
 	r_GTKGtk_tree_store_insert.get()(uintptr(tree_store), uintptr(iter), uintptr(parent), position)
 }
 
-var r_GTKGtk_tree_store_insert_after = lz[func(uintptr, uintptr, uintptr, uintptr)]{sym: "gtk_tree_store_insert_after"}
+var r_GTKGtk_tree_store_insert_after = lz[func(uintptr, uintptr, uintptr, uintptr)]{name: "GTKGtk_tree_store_insert_after", sym: "gtk_tree_store_insert_after"}
 
 func GTKGtk_tree_store_insert_after(tree_store int64, iter int64, parent int64, sibling int64) {
 	r_GTKGtk_tree_store_insert_after.get()(uintptr(tree_store), uintptr(iter), uintptr(parent), uintptr(sibling))
 }
 
-var r_GTKGtk_tree_store_newv = lz[func(int32, unsafe.Pointer) uintptr]{sym: "gtk_tree_store_newv"}
+var r_GTKGtk_tree_store_newv = lz[func(int32, unsafe.Pointer) uintptr]{name: "GTKGtk_tree_store_newv", sym: "gtk_tree_store_newv"}
 
 func GTKGtk_tree_store_newv(n_columns int32, types []int64) int64 {
 	return int64(r_GTKGtk_tree_store_newv.get()(n_columns, sp(types)))
 }
 
-var r_GTKGtk_tree_store_prepend = lz[func(uintptr, uintptr, uintptr)]{sym: "gtk_tree_store_prepend"}
+var r_GTKGtk_tree_store_prepend = lz[func(uintptr, uintptr, uintptr)]{name: "GTKGtk_tree_store_prepend", sym: "gtk_tree_store_prepend"}
 
 func GTKGtk_tree_store_prepend(tree_store int64, iter int64, parent int64) {
 	r_GTKGtk_tree_store_prepend.get()(uintptr(tree_store), uintptr(iter), uintptr(parent))
 }
 
-var r_GTKGtk_tree_store_remove = lz[func(uintptr, uintptr) int32]{sym: "gtk_tree_store_remove"}
+var r_GTKGtk_tree_store_remove = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_tree_store_remove", sym: "gtk_tree_store_remove"}
 
 func GTKGtk_tree_store_remove(tree_store int64, iter int64) bool {
 	return r_GTKGtk_tree_store_remove.get()(uintptr(tree_store), uintptr(iter)) != 0
 }
 
-var r_GTKGtk_tree_store_set = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{sym: "gtk_tree_store_set"}
+var r_GTKGtk_tree_store_set = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{name: "GTKGtk_tree_store_set", sym: "gtk_tree_store_set"}
 
 func GTKGtk_tree_store_set(tree_store int64, iter int64, column int32, value []int8, terminator int32) {
 	r_GTKGtk_tree_store_set.get()(uintptr(tree_store), uintptr(iter), column, sp(value), terminator)
 }
 
-var r_GTKGtk_tree_store_setOverload1 = lz[func(uintptr, uintptr, int32, int32, int32)]{sym: "gtk_tree_store_set"}
+var r_GTKGtk_tree_store_setOverload1 = lz[func(uintptr, uintptr, int32, int32, int32)]{name: "GTKGtk_tree_store_setOverload1", sym: "gtk_tree_store_set"}
 
 func GTKGtk_tree_store_setOverload1(tree_store int64, iter int64, column int32, value int32, terminator int32) {
 	r_GTKGtk_tree_store_setOverload1.get()(uintptr(tree_store), uintptr(iter), column, value, terminator)
 }
 
-var r_GTKGtk_tree_store_setOverload2 = lz[func(uintptr, uintptr, int32, uintptr, int32)]{sym: "gtk_tree_store_set"}
+var r_GTKGtk_tree_store_setOverload2 = lz[func(uintptr, uintptr, int32, uintptr, int32)]{name: "GTKGtk_tree_store_setOverload2", sym: "gtk_tree_store_set"}
 
 func GTKGtk_tree_store_setOverload2(tree_store int64, iter int64, column int32, value int64, terminator int32) {
 	r_GTKGtk_tree_store_setOverload2.get()(uintptr(tree_store), uintptr(iter), column, uintptr(value), terminator)
 }
 
-var r_GTKGtk_tree_store_setOverload3 = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{sym: "gtk_tree_store_set"}
+var r_GTKGtk_tree_store_setOverload3 = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{name: "GTKGtk_tree_store_setOverload3", sym: "gtk_tree_store_set"}
 
 func GTKGtk_tree_store_setOverload3(tree_store int64, iter int64, column int32, value *GdkRGBA, terminator int32) {
 	r_GTKGtk_tree_store_setOverload3.get()(uintptr(tree_store), uintptr(iter), column, unsafe.Pointer(value), terminator)
 }
 
-var r_GTKGtk_tree_store_setOverload4 = lz[func(uintptr, uintptr, int32, int32, int32)]{sym: "gtk_tree_store_set"}
+var r_GTKGtk_tree_store_setOverload4 = lz[func(uintptr, uintptr, int32, int32, int32)]{name: "GTKGtk_tree_store_setOverload4", sym: "gtk_tree_store_set"}
 
 func GTKGtk_tree_store_setOverload4(tree_store int64, iter int64, column int32, value bool, terminator int32) {
 	r_GTKGtk_tree_store_setOverload4.get()(uintptr(tree_store), uintptr(iter), column, b2i(value), terminator)
 }
 
-var r_GTKGtk_tree_store_set_value = lz[func(uintptr, uintptr, int32, uintptr)]{sym: "gtk_tree_store_set_value"}
+var r_GTKGtk_tree_store_set_value = lz[func(uintptr, uintptr, int32, uintptr)]{name: "GTKGtk_tree_store_set_value", sym: "gtk_tree_store_set_value"}
 
 func GTKGtk_tree_store_set_value(tree_store int64, iter int64, column int32, value int64) {
 	r_GTKGtk_tree_store_set_value.get()(uintptr(tree_store), uintptr(iter), column, uintptr(value))
 }
 
-var r_GTK3Gtk_tree_view_column_cell_get_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_tree_view_column_cell_get_size"}
+var r_GTK3Gtk_tree_view_column_cell_get_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]{name: "GTK3Gtk_tree_view_column_cell_get_size", sym: "gtk_tree_view_column_cell_get_size"}
 
 func GTK3Gtk_tree_view_column_cell_get_size(tree_column int64, cell_area *GdkRectangle, x_offset []int32, y_offset []int32, width []int32, height []int32) {
 	r_GTK3Gtk_tree_view_column_cell_get_size.get()(uintptr(tree_column), unsafe.Pointer(cell_area), sp(x_offset), sp(y_offset), sp(width), sp(height))
 }
 
-var r_GTK3Gtk_tree_view_get_bin_window = lz[func(uintptr) uintptr]{sym: "gtk_tree_view_get_bin_window"}
+var r_GTK3Gtk_tree_view_get_bin_window = lz[func(uintptr) uintptr]{name: "GTK3Gtk_tree_view_get_bin_window", sym: "gtk_tree_view_get_bin_window"}
 
 func GTK3Gtk_tree_view_get_bin_window(tree_view int64) int64 {
 	return int64(r_GTK3Gtk_tree_view_get_bin_window.get()(uintptr(tree_view)))
 }
 
-var r_GTK4Gtk_tree_view_column_cell_get_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_tree_view_column_cell_get_size"}
+var r_GTK4Gtk_tree_view_column_cell_get_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]{name: "GTK4Gtk_tree_view_column_cell_get_size", sym: "gtk_tree_view_column_cell_get_size"}
 
 func GTK4Gtk_tree_view_column_cell_get_size(tree_column int64, x_offset []int32, y_offset []int32, width []int32, height []int32) {
 	r_GTK4Gtk_tree_view_column_cell_get_size.get()(uintptr(tree_column), sp(x_offset), sp(y_offset), sp(width), sp(height))
 }
 
-var r_GTK4Gtk_tree_view_enable_model_drag_dest = lz[func(uintptr, uintptr, int32)]{sym: "gtk_tree_view_enable_model_drag_dest"}
+var r_GTK4Gtk_tree_view_enable_model_drag_dest = lz[func(uintptr, uintptr, int32)]{name: "GTK4Gtk_tree_view_enable_model_drag_dest", sym: "gtk_tree_view_enable_model_drag_dest"}
 
 func GTK4Gtk_tree_view_enable_model_drag_dest(tree_view int64, formats int64, actions int32) {
 	r_GTK4Gtk_tree_view_enable_model_drag_dest.get()(uintptr(tree_view), uintptr(formats), actions)
 }
 
-var r_GTKGtk_tree_view_collapse_row = lz[func(uintptr, uintptr) int32]{sym: "gtk_tree_view_collapse_row"}
+var r_GTKGtk_tree_view_collapse_row = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_tree_view_collapse_row", sym: "gtk_tree_view_collapse_row"}
 
 func GTKGtk_tree_view_collapse_row(tree_view int64, path int64) bool {
 	return r_GTKGtk_tree_view_collapse_row.get()(uintptr(tree_view), uintptr(path)) != 0
 }
 
-var r_GTKGtk_tree_view_column_add_attribute = lz[func(uintptr, uintptr, unsafe.Pointer, int32)]{sym: "gtk_tree_view_column_add_attribute"}
+var r_GTKGtk_tree_view_column_add_attribute = lz[func(uintptr, uintptr, unsafe.Pointer, int32)]{name: "GTKGtk_tree_view_column_add_attribute", sym: "gtk_tree_view_column_add_attribute"}
 
 func GTKGtk_tree_view_column_add_attribute(tree_column int64, cell_renderer int64, attribute []int8, column int32) {
 	r_GTKGtk_tree_view_column_add_attribute.get()(uintptr(tree_column), uintptr(cell_renderer), sp(attribute), column)
 }
 
-var r_GTKGtk_tree_view_column_cell_get_position = lz[func(uintptr, uintptr, unsafe.Pointer, unsafe.Pointer) int32]{sym: "gtk_tree_view_column_cell_get_position"}
+var r_GTKGtk_tree_view_column_cell_get_position = lz[func(uintptr, uintptr, unsafe.Pointer, unsafe.Pointer) int32]{name: "GTKGtk_tree_view_column_cell_get_position", sym: "gtk_tree_view_column_cell_get_position"}
 
 func GTKGtk_tree_view_column_cell_get_position(tree_column int64, cell_renderer int64, x_offset []int32, width []int32) bool {
 	return r_GTKGtk_tree_view_column_cell_get_position.get()(uintptr(tree_column), uintptr(cell_renderer), sp(x_offset), sp(width)) != 0
 }
 
-var r_GTKGtk_tree_view_column_cell_set_cell_data = lz[func(uintptr, uintptr, uintptr, int32, int32)]{sym: "gtk_tree_view_column_cell_set_cell_data"}
+var r_GTKGtk_tree_view_column_cell_set_cell_data = lz[func(uintptr, uintptr, uintptr, int32, int32)]{name: "GTKGtk_tree_view_column_cell_set_cell_data", sym: "gtk_tree_view_column_cell_set_cell_data"}
 
 func GTKGtk_tree_view_column_cell_set_cell_data(tree_column int64, tree_model int64, iter int64, is_expander bool, is_expanded bool) {
 	r_GTKGtk_tree_view_column_cell_set_cell_data.get()(uintptr(tree_column), uintptr(tree_model), uintptr(iter), b2i(is_expander), b2i(is_expanded))
 }
 
-var r_GTKGtk_tree_view_column_clear = lz[func(uintptr)]{sym: "gtk_tree_view_column_clear"}
+var r_GTKGtk_tree_view_column_clear = lz[func(uintptr)]{name: "GTKGtk_tree_view_column_clear", sym: "gtk_tree_view_column_clear"}
 
 func GTKGtk_tree_view_column_clear(tree_column int64) {
 	r_GTKGtk_tree_view_column_clear.get()(uintptr(tree_column))
 }
 
-var r_GTKGtk_tree_view_column_get_button = lz[func(uintptr) uintptr]{sym: "gtk_tree_view_column_get_button"}
+var r_GTKGtk_tree_view_column_get_button = lz[func(uintptr) uintptr]{name: "GTKGtk_tree_view_column_get_button", sym: "gtk_tree_view_column_get_button"}
 
 func GTKGtk_tree_view_column_get_button(tree_column int64) int64 {
 	return int64(r_GTKGtk_tree_view_column_get_button.get()(uintptr(tree_column)))
 }
 
-var r_GTKGtk_tree_view_column_get_fixed_width = lz[func(uintptr) int32]{sym: "gtk_tree_view_column_get_fixed_width"}
+var r_GTKGtk_tree_view_column_get_fixed_width = lz[func(uintptr) int32]{name: "GTKGtk_tree_view_column_get_fixed_width", sym: "gtk_tree_view_column_get_fixed_width"}
 
 func GTKGtk_tree_view_column_get_fixed_width(tree_column int64) int32 {
 	return r_GTKGtk_tree_view_column_get_fixed_width.get()(uintptr(tree_column))
 }
 
-var r_GTKGtk_tree_view_column_get_reorderable = lz[func(uintptr) int32]{sym: "gtk_tree_view_column_get_reorderable"}
+var r_GTKGtk_tree_view_column_get_reorderable = lz[func(uintptr) int32]{name: "GTKGtk_tree_view_column_get_reorderable", sym: "gtk_tree_view_column_get_reorderable"}
 
 func GTKGtk_tree_view_column_get_reorderable(tree_column int64) bool {
 	return r_GTKGtk_tree_view_column_get_reorderable.get()(uintptr(tree_column)) != 0
 }
 
-var r_GTKGtk_tree_view_column_get_resizable = lz[func(uintptr) int32]{sym: "gtk_tree_view_column_get_resizable"}
+var r_GTKGtk_tree_view_column_get_resizable = lz[func(uintptr) int32]{name: "GTKGtk_tree_view_column_get_resizable", sym: "gtk_tree_view_column_get_resizable"}
 
 func GTKGtk_tree_view_column_get_resizable(tree_column int64) bool {
 	return r_GTKGtk_tree_view_column_get_resizable.get()(uintptr(tree_column)) != 0
 }
 
-var r_GTKGtk_tree_view_column_get_visible = lz[func(uintptr) int32]{sym: "gtk_tree_view_column_get_visible"}
+var r_GTKGtk_tree_view_column_get_visible = lz[func(uintptr) int32]{name: "GTKGtk_tree_view_column_get_visible", sym: "gtk_tree_view_column_get_visible"}
 
 func GTKGtk_tree_view_column_get_visible(tree_column int64) bool {
 	return r_GTKGtk_tree_view_column_get_visible.get()(uintptr(tree_column)) != 0
 }
 
-var r_GTKGtk_tree_view_column_get_width = lz[func(uintptr) int32]{sym: "gtk_tree_view_column_get_width"}
+var r_GTKGtk_tree_view_column_get_width = lz[func(uintptr) int32]{name: "GTKGtk_tree_view_column_get_width", sym: "gtk_tree_view_column_get_width"}
 
 func GTKGtk_tree_view_column_get_width(tree_column int64) int32 {
 	return r_GTKGtk_tree_view_column_get_width.get()(uintptr(tree_column))
 }
 
-var r_GTKGtk_tree_view_column_new = lz[func() uintptr]{sym: "gtk_tree_view_column_new"}
+var r_GTKGtk_tree_view_column_new = lz[func() uintptr]{name: "GTKGtk_tree_view_column_new", sym: "gtk_tree_view_column_new"}
 
 func GTKGtk_tree_view_column_new() int64 {
 	return int64(r_GTKGtk_tree_view_column_new.get()())
 }
 
-var r_GTKGtk_tree_view_column_pack_end = lz[func(uintptr, uintptr, int32)]{sym: "gtk_tree_view_column_pack_end"}
+var r_GTKGtk_tree_view_column_pack_end = lz[func(uintptr, uintptr, int32)]{name: "GTKGtk_tree_view_column_pack_end", sym: "gtk_tree_view_column_pack_end"}
 
 func GTKGtk_tree_view_column_pack_end(tree_column int64, cell int64, expand bool) {
 	r_GTKGtk_tree_view_column_pack_end.get()(uintptr(tree_column), uintptr(cell), b2i(expand))
 }
 
-var r_GTKGtk_tree_view_column_pack_start = lz[func(uintptr, uintptr, int32)]{sym: "gtk_tree_view_column_pack_start"}
+var r_GTKGtk_tree_view_column_pack_start = lz[func(uintptr, uintptr, int32)]{name: "GTKGtk_tree_view_column_pack_start", sym: "gtk_tree_view_column_pack_start"}
 
 func GTKGtk_tree_view_column_pack_start(tree_column int64, cell int64, expand bool) {
 	r_GTKGtk_tree_view_column_pack_start.get()(uintptr(tree_column), uintptr(cell), b2i(expand))
 }
 
-var r_GTKGtk_tree_view_column_set_alignment = lz[func(uintptr, float32)]{sym: "gtk_tree_view_column_set_alignment"}
+var r_GTKGtk_tree_view_column_set_alignment = lz[func(uintptr, float32)]{name: "GTKGtk_tree_view_column_set_alignment", sym: "gtk_tree_view_column_set_alignment"}
 
 func GTKGtk_tree_view_column_set_alignment(tree_column int64, xalign float32) {
 	r_GTKGtk_tree_view_column_set_alignment.get()(uintptr(tree_column), xalign)
 }
 
-var r_GTKGtk_tree_view_column_set_cell_data_func = lz[func(uintptr, uintptr, uintptr, uintptr, uintptr)]{sym: "gtk_tree_view_column_set_cell_data_func"}
+var r_GTKGtk_tree_view_column_set_cell_data_func = lz[func(uintptr, uintptr, uintptr, uintptr, uintptr)]{name: "GTKGtk_tree_view_column_set_cell_data_func", sym: "gtk_tree_view_column_set_cell_data_func"}
 
 func GTKGtk_tree_view_column_set_cell_data_func(tree_column int64, cell_renderer int64, a2 int64, func_data int64, destroy int64) {
 	r_GTKGtk_tree_view_column_set_cell_data_func.get()(uintptr(tree_column), uintptr(cell_renderer), uintptr(a2), uintptr(func_data), uintptr(destroy))
 }
 
-var r_GTKGtk_tree_view_column_set_clickable = lz[func(uintptr, int32)]{sym: "gtk_tree_view_column_set_clickable"}
+var r_GTKGtk_tree_view_column_set_clickable = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_column_set_clickable", sym: "gtk_tree_view_column_set_clickable"}
 
 func GTKGtk_tree_view_column_set_clickable(tree_column int64, clickable bool) {
 	r_GTKGtk_tree_view_column_set_clickable.get()(uintptr(tree_column), b2i(clickable))
 }
 
-var r_GTKGtk_tree_view_column_set_fixed_width = lz[func(uintptr, int32)]{sym: "gtk_tree_view_column_set_fixed_width"}
+var r_GTKGtk_tree_view_column_set_fixed_width = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_column_set_fixed_width", sym: "gtk_tree_view_column_set_fixed_width"}
 
 func GTKGtk_tree_view_column_set_fixed_width(tree_column int64, fixed_width int32) {
 	r_GTKGtk_tree_view_column_set_fixed_width.get()(uintptr(tree_column), fixed_width)
 }
 
-var r_GTKGtk_tree_view_column_set_min_width = lz[func(uintptr, int32)]{sym: "gtk_tree_view_column_set_min_width"}
+var r_GTKGtk_tree_view_column_set_min_width = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_column_set_min_width", sym: "gtk_tree_view_column_set_min_width"}
 
 func GTKGtk_tree_view_column_set_min_width(tree_column int64, min_width int32) {
 	r_GTKGtk_tree_view_column_set_min_width.get()(uintptr(tree_column), min_width)
 }
 
-var r_GTKGtk_tree_view_column_set_reorderable = lz[func(uintptr, int32)]{sym: "gtk_tree_view_column_set_reorderable"}
+var r_GTKGtk_tree_view_column_set_reorderable = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_column_set_reorderable", sym: "gtk_tree_view_column_set_reorderable"}
 
 func GTKGtk_tree_view_column_set_reorderable(tree_column int64, reorderable bool) {
 	r_GTKGtk_tree_view_column_set_reorderable.get()(uintptr(tree_column), b2i(reorderable))
 }
 
-var r_GTKGtk_tree_view_column_set_resizable = lz[func(uintptr, int32)]{sym: "gtk_tree_view_column_set_resizable"}
+var r_GTKGtk_tree_view_column_set_resizable = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_column_set_resizable", sym: "gtk_tree_view_column_set_resizable"}
 
 func GTKGtk_tree_view_column_set_resizable(tree_column int64, resizable bool) {
 	r_GTKGtk_tree_view_column_set_resizable.get()(uintptr(tree_column), b2i(resizable))
 }
 
-var r_GTKGtk_tree_view_column_set_sizing = lz[func(uintptr, int32)]{sym: "gtk_tree_view_column_set_sizing"}
+var r_GTKGtk_tree_view_column_set_sizing = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_column_set_sizing", sym: "gtk_tree_view_column_set_sizing"}
 
 func GTKGtk_tree_view_column_set_sizing(tree_column int64, a1 int32) {
 	r_GTKGtk_tree_view_column_set_sizing.get()(uintptr(tree_column), a1)
 }
 
-var r_GTKGtk_tree_view_column_set_sort_indicator = lz[func(uintptr, int32)]{sym: "gtk_tree_view_column_set_sort_indicator"}
+var r_GTKGtk_tree_view_column_set_sort_indicator = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_column_set_sort_indicator", sym: "gtk_tree_view_column_set_sort_indicator"}
 
 func GTKGtk_tree_view_column_set_sort_indicator(tree_column int64, setting bool) {
 	r_GTKGtk_tree_view_column_set_sort_indicator.get()(uintptr(tree_column), b2i(setting))
 }
 
-var r_GTKGtk_tree_view_column_set_sort_order = lz[func(uintptr, int32)]{sym: "gtk_tree_view_column_set_sort_order"}
+var r_GTKGtk_tree_view_column_set_sort_order = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_column_set_sort_order", sym: "gtk_tree_view_column_set_sort_order"}
 
 func GTKGtk_tree_view_column_set_sort_order(tree_column int64, order int32) {
 	r_GTKGtk_tree_view_column_set_sort_order.get()(uintptr(tree_column), order)
 }
 
-var r_GTKGtk_tree_view_column_set_visible = lz[func(uintptr, int32)]{sym: "gtk_tree_view_column_set_visible"}
+var r_GTKGtk_tree_view_column_set_visible = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_column_set_visible", sym: "gtk_tree_view_column_set_visible"}
 
 func GTKGtk_tree_view_column_set_visible(tree_column int64, visible bool) {
 	r_GTKGtk_tree_view_column_set_visible.get()(uintptr(tree_column), b2i(visible))
 }
 
-var r_GTKGtk_tree_view_column_set_widget = lz[func(uintptr, uintptr)]{sym: "gtk_tree_view_column_set_widget"}
+var r_GTKGtk_tree_view_column_set_widget = lz[func(uintptr, uintptr)]{name: "GTKGtk_tree_view_column_set_widget", sym: "gtk_tree_view_column_set_widget"}
 
 func GTKGtk_tree_view_column_set_widget(tree_column int64, widget int64) {
 	r_GTKGtk_tree_view_column_set_widget.get()(uintptr(tree_column), uintptr(widget))
 }
 
-var r_GTKGtk_tree_view_columns_autosize = lz[func(uintptr)]{sym: "gtk_tree_view_columns_autosize"}
+var r_GTKGtk_tree_view_columns_autosize = lz[func(uintptr)]{name: "GTKGtk_tree_view_columns_autosize", sym: "gtk_tree_view_columns_autosize"}
 
 func GTKGtk_tree_view_columns_autosize(tree_view int64) {
 	r_GTKGtk_tree_view_columns_autosize.get()(uintptr(tree_view))
 }
 
-var r_GTKGtk_tree_view_convert_bin_window_to_tree_coords = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_tree_view_convert_bin_window_to_tree_coords"}
+var r_GTKGtk_tree_view_convert_bin_window_to_tree_coords = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer)]{name: "GTKGtk_tree_view_convert_bin_window_to_tree_coords", sym: "gtk_tree_view_convert_bin_window_to_tree_coords"}
 
 func GTKGtk_tree_view_convert_bin_window_to_tree_coords(tree_view int64, bx int32, by int32, tx []int32, ty []int32) {
 	r_GTKGtk_tree_view_convert_bin_window_to_tree_coords.get()(uintptr(tree_view), bx, by, sp(tx), sp(ty))
 }
 
-var r_GTKGtk_tree_view_convert_bin_window_to_widget_coords = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_tree_view_convert_bin_window_to_widget_coords"}
+var r_GTKGtk_tree_view_convert_bin_window_to_widget_coords = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer)]{name: "GTKGtk_tree_view_convert_bin_window_to_widget_coords", sym: "gtk_tree_view_convert_bin_window_to_widget_coords"}
 
 func GTKGtk_tree_view_convert_bin_window_to_widget_coords(tree_view int64, bx int32, by int32, wx []int32, wy []int32) {
 	r_GTKGtk_tree_view_convert_bin_window_to_widget_coords.get()(uintptr(tree_view), bx, by, sp(wx), sp(wy))
 }
 
-var r_GTKGtk_tree_view_create_row_drag_icon = lz[func(uintptr, uintptr) uintptr]{sym: "gtk_tree_view_create_row_drag_icon"}
+var r_GTKGtk_tree_view_create_row_drag_icon = lz[func(uintptr, uintptr) uintptr]{name: "GTKGtk_tree_view_create_row_drag_icon", sym: "gtk_tree_view_create_row_drag_icon"}
 
 func GTKGtk_tree_view_create_row_drag_icon(tree_view int64, path int64) int64 {
 	return int64(r_GTKGtk_tree_view_create_row_drag_icon.get()(uintptr(tree_view), uintptr(path)))
 }
 
-var r_GTKGtk_tree_view_expand_row = lz[func(uintptr, uintptr, int32) int32]{sym: "gtk_tree_view_expand_row"}
+var r_GTKGtk_tree_view_expand_row = lz[func(uintptr, uintptr, int32) int32]{name: "GTKGtk_tree_view_expand_row", sym: "gtk_tree_view_expand_row"}
 
 func GTKGtk_tree_view_expand_row(tree_view int64, path int64, open_all bool) bool {
 	return r_GTKGtk_tree_view_expand_row.get()(uintptr(tree_view), uintptr(path), b2i(open_all)) != 0
 }
 
-var r_GTKGtk_tree_view_get_background_area = lz[func(uintptr, uintptr, uintptr, unsafe.Pointer)]{sym: "gtk_tree_view_get_background_area"}
+var r_GTKGtk_tree_view_get_background_area = lz[func(uintptr, uintptr, uintptr, unsafe.Pointer)]{name: "GTKGtk_tree_view_get_background_area", sym: "gtk_tree_view_get_background_area"}
 
 func GTKGtk_tree_view_get_background_area(tree_view int64, path int64, column int64, rect *GdkRectangle) {
 	r_GTKGtk_tree_view_get_background_area.get()(uintptr(tree_view), uintptr(path), uintptr(column), unsafe.Pointer(rect))
 }
 
-var r_GTKGtk_tree_view_get_cell_area = lz[func(uintptr, uintptr, uintptr, unsafe.Pointer)]{sym: "gtk_tree_view_get_cell_area"}
+var r_GTKGtk_tree_view_get_cell_area = lz[func(uintptr, uintptr, uintptr, unsafe.Pointer)]{name: "GTKGtk_tree_view_get_cell_area", sym: "gtk_tree_view_get_cell_area"}
 
 func GTKGtk_tree_view_get_cell_area(tree_view int64, path int64, column int64, rect *GdkRectangle) {
 	r_GTKGtk_tree_view_get_cell_area.get()(uintptr(tree_view), uintptr(path), uintptr(column), unsafe.Pointer(rect))
 }
 
-var r_GTKGtk_tree_view_get_column = lz[func(uintptr, int32) uintptr]{sym: "gtk_tree_view_get_column"}
+var r_GTKGtk_tree_view_get_column = lz[func(uintptr, int32) uintptr]{name: "GTKGtk_tree_view_get_column", sym: "gtk_tree_view_get_column"}
 
 func GTKGtk_tree_view_get_column(tree_view int64, n int32) int64 {
 	return int64(r_GTKGtk_tree_view_get_column.get()(uintptr(tree_view), n))
 }
 
-var r_GTKGtk_tree_view_get_columns = lz[func(uintptr) uintptr]{sym: "gtk_tree_view_get_columns"}
+var r_GTKGtk_tree_view_get_columns = lz[func(uintptr) uintptr]{name: "GTKGtk_tree_view_get_columns", sym: "gtk_tree_view_get_columns"}
 
 func GTKGtk_tree_view_get_columns(tree_view int64) int64 {
 	return int64(r_GTKGtk_tree_view_get_columns.get()(uintptr(tree_view)))
 }
 
-var r_GTKGtk_tree_view_get_cursor = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_tree_view_get_cursor"}
+var r_GTKGtk_tree_view_get_cursor = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "GTKGtk_tree_view_get_cursor", sym: "gtk_tree_view_get_cursor"}
 
 func GTKGtk_tree_view_get_cursor(tree_view int64, path []int64, focus_column []int64) {
 	r_GTKGtk_tree_view_get_cursor.get()(uintptr(tree_view), sp(path), sp(focus_column))
 }
 
-var r_GTKGtk_tree_view_get_expander_column = lz[func(uintptr) uintptr]{sym: "gtk_tree_view_get_expander_column"}
+var r_GTKGtk_tree_view_get_expander_column = lz[func(uintptr) uintptr]{name: "GTKGtk_tree_view_get_expander_column", sym: "gtk_tree_view_get_expander_column"}
 
 func GTKGtk_tree_view_get_expander_column(tree_view int64) int64 {
 	return int64(r_GTKGtk_tree_view_get_expander_column.get()(uintptr(tree_view)))
 }
 
-var r_GTKGtk_tree_view_get_grid_lines = lz[func(uintptr) int32]{sym: "gtk_tree_view_get_grid_lines"}
+var r_GTKGtk_tree_view_get_grid_lines = lz[func(uintptr) int32]{name: "GTKGtk_tree_view_get_grid_lines", sym: "gtk_tree_view_get_grid_lines"}
 
 func GTKGtk_tree_view_get_grid_lines(tree_view int64) int32 {
 	return r_GTKGtk_tree_view_get_grid_lines.get()(uintptr(tree_view))
 }
 
-var r_GTKGtk_tree_view_get_headers_visible = lz[func(uintptr) int32]{sym: "gtk_tree_view_get_headers_visible"}
+var r_GTKGtk_tree_view_get_headers_visible = lz[func(uintptr) int32]{name: "GTKGtk_tree_view_get_headers_visible", sym: "gtk_tree_view_get_headers_visible"}
 
 func GTKGtk_tree_view_get_headers_visible(tree_view int64) bool {
 	return r_GTKGtk_tree_view_get_headers_visible.get()(uintptr(tree_view)) != 0
 }
 
-var r_GTKGtk_tree_view_get_path_at_pos = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) int32]{sym: "gtk_tree_view_get_path_at_pos"}
+var r_GTKGtk_tree_view_get_path_at_pos = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) int32]{name: "GTKGtk_tree_view_get_path_at_pos", sym: "gtk_tree_view_get_path_at_pos"}
 
 func GTKGtk_tree_view_get_path_at_pos(tree_view int64, x int32, y int32, path []int64, column []int64, cell_x []int32, cell_y []int32) bool {
 	return r_GTKGtk_tree_view_get_path_at_pos.get()(uintptr(tree_view), x, y, sp(path), sp(column), sp(cell_x), sp(cell_y)) != 0
 }
 
-var r_GTKGtk_tree_view_get_selection = lz[func(uintptr) uintptr]{sym: "gtk_tree_view_get_selection"}
+var r_GTKGtk_tree_view_get_selection = lz[func(uintptr) uintptr]{name: "GTKGtk_tree_view_get_selection", sym: "gtk_tree_view_get_selection"}
 
 func GTKGtk_tree_view_get_selection(tree_view int64) int64 {
 	return int64(r_GTKGtk_tree_view_get_selection.get()(uintptr(tree_view)))
 }
 
-var r_GTKGtk_tree_view_get_visible_rect = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_tree_view_get_visible_rect"}
+var r_GTKGtk_tree_view_get_visible_rect = lz[func(uintptr, unsafe.Pointer)]{name: "GTKGtk_tree_view_get_visible_rect", sym: "gtk_tree_view_get_visible_rect"}
 
 func GTKGtk_tree_view_get_visible_rect(tree_view int64, visible_rect *GdkRectangle) {
 	r_GTKGtk_tree_view_get_visible_rect.get()(uintptr(tree_view), unsafe.Pointer(visible_rect))
 }
 
-var r_GTKGtk_tree_view_insert_column = lz[func(uintptr, uintptr, int32) int32]{sym: "gtk_tree_view_insert_column"}
+var r_GTKGtk_tree_view_insert_column = lz[func(uintptr, uintptr, int32) int32]{name: "GTKGtk_tree_view_insert_column", sym: "gtk_tree_view_insert_column"}
 
 func GTKGtk_tree_view_insert_column(tree_view int64, column int64, position int32) int32 {
 	return r_GTKGtk_tree_view_insert_column.get()(uintptr(tree_view), uintptr(column), position)
 }
 
-var r_GTKGtk_tree_view_move_column_after = lz[func(uintptr, uintptr, uintptr)]{sym: "gtk_tree_view_move_column_after"}
+var r_GTKGtk_tree_view_move_column_after = lz[func(uintptr, uintptr, uintptr)]{name: "GTKGtk_tree_view_move_column_after", sym: "gtk_tree_view_move_column_after"}
 
 func GTKGtk_tree_view_move_column_after(tree_view int64, column int64, base_column int64) {
 	r_GTKGtk_tree_view_move_column_after.get()(uintptr(tree_view), uintptr(column), uintptr(base_column))
 }
 
-var r_GTKGtk_tree_view_new_with_model = lz[func(uintptr) uintptr]{sym: "gtk_tree_view_new_with_model"}
+var r_GTKGtk_tree_view_new_with_model = lz[func(uintptr) uintptr]{name: "GTKGtk_tree_view_new_with_model", sym: "gtk_tree_view_new_with_model"}
 
 func GTKGtk_tree_view_new_with_model(model int64) int64 {
 	return int64(r_GTKGtk_tree_view_new_with_model.get()(uintptr(model)))
 }
 
-var r_GTKGtk_tree_view_remove_column = lz[func(uintptr, uintptr) int32]{sym: "gtk_tree_view_remove_column"}
+var r_GTKGtk_tree_view_remove_column = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_tree_view_remove_column", sym: "gtk_tree_view_remove_column"}
 
 func GTKGtk_tree_view_remove_column(tree_view int64, column int64) int32 {
 	return r_GTKGtk_tree_view_remove_column.get()(uintptr(tree_view), uintptr(column))
 }
 
-var r_GTKGtk_tree_view_row_expanded = lz[func(uintptr, uintptr) int32]{sym: "gtk_tree_view_row_expanded"}
+var r_GTKGtk_tree_view_row_expanded = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_tree_view_row_expanded", sym: "gtk_tree_view_row_expanded"}
 
 func GTKGtk_tree_view_row_expanded(tree_view int64, path int64) bool {
 	return r_GTKGtk_tree_view_row_expanded.get()(uintptr(tree_view), uintptr(path)) != 0
 }
 
-var r_GTKGtk_tree_view_scroll_to_cell = lz[func(uintptr, uintptr, uintptr, int32, float32, float32)]{sym: "gtk_tree_view_scroll_to_cell"}
+var r_GTKGtk_tree_view_scroll_to_cell = lz[func(uintptr, uintptr, uintptr, int32, float32, float32)]{name: "GTKGtk_tree_view_scroll_to_cell", sym: "gtk_tree_view_scroll_to_cell"}
 
 func GTKGtk_tree_view_scroll_to_cell(tree_view int64, path int64, column int64, use_align bool, row_align float32, col_align float32) {
 	r_GTKGtk_tree_view_scroll_to_cell.get()(uintptr(tree_view), uintptr(path), uintptr(column), b2i(use_align), row_align, col_align)
 }
 
-var r_GTKGtk_tree_view_scroll_to_point = lz[func(uintptr, int32, int32)]{sym: "gtk_tree_view_scroll_to_point"}
+var r_GTKGtk_tree_view_scroll_to_point = lz[func(uintptr, int32, int32)]{name: "GTKGtk_tree_view_scroll_to_point", sym: "gtk_tree_view_scroll_to_point"}
 
 func GTKGtk_tree_view_scroll_to_point(tree_view int64, tree_x int32, tree_y int32) {
 	r_GTKGtk_tree_view_scroll_to_point.get()(uintptr(tree_view), tree_x, tree_y)
 }
 
-var r_GTKGtk_tree_view_set_cursor = lz[func(uintptr, uintptr, uintptr, int32)]{sym: "gtk_tree_view_set_cursor"}
+var r_GTKGtk_tree_view_set_cursor = lz[func(uintptr, uintptr, uintptr, int32)]{name: "GTKGtk_tree_view_set_cursor", sym: "gtk_tree_view_set_cursor"}
 
 func GTKGtk_tree_view_set_cursor(tree_view int64, path int64, focus_column int64, start_editing bool) {
 	r_GTKGtk_tree_view_set_cursor.get()(uintptr(tree_view), uintptr(path), uintptr(focus_column), b2i(start_editing))
 }
 
-var r_GTKGtk_tree_view_set_drag_dest_row = lz[func(uintptr, uintptr, int32)]{sym: "gtk_tree_view_set_drag_dest_row"}
+var r_GTKGtk_tree_view_set_drag_dest_row = lz[func(uintptr, uintptr, int32)]{name: "GTKGtk_tree_view_set_drag_dest_row", sym: "gtk_tree_view_set_drag_dest_row"}
 
 func GTKGtk_tree_view_set_drag_dest_row(tree_view int64, path int64, pos int32) {
 	r_GTKGtk_tree_view_set_drag_dest_row.get()(uintptr(tree_view), uintptr(path), pos)
 }
 
-var r_GTKGtk_tree_view_set_grid_lines = lz[func(uintptr, int32)]{sym: "gtk_tree_view_set_grid_lines"}
+var r_GTKGtk_tree_view_set_grid_lines = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_set_grid_lines", sym: "gtk_tree_view_set_grid_lines"}
 
 func GTKGtk_tree_view_set_grid_lines(tree_view int64, grid_lines int32) {
 	r_GTKGtk_tree_view_set_grid_lines.get()(uintptr(tree_view), grid_lines)
 }
 
-var r_GTKGtk_tree_view_set_headers_visible = lz[func(uintptr, int32)]{sym: "gtk_tree_view_set_headers_visible"}
+var r_GTKGtk_tree_view_set_headers_visible = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_set_headers_visible", sym: "gtk_tree_view_set_headers_visible"}
 
 func GTKGtk_tree_view_set_headers_visible(tree_view int64, headers_visible bool) {
 	r_GTKGtk_tree_view_set_headers_visible.get()(uintptr(tree_view), b2i(headers_visible))
 }
 
-var r_GTKGtk_tree_view_set_model = lz[func(uintptr, uintptr)]{sym: "gtk_tree_view_set_model"}
+var r_GTKGtk_tree_view_set_model = lz[func(uintptr, uintptr)]{name: "GTKGtk_tree_view_set_model", sym: "gtk_tree_view_set_model"}
 
 func GTKGtk_tree_view_set_model(tree_view int64, model int64) {
 	r_GTKGtk_tree_view_set_model.get()(uintptr(tree_view), uintptr(model))
 }
 
-var r_GTKGtk_tree_view_set_search_column = lz[func(uintptr, int32)]{sym: "gtk_tree_view_set_search_column"}
+var r_GTKGtk_tree_view_set_search_column = lz[func(uintptr, int32)]{name: "GTKGtk_tree_view_set_search_column", sym: "gtk_tree_view_set_search_column"}
 
 func GTKGtk_tree_view_set_search_column(tree_view int64, column int32) {
 	r_GTKGtk_tree_view_set_search_column.get()(uintptr(tree_view), column)
 }
 
-var r_OSG_type_class_peek_parent = lz[func(uintptr) uintptr]{sym: "g_type_class_peek_parent"}
+var r_OSG_type_class_peek_parent = lz[func(uintptr) uintptr]{name: "OSG_type_class_peek_parent", sym: "g_type_class_peek_parent"}
 
 func OSG_type_class_peek_parent(g_class int64) int64 {
 	return int64(r_OSG_type_class_peek_parent.get()(uintptr(g_class)))
 }
 
-var r_OSG_type_class_ref = lz[func(uintptr) uintptr]{sym: "g_type_class_ref"}
+var r_OSG_type_class_ref = lz[func(uintptr) uintptr]{name: "OSG_type_class_ref", sym: "g_type_class_ref"}
 
 func OSG_type_class_ref(a0 int64) int64 {
 	return int64(r_OSG_type_class_ref.get()(uintptr(a0)))
 }
 
-var r_OSG_type_class_unref = lz[func(uintptr)]{sym: "g_type_class_unref"}
+var r_OSG_type_class_unref = lz[func(uintptr)]{name: "OSG_type_class_unref", sym: "g_type_class_unref"}
 
 func OSG_type_class_unref(g_class int64) {
 	r_OSG_type_class_unref.get()(uintptr(g_class))
 }
 
-var r_OSG_type_name = lz[func(uintptr) uintptr]{sym: "g_type_name"}
+var r_OSG_type_name = lz[func(uintptr) uintptr]{name: "OSG_type_name", sym: "g_type_name"}
 
 func OSG_type_name(a0 int64) int64 {
 	return int64(r_OSG_type_name.get()(uintptr(a0)))
 }
 
-var r_OSG_type_register_static = lz[func(uintptr, unsafe.Pointer, uintptr, int32) uintptr]{sym: "g_type_register_static"}
+var r_OSG_type_register_static = lz[func(uintptr, unsafe.Pointer, uintptr, int32) uintptr]{name: "OSG_type_register_static", sym: "g_type_register_static"}
 
 func OSG_type_register_static(parent_type int64, type_name []int8, info int64, flags int32) int64 {
 	return int64(r_OSG_type_register_static.get()(uintptr(parent_type), sp(type_name), uintptr(info), flags))
 }
 
-var r_GDKGdk_unicode_to_keyval = lz[func(int32) int32]{sym: "gdk_unicode_to_keyval"}
+var r_GDKGdk_unicode_to_keyval = lz[func(int32) int32]{name: "GDKGdk_unicode_to_keyval", sym: "gdk_unicode_to_keyval"}
 
 func GDKGdk_unicode_to_keyval(wc int32) int32 {
 	return r_GDKGdk_unicode_to_keyval.get()(wc)
 }
 
-var r_OSG_unsetenv = lz[func(unsafe.Pointer)]{sym: "g_unsetenv"}
+var r_OSG_unsetenv = lz[func(unsafe.Pointer)]{name: "OSG_unsetenv", sym: "g_unsetenv"}
 
 func OSG_unsetenv(variable []int8) {
 	r_OSG_unsetenv.get()(sp(variable))
 }
 
-var r_CairoCairo_user_to_device_distance = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "cairo_user_to_device_distance"}
+var r_CairoCairo_user_to_device_distance = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "CairoCairo_user_to_device_distance", sym: "cairo_user_to_device_distance"}
 
 func CairoCairo_user_to_device_distance(cr int64, dx []float64, dy []float64) {
 	r_CairoCairo_user_to_device_distance.get()(uintptr(cr), sp(dx), sp(dy))
 }
 
-var r_OSG_utf16_to_utf8 = lz[func(unsafe.Pointer, uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) uintptr]{sym: "g_utf16_to_utf8"}
+var r_OSG_utf16_to_utf8 = lz[func(unsafe.Pointer, uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) uintptr]{name: "OSG_utf16_to_utf8", sym: "g_utf16_to_utf8"}
 
 func OSG_utf16_to_utf8(str []uint16, a1 int64, items_read []int64, items_written []int64, error []int64) int64 {
 	return int64(r_OSG_utf16_to_utf8.get()(sp(str), uintptr(a1), sp(items_read), sp(items_written), sp(error)))
 }
 
-var r_OSG_utf8_pointer_to_offset = lz[func(uintptr, uintptr) uintptr]{sym: "g_utf8_pointer_to_offset"}
+var r_OSG_utf8_pointer_to_offset = lz[func(uintptr, uintptr) uintptr]{name: "OSG_utf8_pointer_to_offset", sym: "g_utf8_pointer_to_offset"}
 
 func OSG_utf8_pointer_to_offset(str int64, pos int64) int64 {
 	return int64(r_OSG_utf8_pointer_to_offset.get()(uintptr(str), uintptr(pos)))
 }
 
-var r_OSG_utf8_strlen = lz[func(uintptr, uintptr) uintptr]{sym: "g_utf8_strlen"}
+var r_OSG_utf8_strlen = lz[func(uintptr, uintptr) uintptr]{name: "OSG_utf8_strlen", sym: "g_utf8_strlen"}
 
 func OSG_utf8_strlen(p int64, max int64) int64 {
 	return int64(r_OSG_utf8_strlen.get()(uintptr(p), uintptr(max)))
 }
 
-var r_GDKGdk_utf8_to_string_target = lz[func(unsafe.Pointer) uintptr]{sym: "gdk_utf8_to_string_target"}
+var r_GDKGdk_utf8_to_string_target = lz[func(unsafe.Pointer) uintptr]{name: "GDKGdk_utf8_to_string_target", sym: "gdk_utf8_to_string_target"}
 
 func GDKGdk_utf8_to_string_target(str []int8) int64 {
 	return int64(r_GDKGdk_utf8_to_string_target.get()(sp(str)))
 }
 
-var r_OSG_utf8_to_utf16 = lz[func(unsafe.Pointer, uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) uintptr]{sym: "g_utf8_to_utf16"}
+var r_OSG_utf8_to_utf16 = lz[func(unsafe.Pointer, uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) uintptr]{name: "OSG_utf8_to_utf16", sym: "g_utf8_to_utf16"}
 
 func OSG_utf8_to_utf16(str []int8, a1 int64, items_read []int64, items_written []int64, error []int64) int64 {
 	return int64(r_OSG_utf8_to_utf16.get()(sp(str), uintptr(a1), sp(items_read), sp(items_written), sp(error)))
 }
 
-var r_OSG_utf8_to_utf16StrLenItems_readItems_writtenError = lz[func(uintptr, uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) uintptr]{sym: "g_utf8_to_utf16"}
+var r_OSG_utf8_to_utf16StrLenItems_readItems_writtenError = lz[func(uintptr, uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) uintptr]{name: "OSG_utf8_to_utf16StrLenItems_readItems_writtenError", sym: "g_utf8_to_utf16"}
 
 func OSG_utf8_to_utf16StrLenItems_readItems_writtenError(str int64, a1 int64, items_read []int64, items_written []int64, error []int64) int64 {
 	return int64(r_OSG_utf8_to_utf16StrLenItems_readItems_writtenError.get()(uintptr(str), uintptr(a1), sp(items_read), sp(items_written), sp(error)))
 }
 
-var r_OSG_value_get_boxed = lz[func(uintptr) uintptr]{sym: "g_value_get_boxed"}
+var r_OSG_value_get_boxed = lz[func(uintptr) uintptr]{name: "OSG_value_get_boxed", sym: "g_value_get_boxed"}
 
 func OSG_value_get_boxed(value int64) int64 {
 	return int64(r_OSG_value_get_boxed.get()(uintptr(value)))
 }
 
-var r_OSG_value_peek_pointer = lz[func(uintptr) uintptr]{sym: "g_value_peek_pointer"}
+var r_OSG_value_peek_pointer = lz[func(uintptr) uintptr]{name: "OSG_value_peek_pointer", sym: "g_value_peek_pointer"}
 
 func OSG_value_peek_pointer(value int64) int64 {
 	return int64(r_OSG_value_peek_pointer.get()(uintptr(value)))
 }
 
-var r_OSG_value_take_boxed = lz[func(uintptr, uintptr)]{sym: "g_value_take_boxed"}
+var r_OSG_value_take_boxed = lz[func(uintptr, uintptr)]{name: "OSG_value_take_boxed", sym: "g_value_take_boxed"}
 
 func OSG_value_take_boxed(value int64, v_boxed int64) {
 	r_OSG_value_take_boxed.get()(uintptr(value), uintptr(v_boxed))
 }
 
-var r_OSG_value_unset = lz[func(uintptr)]{sym: "g_value_unset"}
+var r_OSG_value_unset = lz[func(uintptr)]{name: "OSG_value_unset", sym: "g_value_unset"}
 
 func OSG_value_unset(value int64) {
 	r_OSG_value_unset.get()(uintptr(value))

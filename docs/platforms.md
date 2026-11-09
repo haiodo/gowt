@@ -42,8 +42,8 @@ CI (GitHub Actions) uses three workers. The Linux worker builds and vets linux o
 
 | | macOS (cocoa) | Windows (win32) | Linux (gtk 3) |
 |---|---|---|---|
-| Binding layer | `internal/cocoa`, translated from SWT PI/cocoa, purego | `internal/win32`, translated from SWT PI/win32, `syscall.SyscallN` | `internal/gtk`, generated from GIR by `tooling/girgen` plus hand glue, purego |
-| Build | `GOOS=darwin go build` | `GOOS=windows go build` | `GOOS=linux go build` (all `CGO_ENABLED=0`) |
+| Binding layer | `internal/cocoa`, translated from SWT PI/cocoa, purego by default | `internal/win32`, translated from SWT PI/win32, `syscall.SyscallN` by default | `internal/gtk`, generated from GIR by `tooling/girgen` plus hand glue, purego by default |
+| Build | `GOOS=darwin go build` | `GOOS=windows go build` | `GOOS=linux go build` (all `CGO_ENABLED=0`; every OS also offers direct cgo with `CGO_ENABLED=1 -tags gowtcgo` and a native C toolchain) |
 | Stand | the Mac itself | CrossOver (Wine) bottle `gowt`: `make win-swttest`, `make win-snap-check`; real Windows 11 arm64 in a UTM virtual machine on Apple silicon: `make win-testkit` builds a zip (swttest, winprobe, controlexample for amd64 and arm64, `run.cmd`), `swttest -compare` checks the returned result against `tests/expected_windows.txt` | Docker `gowt-linux`, Xvfb + noVNC: `make linux-run CMD="make test-swt"` |
 | Snapshot references | `tests/snapshots` | `tests/snapshots_windows` (BitBlt capture in `internal/shot`) | `tests/snapshots_linux` |
 | DPI / zoom | points (backing scale); one snapshot scale is recorded in `meta.txt` | manifest and `Display` request per-monitor DPI v2; the upstream SWT monitor-specific scaling (rescale on `WM_DPICHANGED`) is on unless `swt.autoScale.updateOnRuntime=false`; with it on, `swt.autoScale` other than `quarter` or `exact` (`integer`, `half`, `false`, a number) fails at `Display` creation with `ERROR_NOT_IMPLEMENTED` unless `swt.autoScale.updateOnRuntime` is `false` or `force`; Wine reports 96 whatever the setting | stand-in `DPIUtil`; snapshots exist only for scale 1 |

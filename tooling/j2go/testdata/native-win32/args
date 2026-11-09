@@ -1,0 +1,6 @@
+--platform
+win32
+--part-target
+5
+--config
+${basedir}

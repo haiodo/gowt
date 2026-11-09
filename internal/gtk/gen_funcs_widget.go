@@ -5,685 +5,685 @@ package gtk
 
 import "unsafe"
 
-var r_GTK4Gtk_widget_activate_action = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer) int32]{sym: "gtk_widget_activate_action"}
+var r_GTK4Gtk_widget_activate_action = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer) int32]{name: "GTK4Gtk_widget_activate_action", sym: "gtk_widget_activate_action"}
 
 func GTK4Gtk_widget_activate_action(widget int64, name []int8, format_string []int8) bool {
 	return r_GTK4Gtk_widget_activate_action.get()(uintptr(widget), sp(name), sp(format_string)) != 0
 }
 
-var r_GTKGtk_widget_activate = lz[func(uintptr) int32]{sym: "gtk_widget_activate"}
+var r_GTKGtk_widget_activate = lz[func(uintptr) int32]{name: "GTKGtk_widget_activate", sym: "gtk_widget_activate"}
 
 func GTKGtk_widget_activate(widget int64) bool {
 	return r_GTKGtk_widget_activate.get()(uintptr(widget)) != 0
 }
 
-var r_GTK3Gtk_widget_add_accelerator = lz[func(uintptr, unsafe.Pointer, uintptr, int32, int32, int32)]{sym: "gtk_widget_add_accelerator"}
+var r_GTK3Gtk_widget_add_accelerator = lz[func(uintptr, unsafe.Pointer, uintptr, int32, int32, int32)]{name: "GTK3Gtk_widget_add_accelerator", sym: "gtk_widget_add_accelerator"}
 
 func GTK3Gtk_widget_add_accelerator(widget int64, accel_signal []int8, accel_group int64, accel_key int32, accel_mods int32, accel_flags int32) {
 	r_GTK3Gtk_widget_add_accelerator.get()(uintptr(widget), sp(accel_signal), uintptr(accel_group), accel_key, accel_mods, accel_flags)
 }
 
-var r_GTK3Gtk_widget_add_events = lz[func(uintptr, int32)]{sym: "gtk_widget_add_events"}
+var r_GTK3Gtk_widget_add_events = lz[func(uintptr, int32)]{name: "GTK3Gtk_widget_add_events", sym: "gtk_widget_add_events"}
 
 func GTK3Gtk_widget_add_events(widget int64, events int32) {
 	r_GTK3Gtk_widget_add_events.get()(uintptr(widget), events)
 }
 
-var r_GTK4Gtk_widget_add_controller = lz[func(uintptr, uintptr)]{sym: "gtk_widget_add_controller"}
+var r_GTK4Gtk_widget_add_controller = lz[func(uintptr, uintptr)]{name: "GTK4Gtk_widget_add_controller", sym: "gtk_widget_add_controller"}
 
 func GTK4Gtk_widget_add_controller(widget int64, controller int64) {
 	r_GTK4Gtk_widget_add_controller.get()(uintptr(widget), uintptr(controller))
 }
 
-var r_GTKGtk_widget_add_css_class = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_widget_add_css_class"}
+var r_GTKGtk_widget_add_css_class = lz[func(uintptr, unsafe.Pointer)]{name: "GTKGtk_widget_add_css_class", sym: "gtk_widget_add_css_class"}
 
 func GTKGtk_widget_add_css_class(widget int64, css_class []int8) {
 	r_GTKGtk_widget_add_css_class.get()(uintptr(widget), sp(css_class))
 }
 
-var r_GTKGtk_widget_child_focus = lz[func(uintptr, int32) int32]{sym: "gtk_widget_child_focus"}
+var r_GTKGtk_widget_child_focus = lz[func(uintptr, int32) int32]{name: "GTKGtk_widget_child_focus", sym: "gtk_widget_child_focus"}
 
 func GTKGtk_widget_child_focus(widget int64, direction int32) bool {
 	return r_GTKGtk_widget_child_focus.get()(uintptr(widget), direction) != 0
 }
 
-var r_GTK4Gtk_widget_class_add_binding_signal = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer, int32, int32, int32)]{sym: "gtk_widget_class_add_binding_signal"}
+var r_GTK4Gtk_widget_class_add_binding_signal = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer, int32, int32, int32)]{name: "GTK4Gtk_widget_class_add_binding_signal", sym: "gtk_widget_class_add_binding_signal"}
 
 func GTK4Gtk_widget_class_add_binding_signal(widget_class int64, keyval int32, mods int32, signal []int8, format_string []int8, a bool, b bool, c bool) {
 	r_GTK4Gtk_widget_class_add_binding_signal.get()(uintptr(widget_class), keyval, mods, sp(signal), sp(format_string), b2i(a), b2i(b), b2i(c))
 }
 
-var r_GTKGtk_widget_class_get_css_name = lz[func(uintptr) uintptr]{sym: "gtk_widget_class_get_css_name"}
+var r_GTKGtk_widget_class_get_css_name = lz[func(uintptr) uintptr]{name: "GTKGtk_widget_class_get_css_name", sym: "gtk_widget_class_get_css_name"}
 
 func GTKGtk_widget_class_get_css_name(widget_class int64) int64 {
 	return int64(r_GTKGtk_widget_class_get_css_name.get()(uintptr(widget_class)))
 }
 
-var r_GTKGtk_widget_create_pango_layout = lz[func(uintptr, unsafe.Pointer) uintptr]{sym: "gtk_widget_create_pango_layout"}
+var r_GTKGtk_widget_create_pango_layout = lz[func(uintptr, unsafe.Pointer) uintptr]{name: "GTKGtk_widget_create_pango_layout", sym: "gtk_widget_create_pango_layout"}
 
 func GTKGtk_widget_create_pango_layout(widget int64, text []int8) int64 {
 	return int64(r_GTKGtk_widget_create_pango_layout.get()(uintptr(widget), sp(text)))
 }
 
-var r_GTKGtk_widget_create_pango_layoutWidgetText = lz[func(uintptr, uintptr) uintptr]{sym: "gtk_widget_create_pango_layout"}
+var r_GTKGtk_widget_create_pango_layoutWidgetText = lz[func(uintptr, uintptr) uintptr]{name: "GTKGtk_widget_create_pango_layoutWidgetText", sym: "gtk_widget_create_pango_layout"}
 
 func GTKGtk_widget_create_pango_layoutWidgetText(widget int64, text int64) int64 {
 	return int64(r_GTKGtk_widget_create_pango_layoutWidgetText.get()(uintptr(widget), uintptr(text)))
 }
 
-var r_GTK3Gtk_widget_destroy = lz[func(uintptr)]{sym: "gtk_widget_destroy"}
+var r_GTK3Gtk_widget_destroy = lz[func(uintptr)]{name: "GTK3Gtk_widget_destroy", sym: "gtk_widget_destroy"}
 
 func GTK3Gtk_widget_destroy(widget int64) {
 	r_GTK3Gtk_widget_destroy.get()(uintptr(widget))
 }
 
-var r_GTK3Gtk_widget_draw = lz[func(uintptr, uintptr)]{sym: "gtk_widget_draw"}
+var r_GTK3Gtk_widget_draw = lz[func(uintptr, uintptr)]{name: "GTK3Gtk_widget_draw", sym: "gtk_widget_draw"}
 
 func GTK3Gtk_widget_draw(widget int64, cr int64) {
 	r_GTK3Gtk_widget_draw.get()(uintptr(widget), uintptr(cr))
 }
 
-var r_GTK3Gtk_widget_event = lz[func(uintptr, uintptr) int32]{sym: "gtk_widget_event"}
+var r_GTK3Gtk_widget_event = lz[func(uintptr, uintptr) int32]{name: "GTK3Gtk_widget_event", sym: "gtk_widget_event"}
 
 func GTK3Gtk_widget_event(widget int64, event int64) bool {
 	return r_GTK3Gtk_widget_event.get()(uintptr(widget), uintptr(event)) != 0
 }
 
-var r_GTK3Gtk_widget_get_can_default = lz[func(uintptr) int32]{sym: "gtk_widget_get_can_default"}
+var r_GTK3Gtk_widget_get_can_default = lz[func(uintptr) int32]{name: "GTK3Gtk_widget_get_can_default", sym: "gtk_widget_get_can_default"}
 
 func GTK3Gtk_widget_get_can_default(widget int64) bool {
 	return r_GTK3Gtk_widget_get_can_default.get()(uintptr(widget)) != 0
 }
 
-var r_GTK3Gtk_widget_get_clip = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_widget_get_clip"}
+var r_GTK3Gtk_widget_get_clip = lz[func(uintptr, unsafe.Pointer)]{name: "GTK3Gtk_widget_get_clip", sym: "gtk_widget_get_clip"}
 
 func GTK3Gtk_widget_get_clip(widget int64, clip *GtkAllocation) {
 	r_GTK3Gtk_widget_get_clip.get()(uintptr(widget), unsafe.Pointer(clip))
 }
 
-var r_GTK3Gtk_widget_get_events = lz[func(uintptr) int32]{sym: "gtk_widget_get_events"}
+var r_GTK3Gtk_widget_get_events = lz[func(uintptr) int32]{name: "GTK3Gtk_widget_get_events", sym: "gtk_widget_get_events"}
 
 func GTK3Gtk_widget_get_events(widget int64) int32 {
 	return r_GTK3Gtk_widget_get_events.get()(uintptr(widget))
 }
 
-var r_GTK3Gtk_widget_get_has_window = lz[func(uintptr) int32]{sym: "gtk_widget_get_has_window"}
+var r_GTK3Gtk_widget_get_has_window = lz[func(uintptr) int32]{name: "GTK3Gtk_widget_get_has_window", sym: "gtk_widget_get_has_window"}
 
 func GTK3Gtk_widget_get_has_window(widget int64) bool {
 	return r_GTK3Gtk_widget_get_has_window.get()(uintptr(widget)) != 0
 }
 
-var r_GTK3Gtk_widget_get_preferred_height = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_widget_get_preferred_height"}
+var r_GTK3Gtk_widget_get_preferred_height = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "GTK3Gtk_widget_get_preferred_height", sym: "gtk_widget_get_preferred_height"}
 
 func GTK3Gtk_widget_get_preferred_height(widget int64, minimum_height []int32, natural_height []int32) {
 	r_GTK3Gtk_widget_get_preferred_height.get()(uintptr(widget), sp(minimum_height), sp(natural_height))
 }
 
-var r_GTK3Gtk_widget_get_preferred_height_for_width = lz[func(uintptr, int32, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_widget_get_preferred_height_for_width"}
+var r_GTK3Gtk_widget_get_preferred_height_for_width = lz[func(uintptr, int32, unsafe.Pointer, unsafe.Pointer)]{name: "GTK3Gtk_widget_get_preferred_height_for_width", sym: "gtk_widget_get_preferred_height_for_width"}
 
 func GTK3Gtk_widget_get_preferred_height_for_width(widget int64, width int32, minimum_height []int32, natural_height []int32) {
 	r_GTK3Gtk_widget_get_preferred_height_for_width.get()(uintptr(widget), width, sp(minimum_height), sp(natural_height))
 }
 
-var r_GTK3Gtk_widget_get_preferred_width_for_height = lz[func(uintptr, int32, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_widget_get_preferred_width_for_height"}
+var r_GTK3Gtk_widget_get_preferred_width_for_height = lz[func(uintptr, int32, unsafe.Pointer, unsafe.Pointer)]{name: "GTK3Gtk_widget_get_preferred_width_for_height", sym: "gtk_widget_get_preferred_width_for_height"}
 
 func GTK3Gtk_widget_get_preferred_width_for_height(widget int64, height int32, minimum_width []int32, natural_width []int32) {
 	r_GTK3Gtk_widget_get_preferred_width_for_height.get()(uintptr(widget), height, sp(minimum_width), sp(natural_width))
 }
 
-var r_GTK3Gtk_widget_get_screen = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_screen"}
+var r_GTK3Gtk_widget_get_screen = lz[func(uintptr) uintptr]{name: "GTK3Gtk_widget_get_screen", sym: "gtk_widget_get_screen"}
 
 func GTK3Gtk_widget_get_screen(widget int64) int64 {
 	return int64(r_GTK3Gtk_widget_get_screen.get()(uintptr(widget)))
 }
 
-var r_GTK3Gtk_widget_get_toplevel = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_toplevel"}
+var r_GTK3Gtk_widget_get_toplevel = lz[func(uintptr) uintptr]{name: "GTK3Gtk_widget_get_toplevel", sym: "gtk_widget_get_toplevel"}
 
 func GTK3Gtk_widget_get_toplevel(widget int64) int64 {
 	return int64(r_GTK3Gtk_widget_get_toplevel.get()(uintptr(widget)))
 }
 
-var r_GTK3Gtk_widget_get_window = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_window"}
+var r_GTK3Gtk_widget_get_window = lz[func(uintptr) uintptr]{name: "GTK3Gtk_widget_get_window", sym: "gtk_widget_get_window"}
 
 func GTK3Gtk_widget_get_window(widget int64) int64 {
 	return int64(r_GTK3Gtk_widget_get_window.get()(uintptr(widget)))
 }
 
-var r_GTK4Gtk_widget_get_clipboard = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_clipboard"}
+var r_GTK4Gtk_widget_get_clipboard = lz[func(uintptr) uintptr]{name: "GTK4Gtk_widget_get_clipboard", sym: "gtk_widget_get_clipboard"}
 
 func GTK4Gtk_widget_get_clipboard(widget int64) int64 {
 	return int64(r_GTK4Gtk_widget_get_clipboard.get()(uintptr(widget)))
 }
 
-var r_GTK4Gtk_widget_get_first_child = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_first_child"}
+var r_GTK4Gtk_widget_get_first_child = lz[func(uintptr) uintptr]{name: "GTK4Gtk_widget_get_first_child", sym: "gtk_widget_get_first_child"}
 
 func GTK4Gtk_widget_get_first_child(widget int64) int64 {
 	return int64(r_GTK4Gtk_widget_get_first_child.get()(uintptr(widget)))
 }
 
-var r_GTK4Gtk_widget_get_height = lz[func(uintptr) int32]{sym: "gtk_widget_get_height"}
+var r_GTK4Gtk_widget_get_height = lz[func(uintptr) int32]{name: "GTK4Gtk_widget_get_height", sym: "gtk_widget_get_height"}
 
 func GTK4Gtk_widget_get_height(widget int64) int32 {
 	return r_GTK4Gtk_widget_get_height.get()(uintptr(widget))
 }
 
-var r_GTK4Gtk_widget_get_last_child = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_last_child"}
+var r_GTK4Gtk_widget_get_last_child = lz[func(uintptr) uintptr]{name: "GTK4Gtk_widget_get_last_child", sym: "gtk_widget_get_last_child"}
 
 func GTK4Gtk_widget_get_last_child(widget int64) int64 {
 	return int64(r_GTK4Gtk_widget_get_last_child.get()(uintptr(widget)))
 }
 
-var r_GTK4Gtk_widget_get_native = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_native"}
+var r_GTK4Gtk_widget_get_native = lz[func(uintptr) uintptr]{name: "GTK4Gtk_widget_get_native", sym: "gtk_widget_get_native"}
 
 func GTK4Gtk_widget_get_native(widget int64) int64 {
 	return int64(r_GTK4Gtk_widget_get_native.get()(uintptr(widget)))
 }
 
-var r_GTK4Gtk_widget_get_next_sibling = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_next_sibling"}
+var r_GTK4Gtk_widget_get_next_sibling = lz[func(uintptr) uintptr]{name: "GTK4Gtk_widget_get_next_sibling", sym: "gtk_widget_get_next_sibling"}
 
 func GTK4Gtk_widget_get_next_sibling(widget int64) int64 {
 	return int64(r_GTK4Gtk_widget_get_next_sibling.get()(uintptr(widget)))
 }
 
-var r_GTK4Gtk_widget_get_prev_sibling = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_prev_sibling"}
+var r_GTK4Gtk_widget_get_prev_sibling = lz[func(uintptr) uintptr]{name: "GTK4Gtk_widget_get_prev_sibling", sym: "gtk_widget_get_prev_sibling"}
 
 func GTK4Gtk_widget_get_prev_sibling(widget int64) int64 {
 	return int64(r_GTK4Gtk_widget_get_prev_sibling.get()(uintptr(widget)))
 }
 
-var r_GTK4Gtk_widget_get_receives_default = lz[func(uintptr) int32]{sym: "gtk_widget_get_receives_default"}
+var r_GTK4Gtk_widget_get_receives_default = lz[func(uintptr) int32]{name: "GTK4Gtk_widget_get_receives_default", sym: "gtk_widget_get_receives_default"}
 
 func GTK4Gtk_widget_get_receives_default(widget int64) bool {
 	return r_GTK4Gtk_widget_get_receives_default.get()(uintptr(widget)) != 0
 }
 
-var r_GTK4Gtk_widget_get_root = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_root"}
+var r_GTK4Gtk_widget_get_root = lz[func(uintptr) uintptr]{name: "GTK4Gtk_widget_get_root", sym: "gtk_widget_get_root"}
 
 func GTK4Gtk_widget_get_root(widget int64) int64 {
 	return int64(r_GTK4Gtk_widget_get_root.get()(uintptr(widget)))
 }
 
-var r_GTK4Gtk_widget_get_width = lz[func(uintptr) int32]{sym: "gtk_widget_get_width"}
+var r_GTK4Gtk_widget_get_width = lz[func(uintptr) int32]{name: "GTK4Gtk_widget_get_width", sym: "gtk_widget_get_width"}
 
 func GTK4Gtk_widget_get_width(widget int64) int32 {
 	return r_GTK4Gtk_widget_get_width.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_get_allocation = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_widget_get_allocation"}
+var r_GTKGtk_widget_get_allocation = lz[func(uintptr, unsafe.Pointer)]{name: "GTKGtk_widget_get_allocation", sym: "gtk_widget_get_allocation"}
 
 func GTKGtk_widget_get_allocation(widget int64, allocation *GtkAllocation) {
 	r_GTKGtk_widget_get_allocation.get()(uintptr(widget), unsafe.Pointer(allocation))
 }
 
-var r_GTKGtk_widget_get_child_visible = lz[func(uintptr) int32]{sym: "gtk_widget_get_child_visible"}
+var r_GTKGtk_widget_get_child_visible = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_child_visible", sym: "gtk_widget_get_child_visible"}
 
 func GTKGtk_widget_get_child_visible(widget int64) bool {
 	return r_GTKGtk_widget_get_child_visible.get()(uintptr(widget)) != 0
 }
 
-var r_GTKGtk_widget_get_mapped = lz[func(uintptr) int32]{sym: "gtk_widget_get_mapped"}
+var r_GTKGtk_widget_get_mapped = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_mapped", sym: "gtk_widget_get_mapped"}
 
 func GTKGtk_widget_get_mapped(widget int64) bool {
 	return r_GTKGtk_widget_get_mapped.get()(uintptr(widget)) != 0
 }
 
-var r_GTKGtk_widget_get_margin_bottom = lz[func(uintptr) int32]{sym: "gtk_widget_get_margin_bottom"}
+var r_GTKGtk_widget_get_margin_bottom = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_margin_bottom", sym: "gtk_widget_get_margin_bottom"}
 
 func GTKGtk_widget_get_margin_bottom(widget int64) int32 {
 	return r_GTKGtk_widget_get_margin_bottom.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_get_margin_end = lz[func(uintptr) int32]{sym: "gtk_widget_get_margin_end"}
+var r_GTKGtk_widget_get_margin_end = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_margin_end", sym: "gtk_widget_get_margin_end"}
 
 func GTKGtk_widget_get_margin_end(widget int64) int32 {
 	return r_GTKGtk_widget_get_margin_end.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_get_margin_start = lz[func(uintptr) int32]{sym: "gtk_widget_get_margin_start"}
+var r_GTKGtk_widget_get_margin_start = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_margin_start", sym: "gtk_widget_get_margin_start"}
 
 func GTKGtk_widget_get_margin_start(widget int64) int32 {
 	return r_GTKGtk_widget_get_margin_start.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_get_margin_top = lz[func(uintptr) int32]{sym: "gtk_widget_get_margin_top"}
+var r_GTKGtk_widget_get_margin_top = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_margin_top", sym: "gtk_widget_get_margin_top"}
 
 func GTKGtk_widget_get_margin_top(widget int64) int32 {
 	return r_GTKGtk_widget_get_margin_top.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_get_name = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_name"}
+var r_GTKGtk_widget_get_name = lz[func(uintptr) uintptr]{name: "GTKGtk_widget_get_name", sym: "gtk_widget_get_name"}
 
 func GTKGtk_widget_get_name(widget int64) int64 {
 	return int64(r_GTKGtk_widget_get_name.get()(uintptr(widget)))
 }
 
-var r_GTKGtk_widget_get_opacity = lz[func(uintptr) float64]{sym: "gtk_widget_get_opacity"}
+var r_GTKGtk_widget_get_opacity = lz[func(uintptr) float64]{name: "GTKGtk_widget_get_opacity", sym: "gtk_widget_get_opacity"}
 
 func GTKGtk_widget_get_opacity(widget int64) float64 {
 	return r_GTKGtk_widget_get_opacity.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_get_pango_context = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_pango_context"}
+var r_GTKGtk_widget_get_pango_context = lz[func(uintptr) uintptr]{name: "GTKGtk_widget_get_pango_context", sym: "gtk_widget_get_pango_context"}
 
 func GTKGtk_widget_get_pango_context(widget int64) int64 {
 	return int64(r_GTKGtk_widget_get_pango_context.get()(uintptr(widget)))
 }
 
-var r_GTKGtk_widget_get_parent = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_parent"}
+var r_GTKGtk_widget_get_parent = lz[func(uintptr) uintptr]{name: "GTKGtk_widget_get_parent", sym: "gtk_widget_get_parent"}
 
 func GTKGtk_widget_get_parent(widget int64) int64 {
 	return int64(r_GTKGtk_widget_get_parent.get()(uintptr(widget)))
 }
 
-var r_GTKGtk_widget_get_parent_window = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_parent_window"}
+var r_GTKGtk_widget_get_parent_window = lz[func(uintptr) uintptr]{name: "GTKGtk_widget_get_parent_window", sym: "gtk_widget_get_parent_window"}
 
 func GTKGtk_widget_get_parent_window(widget int64) int64 {
 	return int64(r_GTKGtk_widget_get_parent_window.get()(uintptr(widget)))
 }
 
-var r_GTKGtk_widget_get_preferred_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_widget_get_preferred_size"}
+var r_GTKGtk_widget_get_preferred_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "GTKGtk_widget_get_preferred_size", sym: "gtk_widget_get_preferred_size"}
 
 func GTKGtk_widget_get_preferred_size(widget int64, minimum_size *GtkRequisition, natural_size *GtkRequisition) {
 	r_GTKGtk_widget_get_preferred_size.get()(uintptr(widget), unsafe.Pointer(minimum_size), unsafe.Pointer(natural_size))
 }
 
-var r_GTKGtk_widget_get_realized = lz[func(uintptr) int32]{sym: "gtk_widget_get_realized"}
+var r_GTKGtk_widget_get_realized = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_realized", sym: "gtk_widget_get_realized"}
 
 func GTKGtk_widget_get_realized(widget int64) bool {
 	return r_GTKGtk_widget_get_realized.get()(uintptr(widget)) != 0
 }
 
-var r_GTKGtk_widget_get_scale_factor = lz[func(uintptr) int32]{sym: "gtk_widget_get_scale_factor"}
+var r_GTKGtk_widget_get_scale_factor = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_scale_factor", sym: "gtk_widget_get_scale_factor"}
 
 func GTKGtk_widget_get_scale_factor(widget int64) int32 {
 	return r_GTKGtk_widget_get_scale_factor.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_get_sensitive = lz[func(uintptr) int32]{sym: "gtk_widget_get_sensitive"}
+var r_GTKGtk_widget_get_sensitive = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_sensitive", sym: "gtk_widget_get_sensitive"}
 
 func GTKGtk_widget_get_sensitive(widget int64) bool {
 	return r_GTKGtk_widget_get_sensitive.get()(uintptr(widget)) != 0
 }
 
-var r_GTKGtk_widget_get_size_request = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_widget_get_size_request"}
+var r_GTKGtk_widget_get_size_request = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "GTKGtk_widget_get_size_request", sym: "gtk_widget_get_size_request"}
 
 func GTKGtk_widget_get_size_request(widget int64, width []int32, height []int32) {
 	r_GTKGtk_widget_get_size_request.get()(uintptr(widget), sp(width), sp(height))
 }
 
-var r_GTKGtk_widget_get_state_flags = lz[func(uintptr) int32]{sym: "gtk_widget_get_state_flags"}
+var r_GTKGtk_widget_get_state_flags = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_state_flags", sym: "gtk_widget_get_state_flags"}
 
 func GTKGtk_widget_get_state_flags(widget int64) int32 {
 	return r_GTKGtk_widget_get_state_flags.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_get_style_context = lz[func(uintptr) uintptr]{sym: "gtk_widget_get_style_context"}
+var r_GTKGtk_widget_get_style_context = lz[func(uintptr) uintptr]{name: "GTKGtk_widget_get_style_context", sym: "gtk_widget_get_style_context"}
 
 func GTKGtk_widget_get_style_context(widget int64) int64 {
 	return int64(r_GTKGtk_widget_get_style_context.get()(uintptr(widget)))
 }
 
-var r_GTKGtk_widget_get_visible = lz[func(uintptr) int32]{sym: "gtk_widget_get_visible"}
+var r_GTKGtk_widget_get_visible = lz[func(uintptr) int32]{name: "GTKGtk_widget_get_visible", sym: "gtk_widget_get_visible"}
 
 func GTKGtk_widget_get_visible(widget int64) bool {
 	return r_GTKGtk_widget_get_visible.get()(uintptr(widget)) != 0
 }
 
-var r_GTKGtk_widget_grab_focus = lz[func(uintptr)]{sym: "gtk_widget_grab_focus"}
+var r_GTKGtk_widget_grab_focus = lz[func(uintptr)]{name: "GTKGtk_widget_grab_focus", sym: "gtk_widget_grab_focus"}
 
 func GTKGtk_widget_grab_focus(widget int64) {
 	r_GTKGtk_widget_grab_focus.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_has_default = lz[func(uintptr) int32]{sym: "gtk_widget_has_default"}
+var r_GTKGtk_widget_has_default = lz[func(uintptr) int32]{name: "GTKGtk_widget_has_default", sym: "gtk_widget_has_default"}
 
 func GTKGtk_widget_has_default(widget int64) bool {
 	return r_GTKGtk_widget_has_default.get()(uintptr(widget)) != 0
 }
 
-var r_GTKGtk_widget_has_focus = lz[func(uintptr) int32]{sym: "gtk_widget_has_focus"}
+var r_GTKGtk_widget_has_focus = lz[func(uintptr) int32]{name: "GTKGtk_widget_has_focus", sym: "gtk_widget_has_focus"}
 
 func GTKGtk_widget_has_focus(widget int64) bool {
 	return r_GTKGtk_widget_has_focus.get()(uintptr(widget)) != 0
 }
 
-var r_GTK3Gtk_widget_hide = lz[func(uintptr)]{sym: "gtk_widget_hide"}
+var r_GTK3Gtk_widget_hide = lz[func(uintptr)]{name: "GTK3Gtk_widget_hide", sym: "gtk_widget_hide"}
 
 func GTK3Gtk_widget_hide(widget int64) {
 	r_GTK3Gtk_widget_hide.get()(uintptr(widget))
 }
 
-var r_GTK3Gtk_widget_input_shape_combine_region = lz[func(uintptr, uintptr)]{sym: "gtk_widget_input_shape_combine_region"}
+var r_GTK3Gtk_widget_input_shape_combine_region = lz[func(uintptr, uintptr)]{name: "GTK3Gtk_widget_input_shape_combine_region", sym: "gtk_widget_input_shape_combine_region"}
 
 func GTK3Gtk_widget_input_shape_combine_region(widget int64, region int64) {
 	r_GTK3Gtk_widget_input_shape_combine_region.get()(uintptr(widget), uintptr(region))
 }
 
-var r_GTK4Gtk_widget_insert_after = lz[func(uintptr, uintptr, uintptr)]{sym: "gtk_widget_insert_after"}
+var r_GTK4Gtk_widget_insert_after = lz[func(uintptr, uintptr, uintptr)]{name: "GTK4Gtk_widget_insert_after", sym: "gtk_widget_insert_after"}
 
 func GTK4Gtk_widget_insert_after(widget int64, parent int64, previous_sibling int64) {
 	r_GTK4Gtk_widget_insert_after.get()(uintptr(widget), uintptr(parent), uintptr(previous_sibling))
 }
 
-var r_GTK4Gtk_widget_insert_before = lz[func(uintptr, uintptr, uintptr)]{sym: "gtk_widget_insert_before"}
+var r_GTK4Gtk_widget_insert_before = lz[func(uintptr, uintptr, uintptr)]{name: "GTK4Gtk_widget_insert_before", sym: "gtk_widget_insert_before"}
 
 func GTK4Gtk_widget_insert_before(widget int64, parent int64, next_sibling int64) {
 	r_GTK4Gtk_widget_insert_before.get()(uintptr(widget), uintptr(parent), uintptr(next_sibling))
 }
 
-var r_GTKGtk_widget_insert_action_group = lz[func(uintptr, unsafe.Pointer, uintptr)]{sym: "gtk_widget_insert_action_group"}
+var r_GTKGtk_widget_insert_action_group = lz[func(uintptr, unsafe.Pointer, uintptr)]{name: "GTKGtk_widget_insert_action_group", sym: "gtk_widget_insert_action_group"}
 
 func GTKGtk_widget_insert_action_group(widget int64, name []int8, group int64) {
 	r_GTKGtk_widget_insert_action_group.get()(uintptr(widget), sp(name), uintptr(group))
 }
 
-var r_GTKGtk_widget_is_focus = lz[func(uintptr) int32]{sym: "gtk_widget_is_focus"}
+var r_GTKGtk_widget_is_focus = lz[func(uintptr) int32]{name: "GTKGtk_widget_is_focus", sym: "gtk_widget_is_focus"}
 
 func GTKGtk_widget_is_focus(widget int64) bool {
 	return r_GTKGtk_widget_is_focus.get()(uintptr(widget)) != 0
 }
 
-var r_GTK4Gtk_widget_measure = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_widget_measure"}
+var r_GTK4Gtk_widget_measure = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]{name: "GTK4Gtk_widget_measure", sym: "gtk_widget_measure"}
 
 func GTK4Gtk_widget_measure(widget int64, orientation int32, for_size int32, minimum []int32, natural []int32, minimum_baseline []int32, natural_baseline []int32) {
 	r_GTK4Gtk_widget_measure.get()(uintptr(widget), orientation, for_size, sp(minimum), sp(natural), sp(minimum_baseline), sp(natural_baseline))
 }
 
-var r_GTKGtk_widget_mnemonic_activate = lz[func(uintptr, int32) int32]{sym: "gtk_widget_mnemonic_activate"}
+var r_GTKGtk_widget_mnemonic_activate = lz[func(uintptr, int32) int32]{name: "GTKGtk_widget_mnemonic_activate", sym: "gtk_widget_mnemonic_activate"}
 
 func GTKGtk_widget_mnemonic_activate(widget int64, group_cycling bool) bool {
 	return r_GTKGtk_widget_mnemonic_activate.get()(uintptr(widget), b2i(group_cycling)) != 0
 }
 
-var r_GTK3Gtk_widget_override_font = lz[func(uintptr, uintptr)]{sym: "gtk_widget_override_font"}
+var r_GTK3Gtk_widget_override_font = lz[func(uintptr, uintptr)]{name: "GTK3Gtk_widget_override_font", sym: "gtk_widget_override_font"}
 
 func GTK3Gtk_widget_override_font(widget int64, font_desc int64) {
 	r_GTK3Gtk_widget_override_font.get()(uintptr(widget), uintptr(font_desc))
 }
 
-var r_GTK4Gtk_widget_paintable_new = lz[func(uintptr) uintptr]{sym: "gtk_widget_paintable_new"}
+var r_GTK4Gtk_widget_paintable_new = lz[func(uintptr) uintptr]{name: "GTK4Gtk_widget_paintable_new", sym: "gtk_widget_paintable_new"}
 
 func GTK4Gtk_widget_paintable_new(widget int64) int64 {
 	return int64(r_GTK4Gtk_widget_paintable_new.get()(uintptr(widget)))
 }
 
-var r_GTK4Gtk_widget_pick = lz[func(uintptr, float64, float64, int32) uintptr]{sym: "gtk_widget_pick"}
+var r_GTK4Gtk_widget_pick = lz[func(uintptr, float64, float64, int32) uintptr]{name: "GTK4Gtk_widget_pick", sym: "gtk_widget_pick"}
 
 func GTK4Gtk_widget_pick(widget int64, x float64, y float64, flags int32) int64 {
 	return int64(r_GTK4Gtk_widget_pick.get()(uintptr(widget), x, y, flags))
 }
 
-var r_GTKGtk_widget_queue_draw = lz[func(uintptr)]{sym: "gtk_widget_queue_draw"}
+var r_GTKGtk_widget_queue_draw = lz[func(uintptr)]{name: "GTKGtk_widget_queue_draw", sym: "gtk_widget_queue_draw"}
 
 func GTKGtk_widget_queue_draw(widget int64) {
 	r_GTKGtk_widget_queue_draw.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_queue_resize = lz[func(uintptr)]{sym: "gtk_widget_queue_resize"}
+var r_GTKGtk_widget_queue_resize = lz[func(uintptr)]{name: "GTKGtk_widget_queue_resize", sym: "gtk_widget_queue_resize"}
 
 func GTKGtk_widget_queue_resize(widget int64) {
 	r_GTKGtk_widget_queue_resize.get()(uintptr(widget))
 }
 
-var r_GTKGtk_widget_realize = lz[func(uintptr)]{sym: "gtk_widget_realize"}
+var r_GTKGtk_widget_realize = lz[func(uintptr)]{name: "GTKGtk_widget_realize", sym: "gtk_widget_realize"}
 
 func GTKGtk_widget_realize(widget int64) {
 	r_GTKGtk_widget_realize.get()(uintptr(widget))
 }
 
-var r_GTK3Gtk_widget_remove_accelerator = lz[func(uintptr, uintptr, int32, int32) int32]{sym: "gtk_widget_remove_accelerator"}
+var r_GTK3Gtk_widget_remove_accelerator = lz[func(uintptr, uintptr, int32, int32) int32]{name: "GTK3Gtk_widget_remove_accelerator", sym: "gtk_widget_remove_accelerator"}
 
 func GTK3Gtk_widget_remove_accelerator(widget int64, accel_group int64, accel_key int32, accel_mods int32) bool {
 	return r_GTK3Gtk_widget_remove_accelerator.get()(uintptr(widget), uintptr(accel_group), accel_key, accel_mods) != 0
 }
 
-var r_GTK4Gtk_widget_remove_controller = lz[func(uintptr, uintptr)]{sym: "gtk_widget_remove_controller"}
+var r_GTK4Gtk_widget_remove_controller = lz[func(uintptr, uintptr)]{name: "GTK4Gtk_widget_remove_controller", sym: "gtk_widget_remove_controller"}
 
 func GTK4Gtk_widget_remove_controller(widget int64, controller int64) {
 	r_GTK4Gtk_widget_remove_controller.get()(uintptr(widget), uintptr(controller))
 }
 
-var r_GTK3Gtk_widget_reparent = lz[func(uintptr, uintptr)]{sym: "gtk_widget_reparent"}
+var r_GTK3Gtk_widget_reparent = lz[func(uintptr, uintptr)]{name: "GTK3Gtk_widget_reparent", sym: "gtk_widget_reparent"}
 
 func GTK3Gtk_widget_reparent(widget int64, new_parent int64) {
 	r_GTK3Gtk_widget_reparent.get()(uintptr(widget), uintptr(new_parent))
 }
 
-var r_GTK3Gtk_widget_set_allocation = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_widget_set_allocation"}
+var r_GTK3Gtk_widget_set_allocation = lz[func(uintptr, unsafe.Pointer)]{name: "GTK3Gtk_widget_set_allocation", sym: "gtk_widget_set_allocation"}
 
 func GTK3Gtk_widget_set_allocation(widget int64, allocation *GtkAllocation) {
 	r_GTK3Gtk_widget_set_allocation.get()(uintptr(widget), unsafe.Pointer(allocation))
 }
 
-var r_GTK3Gtk_widget_set_can_default = lz[func(uintptr, int32)]{sym: "gtk_widget_set_can_default"}
+var r_GTK3Gtk_widget_set_can_default = lz[func(uintptr, int32)]{name: "GTK3Gtk_widget_set_can_default", sym: "gtk_widget_set_can_default"}
 
 func GTK3Gtk_widget_set_can_default(widget int64, can_default bool) {
 	r_GTK3Gtk_widget_set_can_default.get()(uintptr(widget), b2i(can_default))
 }
 
-var r_GTK3Gtk_widget_set_clip = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_widget_set_clip"}
+var r_GTK3Gtk_widget_set_clip = lz[func(uintptr, unsafe.Pointer)]{name: "GTK3Gtk_widget_set_clip", sym: "gtk_widget_set_clip"}
 
 func GTK3Gtk_widget_set_clip(widget int64, clip *GtkAllocation) {
 	r_GTK3Gtk_widget_set_clip.get()(uintptr(widget), unsafe.Pointer(clip))
 }
 
-var r_GTK3Gtk_widget_set_double_buffered = lz[func(uintptr, int32)]{sym: "gtk_widget_set_double_buffered"}
+var r_GTK3Gtk_widget_set_double_buffered = lz[func(uintptr, int32)]{name: "GTK3Gtk_widget_set_double_buffered", sym: "gtk_widget_set_double_buffered"}
 
 func GTK3Gtk_widget_set_double_buffered(widget int64, double_buffered bool) {
 	r_GTK3Gtk_widget_set_double_buffered.get()(uintptr(widget), b2i(double_buffered))
 }
 
-var r_GTK3Gtk_widget_set_has_window = lz[func(uintptr, int32)]{sym: "gtk_widget_set_has_window"}
+var r_GTK3Gtk_widget_set_has_window = lz[func(uintptr, int32)]{name: "GTK3Gtk_widget_set_has_window", sym: "gtk_widget_set_has_window"}
 
 func GTK3Gtk_widget_set_has_window(widget int64, has_window bool) {
 	r_GTK3Gtk_widget_set_has_window.get()(uintptr(widget), b2i(has_window))
 }
 
-var r_GTK3Gtk_widget_set_parent_window = lz[func(uintptr, uintptr)]{sym: "gtk_widget_set_parent_window"}
+var r_GTK3Gtk_widget_set_parent_window = lz[func(uintptr, uintptr)]{name: "GTK3Gtk_widget_set_parent_window", sym: "gtk_widget_set_parent_window"}
 
 func GTK3Gtk_widget_set_parent_window(widget int64, parent_window int64) {
 	r_GTK3Gtk_widget_set_parent_window.get()(uintptr(widget), uintptr(parent_window))
 }
 
-var r_GTK3Gtk_widget_set_redraw_on_allocate = lz[func(uintptr, int32)]{sym: "gtk_widget_set_redraw_on_allocate"}
+var r_GTK3Gtk_widget_set_redraw_on_allocate = lz[func(uintptr, int32)]{name: "GTK3Gtk_widget_set_redraw_on_allocate", sym: "gtk_widget_set_redraw_on_allocate"}
 
 func GTK3Gtk_widget_set_redraw_on_allocate(widget int64, redraw_on_allocate bool) {
 	r_GTK3Gtk_widget_set_redraw_on_allocate.get()(uintptr(widget), b2i(redraw_on_allocate))
 }
 
-var r_GTK4Gtk_widget_set_cursor = lz[func(uintptr, uintptr)]{sym: "gtk_widget_set_cursor"}
+var r_GTK4Gtk_widget_set_cursor = lz[func(uintptr, uintptr)]{name: "GTK4Gtk_widget_set_cursor", sym: "gtk_widget_set_cursor"}
 
 func GTK4Gtk_widget_set_cursor(widget int64, cursor int64) {
 	r_GTK4Gtk_widget_set_cursor.get()(uintptr(widget), uintptr(cursor))
 }
 
-var r_GTK4Gtk_widget_set_focusable = lz[func(uintptr, int32)]{sym: "gtk_widget_set_focusable"}
+var r_GTK4Gtk_widget_set_focusable = lz[func(uintptr, int32)]{name: "GTK4Gtk_widget_set_focusable", sym: "gtk_widget_set_focusable"}
 
 func GTK4Gtk_widget_set_focusable(widget int64, focusable bool) {
 	r_GTK4Gtk_widget_set_focusable.get()(uintptr(widget), b2i(focusable))
 }
 
-var r_GTK4Gtk_widget_set_overflow = lz[func(uintptr, int32)]{sym: "gtk_widget_set_overflow"}
+var r_GTK4Gtk_widget_set_overflow = lz[func(uintptr, int32)]{name: "GTK4Gtk_widget_set_overflow", sym: "gtk_widget_set_overflow"}
 
 func GTK4Gtk_widget_set_overflow(widget int64, overflow int32) {
 	r_GTK4Gtk_widget_set_overflow.get()(uintptr(widget), overflow)
 }
 
-var r_GTK4Gtk_widget_set_size_request = lz[func(uintptr, int32, int32)]{sym: "gtk_widget_set_size_request"}
+var r_GTK4Gtk_widget_set_size_request = lz[func(uintptr, int32, int32)]{name: "GTK4Gtk_widget_set_size_request", sym: "gtk_widget_set_size_request"}
 
 func GTK4Gtk_widget_set_size_request(widget int64, width int32, height int32) {
 	r_GTK4Gtk_widget_set_size_request.get()(uintptr(widget), width, height)
 }
 
-var r_GTKGtk_widget_set_can_focus = lz[func(uintptr, int32)]{sym: "gtk_widget_set_can_focus"}
+var r_GTKGtk_widget_set_can_focus = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_can_focus", sym: "gtk_widget_set_can_focus"}
 
 func GTKGtk_widget_set_can_focus(widget int64, can_focus bool) {
 	r_GTKGtk_widget_set_can_focus.get()(uintptr(widget), b2i(can_focus))
 }
 
-var r_GTKGtk_widget_set_default_direction = lz[func(int32)]{sym: "gtk_widget_set_default_direction"}
+var r_GTKGtk_widget_set_default_direction = lz[func(int32)]{name: "GTKGtk_widget_set_default_direction", sym: "gtk_widget_set_default_direction"}
 
 func GTKGtk_widget_set_default_direction(dir int32) {
 	r_GTKGtk_widget_set_default_direction.get()(dir)
 }
 
-var r_GTKGtk_widget_set_direction = lz[func(uintptr, int32)]{sym: "gtk_widget_set_direction"}
+var r_GTKGtk_widget_set_direction = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_direction", sym: "gtk_widget_set_direction"}
 
 func GTKGtk_widget_set_direction(widget int64, dir int32) {
 	r_GTKGtk_widget_set_direction.get()(uintptr(widget), dir)
 }
 
-var r_GTKGtk_widget_set_focus_on_click = lz[func(uintptr, int32)]{sym: "gtk_widget_set_focus_on_click"}
+var r_GTKGtk_widget_set_focus_on_click = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_focus_on_click", sym: "gtk_widget_set_focus_on_click"}
 
 func GTKGtk_widget_set_focus_on_click(widget int64, focus_on_click bool) {
 	r_GTKGtk_widget_set_focus_on_click.get()(uintptr(widget), b2i(focus_on_click))
 }
 
-var r_GTKGtk_widget_set_halign = lz[func(uintptr, int32)]{sym: "gtk_widget_set_halign"}
+var r_GTKGtk_widget_set_halign = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_halign", sym: "gtk_widget_set_halign"}
 
 func GTKGtk_widget_set_halign(widget int64, align int32) {
 	r_GTKGtk_widget_set_halign.get()(uintptr(widget), align)
 }
 
-var r_GTKGtk_widget_set_hexpand = lz[func(uintptr, int32)]{sym: "gtk_widget_set_hexpand"}
+var r_GTKGtk_widget_set_hexpand = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_hexpand", sym: "gtk_widget_set_hexpand"}
 
 func GTKGtk_widget_set_hexpand(widget int64, expand bool) {
 	r_GTKGtk_widget_set_hexpand.get()(uintptr(widget), b2i(expand))
 }
 
-var r_GTKGtk_widget_set_margin_bottom = lz[func(uintptr, int32)]{sym: "gtk_widget_set_margin_bottom"}
+var r_GTKGtk_widget_set_margin_bottom = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_margin_bottom", sym: "gtk_widget_set_margin_bottom"}
 
 func GTKGtk_widget_set_margin_bottom(widget int64, margin int32) {
 	r_GTKGtk_widget_set_margin_bottom.get()(uintptr(widget), margin)
 }
 
-var r_GTKGtk_widget_set_margin_end = lz[func(uintptr, int32)]{sym: "gtk_widget_set_margin_end"}
+var r_GTKGtk_widget_set_margin_end = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_margin_end", sym: "gtk_widget_set_margin_end"}
 
 func GTKGtk_widget_set_margin_end(widget int64, margin int32) {
 	r_GTKGtk_widget_set_margin_end.get()(uintptr(widget), margin)
 }
 
-var r_GTKGtk_widget_set_margin_start = lz[func(uintptr, int32)]{sym: "gtk_widget_set_margin_start"}
+var r_GTKGtk_widget_set_margin_start = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_margin_start", sym: "gtk_widget_set_margin_start"}
 
 func GTKGtk_widget_set_margin_start(widget int64, margin int32) {
 	r_GTKGtk_widget_set_margin_start.get()(uintptr(widget), margin)
 }
 
-var r_GTKGtk_widget_set_margin_top = lz[func(uintptr, int32)]{sym: "gtk_widget_set_margin_top"}
+var r_GTKGtk_widget_set_margin_top = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_margin_top", sym: "gtk_widget_set_margin_top"}
 
 func GTKGtk_widget_set_margin_top(widget int64, margin int32) {
 	r_GTKGtk_widget_set_margin_top.get()(uintptr(widget), margin)
 }
 
-var r_GTKGtk_widget_set_opacity = lz[func(uintptr, float64)]{sym: "gtk_widget_set_opacity"}
+var r_GTKGtk_widget_set_opacity = lz[func(uintptr, float64)]{name: "GTKGtk_widget_set_opacity", sym: "gtk_widget_set_opacity"}
 
 func GTKGtk_widget_set_opacity(widget int64, opacity float64) {
 	r_GTKGtk_widget_set_opacity.get()(uintptr(widget), opacity)
 }
 
-var r_GTKGtk_widget_set_parent = lz[func(uintptr, uintptr)]{sym: "gtk_widget_set_parent"}
+var r_GTKGtk_widget_set_parent = lz[func(uintptr, uintptr)]{name: "GTKGtk_widget_set_parent", sym: "gtk_widget_set_parent"}
 
 func GTKGtk_widget_set_parent(widget int64, parent int64) {
 	r_GTKGtk_widget_set_parent.get()(uintptr(widget), uintptr(parent))
 }
 
-var r_GTKGtk_widget_set_receives_default = lz[func(uintptr, int32)]{sym: "gtk_widget_set_receives_default"}
+var r_GTKGtk_widget_set_receives_default = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_receives_default", sym: "gtk_widget_set_receives_default"}
 
 func GTKGtk_widget_set_receives_default(widget int64, receives_default bool) {
 	r_GTKGtk_widget_set_receives_default.get()(uintptr(widget), b2i(receives_default))
 }
 
-var r_GTKGtk_widget_set_sensitive = lz[func(uintptr, int32)]{sym: "gtk_widget_set_sensitive"}
+var r_GTKGtk_widget_set_sensitive = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_sensitive", sym: "gtk_widget_set_sensitive"}
 
 func GTKGtk_widget_set_sensitive(widget int64, sensitive bool) {
 	r_GTKGtk_widget_set_sensitive.get()(uintptr(widget), b2i(sensitive))
 }
 
-var r_GTKGtk_widget_set_size_request = lz[func(uintptr, int32, int32)]{sym: "gtk_widget_set_size_request"}
+var r_GTKGtk_widget_set_size_request = lz[func(uintptr, int32, int32)]{name: "GTKGtk_widget_set_size_request", sym: "gtk_widget_set_size_request"}
 
 func GTKGtk_widget_set_size_request(widget int64, width int32, height int32) {
 	r_GTKGtk_widget_set_size_request.get()(uintptr(widget), width, height)
 }
 
-var r_GTKGtk_widget_set_tooltip_text = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_widget_set_tooltip_text"}
+var r_GTKGtk_widget_set_tooltip_text = lz[func(uintptr, unsafe.Pointer)]{name: "GTKGtk_widget_set_tooltip_text", sym: "gtk_widget_set_tooltip_text"}
 
 func GTKGtk_widget_set_tooltip_text(widget int64, text []int8) {
 	r_GTKGtk_widget_set_tooltip_text.get()(uintptr(widget), sp(text))
 }
 
-var r_GTKGtk_widget_set_valign = lz[func(uintptr, int32)]{sym: "gtk_widget_set_valign"}
+var r_GTKGtk_widget_set_valign = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_valign", sym: "gtk_widget_set_valign"}
 
 func GTKGtk_widget_set_valign(widget int64, align int32) {
 	r_GTKGtk_widget_set_valign.get()(uintptr(widget), align)
 }
 
-var r_GTKGtk_widget_set_vexpand = lz[func(uintptr, int32)]{sym: "gtk_widget_set_vexpand"}
+var r_GTKGtk_widget_set_vexpand = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_vexpand", sym: "gtk_widget_set_vexpand"}
 
 func GTKGtk_widget_set_vexpand(widget int64, expand bool) {
 	r_GTKGtk_widget_set_vexpand.get()(uintptr(widget), b2i(expand))
 }
 
-var r_GTKGtk_widget_set_visible = lz[func(uintptr, int32)]{sym: "gtk_widget_set_visible"}
+var r_GTKGtk_widget_set_visible = lz[func(uintptr, int32)]{name: "GTKGtk_widget_set_visible", sym: "gtk_widget_set_visible"}
 
 func GTKGtk_widget_set_visible(widget int64, visible bool) {
 	r_GTKGtk_widget_set_visible.get()(uintptr(widget), b2i(visible))
 }
 
-var r_GTK3Gtk_widget_shape_combine_region = lz[func(uintptr, uintptr)]{sym: "gtk_widget_shape_combine_region"}
+var r_GTK3Gtk_widget_shape_combine_region = lz[func(uintptr, uintptr)]{name: "GTK3Gtk_widget_shape_combine_region", sym: "gtk_widget_shape_combine_region"}
 
 func GTK3Gtk_widget_shape_combine_region(widget int64, region int64) {
 	r_GTK3Gtk_widget_shape_combine_region.get()(uintptr(widget), uintptr(region))
 }
 
-var r_GTK3Gtk_widget_show = lz[func(uintptr)]{sym: "gtk_widget_show"}
+var r_GTK3Gtk_widget_show = lz[func(uintptr)]{name: "GTK3Gtk_widget_show", sym: "gtk_widget_show"}
 
 func GTK3Gtk_widget_show(widget int64) {
 	r_GTK3Gtk_widget_show.get()(uintptr(widget))
 }
 
-var r_GTK3Gtk_widget_size_allocate = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_widget_size_allocate"}
+var r_GTK3Gtk_widget_size_allocate = lz[func(uintptr, unsafe.Pointer)]{name: "GTK3Gtk_widget_size_allocate", sym: "gtk_widget_size_allocate"}
 
 func GTK3Gtk_widget_size_allocate(widget int64, allocation *GtkAllocation) {
 	r_GTK3Gtk_widget_size_allocate.get()(uintptr(widget), unsafe.Pointer(allocation))
 }
 
-var r_GTK4Gtk_widget_size_allocate = lz[func(uintptr, unsafe.Pointer, int32)]{sym: "gtk_widget_size_allocate"}
+var r_GTK4Gtk_widget_size_allocate = lz[func(uintptr, unsafe.Pointer, int32)]{name: "GTK4Gtk_widget_size_allocate", sym: "gtk_widget_size_allocate"}
 
 func GTK4Gtk_widget_size_allocate(widget int64, allocation *GtkAllocation, baseline int32) {
 	r_GTK4Gtk_widget_size_allocate.get()(uintptr(widget), unsafe.Pointer(allocation), baseline)
 }
 
-var r_GTK4Gtk_widget_snapshot_child = lz[func(uintptr, uintptr, uintptr)]{sym: "gtk_widget_snapshot_child"}
+var r_GTK4Gtk_widget_snapshot_child = lz[func(uintptr, uintptr, uintptr)]{name: "GTK4Gtk_widget_snapshot_child", sym: "gtk_widget_snapshot_child"}
 
 func GTK4Gtk_widget_snapshot_child(widget int64, child int64, snapshot int64) {
 	r_GTK4Gtk_widget_snapshot_child.get()(uintptr(widget), uintptr(child), uintptr(snapshot))
 }
 
-var r_GTK3Gtk_widget_style_get = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, uintptr)]{sym: "gtk_widget_style_get"}
+var r_GTK3Gtk_widget_style_get = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, uintptr)]{name: "GTK3Gtk_widget_style_get", sym: "gtk_widget_style_get"}
 
 func GTK3Gtk_widget_style_get(widget int64, property_name []int8, value []int32, terminator int64) {
 	r_GTK3Gtk_widget_style_get.get()(uintptr(widget), sp(property_name), sp(value), uintptr(terminator))
 }
 
-var r_GTK3Gtk_widget_style_getWidgetProperty_nameValueTerminator = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, uintptr)]{sym: "gtk_widget_style_get"}
+var r_GTK3Gtk_widget_style_getWidgetProperty_nameValueTerminator = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, uintptr)]{name: "GTK3Gtk_widget_style_getWidgetProperty_nameValueTerminator", sym: "gtk_widget_style_get"}
 
 func GTK3Gtk_widget_style_getWidgetProperty_nameValueTerminator(widget int64, property_name []int8, value []int64, terminator int64) {
 	r_GTK3Gtk_widget_style_getWidgetProperty_nameValueTerminator.get()(uintptr(widget), sp(property_name), sp(value), uintptr(terminator))
 }
 
-var r_GTK3Gtk_widget_translate_coordinates = lz[func(uintptr, uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer) int32]{sym: "gtk_widget_translate_coordinates"}
+var r_GTK3Gtk_widget_translate_coordinates = lz[func(uintptr, uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer) int32]{name: "GTK3Gtk_widget_translate_coordinates", sym: "gtk_widget_translate_coordinates"}
 
 func GTK3Gtk_widget_translate_coordinates(src_widget int64, dest_widget int64, src_x int32, src_y int32, dest_x []int32, dest_y []int32) bool {
 	return r_GTK3Gtk_widget_translate_coordinates.get()(uintptr(src_widget), uintptr(dest_widget), src_x, src_y, sp(dest_x), sp(dest_y)) != 0
 }
 
-var r_GTK4Gtk_widget_translate_coordinates = lz[func(uintptr, uintptr, float64, float64, unsafe.Pointer, unsafe.Pointer) int32]{sym: "gtk_widget_translate_coordinates"}
+var r_GTK4Gtk_widget_translate_coordinates = lz[func(uintptr, uintptr, float64, float64, unsafe.Pointer, unsafe.Pointer) int32]{name: "GTK4Gtk_widget_translate_coordinates", sym: "gtk_widget_translate_coordinates"}
 
 func GTK4Gtk_widget_translate_coordinates(src_widget int64, dest_widget int64, src_x float64, src_y float64, dest_x []float64, dest_y []float64) bool {
 	return r_GTK4Gtk_widget_translate_coordinates.get()(uintptr(src_widget), uintptr(dest_widget), src_x, src_y, sp(dest_x), sp(dest_y)) != 0
 }
 
-var r_GTKGtk_widget_unparent = lz[func(uintptr)]{sym: "gtk_widget_unparent"}
+var r_GTKGtk_widget_unparent = lz[func(uintptr)]{name: "GTKGtk_widget_unparent", sym: "gtk_widget_unparent"}
 
 func GTKGtk_widget_unparent(widget int64) {
 	r_GTKGtk_widget_unparent.get()(uintptr(widget))

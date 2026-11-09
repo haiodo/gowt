@@ -1,5 +1,5 @@
-// girgen emits internal/gtk (purego bindings) from GIR files for exactly the names the SWT widget
-// code uses; the call-site names are the interface spec (see README, "GIR-driven gtk binding").
+// girgen emits internal/gtk (purego and opt-in cgo bindings) from GIR files for exactly the names
+// the SWT widget code uses; the call-site names are the interface spec (see README, "GIR-driven gtk binding").
 package main
 
 import (
@@ -118,7 +118,7 @@ func main() {
 	ix3, ix4 := loadIndex(*girDir, base3), loadIndex(*girDir, base4)
 	hdr := "/usr/include/cairo/"
 	addCairoProtos(ix3, []string{hdr + "cairo.h", hdr + "cairo-xlib.h", hdr + "cairo-pdf.h", hdr + "cairo-ps.h"})
-	g := &gen{res: &Resolver{ix3: ix3, ix4: ix4, shapes: shapes, called: called}, shapes: shapes, structs: map[string]bool{}, layouts: map[string]*Layout{}, emitted: map[string]bool{}}
+	g := &gen{res: &Resolver{ix3: ix3, ix4: ix4, shapes: shapes, called: called}, shapes: shapes, structs: map[string]bool{}, layouts: map[string]*Layout{}, emitted: map[string]bool{}, natives: map[string][]cgoNative{}}
 	counts := map[string]int{}
 	for _, n := range names {
 		if glue[n] {
@@ -165,6 +165,13 @@ func main() {
 			src += "import \"unsafe\"\n\n"
 		}
 		files["gen_funcs_"+part.Name+".go"] = src + body
+		var nat []cgoNative
+		for _, ch := range part.Chunks {
+			nat = append(nat, g.natives[ch.Text]...)
+		}
+		if csrc := cgoFileText(nat); csrc != "" {
+			files["gen_funcs_"+part.Name+"_cgo.go"] = csrc
+		}
 	}
 	for n, c := range files {
 		src, err := format.Source([]byte(c))

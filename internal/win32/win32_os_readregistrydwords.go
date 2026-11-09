@@ -16,24 +16,6 @@
 
 package win32
 
-import (
-	"syscall"
-	"unsafe"
-)
-
-var proc_OSWindowFromPoint = newProc("WindowFromPoint")
-
-func OSWindowFromPoint(lpPoint *POINT) int64 {
-	var b_lpPoint [1]uint64
-	var p_lpPoint unsafe.Pointer
-	if lpPoint != nil {
-		p_lpPoint = unsafe.Pointer(&b_lpPoint)
-		lpPoint.toC(p_lpPoint)
-	}
-	r, _, _ := syscall.SyscallN(proc_OSWindowFromPoint.addr(), structArg(p_lpPoint, 8))
-	return int64(r)
-}
-
 func OSReadRegistryDwords(hkeyLocation int32, key string, valueName string) []int32 {
 	var ERROR_MORE_DATA int32 = 234
 	_ = key
@@ -60,11 +42,4 @@ func OSReadRegistryDwords(hkeyLocation int32, key string, valueName string) []in
 		}
 	}
 	return nil
-}
-
-var proc_OSWcslen = newProc("wcslen")
-
-func OSWcslen(string_ int64) int32 {
-	r, _, _ := syscall.SyscallN(proc_OSWcslen.addr(), uintptr(string_))
-	return int32(r)
 }

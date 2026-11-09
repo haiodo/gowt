@@ -3241,11 +3241,12 @@ port builds `swt`) and lists each platform lacking a symbol another has. `make c
 `PLATFORM=win32 make gen` translates `Eclipse SWT/win32` into `swt/*_windows.go` and `Eclipse SWT PI/win32` (win32, win32/version, gdip,
 ole/win32) into `internal/win32`; `GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build ./... && go vet ./...` passes on the Mac.
 
-**Binding layer: stdlib `syscall`, no cgo, no new dependency.** Each `OS.*`/`COM.*` native is a lazy proc (`internal/win32/dll_manual.go`):
+**Binding layer: stdlib `syscall` by default, no new dependency.** Each `OS.*`/`COM.*` native is a lazy proc (`internal/win32/dll_manual.go`):
 the first DLL of a fixed list (user32, gdi32, kernel32, comctl32, ... usp10, ucrtbase, ntdll) that exports `<name>W`, else `<name>`, wins; the call is
 `syscall.SyscallN`. Floats go through the integer slots (the Go runtime copies the first four words into XMM too); `//go:uintptrescapes` helpers
 keep Go pointers alive for GDI+. Callbacks (`Callback`, window procedures) are `syscall.NewCallback` with 0..8 word arguments (2000 slots, never freed).
-Why not purego or mingw cgo: purego's Windows support is the same SyscallN underneath, cgo needs a cross C toolchain. `COM.VtblCall*` reads the vtable slot.
+With `CGO_ENABLED=1 -tags gowtcgo`, generated `<unit>_cgo.go` companions call typed C wrappers instead; `<unit>_native.go` keeps the default bodies, and
+GDI+/Direct2D use their own typed dispatchers. This opt-in mode needs a native C toolchain. `COM.VtblCall*` reads the vtable slot.
 `dynamic` natives that a Windows lacks return 0 (`GetDpiForMonitor`). `setenv`, `CreateSwtWebView2Options` have no export: panic stubs.
 - **Struct layout.** SWT's Java structs are not C mirrors (flattened `rcPaint.left`, reordered fields, BOOL as boolean, bitfields, partial structs), so the
   Go structs keep the Java shape and every native copies them through a C-layout buffer: `toC`/`fromC` (generated, `WinPack`; `flags=no_in/no_out` honoured, by-value
@@ -3255,7 +3256,7 @@ Why not purego or mingw cgo: purego's Windows support is the same SyscallN under
   cell holding the `GpFontFamily*` (SWT creates an empty one and fills it). `Image.getLastStatus` is always Ok (the constructor returns 0 on failure).
 - **Manifest.** SWT activates a manifest from its JNI DLL resources; `custom_manual.go` writes the embedded `swt.manifest` (common controls 6) to the temp dir and
   activates it in `init`. The manifest marks the process system-DPI aware (Display.create also sets the thread context): native zoom = system DPI, device zoom = SWT's default "integer" autoscale of it (`graphics_dpiutil_manual_windows.go`). Per-monitor awareness / runtime rescaling is not enabled (monitor-specific scaling stays off). `winprobe -display` prints dpi, awareness context and zoom; CrossOver reports 96 whatever `LogPixels` is, so zoom > 100 is not verified.
-- **`make win-probe`** (console, no window): every proc the bindings call must resolve in the bottle (819 procs, 0 missing, 2 optional absent), and
+- **`make win-probe`** (console, no window): every proc the bindings call must resolve in the bottle (821 procs on Windows 11, 0 missing, 1 optional absent), and
   package `swt` initialises without a "deferred init" error.
 
 **Translator changes (general rules).** Records are rewritten to final classes before parsing (`SourcePrep`, local ones hoisted to the file's class); qualified

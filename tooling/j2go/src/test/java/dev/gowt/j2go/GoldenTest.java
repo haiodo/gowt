@@ -25,8 +25,9 @@ class GoldenTest {
 	private static final String PLATFORM_ROOT = "bundles/org.eclipse.swt/Eclipse SWT/cocoa/fixture";
 	// A rule with a "pi" marker puts its inputs at the PI package's real path under the platform's
 	// PI source root, so the fixture classes ARE that package (structs, natives) and land in
-	// internal/<platform> instead of swt/.
+	// internal/<platform> instead of swt/. "piwin32" is the same for the win32 PI package.
 	private static final String PI_ROOT = "bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa";
+	private static final String PI_ROOT_WIN32 = "bundles/org.eclipse.swt/Eclipse SWT PI/win32/org/eclipse/swt/internal/win32";
 
 	@TestFactory
 	Stream<DynamicTest> rules() throws IOException {
@@ -51,7 +52,8 @@ class GoldenTest {
 		boolean external = Files.exists(rule.resolve("external"));
 		boolean platformRule = Files.exists(rule.resolve("platform"));
 		boolean piRule = Files.exists(rule.resolve("pi"));
-		Path inputs = external ? work.resolve("ext/fixture") : src.resolve(piRule ? PI_ROOT : platformRule ? PLATFORM_ROOT : ROOT);
+		boolean piWin32Rule = Files.exists(rule.resolve("piwin32"));
+		Path inputs = external ? work.resolve("ext/fixture") : src.resolve(piRule ? PI_ROOT : piWin32Rule ? PI_ROOT_WIN32 : platformRule ? PLATFORM_ROOT : ROOT);
 		Files.createDirectories(inputs);
 		for (String n : names) Files.copy(in.resolve(n), inputs.resolve(n));
 
@@ -60,9 +62,9 @@ class GoldenTest {
 				"-cp", System.getProperty("java.class.path"), "dev.gowt.j2go.Main", "--swt", src.toString(), "--out", out.toString()));
 		// An optional args file holds extra j2go flags for the rule, one per line.
 		// ${rule} is the rule's absolute directory.
-		if (Files.exists(rule.resolve("args"))) Files.readAllLines(rule.resolve("args")).forEach(l -> cmd.add(l.replace("${rule}", rule.toAbsolutePath().toString()).replace("${classpath}", System.getProperty("java.class.path"))));
+		if (Files.exists(rule.resolve("args"))) Files.readAllLines(rule.resolve("args")).forEach(l -> cmd.add(l.replace("${rule}", rule.toAbsolutePath().toString()).replace("${classpath}", System.getProperty("java.class.path")).replace("${basedir}", System.getProperty("user.dir"))));
 		if (external && Files.readString(rule.resolve("external")).contains("src")) cmd.addAll(List.of("--src", work.resolve("ext").toString()));
-		for (String n : names) cmd.add(external ? inputs.resolve(n).toString() : (piRule ? "org/eclipse/swt/internal/cocoa/" : "fixture/") + n);
+		for (String n : names) cmd.add(external ? inputs.resolve(n).toString() : (piRule ? "org/eclipse/swt/internal/cocoa/" : piWin32Rule ? "org/eclipse/swt/internal/win32/" : "fixture/") + n);
 		Process p = new ProcessBuilder(cmd).directory(cwd.toFile()).redirectErrorStream(true).start();
 		String log = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 		assertEquals(0, p.waitFor(), log);

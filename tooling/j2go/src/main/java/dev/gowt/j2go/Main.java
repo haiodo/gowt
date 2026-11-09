@@ -319,6 +319,22 @@ public class Main {
 				Files.writeString(outPath, cgoFile, StandardCharsets.UTF_8);
 				System.out.println("wrote " + outPath);
 			}
+
+			// Opt-in cgo backend (windows && gowtcgo && cgo): the unit's DLL natives get two
+			// companion files - the default SyscallN wrappers (_native.go, excluded under gowtcgo)
+			// and their typed C twins (_cgo.go, excluded without it). The unit's own files stay
+			// shared (structs, sizeof accessors, constant wrappers carry no backend code).
+			String winNative = emitter.winNativeCompanionFile();
+			if (winNative != null) {
+				Path outPath = Path.of(outDir, outDirName, baseStem + "_native.go");
+				Files.createDirectories(outPath.getParent());
+				Files.writeString(outPath, winNative, StandardCharsets.UTF_8);
+				System.out.println("wrote " + outPath);
+				String winCgo = emitter.winCgoCompanionFile();
+				Path cgoPath = Path.of(outDir, outDirName, baseStem + "_cgo.go");
+				Files.writeString(cgoPath, winCgo, StandardCharsets.UTF_8);
+				System.out.println("wrote " + cgoPath);
+			}
 		}
 
 		if (!reference && Profile.active == null && emittedSwtPlatformFile) {

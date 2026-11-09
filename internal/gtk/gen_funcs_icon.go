@@ -5,787 +5,787 @@ package gtk
 
 import "unsafe"
 
-var r_GTK4Gtk_icon_paintable_get_file = lz[func(uintptr) uintptr]{sym: "gtk_icon_paintable_get_file"}
+var r_GTK4Gtk_icon_paintable_get_file = lz[func(uintptr) uintptr]{name: "GTK4Gtk_icon_paintable_get_file", sym: "gtk_icon_paintable_get_file"}
 
 func GTK4Gtk_icon_paintable_get_file(self int64) int64 {
 	return int64(r_GTK4Gtk_icon_paintable_get_file.get()(uintptr(self)))
 }
 
-var r_GTK3Gtk_icon_theme_get_default = lz[func() uintptr]{sym: "gtk_icon_theme_get_default"}
+var r_GTK3Gtk_icon_theme_get_default = lz[func() uintptr]{name: "GTK3Gtk_icon_theme_get_default", sym: "gtk_icon_theme_get_default"}
 
 func GTK3Gtk_icon_theme_get_default() int64 {
 	return int64(r_GTK3Gtk_icon_theme_get_default.get()())
 }
 
-var r_GTK3Gtk_icon_theme_load_icon = lz[func(uintptr, unsafe.Pointer, int32, int32, uintptr) uintptr]{sym: "gtk_icon_theme_load_icon"}
+var r_GTK3Gtk_icon_theme_load_icon = lz[func(uintptr, unsafe.Pointer, int32, int32, uintptr) uintptr]{name: "GTK3Gtk_icon_theme_load_icon", sym: "gtk_icon_theme_load_icon"}
 
 func GTK3Gtk_icon_theme_load_icon(icon_theme int64, icon_name []int8, size int32, flags int32, error int64) int64 {
 	return int64(r_GTK3Gtk_icon_theme_load_icon.get()(uintptr(icon_theme), sp(icon_name), size, flags, uintptr(error)))
 }
 
-var r_GTK4Gtk_icon_theme_get_for_display = lz[func(uintptr) uintptr]{sym: "gtk_icon_theme_get_for_display"}
+var r_GTK4Gtk_icon_theme_get_for_display = lz[func(uintptr) uintptr]{name: "GTK4Gtk_icon_theme_get_for_display", sym: "gtk_icon_theme_get_for_display"}
 
 func GTK4Gtk_icon_theme_get_for_display(display int64) int64 {
 	return int64(r_GTK4Gtk_icon_theme_get_for_display.get()(uintptr(display)))
 }
 
-var r_GTK4Gtk_icon_theme_lookup_icon = lz[func(uintptr, unsafe.Pointer, uintptr, int32, int32, int32, int32) uintptr]{sym: "gtk_icon_theme_lookup_icon"}
+var r_GTK4Gtk_icon_theme_lookup_icon = lz[func(uintptr, unsafe.Pointer, uintptr, int32, int32, int32, int32) uintptr]{name: "GTK4Gtk_icon_theme_lookup_icon", sym: "gtk_icon_theme_lookup_icon"}
 
 func GTK4Gtk_icon_theme_lookup_icon(self int64, icon_name []int8, fallbacks int64, size int32, scale int32, direction int32, flags int32) int64 {
 	return int64(r_GTK4Gtk_icon_theme_lookup_icon.get()(uintptr(self), sp(icon_name), uintptr(fallbacks), size, scale, direction, flags))
 }
 
-var r_CairoCairo_identity_matrix = lz[func(uintptr)]{sym: "cairo_identity_matrix"}
+var r_CairoCairo_identity_matrix = lz[func(uintptr)]{name: "CairoCairo_identity_matrix", sym: "cairo_identity_matrix"}
 
 func CairoCairo_identity_matrix(cr int64) {
 	r_CairoCairo_identity_matrix.get()(uintptr(cr))
 }
 
-var r_OSG_idle_add = lz[func(uintptr, uintptr) int32]{sym: "g_idle_add"}
+var r_OSG_idle_add = lz[func(uintptr, uintptr) int32]{name: "OSG_idle_add", sym: "g_idle_add"}
 
 func OSG_idle_add(function int64, data int64) int32 {
 	return r_OSG_idle_add.get()(uintptr(function), uintptr(data))
 }
 
-var r_GTK3Gtk_im_context_filter_keypress = lz[func(uintptr, uintptr) int32]{sym: "gtk_im_context_filter_keypress"}
+var r_GTK3Gtk_im_context_filter_keypress = lz[func(uintptr, uintptr) int32]{name: "GTK3Gtk_im_context_filter_keypress", sym: "gtk_im_context_filter_keypress"}
 
 func GTK3Gtk_im_context_filter_keypress(context int64, event int64) bool {
 	return r_GTK3Gtk_im_context_filter_keypress.get()(uintptr(context), uintptr(event)) != 0
 }
 
-var r_GTK4Gtk_im_context_filter_keypress = lz[func(uintptr, uintptr) int32]{sym: "gtk_im_context_filter_keypress"}
+var r_GTK4Gtk_im_context_filter_keypress = lz[func(uintptr, uintptr) int32]{name: "GTK4Gtk_im_context_filter_keypress", sym: "gtk_im_context_filter_keypress"}
 
 func GTK4Gtk_im_context_filter_keypress(context int64, event int64) bool {
 	return r_GTK4Gtk_im_context_filter_keypress.get()(uintptr(context), uintptr(event)) != 0
 }
 
-var r_GTKGtk_im_context_focus_in = lz[func(uintptr)]{sym: "gtk_im_context_focus_in"}
+var r_GTKGtk_im_context_focus_in = lz[func(uintptr)]{name: "GTKGtk_im_context_focus_in", sym: "gtk_im_context_focus_in"}
 
 func GTKGtk_im_context_focus_in(context int64) {
 	r_GTKGtk_im_context_focus_in.get()(uintptr(context))
 }
 
-var r_GTKGtk_im_context_focus_out = lz[func(uintptr)]{sym: "gtk_im_context_focus_out"}
+var r_GTKGtk_im_context_focus_out = lz[func(uintptr)]{name: "GTKGtk_im_context_focus_out", sym: "gtk_im_context_focus_out"}
 
 func GTKGtk_im_context_focus_out(context int64) {
 	r_GTKGtk_im_context_focus_out.get()(uintptr(context))
 }
 
-var r_GTKGtk_im_context_get_preedit_string = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]{sym: "gtk_im_context_get_preedit_string"}
+var r_GTKGtk_im_context_get_preedit_string = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]{name: "GTKGtk_im_context_get_preedit_string", sym: "gtk_im_context_get_preedit_string"}
 
 func GTKGtk_im_context_get_preedit_string(context int64, str []int64, attrs []int64, cursor_pos []int32) {
 	r_GTKGtk_im_context_get_preedit_string.get()(uintptr(context), sp(str), sp(attrs), sp(cursor_pos))
 }
 
-var r_GTKGtk_im_context_reset = lz[func(uintptr)]{sym: "gtk_im_context_reset"}
+var r_GTKGtk_im_context_reset = lz[func(uintptr)]{name: "GTKGtk_im_context_reset", sym: "gtk_im_context_reset"}
 
 func GTKGtk_im_context_reset(context int64) {
 	r_GTKGtk_im_context_reset.get()(uintptr(context))
 }
 
-var r_GTKGtk_im_context_set_cursor_location = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_im_context_set_cursor_location"}
+var r_GTKGtk_im_context_set_cursor_location = lz[func(uintptr, unsafe.Pointer)]{name: "GTKGtk_im_context_set_cursor_location", sym: "gtk_im_context_set_cursor_location"}
 
 func GTKGtk_im_context_set_cursor_location(context int64, area *GdkRectangle) {
 	r_GTKGtk_im_context_set_cursor_location.get()(uintptr(context), unsafe.Pointer(area))
 }
 
-var r_GTKGtk_im_multicontext_new = lz[func() uintptr]{sym: "gtk_im_multicontext_new"}
+var r_GTKGtk_im_multicontext_new = lz[func() uintptr]{name: "GTKGtk_im_multicontext_new", sym: "gtk_im_multicontext_new"}
 
 func GTKGtk_im_multicontext_new() int64 {
 	return int64(r_GTKGtk_im_multicontext_new.get()())
 }
 
-var r_GTK4Gtk_image_clear = lz[func(uintptr)]{sym: "gtk_image_clear"}
+var r_GTK4Gtk_image_clear = lz[func(uintptr)]{name: "GTK4Gtk_image_clear", sym: "gtk_image_clear"}
 
 func GTK4Gtk_image_clear(image int64) {
 	r_GTK4Gtk_image_clear.get()(uintptr(image))
 }
 
-var r_GTK3Gtk_image_new_from_icon_name = lz[func(unsafe.Pointer, int32) uintptr]{sym: "gtk_image_new_from_icon_name"}
+var r_GTK3Gtk_image_new_from_icon_name = lz[func(unsafe.Pointer, int32) uintptr]{name: "GTK3Gtk_image_new_from_icon_name", sym: "gtk_image_new_from_icon_name"}
 
 func GTK3Gtk_image_new_from_icon_name(icon_name []int8, size int32) int64 {
 	return int64(r_GTK3Gtk_image_new_from_icon_name.get()(sp(icon_name), size))
 }
 
-var r_GTK3Gtk_image_new_from_surface = lz[func(uintptr) uintptr]{sym: "gtk_image_new_from_surface"}
+var r_GTK3Gtk_image_new_from_surface = lz[func(uintptr) uintptr]{name: "GTK3Gtk_image_new_from_surface", sym: "gtk_image_new_from_surface"}
 
 func GTK3Gtk_image_new_from_surface(surface int64) int64 {
 	return int64(r_GTK3Gtk_image_new_from_surface.get()(uintptr(surface)))
 }
 
-var r_GTK4Gtk_image_new_from_icon_name = lz[func(unsafe.Pointer) uintptr]{sym: "gtk_image_new_from_icon_name"}
+var r_GTK4Gtk_image_new_from_icon_name = lz[func(unsafe.Pointer) uintptr]{name: "GTK4Gtk_image_new_from_icon_name", sym: "gtk_image_new_from_icon_name"}
 
 func GTK4Gtk_image_new_from_icon_name(icon_name []int8) int64 {
 	return int64(r_GTK4Gtk_image_new_from_icon_name.get()(sp(icon_name)))
 }
 
-var r_GTKGtk_image_new = lz[func() uintptr]{sym: "gtk_image_new"}
+var r_GTKGtk_image_new = lz[func() uintptr]{name: "GTKGtk_image_new", sym: "gtk_image_new"}
 
 func GTKGtk_image_new() int64 {
 	return int64(r_GTKGtk_image_new.get()())
 }
 
-var r_GTK3Gtk_image_set_from_icon_name = lz[func(uintptr, unsafe.Pointer, int32)]{sym: "gtk_image_set_from_icon_name"}
+var r_GTK3Gtk_image_set_from_icon_name = lz[func(uintptr, unsafe.Pointer, int32)]{name: "GTK3Gtk_image_set_from_icon_name", sym: "gtk_image_set_from_icon_name"}
 
 func GTK3Gtk_image_set_from_icon_name(image int64, icon_name []int8, size int32) {
 	r_GTK3Gtk_image_set_from_icon_name.get()(uintptr(image), sp(icon_name), size)
 }
 
-var r_GTK3Gtk_image_set_from_surface = lz[func(uintptr, uintptr)]{sym: "gtk_image_set_from_surface"}
+var r_GTK3Gtk_image_set_from_surface = lz[func(uintptr, uintptr)]{name: "GTK3Gtk_image_set_from_surface", sym: "gtk_image_set_from_surface"}
 
 func GTK3Gtk_image_set_from_surface(image int64, surface int64) {
 	r_GTK3Gtk_image_set_from_surface.get()(uintptr(image), uintptr(surface))
 }
 
-var r_GTK4Gtk_image_set_from_icon_name = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_image_set_from_icon_name"}
+var r_GTK4Gtk_image_set_from_icon_name = lz[func(uintptr, unsafe.Pointer)]{name: "GTK4Gtk_image_set_from_icon_name", sym: "gtk_image_set_from_icon_name"}
 
 func GTK4Gtk_image_set_from_icon_name(image int64, icon_name []int8) {
 	r_GTK4Gtk_image_set_from_icon_name.get()(uintptr(image), sp(icon_name))
 }
 
-var r_GTK4Gtk_image_set_from_paintable = lz[func(uintptr, uintptr)]{sym: "gtk_image_set_from_paintable"}
+var r_GTK4Gtk_image_set_from_paintable = lz[func(uintptr, uintptr)]{name: "GTK4Gtk_image_set_from_paintable", sym: "gtk_image_set_from_paintable"}
 
 func GTK4Gtk_image_set_from_paintable(image int64, paintable int64) {
 	r_GTK4Gtk_image_set_from_paintable.get()(uintptr(image), uintptr(paintable))
 }
 
-var r_GTKGtk_image_set_pixel_size = lz[func(uintptr, int32)]{sym: "gtk_image_set_pixel_size"}
+var r_GTKGtk_image_set_pixel_size = lz[func(uintptr, int32)]{name: "GTKGtk_image_set_pixel_size", sym: "gtk_image_set_pixel_size"}
 
 func GTKGtk_image_set_pixel_size(image int64, pixel_size int32) {
 	r_GTKGtk_image_set_pixel_size.get()(uintptr(image), pixel_size)
 }
 
-var r_CairoCairo_image_surface_create = lz[func(int32, int32, int32) uintptr]{sym: "cairo_image_surface_create"}
+var r_CairoCairo_image_surface_create = lz[func(int32, int32, int32) uintptr]{name: "CairoCairo_image_surface_create", sym: "cairo_image_surface_create"}
 
 func CairoCairo_image_surface_create(format int32, width int32, height int32) int64 {
 	return int64(r_CairoCairo_image_surface_create.get()(format, width, height))
 }
 
-var r_CairoCairo_image_surface_get_data = lz[func(uintptr) uintptr]{sym: "cairo_image_surface_get_data"}
+var r_CairoCairo_image_surface_get_data = lz[func(uintptr) uintptr]{name: "CairoCairo_image_surface_get_data", sym: "cairo_image_surface_get_data"}
 
 func CairoCairo_image_surface_get_data(surface int64) int64 {
 	return int64(r_CairoCairo_image_surface_get_data.get()(uintptr(surface)))
 }
 
-var r_CairoCairo_image_surface_get_format = lz[func(uintptr) int32]{sym: "cairo_image_surface_get_format"}
+var r_CairoCairo_image_surface_get_format = lz[func(uintptr) int32]{name: "CairoCairo_image_surface_get_format", sym: "cairo_image_surface_get_format"}
 
 func CairoCairo_image_surface_get_format(surface int64) int32 {
 	return r_CairoCairo_image_surface_get_format.get()(uintptr(surface))
 }
 
-var r_CairoCairo_image_surface_get_height = lz[func(uintptr) int32]{sym: "cairo_image_surface_get_height"}
+var r_CairoCairo_image_surface_get_height = lz[func(uintptr) int32]{name: "CairoCairo_image_surface_get_height", sym: "cairo_image_surface_get_height"}
 
 func CairoCairo_image_surface_get_height(surface int64) int32 {
 	return r_CairoCairo_image_surface_get_height.get()(uintptr(surface))
 }
 
-var r_CairoCairo_image_surface_get_stride = lz[func(uintptr) int32]{sym: "cairo_image_surface_get_stride"}
+var r_CairoCairo_image_surface_get_stride = lz[func(uintptr) int32]{name: "CairoCairo_image_surface_get_stride", sym: "cairo_image_surface_get_stride"}
 
 func CairoCairo_image_surface_get_stride(surface int64) int32 {
 	return r_CairoCairo_image_surface_get_stride.get()(uintptr(surface))
 }
 
-var r_CairoCairo_image_surface_get_width = lz[func(uintptr) int32]{sym: "cairo_image_surface_get_width"}
+var r_CairoCairo_image_surface_get_width = lz[func(uintptr) int32]{name: "CairoCairo_image_surface_get_width", sym: "cairo_image_surface_get_width"}
 
 func CairoCairo_image_surface_get_width(surface int64) int32 {
 	return r_CairoCairo_image_surface_get_width.get()(uintptr(surface))
 }
 
-var r_CairoCairo_in_fill = lz[func(uintptr, float64, float64) int32]{sym: "cairo_in_fill"}
+var r_CairoCairo_in_fill = lz[func(uintptr, float64, float64) int32]{name: "CairoCairo_in_fill", sym: "cairo_in_fill"}
 
 func CairoCairo_in_fill(cr int64, x float64, y float64) int32 {
 	return r_CairoCairo_in_fill.get()(uintptr(cr), x, y)
 }
 
-var r_CairoCairo_in_stroke = lz[func(uintptr, float64, float64) int32]{sym: "cairo_in_stroke"}
+var r_CairoCairo_in_stroke = lz[func(uintptr, float64, float64) int32]{name: "CairoCairo_in_stroke", sym: "cairo_in_stroke"}
 
 func CairoCairo_in_stroke(cr int64, x float64, y float64) int32 {
 	return r_CairoCairo_in_stroke.get()(uintptr(cr), x, y)
 }
 
-var r_GTK3Gtk_init_check = lz[func(unsafe.Pointer, unsafe.Pointer) int32]{sym: "gtk_init_check"}
+var r_GTK3Gtk_init_check = lz[func(unsafe.Pointer, unsafe.Pointer) int32]{name: "GTK3Gtk_init_check", sym: "gtk_init_check"}
 
 func GTK3Gtk_init_check(argc []int64, argv []int64) bool {
 	return r_GTK3Gtk_init_check.get()(sp(argc), sp(argv)) != 0
 }
 
-var r_GTK4Gtk_init_check = lz[func() int32]{sym: "gtk_init_check"}
+var r_GTK4Gtk_init_check = lz[func() int32]{name: "GTK4Gtk_init_check", sym: "gtk_init_check"}
 
 func GTK4Gtk_init_check() bool {
 	return r_GTK4Gtk_init_check.get()() != 0
 }
 
-var r_OSG_io_error_quark = lz[func() int32]{sym: "g_io_error_quark"}
+var r_OSG_io_error_quark = lz[func() int32]{name: "OSG_io_error_quark", sym: "g_io_error_quark"}
 
 func OSG_io_error_quark() int32 {
 	return r_OSG_io_error_quark.get()()
 }
 
-var r_GDKGdk_key_event_get_keyval = lz[func(uintptr) int32]{sym: "gdk_key_event_get_keyval"}
+var r_GDKGdk_key_event_get_keyval = lz[func(uintptr) int32]{name: "GDKGdk_key_event_get_keyval", sym: "gdk_key_event_get_keyval"}
 
 func GDKGdk_key_event_get_keyval(event int64) int32 {
 	return r_GDKGdk_key_event_get_keyval.get()(uintptr(event))
 }
 
-var r_GDKGdk_key_event_get_layout = lz[func(uintptr) int32]{sym: "gdk_key_event_get_layout"}
+var r_GDKGdk_key_event_get_layout = lz[func(uintptr) int32]{name: "GDKGdk_key_event_get_layout", sym: "gdk_key_event_get_layout"}
 
 func GDKGdk_key_event_get_layout(event int64) int32 {
 	return r_GDKGdk_key_event_get_layout.get()(uintptr(event))
 }
 
-var r_GDKGdk_keymap_get_entries_for_keyval = lz[func(uintptr, int32, unsafe.Pointer, unsafe.Pointer) int32]{sym: "gdk_keymap_get_entries_for_keyval"}
+var r_GDKGdk_keymap_get_entries_for_keyval = lz[func(uintptr, int32, unsafe.Pointer, unsafe.Pointer) int32]{name: "GDKGdk_keymap_get_entries_for_keyval", sym: "gdk_keymap_get_entries_for_keyval"}
 
 func GDKGdk_keymap_get_entries_for_keyval(keymap int64, keyval int32, keys []int64, n_keys []int32) bool {
 	return r_GDKGdk_keymap_get_entries_for_keyval.get()(uintptr(keymap), keyval, sp(keys), sp(n_keys)) != 0
 }
 
-var r_GDKGdk_keymap_get_for_display = lz[func(uintptr) uintptr]{sym: "gdk_keymap_get_for_display"}
+var r_GDKGdk_keymap_get_for_display = lz[func(uintptr) uintptr]{name: "GDKGdk_keymap_get_for_display", sym: "gdk_keymap_get_for_display"}
 
 func GDKGdk_keymap_get_for_display(display int64) int64 {
 	return int64(r_GDKGdk_keymap_get_for_display.get()(uintptr(display)))
 }
 
-var r_GDKGdk_keymap_translate_keyboard_state = lz[func(uintptr, int32, int32, int32, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) int32]{sym: "gdk_keymap_translate_keyboard_state"}
+var r_GDKGdk_keymap_translate_keyboard_state = lz[func(uintptr, int32, int32, int32, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) int32]{name: "GDKGdk_keymap_translate_keyboard_state", sym: "gdk_keymap_translate_keyboard_state"}
 
 func GDKGdk_keymap_translate_keyboard_state(keymap int64, hardware_keycode int32, state int32, group int32, keyval []int32, effective_group []int32, level []int32, consumed_modifiers []int32) bool {
 	return r_GDKGdk_keymap_translate_keyboard_state.get()(uintptr(keymap), hardware_keycode, state, group, sp(keyval), sp(effective_group), sp(level), sp(consumed_modifiers)) != 0
 }
 
-var r_GDKGdk_keyval_to_lower = lz[func(int32) int32]{sym: "gdk_keyval_to_lower"}
+var r_GDKGdk_keyval_to_lower = lz[func(int32) int32]{name: "GDKGdk_keyval_to_lower", sym: "gdk_keyval_to_lower"}
 
 func GDKGdk_keyval_to_lower(keyval int64) int64 {
 	return int64(r_GDKGdk_keyval_to_lower.get()(int32(keyval)))
 }
 
-var r_GDKGdk_keyval_to_unicode = lz[func(int32) int32]{sym: "gdk_keyval_to_unicode"}
+var r_GDKGdk_keyval_to_unicode = lz[func(int32) int32]{name: "GDKGdk_keyval_to_unicode", sym: "gdk_keyval_to_unicode"}
 
 func GDKGdk_keyval_to_unicode(keyval int64) int64 {
 	return int64(r_GDKGdk_keyval_to_unicode.get()(int32(keyval)))
 }
 
-var r_GTK4Gtk_keyval_trigger_new = lz[func(int32, int32) uintptr]{sym: "gtk_keyval_trigger_new"}
+var r_GTK4Gtk_keyval_trigger_new = lz[func(int32, int32) uintptr]{name: "GTK4Gtk_keyval_trigger_new", sym: "gtk_keyval_trigger_new"}
 
 func GTK4Gtk_keyval_trigger_new(keyval int32, modifiers int32) int64 {
 	return int64(r_GTK4Gtk_keyval_trigger_new.get()(keyval, modifiers))
 }
 
-var r_GTKGtk_label_get_layout = lz[func(uintptr) uintptr]{sym: "gtk_label_get_layout"}
+var r_GTKGtk_label_get_layout = lz[func(uintptr) uintptr]{name: "GTKGtk_label_get_layout", sym: "gtk_label_get_layout"}
 
 func GTKGtk_label_get_layout(label int64) int64 {
 	return int64(r_GTKGtk_label_get_layout.get()(uintptr(label)))
 }
 
-var r_GTKGtk_label_get_mnemonic_keyval = lz[func(uintptr) int32]{sym: "gtk_label_get_mnemonic_keyval"}
+var r_GTKGtk_label_get_mnemonic_keyval = lz[func(uintptr) int32]{name: "GTKGtk_label_get_mnemonic_keyval", sym: "gtk_label_get_mnemonic_keyval"}
 
 func GTKGtk_label_get_mnemonic_keyval(label int64) int32 {
 	return r_GTKGtk_label_get_mnemonic_keyval.get()(uintptr(label))
 }
 
-var r_GTKGtk_label_new = lz[func(unsafe.Pointer) uintptr]{sym: "gtk_label_new"}
+var r_GTKGtk_label_new = lz[func(unsafe.Pointer) uintptr]{name: "GTKGtk_label_new", sym: "gtk_label_new"}
 
 func GTKGtk_label_new(str []int8) int64 {
 	return int64(r_GTKGtk_label_new.get()(sp(str)))
 }
 
-var r_GTKGtk_label_new_with_mnemonic = lz[func(unsafe.Pointer) uintptr]{sym: "gtk_label_new_with_mnemonic"}
+var r_GTKGtk_label_new_with_mnemonic = lz[func(unsafe.Pointer) uintptr]{name: "GTKGtk_label_new_with_mnemonic", sym: "gtk_label_new_with_mnemonic"}
 
 func GTKGtk_label_new_with_mnemonic(str []int8) int64 {
 	return int64(r_GTKGtk_label_new_with_mnemonic.get()(sp(str)))
 }
 
-var r_GTK3Gtk_label_set_line_wrap = lz[func(uintptr, int32)]{sym: "gtk_label_set_line_wrap"}
+var r_GTK3Gtk_label_set_line_wrap = lz[func(uintptr, int32)]{name: "GTK3Gtk_label_set_line_wrap", sym: "gtk_label_set_line_wrap"}
 
 func GTK3Gtk_label_set_line_wrap(label int64, wrap bool) {
 	r_GTK3Gtk_label_set_line_wrap.get()(uintptr(label), b2i(wrap))
 }
 
-var r_GTK3Gtk_label_set_line_wrap_mode = lz[func(uintptr, int32)]{sym: "gtk_label_set_line_wrap_mode"}
+var r_GTK3Gtk_label_set_line_wrap_mode = lz[func(uintptr, int32)]{name: "GTK3Gtk_label_set_line_wrap_mode", sym: "gtk_label_set_line_wrap_mode"}
 
 func GTK3Gtk_label_set_line_wrap_mode(label int64, wrap_mode int32) {
 	r_GTK3Gtk_label_set_line_wrap_mode.get()(uintptr(label), wrap_mode)
 }
 
-var r_GTK4Gtk_label_set_wrap = lz[func(uintptr, int32)]{sym: "gtk_label_set_wrap"}
+var r_GTK4Gtk_label_set_wrap = lz[func(uintptr, int32)]{name: "GTK4Gtk_label_set_wrap", sym: "gtk_label_set_wrap"}
 
 func GTK4Gtk_label_set_wrap(self int64, wrap bool) {
 	r_GTK4Gtk_label_set_wrap.get()(uintptr(self), b2i(wrap))
 }
 
-var r_GTK4Gtk_label_set_wrap_mode = lz[func(uintptr, int32)]{sym: "gtk_label_set_wrap_mode"}
+var r_GTK4Gtk_label_set_wrap_mode = lz[func(uintptr, int32)]{name: "GTK4Gtk_label_set_wrap_mode", sym: "gtk_label_set_wrap_mode"}
 
 func GTK4Gtk_label_set_wrap_mode(self int64, wrap_mode int32) {
 	r_GTK4Gtk_label_set_wrap_mode.get()(uintptr(self), wrap_mode)
 }
 
-var r_GTKGtk_label_set_attributes = lz[func(uintptr, uintptr)]{sym: "gtk_label_set_attributes"}
+var r_GTKGtk_label_set_attributes = lz[func(uintptr, uintptr)]{name: "GTKGtk_label_set_attributes", sym: "gtk_label_set_attributes"}
 
 func GTKGtk_label_set_attributes(label int64, attrs int64) {
 	r_GTKGtk_label_set_attributes.get()(uintptr(label), uintptr(attrs))
 }
 
-var r_GTKGtk_label_set_justify = lz[func(uintptr, int32)]{sym: "gtk_label_set_justify"}
+var r_GTKGtk_label_set_justify = lz[func(uintptr, int32)]{name: "GTKGtk_label_set_justify", sym: "gtk_label_set_justify"}
 
 func GTKGtk_label_set_justify(label int64, jtype int32) {
 	r_GTKGtk_label_set_justify.get()(uintptr(label), jtype)
 }
 
-var r_GTKGtk_label_set_text = lz[func(uintptr, uintptr)]{sym: "gtk_label_set_text"}
+var r_GTKGtk_label_set_text = lz[func(uintptr, uintptr)]{name: "GTKGtk_label_set_text", sym: "gtk_label_set_text"}
 
 func GTKGtk_label_set_text(label int64, str int64) {
 	r_GTKGtk_label_set_text.get()(uintptr(label), uintptr(str))
 }
 
-var r_GTKGtk_label_set_textLabelStr = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_label_set_text"}
+var r_GTKGtk_label_set_textLabelStr = lz[func(uintptr, unsafe.Pointer)]{name: "GTKGtk_label_set_textLabelStr", sym: "gtk_label_set_text"}
 
 func GTKGtk_label_set_textLabelStr(label int64, str []int8) {
 	r_GTKGtk_label_set_textLabelStr.get()(uintptr(label), sp(str))
 }
 
-var r_GTKGtk_label_set_text_with_mnemonic = lz[func(uintptr, unsafe.Pointer)]{sym: "gtk_label_set_text_with_mnemonic"}
+var r_GTKGtk_label_set_text_with_mnemonic = lz[func(uintptr, unsafe.Pointer)]{name: "GTKGtk_label_set_text_with_mnemonic", sym: "gtk_label_set_text_with_mnemonic"}
 
 func GTKGtk_label_set_text_with_mnemonic(label int64, str []int8) {
 	r_GTKGtk_label_set_text_with_mnemonic.get()(uintptr(label), sp(str))
 }
 
-var r_GTKGtk_label_set_xalign = lz[func(uintptr, float32)]{sym: "gtk_label_set_xalign"}
+var r_GTKGtk_label_set_xalign = lz[func(uintptr, float32)]{name: "GTKGtk_label_set_xalign", sym: "gtk_label_set_xalign"}
 
 func GTKGtk_label_set_xalign(label int64, xalign float32) {
 	r_GTKGtk_label_set_xalign.get()(uintptr(label), xalign)
 }
 
-var r_GTKGtk_label_set_yalign = lz[func(uintptr, float32)]{sym: "gtk_label_set_yalign"}
+var r_GTKGtk_label_set_yalign = lz[func(uintptr, float32)]{name: "GTKGtk_label_set_yalign", sym: "gtk_label_set_yalign"}
 
 func GTKGtk_label_set_yalign(label int64, yalign float32) {
 	r_GTKGtk_label_set_yalign.get()(uintptr(label), yalign)
 }
 
-var r_OSPango_layout_context_changed = lz[func(uintptr)]{sym: "pango_layout_context_changed"}
+var r_OSPango_layout_context_changed = lz[func(uintptr)]{name: "OSPango_layout_context_changed", sym: "pango_layout_context_changed"}
 
 func OSPango_layout_context_changed(layout int64) {
 	r_OSPango_layout_context_changed.get()(uintptr(layout))
 }
 
-var r_OSPango_layout_get_alignment = lz[func(uintptr) int32]{sym: "pango_layout_get_alignment"}
+var r_OSPango_layout_get_alignment = lz[func(uintptr) int32]{name: "OSPango_layout_get_alignment", sym: "pango_layout_get_alignment"}
 
 func OSPango_layout_get_alignment(layout int64) int32 {
 	return r_OSPango_layout_get_alignment.get()(uintptr(layout))
 }
 
-var r_OSPango_layout_get_context = lz[func(uintptr) uintptr]{sym: "pango_layout_get_context"}
+var r_OSPango_layout_get_context = lz[func(uintptr) uintptr]{name: "OSPango_layout_get_context", sym: "pango_layout_get_context"}
 
 func OSPango_layout_get_context(layout int64) int64 {
 	return int64(r_OSPango_layout_get_context.get()(uintptr(layout)))
 }
 
-var r_OSPango_layout_get_indent = lz[func(uintptr) int32]{sym: "pango_layout_get_indent"}
+var r_OSPango_layout_get_indent = lz[func(uintptr) int32]{name: "OSPango_layout_get_indent", sym: "pango_layout_get_indent"}
 
 func OSPango_layout_get_indent(layout int64) int32 {
 	return r_OSPango_layout_get_indent.get()(uintptr(layout))
 }
 
-var r_OSPango_layout_get_iter = lz[func(uintptr) uintptr]{sym: "pango_layout_get_iter"}
+var r_OSPango_layout_get_iter = lz[func(uintptr) uintptr]{name: "OSPango_layout_get_iter", sym: "pango_layout_get_iter"}
 
 func OSPango_layout_get_iter(layout int64) int64 {
 	return int64(r_OSPango_layout_get_iter.get()(uintptr(layout)))
 }
 
-var r_OSPango_layout_get_justify = lz[func(uintptr) int32]{sym: "pango_layout_get_justify"}
+var r_OSPango_layout_get_justify = lz[func(uintptr) int32]{name: "OSPango_layout_get_justify", sym: "pango_layout_get_justify"}
 
 func OSPango_layout_get_justify(layout int64) bool {
 	return r_OSPango_layout_get_justify.get()(uintptr(layout)) != 0
 }
 
-var r_OSPango_layout_get_line = lz[func(uintptr, int32) uintptr]{sym: "pango_layout_get_line"}
+var r_OSPango_layout_get_line = lz[func(uintptr, int32) uintptr]{name: "OSPango_layout_get_line", sym: "pango_layout_get_line"}
 
 func OSPango_layout_get_line(layout int64, line int32) int64 {
 	return int64(r_OSPango_layout_get_line.get()(uintptr(layout), line))
 }
 
-var r_OSPango_layout_get_line_count = lz[func(uintptr) int32]{sym: "pango_layout_get_line_count"}
+var r_OSPango_layout_get_line_count = lz[func(uintptr) int32]{name: "OSPango_layout_get_line_count", sym: "pango_layout_get_line_count"}
 
 func OSPango_layout_get_line_count(layout int64) int32 {
 	return r_OSPango_layout_get_line_count.get()(uintptr(layout))
 }
 
-var r_OSPango_layout_get_log_attrs = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "pango_layout_get_log_attrs"}
+var r_OSPango_layout_get_log_attrs = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "OSPango_layout_get_log_attrs", sym: "pango_layout_get_log_attrs"}
 
 func OSPango_layout_get_log_attrs(layout int64, attrs []int64, n_attrs []int32) {
 	r_OSPango_layout_get_log_attrs.get()(uintptr(layout), sp(attrs), sp(n_attrs))
 }
 
-var r_OSPango_layout_get_pixel_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "pango_layout_get_pixel_size"}
+var r_OSPango_layout_get_pixel_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "OSPango_layout_get_pixel_size", sym: "pango_layout_get_pixel_size"}
 
 func OSPango_layout_get_pixel_size(layout int64, width []int32, height []int32) {
 	r_OSPango_layout_get_pixel_size.get()(uintptr(layout), sp(width), sp(height))
 }
 
-var r_OSPango_layout_get_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "pango_layout_get_size"}
+var r_OSPango_layout_get_size = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "OSPango_layout_get_size", sym: "pango_layout_get_size"}
 
 func OSPango_layout_get_size(layout int64, width []int32, height []int32) {
 	r_OSPango_layout_get_size.get()(uintptr(layout), sp(width), sp(height))
 }
 
-var r_OSPango_layout_get_spacing = lz[func(uintptr) int32]{sym: "pango_layout_get_spacing"}
+var r_OSPango_layout_get_spacing = lz[func(uintptr) int32]{name: "OSPango_layout_get_spacing", sym: "pango_layout_get_spacing"}
 
 func OSPango_layout_get_spacing(layout int64) int32 {
 	return r_OSPango_layout_get_spacing.get()(uintptr(layout))
 }
 
-var r_OSPango_layout_get_text = lz[func(uintptr) uintptr]{sym: "pango_layout_get_text"}
+var r_OSPango_layout_get_text = lz[func(uintptr) uintptr]{name: "OSPango_layout_get_text", sym: "pango_layout_get_text"}
 
 func OSPango_layout_get_text(layout int64) int64 {
 	return int64(r_OSPango_layout_get_text.get()(uintptr(layout)))
 }
 
-var r_OSPango_layout_get_width = lz[func(uintptr) int32]{sym: "pango_layout_get_width"}
+var r_OSPango_layout_get_width = lz[func(uintptr) int32]{name: "OSPango_layout_get_width", sym: "pango_layout_get_width"}
 
 func OSPango_layout_get_width(layout int64) int32 {
 	return r_OSPango_layout_get_width.get()(uintptr(layout))
 }
 
-var r_OSPango_layout_index_to_pos = lz[func(uintptr, int32, unsafe.Pointer)]{sym: "pango_layout_index_to_pos"}
+var r_OSPango_layout_index_to_pos = lz[func(uintptr, int32, unsafe.Pointer)]{name: "OSPango_layout_index_to_pos", sym: "pango_layout_index_to_pos"}
 
 func OSPango_layout_index_to_pos(layout int64, index_ int32, pos *PangoRectangle) {
 	r_OSPango_layout_index_to_pos.get()(uintptr(layout), index_, unsafe.Pointer(pos))
 }
 
-var r_OSPango_layout_iter_free = lz[func(uintptr)]{sym: "pango_layout_iter_free"}
+var r_OSPango_layout_iter_free = lz[func(uintptr)]{name: "OSPango_layout_iter_free", sym: "pango_layout_iter_free"}
 
 func OSPango_layout_iter_free(iter int64) {
 	r_OSPango_layout_iter_free.get()(uintptr(iter))
 }
 
-var r_OSPango_layout_iter_get_index = lz[func(uintptr) int32]{sym: "pango_layout_iter_get_index"}
+var r_OSPango_layout_iter_get_index = lz[func(uintptr) int32]{name: "OSPango_layout_iter_get_index", sym: "pango_layout_iter_get_index"}
 
 func OSPango_layout_iter_get_index(iter int64) int32 {
 	return r_OSPango_layout_iter_get_index.get()(uintptr(iter))
 }
 
-var r_OSPango_layout_iter_get_line_extents = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "pango_layout_iter_get_line_extents"}
+var r_OSPango_layout_iter_get_line_extents = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "OSPango_layout_iter_get_line_extents", sym: "pango_layout_iter_get_line_extents"}
 
 func OSPango_layout_iter_get_line_extents(iter int64, ink_rect *PangoRectangle, logical_rect *PangoRectangle) {
 	r_OSPango_layout_iter_get_line_extents.get()(uintptr(iter), unsafe.Pointer(ink_rect), unsafe.Pointer(logical_rect))
 }
 
-var r_OSPango_layout_iter_get_run = lz[func(uintptr) uintptr]{sym: "pango_layout_iter_get_run"}
+var r_OSPango_layout_iter_get_run = lz[func(uintptr) uintptr]{name: "OSPango_layout_iter_get_run", sym: "pango_layout_iter_get_run"}
 
 func OSPango_layout_iter_get_run(iter int64) int64 {
 	return int64(r_OSPango_layout_iter_get_run.get()(uintptr(iter)))
 }
 
-var r_OSPango_layout_iter_next_line = lz[func(uintptr) int32]{sym: "pango_layout_iter_next_line"}
+var r_OSPango_layout_iter_next_line = lz[func(uintptr) int32]{name: "OSPango_layout_iter_next_line", sym: "pango_layout_iter_next_line"}
 
 func OSPango_layout_iter_next_line(iter int64) bool {
 	return r_OSPango_layout_iter_next_line.get()(uintptr(iter)) != 0
 }
 
-var r_OSPango_layout_iter_next_run = lz[func(uintptr) int32]{sym: "pango_layout_iter_next_run"}
+var r_OSPango_layout_iter_next_run = lz[func(uintptr) int32]{name: "OSPango_layout_iter_next_run", sym: "pango_layout_iter_next_run"}
 
 func OSPango_layout_iter_next_run(iter int64) bool {
 	return r_OSPango_layout_iter_next_run.get()(uintptr(iter)) != 0
 }
 
-var r_OSPango_layout_line_get_extents = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{sym: "pango_layout_line_get_extents"}
+var r_OSPango_layout_line_get_extents = lz[func(uintptr, unsafe.Pointer, unsafe.Pointer)]{name: "OSPango_layout_line_get_extents", sym: "pango_layout_line_get_extents"}
 
 func OSPango_layout_line_get_extents(line int64, ink_rect *PangoRectangle, logical_rect *PangoRectangle) {
 	r_OSPango_layout_line_get_extents.get()(uintptr(line), unsafe.Pointer(ink_rect), unsafe.Pointer(logical_rect))
 }
 
-var r_OSPango_layout_new = lz[func(uintptr) uintptr]{sym: "pango_layout_new"}
+var r_OSPango_layout_new = lz[func(uintptr) uintptr]{name: "OSPango_layout_new", sym: "pango_layout_new"}
 
 func OSPango_layout_new(context int64) int64 {
 	return int64(r_OSPango_layout_new.get()(uintptr(context)))
 }
 
-var r_OSPango_layout_set_alignment = lz[func(uintptr, int32)]{sym: "pango_layout_set_alignment"}
+var r_OSPango_layout_set_alignment = lz[func(uintptr, int32)]{name: "OSPango_layout_set_alignment", sym: "pango_layout_set_alignment"}
 
 func OSPango_layout_set_alignment(layout int64, alignment int32) {
 	r_OSPango_layout_set_alignment.get()(uintptr(layout), alignment)
 }
 
-var r_OSPango_layout_set_attributes = lz[func(uintptr, uintptr)]{sym: "pango_layout_set_attributes"}
+var r_OSPango_layout_set_attributes = lz[func(uintptr, uintptr)]{name: "OSPango_layout_set_attributes", sym: "pango_layout_set_attributes"}
 
 func OSPango_layout_set_attributes(layout int64, attrs int64) {
 	r_OSPango_layout_set_attributes.get()(uintptr(layout), uintptr(attrs))
 }
 
-var r_OSPango_layout_set_auto_dir = lz[func(uintptr, int32)]{sym: "pango_layout_set_auto_dir"}
+var r_OSPango_layout_set_auto_dir = lz[func(uintptr, int32)]{name: "OSPango_layout_set_auto_dir", sym: "pango_layout_set_auto_dir"}
 
 func OSPango_layout_set_auto_dir(layout int64, auto_dir bool) {
 	r_OSPango_layout_set_auto_dir.get()(uintptr(layout), b2i(auto_dir))
 }
 
-var r_OSPango_layout_set_font_description = lz[func(uintptr, uintptr)]{sym: "pango_layout_set_font_description"}
+var r_OSPango_layout_set_font_description = lz[func(uintptr, uintptr)]{name: "OSPango_layout_set_font_description", sym: "pango_layout_set_font_description"}
 
 func OSPango_layout_set_font_description(layout int64, desc int64) {
 	r_OSPango_layout_set_font_description.get()(uintptr(layout), uintptr(desc))
 }
 
-var r_OSPango_layout_set_indent = lz[func(uintptr, int32)]{sym: "pango_layout_set_indent"}
+var r_OSPango_layout_set_indent = lz[func(uintptr, int32)]{name: "OSPango_layout_set_indent", sym: "pango_layout_set_indent"}
 
 func OSPango_layout_set_indent(layout int64, indent int32) {
 	r_OSPango_layout_set_indent.get()(uintptr(layout), indent)
 }
 
-var r_OSPango_layout_set_justify = lz[func(uintptr, int32)]{sym: "pango_layout_set_justify"}
+var r_OSPango_layout_set_justify = lz[func(uintptr, int32)]{name: "OSPango_layout_set_justify", sym: "pango_layout_set_justify"}
 
 func OSPango_layout_set_justify(layout int64, justify bool) {
 	r_OSPango_layout_set_justify.get()(uintptr(layout), b2i(justify))
 }
 
-var r_OSPango_layout_set_single_paragraph_mode = lz[func(uintptr, int32)]{sym: "pango_layout_set_single_paragraph_mode"}
+var r_OSPango_layout_set_single_paragraph_mode = lz[func(uintptr, int32)]{name: "OSPango_layout_set_single_paragraph_mode", sym: "pango_layout_set_single_paragraph_mode"}
 
 func OSPango_layout_set_single_paragraph_mode(layout int64, setting bool) {
 	r_OSPango_layout_set_single_paragraph_mode.get()(uintptr(layout), b2i(setting))
 }
 
-var r_OSPango_layout_set_spacing = lz[func(uintptr, int32)]{sym: "pango_layout_set_spacing"}
+var r_OSPango_layout_set_spacing = lz[func(uintptr, int32)]{name: "OSPango_layout_set_spacing", sym: "pango_layout_set_spacing"}
 
 func OSPango_layout_set_spacing(layout int64, spacing int32) {
 	r_OSPango_layout_set_spacing.get()(uintptr(layout), spacing)
 }
 
-var r_OSPango_layout_set_tabs = lz[func(uintptr, uintptr)]{sym: "pango_layout_set_tabs"}
+var r_OSPango_layout_set_tabs = lz[func(uintptr, uintptr)]{name: "OSPango_layout_set_tabs", sym: "pango_layout_set_tabs"}
 
 func OSPango_layout_set_tabs(layout int64, tabs int64) {
 	r_OSPango_layout_set_tabs.get()(uintptr(layout), uintptr(tabs))
 }
 
-var r_OSPango_layout_set_text = lz[func(uintptr, unsafe.Pointer, int32)]{sym: "pango_layout_set_text"}
+var r_OSPango_layout_set_text = lz[func(uintptr, unsafe.Pointer, int32)]{name: "OSPango_layout_set_text", sym: "pango_layout_set_text"}
 
 func OSPango_layout_set_text(layout int64, text []int8, length int32) {
 	r_OSPango_layout_set_text.get()(uintptr(layout), sp(text), length)
 }
 
-var r_OSPango_layout_set_width = lz[func(uintptr, int32)]{sym: "pango_layout_set_width"}
+var r_OSPango_layout_set_width = lz[func(uintptr, int32)]{name: "OSPango_layout_set_width", sym: "pango_layout_set_width"}
 
 func OSPango_layout_set_width(layout int64, width int32) {
 	r_OSPango_layout_set_width.get()(uintptr(layout), width)
 }
 
-var r_OSPango_layout_set_wrap = lz[func(uintptr, int32)]{sym: "pango_layout_set_wrap"}
+var r_OSPango_layout_set_wrap = lz[func(uintptr, int32)]{name: "OSPango_layout_set_wrap", sym: "pango_layout_set_wrap"}
 
 func OSPango_layout_set_wrap(layout int64, wrap int32) {
 	r_OSPango_layout_set_wrap.get()(uintptr(layout), wrap)
 }
 
-var r_OSPango_layout_xy_to_index = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer) int32]{sym: "pango_layout_xy_to_index"}
+var r_OSPango_layout_xy_to_index = lz[func(uintptr, int32, int32, unsafe.Pointer, unsafe.Pointer) int32]{name: "OSPango_layout_xy_to_index", sym: "pango_layout_xy_to_index"}
 
 func OSPango_layout_xy_to_index(layout int64, x int32, y int32, index_ []int32, trailing []int32) bool {
 	return r_OSPango_layout_xy_to_index.get()(uintptr(layout), x, y, sp(index_), sp(trailing)) != 0
 }
 
-var r_CairoCairo_line_to = lz[func(uintptr, float64, float64)]{sym: "cairo_line_to"}
+var r_CairoCairo_line_to = lz[func(uintptr, float64, float64)]{name: "CairoCairo_line_to", sym: "cairo_line_to"}
 
 func CairoCairo_line_to(cr int64, x float64, y float64) {
 	r_CairoCairo_line_to.get()(uintptr(cr), x, y)
 }
 
-var r_OSG_list_append = lz[func(uintptr, uintptr) uintptr]{sym: "g_list_append"}
+var r_OSG_list_append = lz[func(uintptr, uintptr) uintptr]{name: "OSG_list_append", sym: "g_list_append"}
 
 func OSG_list_append(list int64, data int64) int64 {
 	return int64(r_OSG_list_append.get()(uintptr(list), uintptr(data)))
 }
 
-var r_OSG_list_free = lz[func(uintptr)]{sym: "g_list_free"}
+var r_OSG_list_free = lz[func(uintptr)]{name: "OSG_list_free", sym: "g_list_free"}
 
 func OSG_list_free(list int64) {
 	r_OSG_list_free.get()(uintptr(list))
 }
 
-var r_OSG_list_last = lz[func(uintptr) uintptr]{sym: "g_list_last"}
+var r_OSG_list_last = lz[func(uintptr) uintptr]{name: "OSG_list_last", sym: "g_list_last"}
 
 func OSG_list_last(list int64) int64 {
 	return int64(r_OSG_list_last.get()(uintptr(list)))
 }
 
-var r_OSG_list_length = lz[func(uintptr) int32]{sym: "g_list_length"}
+var r_OSG_list_length = lz[func(uintptr) int32]{name: "OSG_list_length", sym: "g_list_length"}
 
 func OSG_list_length(list int64) int32 {
 	return r_OSG_list_length.get()(uintptr(list))
 }
 
-var r_OSG_list_model_get_item = lz[func(uintptr, int32) uintptr]{sym: "g_list_model_get_item"}
+var r_OSG_list_model_get_item = lz[func(uintptr, int32) uintptr]{name: "OSG_list_model_get_item", sym: "g_list_model_get_item"}
 
 func OSG_list_model_get_item(list int64, position int32) int64 {
 	return int64(r_OSG_list_model_get_item.get()(uintptr(list), position))
 }
 
-var r_OSG_list_model_get_n_items = lz[func(uintptr) int32]{sym: "g_list_model_get_n_items"}
+var r_OSG_list_model_get_n_items = lz[func(uintptr) int32]{name: "OSG_list_model_get_n_items", sym: "g_list_model_get_n_items"}
 
 func OSG_list_model_get_n_items(list int64) int32 {
 	return r_OSG_list_model_get_n_items.get()(uintptr(list))
 }
 
-var r_OSG_list_nth_data = lz[func(uintptr, int32) uintptr]{sym: "g_list_nth_data"}
+var r_OSG_list_nth_data = lz[func(uintptr, int32) uintptr]{name: "OSG_list_nth_data", sym: "g_list_nth_data"}
 
 func OSG_list_nth_data(list int64, n int32) int64 {
 	return int64(r_OSG_list_nth_data.get()(uintptr(list), n))
 }
 
-var r_GTKGtk_list_store_append = lz[func(uintptr, uintptr)]{sym: "gtk_list_store_append"}
+var r_GTKGtk_list_store_append = lz[func(uintptr, uintptr)]{name: "GTKGtk_list_store_append", sym: "gtk_list_store_append"}
 
 func GTKGtk_list_store_append(list_store int64, iter int64) {
 	r_GTKGtk_list_store_append.get()(uintptr(list_store), uintptr(iter))
 }
 
-var r_GTKGtk_list_store_clear = lz[func(uintptr)]{sym: "gtk_list_store_clear"}
+var r_GTKGtk_list_store_clear = lz[func(uintptr)]{name: "GTKGtk_list_store_clear", sym: "gtk_list_store_clear"}
 
 func GTKGtk_list_store_clear(list_store int64) {
 	r_GTKGtk_list_store_clear.get()(uintptr(list_store))
 }
 
-var r_GTKGtk_list_store_insert = lz[func(uintptr, uintptr, int32)]{sym: "gtk_list_store_insert"}
+var r_GTKGtk_list_store_insert = lz[func(uintptr, uintptr, int32)]{name: "GTKGtk_list_store_insert", sym: "gtk_list_store_insert"}
 
 func GTKGtk_list_store_insert(list_store int64, iter int64, position int32) {
 	r_GTKGtk_list_store_insert.get()(uintptr(list_store), uintptr(iter), position)
 }
 
-var r_GTKGtk_list_store_newv = lz[func(int32, unsafe.Pointer) uintptr]{sym: "gtk_list_store_newv"}
+var r_GTKGtk_list_store_newv = lz[func(int32, unsafe.Pointer) uintptr]{name: "GTKGtk_list_store_newv", sym: "gtk_list_store_newv"}
 
 func GTKGtk_list_store_newv(n_columns int32, types []int64) int64 {
 	return int64(r_GTKGtk_list_store_newv.get()(n_columns, sp(types)))
 }
 
-var r_GTKGtk_list_store_remove = lz[func(uintptr, uintptr) int32]{sym: "gtk_list_store_remove"}
+var r_GTKGtk_list_store_remove = lz[func(uintptr, uintptr) int32]{name: "GTKGtk_list_store_remove", sym: "gtk_list_store_remove"}
 
 func GTKGtk_list_store_remove(list_store int64, iter int64) bool {
 	return r_GTKGtk_list_store_remove.get()(uintptr(list_store), uintptr(iter)) != 0
 }
 
-var r_GTKGtk_list_store_set = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{sym: "gtk_list_store_set"}
+var r_GTKGtk_list_store_set = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{name: "GTKGtk_list_store_set", sym: "gtk_list_store_set"}
 
 func GTKGtk_list_store_set(list_store int64, iter int64, column int32, value []int8, terminator int32) {
 	r_GTKGtk_list_store_set.get()(uintptr(list_store), uintptr(iter), column, sp(value), terminator)
 }
 
-var r_GTKGtk_list_store_setOverload1 = lz[func(uintptr, uintptr, int32, int32, int32)]{sym: "gtk_list_store_set"}
+var r_GTKGtk_list_store_setOverload1 = lz[func(uintptr, uintptr, int32, int32, int32)]{name: "GTKGtk_list_store_setOverload1", sym: "gtk_list_store_set"}
 
 func GTKGtk_list_store_setOverload1(list_store int64, iter int64, column int32, value int32, terminator int32) {
 	r_GTKGtk_list_store_setOverload1.get()(uintptr(list_store), uintptr(iter), column, value, terminator)
 }
 
-var r_GTKGtk_list_store_setOverload2 = lz[func(uintptr, uintptr, int32, uintptr, int32)]{sym: "gtk_list_store_set"}
+var r_GTKGtk_list_store_setOverload2 = lz[func(uintptr, uintptr, int32, uintptr, int32)]{name: "GTKGtk_list_store_setOverload2", sym: "gtk_list_store_set"}
 
 func GTKGtk_list_store_setOverload2(list_store int64, iter int64, column int32, value int64, terminator int32) {
 	r_GTKGtk_list_store_setOverload2.get()(uintptr(list_store), uintptr(iter), column, uintptr(value), terminator)
 }
 
-var r_GTKGtk_list_store_setOverload3 = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{sym: "gtk_list_store_set"}
+var r_GTKGtk_list_store_setOverload3 = lz[func(uintptr, uintptr, int32, unsafe.Pointer, int32)]{name: "GTKGtk_list_store_setOverload3", sym: "gtk_list_store_set"}
 
 func GTKGtk_list_store_setOverload3(list_store int64, iter int64, column int32, value *GdkRGBA, terminator int32) {
 	r_GTKGtk_list_store_setOverload3.get()(uintptr(list_store), uintptr(iter), column, unsafe.Pointer(value), terminator)
 }
 
-var r_GTKGtk_list_store_setOverload4 = lz[func(uintptr, uintptr, int32, int32, int32)]{sym: "gtk_list_store_set"}
+var r_GTKGtk_list_store_setOverload4 = lz[func(uintptr, uintptr, int32, int32, int32)]{name: "GTKGtk_list_store_setOverload4", sym: "gtk_list_store_set"}
 
 func GTKGtk_list_store_setOverload4(list_store int64, iter int64, column int32, value bool, terminator int32) {
 	r_GTKGtk_list_store_setOverload4.get()(uintptr(list_store), uintptr(iter), column, b2i(value), terminator)
 }
 
-var r_GTKGtk_list_store_set_value = lz[func(uintptr, uintptr, int32, uintptr)]{sym: "gtk_list_store_set_value"}
+var r_GTKGtk_list_store_set_value = lz[func(uintptr, uintptr, int32, uintptr)]{name: "GTKGtk_list_store_set_value", sym: "gtk_list_store_set_value"}
 
 func GTKGtk_list_store_set_value(list_store int64, iter int64, column int32, value int64) {
 	r_GTKGtk_list_store_set_value.get()(uintptr(list_store), uintptr(iter), column, uintptr(value))
 }
 
-var r_OSG_list_store_append = lz[func(uintptr, uintptr)]{sym: "g_list_store_append"}
+var r_OSG_list_store_append = lz[func(uintptr, uintptr)]{name: "OSG_list_store_append", sym: "g_list_store_append"}
 
 func OSG_list_store_append(store int64, item int64) {
 	r_OSG_list_store_append.get()(uintptr(store), uintptr(item))
 }
 
-var r_OSG_list_store_new = lz[func(uintptr) uintptr]{sym: "g_list_store_new"}
+var r_OSG_list_store_new = lz[func(uintptr) uintptr]{name: "OSG_list_store_new", sym: "g_list_store_new"}
 
 func OSG_list_store_new(item_type int64) int64 {
 	return int64(r_OSG_list_store_new.get()(uintptr(item_type)))
 }
 
-var r_OSG_log_default_handler = lz[func(uintptr, int32, uintptr, uintptr)]{sym: "g_log_default_handler"}
+var r_OSG_log_default_handler = lz[func(uintptr, int32, uintptr, uintptr)]{name: "OSG_log_default_handler", sym: "g_log_default_handler"}
 
 func OSG_log_default_handler(log_domain int64, log_level int32, message int64, unused_data int64) {
 	r_OSG_log_default_handler.get()(uintptr(log_domain), log_level, uintptr(message), uintptr(unused_data))
 }
 
-var r_OSG_log_remove_handler = lz[func(unsafe.Pointer, int32)]{sym: "g_log_remove_handler"}
+var r_OSG_log_remove_handler = lz[func(unsafe.Pointer, int32)]{name: "OSG_log_remove_handler", sym: "g_log_remove_handler"}
 
 func OSG_log_remove_handler(log_domain []int8, handler_id int32) {
 	r_OSG_log_remove_handler.get()(sp(log_domain), handler_id)
 }
 
-var r_OSG_log_set_handler = lz[func(unsafe.Pointer, int32, uintptr, uintptr) int32]{sym: "g_log_set_handler"}
+var r_OSG_log_set_handler = lz[func(unsafe.Pointer, int32, uintptr, uintptr) int32]{name: "OSG_log_set_handler", sym: "g_log_set_handler"}
 
 func OSG_log_set_handler(log_domain []int8, log_levels int32, log_func int64, user_data int64) int32 {
 	return r_OSG_log_set_handler.get()(sp(log_domain), log_levels, uintptr(log_func), uintptr(user_data))
 }
 
-var r_OSG_main_context_acquire = lz[func(uintptr) int32]{sym: "g_main_context_acquire"}
+var r_OSG_main_context_acquire = lz[func(uintptr) int32]{name: "OSG_main_context_acquire", sym: "g_main_context_acquire"}
 
 func OSG_main_context_acquire(context int64) bool {
 	return r_OSG_main_context_acquire.get()(uintptr(context)) != 0
 }
 
-var r_OSG_main_context_check = lz[func(uintptr, int32, uintptr, int32) int32]{sym: "g_main_context_check"}
+var r_OSG_main_context_check = lz[func(uintptr, int32, uintptr, int32) int32]{name: "OSG_main_context_check", sym: "g_main_context_check"}
 
 func OSG_main_context_check(context int64, max_priority int32, fds int64, n_fds int32) bool {
 	return r_OSG_main_context_check.get()(uintptr(context), max_priority, uintptr(fds), n_fds) != 0
 }
 
-var r_OSG_main_context_default = lz[func() uintptr]{sym: "g_main_context_default"}
+var r_OSG_main_context_default = lz[func() uintptr]{name: "OSG_main_context_default", sym: "g_main_context_default"}
 
 func OSG_main_context_default() int64 {
 	return int64(r_OSG_main_context_default.get()())
 }
 
-var r_OSG_main_context_get_poll_func = lz[func(uintptr) uintptr]{sym: "g_main_context_get_poll_func"}
+var r_OSG_main_context_get_poll_func = lz[func(uintptr) uintptr]{name: "OSG_main_context_get_poll_func", sym: "g_main_context_get_poll_func"}
 
 func OSG_main_context_get_poll_func(context int64) int64 {
 	return int64(r_OSG_main_context_get_poll_func.get()(uintptr(context)))
 }
 
-var r_OSG_main_context_iteration = lz[func(uintptr, int32) int32]{sym: "g_main_context_iteration"}
+var r_OSG_main_context_iteration = lz[func(uintptr, int32) int32]{name: "OSG_main_context_iteration", sym: "g_main_context_iteration"}
 
 func OSG_main_context_iteration(context int64, may_block bool) bool {
 	return r_OSG_main_context_iteration.get()(uintptr(context), b2i(may_block)) != 0
 }
 
-var r_OSG_main_context_prepare = lz[func(uintptr, unsafe.Pointer) int32]{sym: "g_main_context_prepare"}
+var r_OSG_main_context_prepare = lz[func(uintptr, unsafe.Pointer) int32]{name: "OSG_main_context_prepare", sym: "g_main_context_prepare"}
 
 func OSG_main_context_prepare(context int64, priority []int32) bool {
 	return r_OSG_main_context_prepare.get()(uintptr(context), sp(priority)) != 0
 }
 
-var r_OSG_main_context_query = lz[func(uintptr, int32, unsafe.Pointer, uintptr, int32) int32]{sym: "g_main_context_query"}
+var r_OSG_main_context_query = lz[func(uintptr, int32, unsafe.Pointer, uintptr, int32) int32]{name: "OSG_main_context_query", sym: "g_main_context_query"}
 
 func OSG_main_context_query(context int64, max_priority int32, timeout_ []int32, fds int64, n_fds int32) int32 {
 	return r_OSG_main_context_query.get()(uintptr(context), max_priority, sp(timeout_), uintptr(fds), n_fds)
 }
 
-var r_OSG_main_context_release = lz[func(uintptr)]{sym: "g_main_context_release"}
+var r_OSG_main_context_release = lz[func(uintptr)]{name: "OSG_main_context_release", sym: "g_main_context_release"}
 
 func OSG_main_context_release(context int64) {
 	r_OSG_main_context_release.get()(uintptr(context))
 }
 
-var r_OSG_main_context_wakeup = lz[func(uintptr)]{sym: "g_main_context_wakeup"}
+var r_OSG_main_context_wakeup = lz[func(uintptr)]{name: "OSG_main_context_wakeup", sym: "g_main_context_wakeup"}
 
 func OSG_main_context_wakeup(context int64) {
 	r_OSG_main_context_wakeup.get()(uintptr(context))
 }
 
-var r_GTK3Gtk_main_do_event = lz[func(uintptr)]{sym: "gtk_main_do_event"}
+var r_GTK3Gtk_main_do_event = lz[func(uintptr)]{name: "GTK3Gtk_main_do_event", sym: "gtk_main_do_event"}
 
 func GTK3Gtk_main_do_event(event int64) {
 	r_GTK3Gtk_main_do_event.get()(uintptr(event))
 }
 
-var r_GTK3Gtk_main_iteration_do = lz[func(int32) int32]{sym: "gtk_main_iteration_do"}
+var r_GTK3Gtk_main_iteration_do = lz[func(int32) int32]{name: "GTK3Gtk_main_iteration_do", sym: "gtk_main_iteration_do"}
 
 func GTK3Gtk_main_iteration_do(blocking bool) bool {
 	return r_GTK3Gtk_main_iteration_do.get()(b2i(blocking)) != 0
 }
 
-var r_OSG_malloc = lz[func(uintptr) uintptr]{sym: "g_malloc"}
+var r_OSG_malloc = lz[func(uintptr) uintptr]{name: "OSG_malloc", sym: "g_malloc"}
 
 func OSG_malloc(n_bytes int64) int64 {
 	return int64(r_OSG_malloc.get()(uintptr(n_bytes)))

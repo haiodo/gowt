@@ -4,7 +4,7 @@
 
 How the repository is laid out and how the SWT port is built. To use gowt see [README.md](README.md). Platform status and test numbers: [platforms.md](platforms.md).
 
-gowt is Eclipse SWT translated from Java to Go by a translator in this repository (`tooling/j2go`, built on Eclipse JDT), with hand-written code where translation does not apply. The generated Go is committed, so users need neither Java nor the SWT sources. Three platform ports exist: macOS (SWT's `cocoa`), Windows (`win32`) and Linux (`gtk`, GTK 3). Everything builds with `CGO_ENABLED=0` by default; the OS libraries are loaded at run time. On macOS, `CGO_ENABLED=1 -tags gowtcgo` selects direct cgo for the generated AppKit calls and the CoreGraphics renderer; callbacks and the remaining hand-written bindings still use purego.
+gowt is Eclipse SWT translated from Java to Go by a translator in this repository (`tooling/j2go`, built on Eclipse JDT), with hand-written code where translation does not apply. The generated Go is committed, so users need neither Java nor the SWT sources. Three platform ports exist: macOS (SWT's `cocoa`), Windows (`win32`) and Linux (`gtk`, GTK 3). Everything builds with `CGO_ENABLED=0` by default; the OS libraries are loaded at run time. On all three platforms, `CGO_ENABLED=1 -tags gowtcgo` selects direct cgo for the generated AppKit/Win32/GTK calls and the CoreGraphics/Direct2D/cairo renderer; callbacks and the remaining hand-written bindings keep their default backend. This opt-in mode needs a native C toolchain; the default mode keeps cross-compilation.
 
 <br clear="right">
 
@@ -16,8 +16,8 @@ gowt is Eclipse SWT translated from Java to Go by a translator in this repositor
 | `look/`, `icons/`, `svg/` | Hand-written packages of the facade: platform look, named icons, SVG rasterizer |
 | `swt/` | The generated SWT API, one Go package (SWT's Java packages import each other in a cycle, which Go does not allow). Files with the suffix `_darwin.go`, `_windows.go` or `_linux.go` belong to one port, unsuffixed files are shared; `*_manual*.go` are hand-written |
 | `internal/cocoa/` | AppKit bindings for darwin, translated from SWT's `Eclipse SWT PI/cocoa`; calls into the Objective-C runtime through purego |
-| `internal/win32/` | Win32 bindings, translated from SWT's `Eclipse SWT PI/win32`; DLL calls through `syscall.SyscallN` |
-| `internal/gtk/` | GTK 3, GLib, Pango and cairo bindings for linux, loaded through purego. Generated from the GIR files by `tooling/girgen` plus hand-written `glue_*.go` files. Clean room: nothing from SWT's `Eclipse SWT PI/gtk` (LGPL) is read or reused; `tooling/j2go/README.md` "Round 20" |
+| `internal/win32/` | Win32 bindings, translated from SWT's `Eclipse SWT PI/win32`; DLL calls through `syscall.SyscallN` by default, or direct cgo with `CGO_ENABLED=1 -tags gowtcgo` |
+| `internal/gtk/` | GTK 3, GLib, Pango and cairo bindings for linux, loaded through purego by default, or direct cgo with `CGO_ENABLED=1 -tags gowtcgo`. Generated from the GIR files by `tooling/girgen` plus hand-written `glue_*.go` files. Clean room: nothing from SWT's `Eclipse SWT PI/gtk` (LGPL) is read or reused; `tooling/j2go/README.md` "Round 20" |
 | `internal/webkit/` | WebKitGTK 4.1 bindings for linux, generated from the GIR files by `tooling/webkitgen` |
 | `internal/jrt/` | The subset of the Java runtime the translated code uses |
 | `internal/junit/` | JUnit 5 shim for the translated tests |

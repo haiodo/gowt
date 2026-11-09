@@ -18,6 +18,7 @@ type gen struct {
 	syms     []*Sym
 	emitted  map[string]bool
 	unpacks  map[string]bool // generated structs with an unpack() to run after C filled them
+	natives  map[string][]cgoNative
 }
 
 func (g *gen) warn(f string, a ...any) { g.warnings = append(g.warnings, fmt.Sprintf(f, a...)) }
@@ -67,7 +68,7 @@ func (g *gen) emitFunc(w *strings.Builder, name, csym string, sig Sig) {
 	if sig.Ret != "" {
 		rt = " " + rr
 	}
-	fmt.Fprintf(w, "var r_%s = lz[func(%s)%s]{sym: %q}\n", name, strings.Join(raws, ", "), rt, csym)
+	fmt.Fprintf(w, "var r_%s = lz[func(%s)%s]{name: %q, sym: %q}\n", name, strings.Join(raws, ", "), rt, name, csym)
 	ret := ""
 	if sig.Ret != "" {
 		ret = " " + sig.Ret
@@ -184,6 +185,13 @@ func (g *gen) emitAll() (base string, chunks []genplan.Chunk, consts, types stri
 func (g *gen) funcChunk(name, csym string, sig Sig) genplan.Chunk {
 	var w strings.Builder
 	g.emitFunc(&w, name, csym, sig)
+	cn := cgoNative{name: name, csym: csym, ret: rawRet(sig)}
+	for _, p := range sig.Params {
+		cn.params = append(cn.params, rawType(p))
+	}
+	if g.natives != nil {
+		g.natives[w.String()] = []cgoNative{cn}
+	}
 	return genplan.Chunk{Group: familyOf(name), Owner: ownerOf(name), Text: w.String()}
 }
 

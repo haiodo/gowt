@@ -78,7 +78,7 @@ func TestSidebarKeepsSelectionQuiet(t *testing.T) {
 }
 
 // Where the toolbar is a bar of gowt widgets, a Sidebar item goes into a row at the top of the
-// sidebar, not into the bar above the content.
+// sidebar as one pill segment, not into the bar above the content.
 func TestSidebarItemRow(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
 		t.Skip("set GOWT_GUI_TEST=1")
@@ -100,7 +100,7 @@ func TestSidebarItemRow(t *testing.T) {
 			rowY, listY = row.GetBounds().Y, kids[len(kids)-1].GetBounds().Y
 			if c, ok := row.Impl().(*swt.Composite); ok {
 				for _, ch := range c.GetChildren() {
-					if _, ok := ch.Impl().(*swt.Button); ok {
+					if _, ok := ch.Impl().(*swt.Canvas); ok {
 						items++
 						itemX = ch.GetBounds().X
 					}
@@ -116,7 +116,7 @@ func TestSidebarItemRow(t *testing.T) {
 		t.Skip("native toolbar")
 	}
 	if items != 1 {
-		t.Errorf("sidebar row has %d icon buttons, want 1", items)
+		t.Errorf("sidebar row has %d pill segments, want 1", items)
 	}
 	// Leading alignment: the first command sits at the row grid's own left padding, wherever the
 	// sidebar margin places the row.
@@ -311,11 +311,11 @@ func TestSidebarHide(t *testing.T) {
 		look.SetSidebarVisible(w, true)
 		look.SetSidebarWidth(w, 50)
 		app.Flush()
-		// The narrowest sidebar is 120 points or the room of the sidebar.left item, which on macOS is more.
+		// The narrowest sidebar is 88 points; the Sidebar toolbar items overflow instead of holding it.
 		least := int32(look.SidebarWidth(w))
 		t.Logf("narrowest sidebar with one Sidebar item: %d", least)
-		if least < 120 || least >= 220 || content.Unwrap().GetBounds().X != shownX-(220-least) {
-			t.Errorf("width 50: got %d, content x %d, want 120 to 219 and x %d", least, content.Unwrap().GetBounds().X, shownX-(220-least))
+		if least != int32(gowt.Scaled(88)) || content.Unwrap().GetBounds().X != shownX-(220-least) {
+			t.Errorf("width 50: got %d, content x %d, want 88 and x %d", least, content.Unwrap().GetBounds().X, shownX-(220-least))
 		}
 		if want := fmt.Sprintf("[false 220 true 220 true %d]", least); fmt.Sprint(changes) != want {
 			t.Errorf("changes %v, want %s", changes, want)
@@ -359,7 +359,7 @@ func TestSidebarDragEvents(t *testing.T) {
 		}
 		send(swt.Selection, 20)
 		least := look.SidebarWidth(w)
-		if !look.SidebarVisible(w) || least < 120 || least >= 300 {
+		if !look.SidebarVisible(w) || least != int(gowt.Scaled(88)) {
 			t.Errorf("dragged to 20: visible %v, width %d; want the drag to stop at the narrowest width", look.SidebarVisible(w), least)
 		}
 		send(swt.MouseUp, 0)
@@ -438,7 +438,7 @@ func TestSidebarItemsOverflow(t *testing.T) {
 		}
 		look.SetSidebarWidth(w, 500)
 		app.Flush()
-		look.SetSidebarWidth(w, 120)
+		look.SetSidebarWidth(w, 150)
 		least := look.SidebarWidth(w)
 		sash := sashOf(w)
 		send := func(typ int32, x int32) int32 {
@@ -472,6 +472,65 @@ func TestSidebarItemsOverflow(t *testing.T) {
 	}
 }
 
+// The sidebar narrows to 88 points even where its Sidebar toolbar items need more room: the items
+// overflow into the row's More menu instead of holding the pane wide (the case that kept it at
+// ~310: a group of several Sidebar items).
+func TestSidebarItemsMinWidth(t *testing.T) {
+	items := []look.ToolbarItem{
+		{Sidebar: true, Group: []look.ToolbarItem{
+			{Title: "Element", ID: "element", Symbol: "square.grid.2x2", OnClick: func() {}},
+			{Title: "Items", ID: "items", Symbol: "list.bullet", OnClick: func() {}},
+		}},
+		{Title: "Hide Sidebar", ID: "hide", Symbol: "sidebar.left", Sidebar: true, OnClick: func() {}},
+	}
+	nativeToolbar := false
+	sidebarWindow(t, items, 320, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+		nativeToolbar = native
+		least := int32(gowt.Scaled(88))
+		look.SetSidebarWidth(w, 50)
+		app.Flush()
+		if got := look.SidebarWidth(w); got != int(least) {
+			t.Errorf("SetSidebarWidth 50: got %d, want the %d minimum", got, least)
+		}
+		if got := sidebar.Unwrap().GetBounds().Width; got != least {
+			t.Errorf("sidebar laid out %d wide, want %d", got, least)
+		}
+		// A drag past the minimum stops at it too.
+		sash := sashOf(w)
+		send := func(typ int32, x int32) int32 {
+			e := swt.NewEvent()
+			e.X, e.Y, e.Button = x, sash.GetBounds().Y, 1
+			sash.NotifyListeners(typ, e)
+			return e.X
+		}
+		x0 := sash.GetBounds().X
+		send(swt.MouseDown, 0)
+		send(swt.Selection, x0-200)
+		send(swt.MouseUp, 0)
+		app.Flush()
+		if got := look.SidebarWidth(w); got != int(least) {
+			t.Errorf("dragged 200 below the minimum: width %d, want %d", got, least)
+		}
+		if native {
+			return
+		}
+		// The toolbar group no longer holds the pane: its items overflow into the row's More menu.
+		more, _ := qatree.Find(app.Unwrap(), qatree.Selector{Class: "ToolItem", Text: "More"})
+		if len(more) != 1 || !more[0].Visible {
+			t.Errorf("overflow button is %+v, want one visible More", more)
+		}
+		last, _ := qatree.Find(app.Unwrap(), qatree.Selector{Class: "MenuItem", Text: "Hide Sidebar"})
+		if len(last) != 1 {
+			t.Errorf("Hide Sidebar is %+v, want one item in the overflow menu", last)
+		}
+	})
+	if nativeToolbar {
+		// The callback runs on the UI thread: t.Skip there would Goexit the TestMain loop.
+		// Skip from the test goroutine instead.
+		t.Skip("NSToolbar has its own overflow")
+	}
+}
+
 // A width below the narrowest, given to SetSidebar, is laid out at the narrowest, so the first drag
 // moves the divider by no more than the pointer moved.
 func TestSidebarNarrowStart(t *testing.T) {
@@ -479,10 +538,10 @@ func TestSidebarNarrowStart(t *testing.T) {
 	for _, s := range []string{"Scan Node.js", "Scan Docker", "Open Profile..."} {
 		items = append(items, look.ToolbarItem{Title: s, Sidebar: true})
 	}
-	sidebarWindow(t, items, 100, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
+	sidebarWindow(t, items, 60, func(app *gowt.App, w *gowt.Window, sidebar, content *gowt.Panel, native bool) {
 		least := look.SidebarWidth(w)
-		if least <= 100 || sidebar.Unwrap().GetBounds().Width != int32(least) {
-			t.Errorf("SetSidebar width 100: SidebarWidth %d, sidebar laid out %d wide", least, sidebar.Unwrap().GetBounds().Width)
+		if least <= 60 || sidebar.Unwrap().GetBounds().Width != int32(least) {
+			t.Errorf("SetSidebar width 60: SidebarWidth %d, sidebar laid out %d wide", least, sidebar.Unwrap().GetBounds().Width)
 		}
 		sash := sashOf(w)
 		send := func(typ int32, x int32) int32 {

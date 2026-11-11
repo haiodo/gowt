@@ -64,7 +64,7 @@ Facade widget families; the view types end in `View`. SWT widget classes are in
 | Containers (Group, Scroll, Split, Tabs, CTabs, Boundary shells) | `widgets_container.go` | `section_{darwin,other}.go`, `ctabs_look_*` | `layout_test.go`, `ctabs_gui_test.go` | `examples/widgets` |
 | Lists, tables, combos | `widgets_list.go` | per-platform sections of the same file | `fitcolumns_test.go`, `qatree_*_gui_test.go` | `examples/rows`, `examples/sidebartable`, `cmd/tree`; [view-based-table.md](view-based-table.md) |
 | Tree | `tree.go` | `tree_edit_{darwin,other}.go` | `tree_test.go`, `tree_edit_gui_test.go`, `tree_edit_gui_darwin_test.go` | `cmd/tree`; [widgets.md](widgets.md) |
-| Tool bar | `look/toolbar.go`, `widgets_container.go` (ToolBarView) | `look/toolbar.go` platform sections, `internal/cocoa/*toolbar*` | `look/toolbar_test.go`, `look/toolbar_*_gui_test.go` | `cmd/gowtdemo`; [widgets.md](widgets.md) |
+| Tool bar | `look/toolbar.go`, `look/pill.go` (Harness pill segments of the widget bar), `widgets_container.go` (ToolBarView) | `look/toolbar.go` platform sections, `look/pill_tabstop_{windows,other}.go`, `internal/cocoa/*toolbar*` (native NSToolbar items: unbordered image items, segmented group capsule) | `look/toolbar_test.go`, `look/toolbar_*_gui_test.go`, `look/pill*_test.go` | `cmd/gowtdemo`; [widgets.md](widgets.md) |
 | Text, styled text, search fields, spinners, scales, progress | `widgets_text.go`, `widgets_range.go` | `fieldeditor_*`, `textfit_*`, `scroll_*` | `text_test.go`, `textfit*_test.go`, `sizehint_gui_test.go` | `examples/widgets`; [widgets.md](widgets.md) |
 | Canvas and drawing widgets | `graphics.go`, `canvaschild.go` | - | `canvassize_test.go` | `examples/gfxcanvas`, `examples/graphics` |
 | ControlExample (widget zoo on `swt`) | - | - | - | `examples/controlexample`, `cmd/controlexample` |
@@ -95,7 +95,7 @@ Packages: `look`, `internal/fluent` (the Windows look helpers).
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Window backdrop, material, corners, dark content | `look/look.go` | `look/look_{darwin,linux,windows,other}.go` | `look/material_*_test.go`, `look/glass*_test.go` | `cmd/glassdemo`, `cmd/backdropdemo`; [cross-platform-look.md](cross-platform-look.md), [theme-look.md](theme-look.md) |
-| Sidebar and bottom panel layouts | `look/inspector_flat.go`, `look/toolbar.go` | `look/look_*.go`, `look/windowdrag_*.go` | `look/sidebar*_test.go`, `look/bottompanel*_test.go`, `look/inspector_*_test.go` | `examples/apps`, `examples/sidebartable` |
+| Sidebar and bottom panel layouts | `look/inspector_flat.go`, `look/toolbar.go` | `look/look_*.go`, `look/windowdrag_*.go` | `look/sidebar*_test.go`, `look/bottompanel*_test.go`, `look/inspector_*_test.go`, `look/panes_overlay_gui_darwin_test.go` | `examples/apps`, `examples/sidebartable` |
 | Inspector controls, fields, search | `look/inspector_flat.go` | - | `look/inspector_*_gui_darwin_test.go` | `examples/catalog` |
 | Window drag by background | `look/windowdrag.go` | `look/windowdrag_{darwin,linux,windows}.go` | `look/toolbar_diag_*_test.go` | [theme-look.md](theme-look.md) |
 | Glass button, icon button, caret | `look/look.go`, `look/toolbar.go` | - | `look/glass*_gui*_test.go`, `look/caret_gui_test.go`, `look/iconbutton_gui_darwin_test.go` | `cmd/glassdemo` |
@@ -190,7 +190,7 @@ Packages: `gfx`, `gfx/cg`, `gfx/cairo`, `gfx/d2d`, `gfx/internal/cache`, `gfx/in
 | PDF backend | `gfx/pdf/`, `gfx/pdf.go` | - | `gfx/pdf_test.go`, `gfx/pdf/*_test.go` | `examples/print` |
 | Pen stroke expansion | `gfx/pen/` | - | `gfx/pen/*_test.go` | [gfx.md](gfx.md) |
 | Synthetic rendering test corpus | `gfx/synth/` | - | `gfx/synth/*_test.go` | - |
-| Interactive view, overlays, autoscroll | `gfx/view/` | per-OS `gfx/view/view_{darwin,linux,windows}.go` | `gfx/view/*_test.go` | `gfx/view/demo` |
+| Interactive view, overlays, autoscroll, idle windows | `gfx/view/` | per-OS `gfx/view/view_{darwin,linux,windows}.go`; macOS shared frame clock and window visibility in `gfx/cg/frameclock_darwin.go`, `gfx/cg/input_darwin.go` | `gfx/view/*_test.go`, `gfx/view/idle_gui_darwin_test.go` | `gfx/view/demo` |
 | Widgets built on gfx (avatar, badge) | `avatar.go`, `badge.go` (root) | - | `avatar_test.go`, `badge_test.go` | [widgets.md](widgets.md) |
 
 ## Printing

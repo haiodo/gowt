@@ -25,6 +25,7 @@ type platform struct {
 	polling bool
 	cursor  map[Cursor]*swt.Cursor
 	wheel   wheelState
+	hidden  atomic.Bool // unused on Windows: DwmFlush throttles an occluded window by itself
 }
 
 func traceOut(format string, a ...any) { fmt.Fprintf(os.Stderr, format+"\n", a...) }

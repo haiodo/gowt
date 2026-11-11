@@ -185,10 +185,10 @@ func SetDarkContent(a *gowt.App, on bool) { setDarkContent(a.Unwrap(), on) }
 
 // ToolbarItem is one entry of the window toolbar.
 type ToolbarItem struct {
-	Title   string // label and tooltip
+	Title   string      // label and tooltip
 	Icon    *gowt.Image // custom image on Windows and Linux; the native macOS toolbar keeps Symbol
-	IconSVG []byte // monochrome SVG, drawn in the bar's text colour on Windows and Linux
-	Symbol  string // SF Symbol name such as "plus" or "square.and.arrow.up"; used after Icon and IconSVG
+	IconSVG []byte      // monochrome SVG, drawn in the bar's text colour on Windows and Linux
+	Symbol  string      // SF Symbol name such as "plus" or "square.and.arrow.up"; used after Icon and IconSVG
 	OnClick func()
 	Space   bool // flexible space; the other fields are ignored
 	// Group makes the item one capsule of segments, such as the back and forward pair; each segment
@@ -209,7 +209,9 @@ type ToolbarItem struct {
 	// following its changes, such as a zoom level "100%"; Title stays the tooltip.
 	Text rx.Reader[string]
 	// Small gives a push item, a text item, a Group or a search field the small control size
-	// (NSControlSizeSmall, an 11-point font on macOS); elsewhere smaller icons and text.
+	// (NSControlSizeSmall, an 11-point font on macOS); elsewhere smaller icons and text. On macOS the
+	// toolbar is the native one and a plain item has no control size, so Small reaches the search
+	// field only.
 	Small bool
 	// OnSearch makes the item a search field (NSSearchToolbarItem) with Title as the placeholder. It
 	// gets the text after a typing pause, on Return and on clearing.
@@ -273,6 +275,7 @@ func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite()
 func SetPanesOverlay(w *gowt.Window, on bool) {
 	on = on && sidebarInset() > 0
 	w.Unwrap().SetDataKeyValue("look.panesOverlay", on)
+	panesOverlayLayer(w.Unwrap(), on)
 	if l := layoutOf(w); l != nil {
 		l.overlay = on
 		w.Unwrap().Layout()
@@ -304,9 +307,9 @@ func SetSidebarFullHeight(w *gowt.Window, on bool) {
 // SetToolbar items as a bar above the content. A background on w itself paints over the macOS
 // sidebar glass; colour the content instead.
 //
-// The user resizes the sidebar by dragging its edge, which stops at 120 points or at the room its
-// Sidebar toolbar items need. Read and change that with SidebarVisible, SetSidebarVisible,
-// SidebarWidth and SetSidebarWidth, and keep it between runs with OnSidebarChange.
+// The user resizes the sidebar by dragging its edge, which stops at 88 points. Read and change
+// that with SidebarVisible, SetSidebarVisible, SidebarWidth and SetSidebarWidth, and keep it
+// between runs with OnSidebarChange.
 func SetSidebar(w *gowt.Window, sidebar, content Container, width int) {
 	l := panesOf(w, content)
 	sb := sidebar.AsComposite()
@@ -477,8 +480,8 @@ func SetSidebarVisible(w *gowt.Window, on bool) { sidebarOf(w).setVisible(on) }
 // SidebarVisible reports whether the sidebar of a SetSidebar window is shown; false without one.
 func SidebarVisible(w *gowt.Window) bool { return sidebarOf(w).visible() }
 
-// SetSidebarWidth sets the sidebar width in points; a hidden sidebar comes back at it. The width is at
-// least 120 and at least the room of the Sidebar toolbar items, as far as the window knows it yet.
+// SetSidebarWidth sets the sidebar width in points; the width is at least 88, as far as the window
+// knows it yet. A hidden sidebar comes back at it.
 func SetSidebarWidth(w *gowt.Window, width int) { sidebarOf(w).setWidth(width) }
 
 // SidebarWidth is the sidebar width in points, also while it is hidden; 0 without SetSidebar.
@@ -542,10 +545,10 @@ func BottomPanelHeight(w *gowt.Window) int { return bottomOf(w).widthOrZero() }
 // drag.
 func OnBottomPanelChange(w *gowt.Window, f func(visible bool, height int)) { bottomOf(w).addChange(f) }
 
-// minSidebarWidth is where a drag of the sidebar edge stops without Sidebar toolbar items,
-// minInspectorWidth where a drag of the inspector edge stops; minContentWidth is the content such a
-// drag leaves at least. They are the points of the doc comments scaled by the density, see gowt.Scaled.
-func minSidebarWidth() int32   { return int32(gowt.Scaled(120)) }
+// minSidebarWidth is where a drag of the sidebar edge stops, minInspectorWidth where a drag of the
+// inspector edge stops; minContentWidth is the content such a drag leaves at least. They are the
+// points of the doc comments scaled by the density, see gowt.Scaled.
+func minSidebarWidth() int32   { return int32(gowt.Scaled(88)) }
 func minInspectorWidth() int32 { return int32(gowt.Scaled(160)) }
 func minContentWidth() int32   { return int32(gowt.Scaled(200)) }
 
@@ -596,7 +599,6 @@ type paneLayout struct {
 	// column is the frame of the content and the bottom panel at the last layout, under the area behind
 	// a floating sidebar beside the content.
 	column, under [4]int32
-	itemsMin      int32 // the width the Sidebar items of the macOS toolbar need, from its last layout
 	// appMin is the minimum size the app set, lastMin the one fitMinSize set last, once minSet
 	appMin, lastMin [2]int32
 	minSet          bool
@@ -743,9 +745,9 @@ func (p *pane) notify() {
 	}
 }
 
-// minWidth is the narrowest pane. For the sidebar that is minSidebarWidth, or the room its Sidebar
-// toolbar items need where that is more (the macOS toolbar group up to its inset from the edge, the
-// Windows and Linux row); for the inspector minInspectorWidth, with toolbar overflow fitting its strip.
+// minWidth is the narrowest pane: minSidebarWidth, minInspectorWidth or minBottomHeight. The
+// sidebar keeps it even where its Sidebar toolbar items no longer fit: they overflow into the row's
+// More menu instead of holding the pane wide (the Inspector items already overflow into their strip).
 func (p *pane) minWidth() int32 {
 	if p.kind == bottomPane {
 		return minBottomHeight()
@@ -753,12 +755,7 @@ func (p *pane) minWidth() int32 {
 	if p.kind == inspectorPane {
 		return minInspectorWidth()
 	}
-	b := bars[p.l.w.Unwrap()]
-	m := max(minSidebarWidth(), p.l.itemsMin)
-	if b != nil && b.side != nil {
-		m = max(m, b.side.Unwrap().ComputeSize(swt.DEFAULT, swt.DEFAULT).X)
-	}
-	return m
+	return minSidebarWidth()
 }
 
 // HandleEvent follows a drag of the sash: it resizes the pane while the mouse moves, stopping at
@@ -848,8 +845,17 @@ func (l *paneLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) 
 			h = max(h, p.c.ComputeSize(swt.DEFAULT, swt.DEFAULT).Y+p.inset())
 		}
 	}
-	// A packed window starts at least as wide as fitMinSize lets it get.
-	pt := swt.NewPoint(l.requiredWidth(max(ct.X, minContentWidth())), top+h)
+	// A packed window starts at least as wide as fitMinSize lets it get, and as wide as the
+	// toolbar bar needs to show every item instead of opening with items already in the menu.
+	w := max(ct.X, minContentWidth())
+	if b := bars[c.GetShell()]; b != nil && b.panel != nil {
+		for _, o := range b.overflows {
+			if o.panel == b.panel {
+				w = max(w, o.required(nil))
+			}
+		}
+	}
+	pt := swt.NewPoint(l.requiredWidth(w), top+h)
 	if wHint != swt.DEFAULT {
 		pt.X = wHint
 	}
@@ -862,7 +868,6 @@ func (l *paneLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) 
 func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	r := c.GetClientArea()
 	s := c.GetShell()
-	l.measure()
 	l.fitMin()
 	top := int32(topInset(s))
 	paneHeight := r.Height
@@ -952,17 +957,6 @@ func (l *paneLayout) fitMinSize() {
 	}
 	l.lastMin, l.minSet = want, true
 	s.SetMinimumSize(want[0], want[1])
-}
-
-// measure takes the room of the Sidebar items from the macOS toolbar's last layout; it reports
-// whether there was a measurement.
-func (l *paneLayout) measure() bool {
-	s := l.w.Unwrap()
-	e, ok := itemsMinEdge(s)
-	if ok && l.side != nil && !l.side.hidden {
-		l.itemsMin = e - s.GetClientArea().X - l.side.inset()
-	}
-	return ok
 }
 
 // fitMin raises a pane narrower than its minWidth to it, so the divider is drawn where a drag starts;

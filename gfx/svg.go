@@ -298,6 +298,9 @@ func WriteSubtreeSVG(out io.Writer, s *Scene, root *Node, area Rect, scale float
 type SVGOptions struct {
 	// Background, when its A is above zero, is filled over the whole area behind the content.
 	Background Color
+	// CSS goes verbatim into a <style> element inside <defs>, for rules the caller's
+	// content addresses by the group ids of the items.
+	CSS string
 }
 
 // WriteSubtreeSVGWith is WriteSubtreeSVG with opt.
@@ -312,6 +315,9 @@ func WriteSubtreeSVGWith(out io.Writer, s *Scene, root *Node, area Rect, scale f
 	var b Items
 	s.CollectSubtree(root, area, &b)
 	var w svgWriter
+	if opt.CSS != "" {
+		fmt.Fprintf(&w.defs, `<style>%s</style>`, opt.CSS)
+	}
 	if opt.Background.A > 0 {
 		fmt.Fprintf(&w.body, `<rect x="%s" y="%s" width="%s" height="%s" %s/>`,
 			num(area.Min.X), num(area.Min.Y), num(area.W()), num(area.H()), w.paint(opt.Background, nil, "fill"))
@@ -322,7 +328,11 @@ func WriteSubtreeSVGWith(out io.Writer, s *Scene, root *Node, area Rect, scale f
 			fmt.Fprintf(&w.body, `<g clip-path="url(#%s)">`, w.clip(c.M, c.Kind, c.Rect, c.Radius, c.Path))
 			closing++
 		}
-		fmt.Fprintf(&w.body, `<g transform="%s"`, matrix(it.M))
+		w.body.WriteString("<g")
+		if it.SVGID != "" {
+			fmt.Fprintf(&w.body, ` id="%s"`, html.EscapeString(it.SVGID))
+		}
+		fmt.Fprintf(&w.body, ` transform="%s"`, matrix(it.M))
 		if it.Alpha < 1 {
 			fmt.Fprintf(&w.body, ` opacity="%s"`, num(it.Alpha))
 		}

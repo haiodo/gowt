@@ -4,6 +4,7 @@ package view
 
 import (
 	"sync/atomic"
+	"time"
 
 	g "github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/gfx"
@@ -12,12 +13,15 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
-// platform is what the macOS View adds: the layer host and the display link.
+// platform is what the macOS View adds: the layer host, the shared frame clock subscription and
+// the window visibility.
 type platform struct {
 	host   *cg.Host
-	link   *cg.FrameClock
 	nsview uintptr
 	posted atomic.Bool
+	hidden atomic.Bool // the window is miniaturized or fully occluded
+	// occlAt is the last visibility re-check, on the frame clock; the CV thread only
+	occlAt time.Duration
 	// polling is set while pollRelease has a timer running; UI thread only
 	polling bool
 	cursor  map[Cursor]*swt.Cursor
@@ -37,8 +41,21 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	v.wireInput()
 	cv.Unwrap().AddControlListener(swt.ControlListenerControlResizedAdapter(func(*swt.ControlEvent) { v.resize.Store(true) }))
 	display := cv.Unwrap().GetDisplay()
-	link := cg.NewFrameClock(func(fi gfx.FrameInfo) {
-		// runs on a Core Video thread: only decide, then hand over to the UI thread
+	// one frame clock serves every window: the callback runs on a Core Video thread, decides, and
+	// hands the frame over to the UI thread
+	visChanged := func(visible bool) {
+		if v.hidden.Swap(!visible) && visible {
+			// one frame to repaint what the hidden window missed
+			v.resize.Store(true)
+		}
+	}
+	v.stops = append(v.stops, cg.SubscribeFrames(func(fi gfx.FrameInfo) {
+		// the occlusion notification is not always delivered (observed with several windows shown in
+		// one burst) and occlusionState lags: re-check lazily, once a second per window
+		if d := fi.Time - v.occlAt; d >= time.Second || d < 0 {
+			v.occlAt = fi.Time
+			cg.RecheckVisibility()
+		}
 		if v.gone.Load() || !v.wantsFrame() || !v.posted.CompareAndSwap(false, true) {
 			return
 		}
@@ -49,18 +66,16 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 				v.frame(fi)
 			}
 		}))
-	})
-	v.link = link
+	}))
+	v.stops = append(v.stops, cg.OnWindowVisibility(v.nsview, visChanged))
 	cv.OnDispose(func() {
 		v.gone.Store(true)
 		for _, stop := range v.stops {
 			stop()
 		}
-		v.link.Close()
 		v.comp.Close()
 		v.host.Close()
 	})
-	link.Start()
 	return v, nil
 }
 

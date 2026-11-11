@@ -27,6 +27,15 @@ func setFullSizeContent(s *swt.Shell, on bool) {
 	s.Layout()
 }
 
+// panesOverlayLayer makes the window content view layer-backed while panes float over the content:
+// a layer-backed gfx canvas inside a tree that paints into the window backing store composites its
+// CALayer above the panes whatever the NSView order, and Control.MoveBelow reorders only NSViews.
+// One layer tree for the whole content view makes AppKit keep sibling order in the layers. Off
+// restores the default backing-store rendering; a view that set wantsLayer itself keeps its layer.
+func panesOverlayLayer(s *swt.Shell, on bool) {
+	cocoa.SetLayerBacked(s.View.Id, on)
+}
+
 // clearBackground makes the composite paint nothing of its own and lets its children inherit that, the SWT
 // way (alpha-0 background plus INHERIT_FORCE), so a backdrop behind it stays visible.
 func clearBackground(c *swt.Composite, on bool) {
@@ -464,7 +473,6 @@ func (d *sidebarHooks) HandleEvent(*swt.Event) { refreshSidebar(d.s) }
 func (d *sidebarHooks) WidgetDisposed(*swt.DisposeEvent) {
 	cocoa.ReleaseSidebar(d.s.View)
 	delete(sidebarShells, d.s)
-	delete(lastMinEdge, d.s)
 }
 
 // clearTree makes c and the controls under it paint no background of their own, so the sidebar glass
@@ -632,34 +640,6 @@ func debugSidebar(s *swt.Shell) {
 
 // sidebarDivider is 0: the sash lies over the sidebar edge, transparent (setSidebarChrome).
 func sidebarDivider() int32 { return 0 }
-
-// itemsMinEdge is the sidebar edge x the Sidebar toolbar items need, from the toolbar's last layout.
-func itemsMinEdge(s *swt.Shell) (int32, bool) {
-	e, ok := cocoa.SidebarItemsMinEdge(s.View)
-	if ok && os.Getenv("GOWT_SIDEBAR_DEBUG") == "1" && e != lastMinEdge[s] {
-		lastMinEdge[s] = e
-		fmt.Fprintf(os.Stderr, "sidebar debug: Sidebar items need the edge at %.1f\n%s", e, cocoa.DescribeSidebarToolbar(s.View))
-	}
-	return int32(math.Ceil(e)), ok
-}
-
-// The toolbar lays its items out after the window layout ran, so a sidebar narrower than its Sidebar
-// items is raised to them from here, before the user can drag it.
-func init() {
-	cocoa.SidebarToolbarLaidOut = func(win uintptr) {
-		for s := range sidebarShells {
-			if s.IsDisposed() || uintptr(s.View.Window().Id) != win || s.GetLayout() == nil {
-				continue
-			}
-			if l, ok := s.GetLayout().Impl().(*paneLayout); ok && l.measure() && l.fitMin() {
-				s.Layout()
-			}
-		}
-	}
-}
-
-// lastMinEdge keeps GOWT_SIDEBAR_DEBUG from printing the same measurement on every layout.
-var lastMinEdge = map[*swt.Shell]float64{}
 
 // syncSidebar gets bg with width 0 for a hidden sidebar, which leaves no glass.
 func syncSidebar(s *swt.Shell, sb *swt.Composite, bg [4]int32, hidden bool) {

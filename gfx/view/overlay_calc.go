@@ -53,13 +53,13 @@ func (e *editor) end(commit, refocus bool) {
 	}
 }
 
-// key reports whether it took the key press: Esc cancels, Enter commits a single-line field and
-// Cmd or Ctrl with Enter commits a multi-line one (a bare Enter there types a line break).
+// key reports whether it took the key press: Esc cancels, a bare Enter commits, and Shift+Enter
+// types a line break in a multi-line field. Cmd+Enter and Ctrl+Enter commit there too.
 func (e *editor) key(code int32, m g.Mods) bool {
 	switch {
 	case code == int32(swt.ESC):
 		e.end(false, true)
-	case (code == int32(swt.CR) || code == swt.KEYPAD_CR) && (!e.multiline || m.Cmd || m.Ctrl):
+	case (code == int32(swt.CR) || code == swt.KEYPAD_CR) && (!e.multiline || m.Cmd || m.Ctrl || m == (g.Mods{})):
 		e.end(true, true)
 	default:
 		return false

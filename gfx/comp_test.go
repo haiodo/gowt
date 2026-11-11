@@ -591,6 +591,20 @@ func TestZoomAtKeepsPoint(t *testing.T) {
 	}
 }
 
+// The tile rasterizers are a process-wide pool: whatever the number of compositors and their
+// per-compositor Options.Workers, there is one pool of the default size.
+func TestTilePoolSharedAcrossCompositors(t *testing.T) {
+	rigs := []*rig{newRig(t, Options{Workers: 4}), newRig(t, Options{Workers: 4}), newRig(t, Options{Workers: 1})}
+	for _, g := range rigs {
+		g.addBackground()
+		g.addBox(1, 100, 100, 50, 50)
+		g.settle()
+	}
+	if n := poolWorkers(); n != poolDefault() {
+		t.Errorf("pool has %d workers, want the default %d for %d compositors", n, poolDefault(), len(rigs))
+	}
+}
+
 // An OnFrame callback drives model animations, so it must keep frames coming on an idle scene.
 func TestOnFrameKeepsTicking(t *testing.T) {
 	g := newRig(t, Options{})

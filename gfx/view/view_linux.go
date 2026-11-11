@@ -27,6 +27,7 @@ type platform struct {
 	cursor  map[Cursor]*swt.Cursor
 	scrolls scrollState
 	queued  atomic.Bool // a draw is queued and the widget has not painted since
+	hidden  atomic.Bool // unused on Linux: the GTK frame clock does not tick a hidden widget
 }
 
 func traceOut(format string, a ...any) { fmt.Fprintf(os.Stderr, format+"\n", a...) }

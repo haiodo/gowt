@@ -89,6 +89,10 @@ func New(scene *gfx.Scene, init func(*View), opts ...g.Option) g.Option {
 
 // wantsFrame is what the frame clock asks on every tick, from its own thread.
 func (v *View) wantsFrame() bool {
+	if v.hidden.Load() {
+		// a hidden window paints nothing; a QA capture may still force one frame
+		return v.force.Load()
+	}
 	return v.comp.NeedsFrame() || v.resize.Load() || v.r.acc.wake.Load() || v.r.autoWake.Load() || v.force.Load()
 }
 

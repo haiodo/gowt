@@ -27,9 +27,11 @@ var (
 	isel      struct {
 		typ, window, locationInWindow, scrollingDeltaX, scrollingDeltaY, hasPrecise, phase, momentumPhase,
 		magnification, modifierFlags, convertPoint, isFlipped, bounds, addMonitor, removeMonitor, defaultCenter,
-		addObserver, removeObserver, object, buttonNumber, respondsTo, windowNumber, pressedButtons, timestamp uintptr
+		addObserver, removeObserver, object, buttonNumber, respondsTo, windowNumber, pressedButtons, timestamp,
+		miniaturized, occlusionState, sharedApplication, windows_, orderedWindows_, isVisible_, count_,
+		objectAtIndex_ uintptr
 	}
-	clsNSEvent, clsNotifCenter, clsNSCursor uintptr
+	clsNSEvent, clsNotifCenter, clsNSCursor, clsNSApplication uintptr
 )
 
 func initInput() {
@@ -47,9 +49,13 @@ func initInput() {
 		isel.defaultCenter, isel.addObserver, isel.removeObserver = s("defaultCenter"), s("addObserverForName:object:queue:usingBlock:"), s("removeObserver:")
 		isel.object, isel.buttonNumber, isel.respondsTo = s("object"), s("buttonNumber"), s("respondsToSelector:")
 		isel.windowNumber, isel.pressedButtons, isel.timestamp = s("windowNumber"), s("pressedMouseButtons"), s("timestamp")
+		isel.miniaturized, isel.occlusionState = s("isMiniaturized"), s("occlusionState")
+		isel.sharedApplication, isel.windows_, isel.orderedWindows_ = s("sharedApplication"), s("windows"), s("orderedWindows")
+		isel.isVisible_, isel.count_, isel.objectAtIndex_ = s("isVisible"), s("count"), s("objectAtIndex:")
 		clsNSEvent = uintptr(cocoa.OSObjc_lookUpClass("NSEvent"))
 		clsNotifCenter = uintptr(cocoa.OSObjc_lookUpClass("NSNotificationCenter"))
 		clsNSCursor = uintptr(cocoa.OSObjc_lookUpClass("NSCursor"))
+		clsNSApplication = uintptr(cocoa.OSObjc_lookUpClass("NSApplication"))
 	})
 }
 
@@ -100,6 +106,9 @@ const (
 	notifUTF8      = 0x08000100
 	notifBacking   = "NSWindowDidChangeBackingPropertiesNotification"
 	notifChangeScr = "NSWindowDidChangeScreenNotification"
+	notifMini      = "NSWindowDidMiniaturizeNotification"
+	notifDemini    = "NSWindowDidDeminiaturizeNotification"
+	notifOccl      = "NSWindowDidChangeOcclusionStateNotification"
 )
 
 // swtButton maps NSEvent.buttonNumber (0 left, 1 right, 2 middle) to SWT's numbering.
@@ -256,6 +265,141 @@ func OnWindowChange(view uintptr, fn func()) (stop func()) {
 		tokens = nil
 		block.Release()
 	}
+}
+
+// OnWindowVisibility calls fn when the window of view is miniaturized, deminiaturized or its
+// occlusion state changes: visible is false while the window is hidden or fully occluded. The
+// block runs on whatever thread posts the notification (an arbitrary thread, not the main one):
+// fn must be thread-safe. The returned function stops it.
+func OnWindowVisibility(view uintptr, fn func(visible bool)) (stop func()) {
+	initInput()
+	visMu.Lock()
+	visSubs[view] = &visSub{fn: fn}
+	visMu.Unlock()
+	block := objc.NewBlock(func(_ objc.Block, note objc.ID) {
+		w := send0(view, isel.window)
+		if w != 0 && send0(uintptr(note), isel.object) == w {
+			fn(windowVisible(w))
+		}
+	})
+	center := send0(clsNotifCenter, isel.defaultCenter)
+	var tokens []uintptr
+	for _, name := range []string{notifMini, notifDemini, notifOccl} {
+		b := []byte(name)
+		s := cfStringCreateWithBytes(0, &b[0], len(b), notifUTF8, false)
+		tokens = append(tokens, msg4(center, isel.addObserver, s, 0, 0, uintptr(block)))
+		cfRelease(s)
+	}
+	return func() {
+		visMu.Lock()
+		delete(visSubs, view)
+		visMu.Unlock()
+		for _, t := range tokens {
+			msgInt(center, isel.removeObserver, t)
+		}
+		tokens = nil
+		block.Release()
+	}
+}
+
+type visSub struct {
+	fn func(bool)
+}
+
+var (
+	visMu   sync.Mutex
+	visSubs = map[uintptr]*visSub{}
+	visAt   time.Time
+)
+
+// RecheckVisibility refreshes the reported visibility of every subscribed view. The OS occlusion
+// notification is not always delivered (observed when several windows are shown in one burst) and
+// occlusionState itself lags, so the state is re-read here; a window fully covered by another
+// window of this app counts as hidden regardless of what the OS reports. Runs at most once a
+// second process-wide: the per-view clock ticks would otherwise scan every window 60 times a
+// second.
+func RecheckVisibility() {
+	initInput()
+	if elapsed := time.Since(visAt); elapsed >= 0 && elapsed < time.Second {
+		return
+	}
+	visAt = time.Now()
+	visMu.Lock()
+	defer visMu.Unlock()
+	for view, s := range visSubs {
+		w := send0(view, isel.window)
+		if w == 0 {
+			continue
+		}
+		s.fn(windowVisible(w) && !fullyCovered(w))
+	}
+}
+
+// fullyCovered reports whether w shows nothing because another window of this app, ordered in
+// front of it, fully contains its frame.
+func fullyCovered(w uintptr) bool {
+	fw := windowFrame(w)
+	order := windowOrder()
+	iw, ok := order[w]
+	if !ok {
+		return false
+	}
+	app := send0(clsNSApplication, isel.sharedApplication)
+	for _, w2 := range nsArray(send0(app, isel.windows_)) {
+		if w2 == w || !nsBool(send0(w2, isel.isVisible_)) {
+			continue
+		}
+		if order[w2] >= iw { // behind w, or not ordered in
+			continue
+		}
+		if containsRect(windowFrame(w2), fw) {
+			return true
+		}
+	}
+	return false
+}
+
+// windowFrame is the NSWindow frame in screen points.
+func windowFrame(w uintptr) (r cocoa.NSRect) {
+	cocoa.OSObjc_msgSend_stretOverload9(&r, int64(w), int64(cocoa.OSSel_registerName("frame")))
+	return r
+}
+
+// windowOrder maps every ordered-in NSWindow of this app to its z position: 0 is frontmost.
+func windowOrder() map[uintptr]int {
+	app := send0(clsNSApplication, isel.sharedApplication)
+	order := map[uintptr]int{}
+	for i, w := range nsArray(send0(app, isel.orderedWindows_)) {
+		order[w] = i
+	}
+	return order
+}
+
+// nsArray lists the object pointers of an NSArray.
+func nsArray(arr uintptr) []uintptr {
+	n := int(send0(arr, isel.count_))
+	out := make([]uintptr, 0, n)
+	for i := 0; i < n; i++ {
+		out = append(out, msgInt(arr, isel.objectAtIndex_, uintptr(i)))
+	}
+	return out
+}
+
+// containsRect reports whether outer fully covers inner (half a point of tolerance).
+func containsRect(outer, inner cocoa.NSRect) bool {
+	return outer.X <= inner.X+0.5 && outer.Y <= inner.Y+0.5 &&
+		outer.X+outer.Width >= inner.X+inner.Width-0.5 &&
+		outer.Y+outer.Height >= inner.Y+inner.Height-0.5
+}
+
+// windowVisible reports whether NSWindow w shows anything: not miniaturized and not fully
+// occluded. occlusionState has no Visible bit when nothing of the window shows (the OS always
+// tracks occlusion on macOS 10.9+); 0 is fully occluded, not unknown.
+func windowVisible(w uintptr) bool {
+	if nsBool(send0(w, isel.miniaturized)) {
+		return false
+	}
+	return send0(w, isel.occlusionState)&2 != 0 // NSWindowOcclusionStateVisible = 1 << 1
 }
 
 // SystemCursor returns the NSCursor class-method result for name, such as "openHandCursor", or 0

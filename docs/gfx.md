@@ -113,6 +113,10 @@ gfx.WriteSubtreeSVGWith(w, scene, node, gfx.Rect{}, 1, gfx.SVGOptions{Background
 A text with neither `Name` nor `Family` gets `font-family="Helvetica Neue, Helvetica, Arial, sans-serif"` in the SVG,
 the names of the backends' default sans, so a viewer without the scene's font still picks a sans face.
 
+`SVGOptions.CSS` adds a `<style>` inside `<defs>`. `tx.SetName(node, "hero")` writes `id="hero"` on the
+node's SVG group, so the CSS can address it independently of paint order. Names must be unique CSS
+identifiers in the exported document; an unnamed node has no `id` attribute.
+
 `Path.ArcTo(x1, y1, x2, y2, r)` is the HTML canvas `arcTo`: a straight segment to the first tangent point, then the arc
 tangent to both lines. A zero radius, a repeated point or three points on a line give a straight segment to `(x1, y1)`.
 It is stored as cubics, so every backend replays it.
@@ -228,9 +232,14 @@ app.Window("title", view.New(scene, func(v *view.View) {
 }, g.Grow()))
 ```
 
-`view.New` builds a `g.Canvas` made layer-backed, a `cg.Host`, a compositor and a CVDisplayLink;
-frames are posted to the UI thread only while `NeedsFrame` is true. Elsewhere `view.New` gives a
-plain canvas and never calls `init`.
+`view.New` builds a `g.Canvas` made layer-backed, a `cg.Host`, a compositor and subscribes the
+window to the shared frame clock (`cg.SubscribeFrames`, one CVDisplayLink for the app). Frames are
+posted to the UI thread only while `NeedsFrame` is true. A window that is miniaturized or fully
+occluded is treated as hidden and paints nothing; the occlusion state is tracked from the OS
+notification and re-checked lazily on the clock (once a second), with a window fully covered by
+another window of the app counted as hidden. A hidden window becoming visible paints one frame to
+catch up. Idle windows draw no frames. Elsewhere `view.New` gives a plain canvas and never calls
+`init`.
 
 On Linux the same call builds a `cairo.Host` that composites the tiles on the CPU in the paint
 callback of the canvas, and runs frames from the GTK frame clock (`gtk_widget_add_tick_callback`) while
@@ -358,7 +367,7 @@ o.SetRect(r); o.Widget(); o.Remove()
   steps of 0.25, at least 1. Without a size the control keeps its font.
 - `v.Edit(view.EditOptions)` is an Overlay with a `g.Text`, `Multiline` for several lines, more
   `Opts` for the Text. It selects the text and takes the focus. Esc cancels. Enter commits; in a
-  multi-line field Cmd+Enter or Ctrl+Enter commits and Enter types a line break. A press on the view,
+  multi-line field Shift+Enter types a line break, and Cmd+Enter or Ctrl+Enter also commits. A press on the view,
   another `Edit` and the focus leaving the field (another control, the window losing the focus) commit.
   `OnCommit(text)` or `OnCancel()` runs once, after the field is gone; the text is read before that.
   Esc and Enter give the keyboard back to the canvas. `Editor.Commit()`, `Cancel()` end it from code.

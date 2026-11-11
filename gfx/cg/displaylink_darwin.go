@@ -106,6 +106,9 @@ func initDL() error {
 	return dlErr
 }
 
+// dlMade counts the display links created, whatever their fate; for tests.
+var dlMade atomic.Int32
+
 // NewDisplayLink makes a stopped link on the active displays.
 func NewDisplayLink(fn func(gfx.FrameInfo)) (*DisplayLink, error) {
 	if err := initDL(); err != nil {
@@ -115,6 +118,7 @@ func NewDisplayLink(fn func(gfx.FrameInfo)) (*DisplayLink, error) {
 	if rc := dlCreate(&d.ref); rc != 0 || d.ref == 0 {
 		return nil, fmt.Errorf("%w (CVReturn %d)", errNoDisplay, rc)
 	}
+	dlMade.Add(1)
 	dlLinks.Store(d.id, d)
 	if rc := dlSetOut(d.ref, dlCallback, d.id); rc != 0 {
 		d.Close()

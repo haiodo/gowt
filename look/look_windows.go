@@ -87,6 +87,8 @@ func classic() {}
 
 func setFullSizeContent(*swt.Shell, bool) {}
 
+func panesOverlayLayer(*swt.Shell, bool) {}
+
 func setGlass(c *swt.Composite, on bool) { fluent.Glass(c, on) }
 
 func setGlassRadius(c *swt.Composite, r float64) { fluent.GlassRadius(c, r) }
@@ -150,9 +152,6 @@ func syncInspector(*swt.Composite, [4]int32, bool) {}
 // sidebarDivider leaves a gap for the sash: an SWT sash here paints its own background and would cover
 // the content edge.
 func sidebarDivider() int32 { return 4 }
-
-// itemsMinEdge has no native toolbar to measure; the side row of Sidebar items is measured instead.
-func itemsMinEdge(*swt.Shell) (int32, bool) { return 0, false }
 
 // startUnfocused does nothing: SWT keeps its choice, the first control.
 func startUnfocused(*swt.Shell) {}

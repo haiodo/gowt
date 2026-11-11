@@ -32,9 +32,11 @@ func TestMain(m *testing.M) {
 
 // postKey puts a press and a release of char into the GDK queue of the focused window. The key code
 // makes swt.CR the Return key; a printable char maps to no key code and goes by its character.
-func postKey(d *swt.Display, char uint16) {
+func postKey(d *swt.Display, char uint16) { postKeyWithMods(d, char, 0) }
+
+func postKeyWithMods(d *swt.Display, char uint16, mods int32) {
 	e := swt.NewEvent()
-	e.Character, e.KeyCode = char, int32(char)
+	e.Character, e.KeyCode, e.StateMask = char, int32(char), mods
 	e.Type = swt.KeyDown
 	d.Post(e)
 	e.Type = swt.KeyUp

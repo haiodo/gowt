@@ -154,3 +154,40 @@ func TestFrameClockCloseWaitsForTick(t *testing.T) {
 		}
 	}
 }
+
+// Subscribers share one clock: three subscribers, at most one display link, the clock keeps
+// ticking while any subscriber stays, and it stops with the last one.
+func TestSharedClockOneLinkManySubscribers(t *testing.T) {
+	var a, b, c, d atomic.Int64
+	links := dlMade.Load()
+	stopA := SubscribeFrames(func(gfx.FrameInfo) { a.Add(1) })
+	stopB := SubscribeFrames(func(gfx.FrameInfo) { b.Add(1) })
+	stopC := SubscribeFrames(func(gfx.FrameInfo) { c.Add(1) })
+	waitFor(t, "every subscriber ticks", func() bool { return a.Load() > 0 && b.Load() > 0 && c.Load() > 0 })
+	if n := dlMade.Load() - links; n > 1 {
+		t.Errorf("%d display links made for 3 subscribers, want at most 1", n)
+	}
+	stopA()
+	waitFor(t, "the remaining subscribers keep ticking", func() bool { return b.Load() > 5 && c.Load() > 5 })
+	stopB()
+	stopC()
+	stopD := SubscribeFrames(func(gfx.FrameInfo) { d.Add(1) })
+	waitFor(t, "the clock restarts for a new subscriber", func() bool { return d.Load() > 0 })
+	stopD()
+}
+
+// Stopping the last subscriber and resubscribing right away must start a fresh clock: the old
+// clock's late tick carries its own high Seq, so a first tick of Seq near 1 proves the new
+// subscriber is called by the new clock only.
+func TestSharedClockResubscribeStartsFreshClock(t *testing.T) {
+	var a, b, bSeq atomic.Int64
+	stopA := SubscribeFrames(func(gfx.FrameInfo) { a.Add(1) })
+	waitFor(t, "the first clock ticking", func() bool { return a.Load() > 40 })
+	stopA()
+	stopB := SubscribeFrames(func(fi gfx.FrameInfo) { bSeq.Store(int64(fi.Seq)); b.Add(1) })
+	waitFor(t, "the new subscriber ticking", func() bool { return b.Load() > 0 })
+	if s := bSeq.Load(); s > 10 {
+		t.Errorf("the new subscriber's first tick has Seq %d: the old clock called it", s)
+	}
+	stopB()
+}

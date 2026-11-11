@@ -198,6 +198,21 @@ func click(e *entry) error {
 			o.SetSelection(o.GetStyle()&swt.RADIO != 0 || !o.GetSelection())
 		}
 		o.NotifyListeners(swt.Selection, swt.NewEvent())
+	case *swt.Canvas:
+		// A canvas button (such as a toolbar pill) has no selection event: a click presses it at its
+		// centre through the pointer delivery of the pointer action.
+		sz := o.GetSize()
+		x, y := float64(sz.X)/2, float64(sz.Y)/2
+		if in, ok := o.GetDataKey(qaview.InputKey).(qaview.Input); ok {
+			if err := in.Pointer("down", x, y, 1, 1, qaview.Mods{}); err != nil {
+				return err
+			}
+			return in.Pointer("up", x, y, 1, 0, qaview.Mods{})
+		}
+		if err := notifyPointer(&o.Control, "down", x, y, 1, 1, qaview.Mods{}); err != nil {
+			return err
+		}
+		return notifyPointer(&o.Control, "up", x, y, 1, 0, qaview.Mods{})
 	case *swt.MenuItem:
 		st := o.GetStyle()
 		if st&swt.CASCADE != 0 {

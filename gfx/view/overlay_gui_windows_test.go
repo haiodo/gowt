@@ -43,13 +43,30 @@ func postWheel(c *swt.Control, num int32) {
 	d.Post(wheel)
 }
 
-func postKey(d *swt.Display, char uint16) {
+func postKey(d *swt.Display, char uint16) { postKeyWithMods(d, char, 0) }
+
+func postKeyWithMods(d *swt.Display, char uint16, mods int32) {
+	modifier := func(key, typ int32) {
+		e := swt.NewEvent()
+		e.KeyCode, e.Type = key, typ
+		d.Post(e)
+	}
+	for _, m := range []struct{ mask, key int32 }{{swt.SHIFT, swt.SHIFT}, {swt.CTRL, swt.CTRL}, {swt.ALT, swt.ALT}, {swt.COMMAND, swt.COMMAND}} {
+		if mods&m.mask != 0 {
+			modifier(m.key, swt.KeyDown)
+		}
+	}
 	e := swt.NewEvent()
-	e.Character = char
+	e.Character, e.StateMask = char, mods
 	e.Type = swt.KeyDown
 	d.Post(e)
 	e.Type = swt.KeyUp
 	d.Post(e)
+	for _, m := range []struct{ mask, key int32 }{{swt.COMMAND, swt.COMMAND}, {swt.ALT, swt.ALT}, {swt.CTRL, swt.CTRL}, {swt.SHIFT, swt.SHIFT}} {
+		if mods&m.mask != 0 {
+			modifier(m.key, swt.KeyUp)
+		}
+	}
 }
 
 // TestOverlayEditGUI runs an Edit over a real view: a child window over the Direct2D swap chain

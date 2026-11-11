@@ -113,3 +113,76 @@ func TestSubtreeSVG(t *testing.T) {
 		t.Errorf("viewBox: %s", out)
 	}
 }
+
+func TestSubtreeSVGCSS(t *testing.T) {
+	s := testScene()
+	add(s, nil, 1, 0, 0, 50, 50)
+	css := `@keyframes spin{to{transform:rotate(360deg)}}#spin{animation:spin 1s}`
+	var b bytes.Buffer
+	if err := WriteSubtreeSVGWith(&b, s, nil, Rect{}, 1, SVGOptions{CSS: css}); err != nil {
+		t.Fatal(err)
+	}
+	out := b.String()
+	wellFormed(t, out)
+	if !strings.Contains(out, "<defs><style>"+css+"</style>") {
+		t.Errorf("CSS not in <defs>:\n%s", out)
+	}
+}
+
+func TestSubtreeSVGNodeID(t *testing.T) {
+	s := testScene()
+	add(s, nil, 1, 0, 0, 50, 50)
+	n := add(s, nil, 2, 100, 0, 10, 10)
+	s.Update(func(tx *Tx) { tx.SetName(n, `a<"&`) })
+	s.Commit()
+	var b bytes.Buffer
+	if err := WriteSubtreeSVG(&b, s, nil, Rect{}, 1); err != nil {
+		t.Fatal(err)
+	}
+	out := b.String()
+	wellFormed(t, out)
+	if strings.Contains(out, `id="n`) {
+		t.Errorf("an unnamed group must carry no id:\n%s", out)
+	}
+	if !strings.Contains(out, `id="a&lt;&#34;&amp;"`) {
+		t.Errorf("name not escaped:\n%s", out)
+	}
+}
+
+// The group id of an item follows its node, not its position: a CSS rule that addresses the id
+// applies to the same picture whatever order the groups come out in.
+func TestSubtreeSVGIDOrderIndependent(t *testing.T) {
+	s := testScene()
+	a := add(s, nil, 1, 0, 0, 10, 10)
+	b := add(s, nil, 2, 50, 0, 20, 20)
+	s.Update(func(tx *Tx) { tx.SetName(a, "aa"); tx.SetName(b, "bb") })
+	s.Commit()
+	write := func() string {
+		var buf bytes.Buffer
+		if err := WriteSubtreeSVGWith(&buf, s, nil, Rect{}, 1, SVGOptions{CSS: "#aa{animation:x}"}); err != nil {
+			t.Fatal(err)
+		}
+		return buf.String()
+	}
+	before := write()
+	s.Update(func(tx *Tx) { tx.SetZ(a, 1) }) // bb first now
+	s.Commit()
+	swapped := write()
+	if !(strings.Index(swapped, `id="bb"`) < strings.Index(swapped, `id="aa"`)) {
+		t.Errorf("z did not reorder groups:\n%s", swapped)
+	}
+	groupOf := func(doc, id string) string {
+		i := strings.Index(doc, `id="`+id+`"`)
+		if i < 0 {
+			t.Fatalf("no group %s in:\n%s", id, doc)
+		}
+		j := strings.Index(doc[i:], "</g>")
+		return doc[i : i+j]
+	}
+	if groupOf(before, "aa") != groupOf(swapped, "aa") || groupOf(before, "bb") != groupOf(swapped, "bb") {
+		t.Errorf("an id moved to another node's group:\n%s", swapped)
+	}
+	if !strings.Contains(swapped, "<style>#aa{animation:x}</style>") {
+		t.Errorf("CSS missing after reorder:\n%s", swapped)
+	}
+}

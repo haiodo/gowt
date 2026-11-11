@@ -123,8 +123,8 @@ type Editor struct {
 }
 
 // Edit puts a g.Text over the view for in-place editing, selects its text and gives it the focus.
-// Esc cancels. Enter commits; in a Multiline field Cmd+Enter or Ctrl+Enter commits and Enter types
-// a line break. The focus leaving the field commits: a click on the view or on another control, or
+// Esc cancels. Enter commits; in a Multiline field Shift+Enter types a line break, and Cmd+Enter or
+// Ctrl+Enter also commits. The focus leaving the field commits: a click on the view or on another control, or
 // the window losing the focus. OnCommit or OnCancel runs once, after the field is gone. Starting
 // another Edit commits the one that is open.
 func (v *View) Edit(opts EditOptions) *Editor {

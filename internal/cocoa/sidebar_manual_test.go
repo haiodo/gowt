@@ -333,7 +333,8 @@ func TestInspectorDivider(t *testing.T) {
 	})
 }
 
-// A text item shows its text as a bordered title; a Small item gets a small button view whose click
+// A text item shows its text as a bordered title; a Small item without an icon keeps a title view;
+// a Small symbol item is a plain item, with the image of its symbol.
 // runs the item.
 func TestToolbarTextAndSmall(t *testing.T) {
 	onMain(func() {
@@ -353,17 +354,16 @@ func TestToolbarTextAndSmall(t *testing.T) {
 			t.Errorf("text item: title %q, bordered %d", goString(msg(text, "title")), msg(text, "isBordered")&0xff)
 		}
 		small := s.item(d, itemIDPrefix+"1")
-		b := msg(small, "view")
-		if b == 0 || b != s.buttons[1] || msg(b, "controlSize") != controlSizeSmall || goString(msg(b, "title")) != "Fit" {
-			t.Fatalf("small item view %x, size %d, title %q", b, msg(b, "controlSize"), goString(msg(b, "title")))
+		if goString(msg(small, "title")) != "Fit" || msg(small, "isBordered")&0xff == 0 || msg(small, "view") != 0 {
+			t.Fatalf("small text item: title %q, bordered %d", goString(msg(small, "title")), msg(small, "isBordered"))
 		}
-		msg(b, "performClick:", 0)
+		s.clicked(itemIDPrefix+"1", -1)
 		if clicks != 1 {
-			t.Errorf("small button clicks %d", clicks)
+			t.Errorf("small text item clicks %d", clicks)
 		}
-		add := msg(s.item(d, itemIDPrefix+"2"), "view")
-		if msg(add, "image") == 0 || msg(add, "isEnabled")&0xff != 0 {
-			t.Errorf("small symbol item: image %x, enabled %d", msg(add, "image"), msg(add, "isEnabled")&0xff)
+		add := s.item(d, itemIDPrefix+"2")
+		if msg(add, "view") != 0 || msg(add, "image") == 0 || msg(add, "isEnabled")&0xff != 0 {
+			t.Errorf("small symbol item: view %x, image %x, enabled %d", msg(add, "view"), msg(add, "image"), msg(add, "isEnabled")&0xff)
 		}
 	})
 }

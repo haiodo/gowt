@@ -61,7 +61,6 @@ type toolbarState struct {
 	searchButtons, searchItems map[int]uintptr
 	searchFields               map[int]uintptr // index in items to the NSSearchField, owned by its item
 	split                      uintptr         // NSSplitView of InstallInspectorTracker, 0 without an inspector
-	buttons                    map[int]uintptr // index in items of a Small push item to its NSButton view, owned by its item
 }
 
 var (
@@ -316,23 +315,21 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		}
 	default:
 		ti = msg(msg(class("NSToolbarItem"), "alloc"), "initWithItemIdentifier:", nsString(id))
-		if it.Small {
-			s.smallButton(ti, target, id, it)
-		} else {
-			msg(ti, "setTarget:", target)
-			msg(ti, "setAction:", sel("gowtClick:"))
-		}
+		msg(ti, "setTarget:", target)
+		msg(ti, "setAction:", sel("gowtClick:"))
 		img := symbolImage(it.Symbol, it.Label)
 		switch {
 		case it.Text != "":
 			// A title on an item without a custom view gives AppKit's own bordered text button.
 			msg(ti, "setTitle:", nsString(it.Text))
 			msg(ti, "setBordered:", 1)
-		case img != 0 && it.Small:
-			msg(msg(ti, "view"), "setImage:", img)
-			msg(msg(ti, "view"), "setImagePosition:", imageOnly)
 		case img != 0:
 			msg(ti, "setImage:", img)
+			if !it.Nav && !s.overSidebar(*it) && respondsTo(ti, "setBordered:") {
+				// AppKit 26+ draws an image item as a bordered glass capsule; the Harness rest state
+				// is a bare icon, so the border goes and AppKit keeps the hover and press fills.
+				msg(ti, "setBordered:", 0)
+			}
 		case it.Small:
 			msg(msg(ti, "view"), "setTitle:", nsString(it.Label))
 		}
@@ -347,33 +344,7 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 	return ti
 }
 
-const (
-	controlSizeSmall = 1  // NSControlSizeSmall
-	bezelToolbar     = 11 // NSBezelStyleToolbar
-	pushIn           = 7  // NSButtonTypeMomentaryPushIn
-	imageOnly        = 1  // NSImageOnly
-)
-
-// smallButton gives item ti a toolbar button of the small control size as its view: NSToolbarItem
-// has no control size of its own. The button runs the item's click through its identifier.
-func (s *toolbarState) smallButton(ti, target uintptr, id string, it *ToolbarItem) {
-	b := msg(msg(class("NSButton"), "alloc"), "init")
-	msg(b, "setButtonType:", pushIn)
-	msg(b, "setBezelStyle:", bezelToolbar)
-	msg(b, "setTitle:", nsString(""))
-	msg(b, "setIdentifier:", nsString(id))
-	msg(b, "setTarget:", target)
-	msg(b, "setAction:", sel("gowtClick:"))
-	msg(b, "setEnabled:", boolArg(!it.Disabled))
-	setSmall(b)
-	msg(ti, "setView:", b)
-	msg(b, "release")
-	if s.buttons == nil {
-		s.buttons = map[int]uintptr{}
-	}
-	i, _ := strconv.Atoi(strings.TrimPrefix(id, itemIDPrefix))
-	s.buttons[i] = b
-}
+const controlSizeSmall = 1 // NSControlSizeSmall
 
 // setSmall gives control v the small control size and the system font of that size, which a control
 // does not take by itself.
@@ -606,9 +577,6 @@ func SetToolbarItemEnabled(view *NSView, item, segment int, on bool) {
 	switch {
 	case segment < 0:
 		it.Disabled = !on
-		if b := s.buttons[item]; b != 0 { // AppKit does not validate an item with a view
-			msg(b, "setEnabled:", boolArg(on))
-		}
 	case segment < len(it.Group):
 		it.Group[segment].Disabled = !on
 		if g := s.groups[item]; g != 0 {

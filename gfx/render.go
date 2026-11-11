@@ -17,11 +17,13 @@ type Clip struct {
 }
 
 // Item is one picture to draw: through M, under the clips, composited at Alpha.
+// SVGID is the node label to write as the group id in SVG output, empty for none; targets ignore it.
 type Item struct {
 	Pic   *Picture
 	M     Affine
 	Alpha float64
 	Clips []Clip
+	SVGID string
 }
 
 // Target is an offscreen bitmap a Renderer draws into. One Target is used by one goroutine at a time.

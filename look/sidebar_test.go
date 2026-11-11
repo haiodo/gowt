@@ -1,6 +1,10 @@
 package look
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/haiodo/gowt"
+)
 
 func TestSidebarFrames(t *testing.T) {
 	bg, sb, ct, sh := sidebarFrames(0, 0, 900, 600, 220, 7, 52, 0)
@@ -66,6 +70,13 @@ func TestDragWidth(t *testing.T) {
 		if w := dragWidth(c.want, c.least, c.most); w != c.width {
 			t.Errorf("dragWidth(%d, %d, %d) = %d, want %d", c.want, c.least, c.most, w, c.width)
 		}
+	}
+}
+
+// The sidebar narrows to 88 points: its toolbar items overflow instead of holding it wider.
+func TestMinSidebarWidth(t *testing.T) {
+	if got, want := minSidebarWidth(), int32(gowt.Scaled(88)); got != want {
+		t.Errorf("minSidebarWidth() = %d, want %d", got, want)
 	}
 }
 

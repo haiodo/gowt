@@ -12,7 +12,7 @@ import (
 // Options tune a Compositor; the zero value gives the defaults noted on each field.
 type Options struct {
 	TilePx  int           // tile side in device pixels; 512
-	Workers int           // tile rasterizer goroutines; NumCPU-2, at most 6, at least 1
+	Workers int           // tiles of this compositor drawn at once; the rasterizers come from a pool shared by all compositors; NumCPU-2, at most 6, at least 1
 	Margin  int           // tiles kept around the view; 1
 	Settle  time.Duration // zoom stands still this long before tiles are redrawn at the new scale; 120 ms
 	// ExactZoom draws tiles at exactly the zoom after a gesture instead of the next power of two
@@ -106,6 +106,186 @@ type camSnap struct {
 	hw, hh float64
 }
 
+// tilePool is the process-wide pool of tile rasterizer goroutines, shared by every Compositor:
+// windows do not multiply the workers. Started lazily on the first queued tile; a worker releases
+// its tile-sized target before it waits.
+var tilePool = struct {
+	mu      sync.Mutex
+	cond    *sync.Cond
+	comps   map[*Compositor]struct{}
+	started bool
+	n       int
+}{comps: map[*Compositor]struct{}{}}
+
+func init() { tilePool.cond = sync.NewCond(&tilePool.mu) }
+
+// poolDefault is the pool size: the same formula the per-compositor default used.
+func poolDefault() int { return min(max(runtime.NumCPU()-2, 1), 6) }
+
+// poolWorkers reports how many worker goroutines the pool has started; for tests.
+func poolWorkers() int {
+	tilePool.mu.Lock()
+	defer tilePool.mu.Unlock()
+	return tilePool.n
+}
+
+// dropQueued releases every queued tile without drawing: the queued flags go back and the pending
+// count sinks, like the gen -1 results a live compositor gets from drain.
+func (c *Compositor) dropQueued() {
+	for _, j := range c.queue {
+		c.pending.Add(-1)
+		j.t.queued = false
+	}
+	c.queue = nil
+}
+
+// enqueue hands tiles to the shared pool.
+func (c *Compositor) enqueue(add []job) {
+	tilePool.mu.Lock()
+	c.mu.Lock()
+	if c.closed {
+		// a frame raced the Close: give the queued flags back and drop the jobs
+		c.dropQueuedWith(add)
+		c.mu.Unlock()
+		tilePool.mu.Unlock()
+		return
+	}
+	c.queue = append(c.queue, add...)
+	c.pending.Add(int32(len(add)))
+	c.mu.Unlock()
+	if !tilePool.started {
+		tilePool.started = true
+		tilePool.n = poolDefault()
+		for i := 0; i < tilePool.n; i++ {
+			go tileWorker()
+		}
+	}
+	tilePool.comps[c] = struct{}{}
+	tilePool.cond.Broadcast()
+	tilePool.mu.Unlock()
+}
+
+// dropQueuedWith releases jobs that never reached the queue.
+func (c *Compositor) dropQueuedWith(add []job) {
+	for _, j := range add {
+		j.t.queued = false
+	}
+}
+
+// take pops the most urgent queued tile of any compositor: tiles in view first, then the nearest
+// to the view's center, waiting when there is no work anywhere. release runs before the wait, so
+// an idle worker holds no tile target. Locks are taken pool-then-compositor everywhere.
+func take(release func()) (*Compositor, job) {
+	tilePool.mu.Lock()
+	defer tilePool.mu.Unlock()
+	for {
+		for c := range tilePool.comps {
+			c.mu.Lock()
+			if c.closed {
+				c.dropQueued()
+				c.mu.Unlock()
+				delete(tilePool.comps, c)
+				continue
+			}
+			if c.inflight >= c.o.Workers {
+				// its workers are busy: leave the queue for the wake from a finished tile
+				c.mu.Unlock()
+				continue
+			}
+			// drop what was evicted while it waited
+			w := c.queue[:0]
+			for _, j := range c.queue {
+				if j.t.evicted.Load() {
+					c.pending.Add(-1)
+					c.pushLocked(result{t: j.t, gen: -1})
+					continue
+				}
+				w = append(w, j)
+			}
+			c.queue = w
+			if len(c.queue) == 0 {
+				c.mu.Unlock()
+				delete(tilePool.comps, c)
+				continue
+			}
+			ctr := c.snap.Load().center
+			best, bestD := 0, math.Inf(1)
+			for i, j := range c.queue {
+				r := j.s.rect(j.t.key)
+				d := r.Center().Dist(ctr)
+				if !r.Intersects(c.viewRectAtomic()) {
+					d += 1e12
+				}
+				if d < bestD {
+					best, bestD = i, d
+				}
+			}
+			j := c.queue[best]
+			c.queue = append(c.queue[:best], c.queue[best+1:]...)
+			c.inflight++
+			c.wg.Add(1) // Close waits for the result push
+			c.mu.Unlock()
+			return c, j
+		}
+		release()
+		tilePool.cond.Wait()
+	}
+}
+
+// tileWorker draws tiles for every compositor. The target belongs to one renderer: kept while the
+// jobs come from a single compositor, released when the source changes and before waiting.
+func tileWorker() {
+	var t Target
+	var items Items
+	var last *Compositor
+	defer func() {
+		if t != nil {
+			t.Close()
+		}
+	}()
+	for {
+		c, j := take(func() {
+			if t != nil {
+				t.Close()
+				t = nil
+			}
+		})
+		if last != c && t != nil {
+			t.Close()
+			t = nil
+		}
+		last = c
+		gen := j.t.gen.Load()
+		start := time.Now()
+		rect := j.s.rect(j.t.key)
+		c.scene.Collect(rect, &items)
+		var img Image = blankTile{}
+		if len(items.List) > 0 {
+			if t == nil {
+				t = c.r.NewTarget(c.o.TilePx, c.o.TilePx)
+			}
+			if ss, ok := t.(ScreenScaler); ok {
+				ss.SetScreenScale(j.s.dpr)
+			}
+			t.Begin(j.s.scale, rect.Min, Color{})
+			t.Draw(items.List)
+			img = t.Snapshot(float64(c.o.TilePx)/j.s.dpr, float64(c.o.TilePx)/j.s.dpr)
+		}
+		c.rasterNs.Add(int64(time.Since(start)))
+		c.rastered.Add(1)
+		c.pending.Add(-1)
+		c.mu.Lock()
+		c.pushLocked(result{j.t, gen, img})
+		c.inflight--
+		c.mu.Unlock()
+		c.wg.Done()
+		// a freed slot may unblock a capped compositor; pool-then-compositor order kept: no locks held
+		tilePool.mu.Lock()
+		tilePool.cond.Broadcast()
+		tilePool.mu.Unlock()
+	}
+}
+
 type lift struct {
 	node    *Node
 	layer   Layer
@@ -188,16 +368,18 @@ type Compositor struct {
 	fi             FrameInfo
 	busy           bool
 
-	mu      sync.Mutex
-	cond    *sync.Cond
-	queue   []job
-	ready   []result
-	closed  bool
-	readyN  atomic.Bool
-	liftN   atomic.Bool // liftReady has something
-	snap    atomic.Pointer[camSnap]
-	pending atomic.Int32
-	wg      sync.WaitGroup
+	mu     sync.Mutex
+	queue  []job
+	ready  []result
+	closed bool
+	// inflight is how many queued tiles workers hold right now; take never gives a compositor
+	// more than o.Workers at once, the per-compositor concurrency the dedicated workers had.
+	inflight int
+	readyN   atomic.Bool
+	liftN    atomic.Bool // liftReady has something
+	snap     atomic.Pointer[camSnap]
+	pending  atomic.Int32
+	wg       sync.WaitGroup
 
 	rastered atomic.Uint64
 	rasterNs atomic.Int64
@@ -208,22 +390,22 @@ type Compositor struct {
 func NewCompositor(s *Scene, r Renderer, h Host, o Options) *Compositor {
 	o.fill()
 	c := &Compositor{scene: s, r: r, host: h, o: o, dpr: 1, vw: 800, vh: 600, cam: Camera{Zoom: 1}, lastZoom: -1, scr: make([]scratch, 1)}
-	c.cond = sync.NewCond(&c.mu)
 	c.snap.Store(&camSnap{})
 	c.camDirty.Store(true)
-	for i := 0; i < o.Workers; i++ {
-		c.wg.Add(1)
-		go c.worker()
-	}
 	return c
 }
 
 // Close stops the workers and removes every layer.
 func (c *Compositor) Close() {
+	// pool-then-compositor, the order take and enqueue use: no worker hands a job out of a
+	// closing compositor, and Close's Wait below covers the jobs already handed out.
+	tilePool.mu.Lock()
 	c.mu.Lock()
 	c.closed = true
-	c.cond.Broadcast()
+	c.dropQueued()
 	c.mu.Unlock()
+	delete(tilePool.comps, c)
+	tilePool.mu.Unlock()
 	c.wg.Wait()
 	c.host.Begin()
 	for _, set := range []*tileSet{c.cur, c.prev} {
@@ -279,7 +461,8 @@ func (c *Compositor) SetCamera(cam Camera) {
 	}
 }
 
-// Workers is the number of tile rasterizer goroutines.
+// Workers limits how many of this compositor's tiles are drawn at once and caps the per-frame
+// sprite redraw batch; the rasterizers come from a pool shared by every compositor.
 func (c *Compositor) Workers() int { return c.o.Workers }
 
 // Camera returns the current camera.
@@ -473,54 +656,8 @@ func (c *Compositor) ensureTiles(moved bool) {
 		}
 	}
 	if len(add) > 0 {
-		c.pending.Add(int32(len(add)))
-		c.mu.Lock()
-		c.queue = append(c.queue, add...)
-		c.cond.Broadcast()
-		c.mu.Unlock()
+		c.enqueue(add)
 	}
-}
-
-// next takes the most urgent job: tiles in view first, then the nearest to the view's center.
-func (c *Compositor) next(idle func()) (job, bool) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	for {
-		if c.closed {
-			return job{}, false
-		}
-		// drop what was evicted while it waited
-		w := c.queue[:0]
-		for _, j := range c.queue {
-			if j.t.evicted.Load() {
-				c.pending.Add(-1)
-				c.pushLocked(result{t: j.t, gen: -1})
-				continue
-			}
-			w = append(w, j)
-		}
-		c.queue = w
-		if len(c.queue) > 0 {
-			break
-		}
-		idle()
-		c.cond.Wait()
-	}
-	ctr := c.snap.Load().center
-	best, bestD := 0, math.Inf(1)
-	for i, j := range c.queue {
-		r := j.s.rect(j.t.key)
-		d := r.Center().Dist(ctr)
-		if !r.Intersects(c.viewRectAtomic()) {
-			d += 1e12
-		}
-		if d < bestD {
-			best, bestD = i, d
-		}
-	}
-	j := c.queue[best]
-	c.queue = append(c.queue[:best], c.queue[best+1:]...)
-	return j, true
 }
 
 // pushLocked adds a result (gen -1 means "give the queued flag back") for the next Frame.
@@ -534,52 +671,6 @@ func (c *Compositor) pushLocked(r result) {
 func (c *Compositor) viewRectAtomic() Rect {
 	s := c.snap.Load()
 	return R(s.center.X-s.hw, s.center.Y-s.hh, 2*s.hw, 2*s.hh)
-}
-
-func (c *Compositor) worker() {
-	defer c.wg.Done()
-	var t Target
-	var items Items
-	defer func() {
-		if t != nil {
-			t.Close()
-		}
-	}()
-	for {
-		// a target is a whole tile of memory per worker; between bursts of work it would only sit there.
-		// Released where the worker starts to wait: only then it is known that the queue is empty.
-		j, ok := c.next(func() {
-			if t != nil {
-				t.Close()
-				t = nil
-			}
-		})
-		if !ok {
-			return
-		}
-		gen := j.t.gen.Load()
-		start := time.Now()
-		rect := j.s.rect(j.t.key)
-		c.scene.Collect(rect, &items)
-		var img Image = blankTile{}
-		if len(items.List) > 0 {
-			if t == nil {
-				t = c.r.NewTarget(c.o.TilePx, c.o.TilePx)
-			}
-			if ss, ok := t.(ScreenScaler); ok {
-				ss.SetScreenScale(j.s.dpr)
-			}
-			t.Begin(j.s.scale, rect.Min, Color{})
-			t.Draw(items.List)
-			img = t.Snapshot(float64(c.o.TilePx)/j.s.dpr, float64(c.o.TilePx)/j.s.dpr)
-		}
-		c.rasterNs.Add(int64(time.Since(start)))
-		c.rastered.Add(1)
-		c.pending.Add(-1)
-		c.mu.Lock()
-		c.pushLocked(result{j.t, gen, img})
-		c.mu.Unlock()
-	}
 }
 
 // pendingTileBudget is the most tile images a frame applies while a sprite is drawn: the host
@@ -716,11 +807,7 @@ func (c *Compositor) requeue() {
 		}
 	}
 	if len(add) > 0 {
-		c.pending.Add(int32(len(add)))
-		c.mu.Lock()
-		c.queue = append(c.queue, add...)
-		c.cond.Broadcast()
-		c.mu.Unlock()
+		c.enqueue(add)
 	}
 }
 

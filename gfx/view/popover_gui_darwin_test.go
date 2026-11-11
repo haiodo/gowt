@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ebitengine/purego/objc"
+	"github.com/ebitengine/purego"
 
 	g "github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/gfx"
@@ -38,7 +38,9 @@ var macKeys = map[uint16]uint16{' ': 49, 'x': 7, 'y': 16, '\r': 36}
 
 // postKey queues a press and a release of char as typed keys for the key window. A test process that
 // is not active has no key window: then they go straight to the window of the focus control.
-func postKey(d *swt.Display, char uint16) {
+func postKey(d *swt.Display, char uint16) { postKeyWithMods(d, char, 0) }
+
+func postKeyWithMods(d *swt.Display, char uint16, mods int32) {
 	app := cocoa.NSApplicationSharedApplication()
 	win := app.KeyWindow()
 	if win == nil {
@@ -48,15 +50,23 @@ func postKey(d *swt.Display, char uint16) {
 		}
 		win = c.View.Window()
 	}
-	sel := objc.RegisterName
+	flags := uint64(0)
+	for mask, flag := range map[int32]uint64{swt.SHIFT: 1 << 17, swt.CTRL: 1 << 18, swt.COMMAND: 1 << 20} {
+		if mods&mask != 0 {
+			flags |= flag
+		}
+	}
+	addr, _ := purego.Dlsym(purego.RTLD_DEFAULT, "objc_msgSend")
+	var keyEvent func(int64, int64, uint64, nsPoint, uint64, float64, int64, uintptr, int64, int64, bool, uint16) int64
+	purego.RegisterFunc(&keyEvent, addr)
 	s := cocoa.NSStringStringWith(string(rune(char)))
 	for _, typ := range []uint64{10, 11} { // NSEventTypeKeyDown, NSEventTypeKeyUp
-		ev := objc.ID(objc.GetClass("NSEvent")).Send(sel("keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:"),
-			typ, nsPoint{}, uint64(0), 0.0, win.WindowNumber(), objc.ID(0), objc.ID(s.Id), objc.ID(s.Id), false, macKeys[char])
+		ev := keyEvent(cocoa.OSObjc_getClass("NSEvent"), cocoa.OSSel_registerName("keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:"),
+			typ, nsPoint{}, flags, 0.0, win.WindowNumber(), 0, s.Id, s.Id, false, macKeys[char])
 		if app.KeyWindow() != nil {
-			app.PostEvent(cocoa.NewNSEventOverload1(int64(ev)), false)
+			app.PostEvent(cocoa.NewNSEventOverload1(ev), false)
 		} else {
-			win.SendEvent(cocoa.NewNSEventOverload1(int64(ev)))
+			win.SendEvent(cocoa.NewNSEventOverload1(ev))
 		}
 	}
 }

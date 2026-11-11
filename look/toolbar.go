@@ -2,7 +2,6 @@ package look
 
 import (
 	"fmt"
-	"runtime"
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/internal/jrt"
@@ -315,18 +314,11 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 			_, symbol := barSymbols[g.Symbol]
 			iconOnly = iconOnly && (g.Icon != nil || len(g.IconSVG) > 0 || symbol)
 		}
-		// The square Button is the Windows and Linux fallback; macOS keeps ToolItem, which supplies the
-		// disabled image and the ToolItem nodes the QA tree expects there.
-		if iconOnly && runtime.GOOS != "darwin" {
-			if len(segs) == 1 {
-				return toolButton(p, segs[0], size, icons)
-			}
-			var group *gowt.Panel
-			p.Add(gowt.HBox(gowt.Gap(0), gowt.Padding(0), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Ref(&group)))
-			for _, g := range segs {
-				toolButton(group, g, size, icons)
-			}
-			return group
+		// The pill is the house look of the bar: a native ToolBar cannot give the Harness fill
+		// states and the hairline between the segments of a group. A segment without an icon or a
+		// symbol keeps the ToolBar item, which shows its title.
+		if iconOnly {
+			return pillItem(p, it, size, icons)
 		}
 		var tb *gowt.ToolBarView
 		p.Add(gowt.ToolBar(gowt.Flat(), gowt.Place(gowt.AlignStart, gowt.AlignCenter), gowt.Size(0, gowt.Spacing.ControlHeight), gowt.Ref(&tb)))
@@ -338,39 +330,6 @@ func (b *toolbarBar) item(p *gowt.Panel, it ToolbarItem, icons *[]func(on, off s
 		}
 		return tb
 	}
-}
-
-// toolButton adds a square icon button; ToolItem.SetWidth sizes only separators on Windows and Linux.
-func toolButton(p *gowt.Panel, it ToolbarItem, size int, icons *[]func(on, off string) []*swt.Image) *gowt.ButtonView {
-	var bt *gowt.ButtonView
-	opts := []gowt.Option{gowt.Borderless(), gowt.Place(gowt.AlignStart, gowt.AlignCenter),
-		gowt.Size(gowt.Spacing.ControlHeight, gowt.Spacing.ControlHeight), gowt.Tooltip(it.Title), gowt.AccessibleLabel(it.Title), gowt.Ref(&bt)}
-	if it.OnClick != nil {
-		opts = append(opts, gowt.OnClick(it.OnClick))
-	}
-	if it.ID != "" {
-		opts = append(opts, gowt.ID(it.ID))
-	}
-	p.Add(gowt.Button("", opts...))
-	shape, symbol := barSymbols[it.Symbol]
-	switch {
-	case it.Icon != nil:
-		bt.Unwrap().SetImage(it.Icon.Unwrap())
-	case len(it.IconSVG) > 0 || symbol:
-		data := string(it.IconSVG)
-		if len(it.IconSVG) == 0 {
-			data = fmt.Sprintf(barSVG, shape)
-		}
-		*icons = append(*icons, func(on, _ string) []*swt.Image {
-			img := swt.NewImageDeviceImageDataProvider(bt.Unwrap().GetDisplay(), svg.NewImageDataProvider([]byte(data), size, size, on))
-			bt.Unwrap().SetImage(img)
-			return []*swt.Image{img}
-		})
-	}
-	if it.Enabled != nil {
-		gowt.Watch(bt, it.Enabled, bt.SetEnabled)
-	}
-	return bt
 }
 
 type barCell struct {
@@ -615,6 +574,8 @@ func setBarIDs(w gowt.Widget, it ToolbarItem, restore bool) {
 		v.Unwrap().SetDataKeyValue("gowt.id", id)
 	case *gowt.TextView:
 		v.Unwrap().SetDataKeyValue("gowt.id", id)
+	case *gowt.CanvasView:
+		v.Unwrap().SetDataKeyValue("gowt.id", id)
 	case *gowt.Panel:
 		for i, child := range v.Unwrap().GetChildren() {
 			segmentID := ""
@@ -633,6 +594,8 @@ func barControl(w gowt.Widget) *swt.Control {
 	case *gowt.ButtonView:
 		return &v.Unwrap().Control
 	case *gowt.TextView:
+		return &v.Unwrap().Control
+	case *gowt.CanvasView:
 		return &v.Unwrap().Control
 	case *gowt.LabelView:
 		return &v.Unwrap().Control

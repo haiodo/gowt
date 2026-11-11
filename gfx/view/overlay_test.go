@@ -71,9 +71,13 @@ func TestEditorKeys(t *testing.T) {
 		cancels   int
 	}{
 		{"Enter in one line", false, enter, g.Mods{}, true, 1, 0},
+		{"Shift+Enter in one line", false, enter, g.Mods{Shift: true}, true, 1, 0},
 		{"keypad Enter in one line", false, swt.KEYPAD_CR, g.Mods{}, true, 1, 0},
-		{"Enter in many lines types a break", true, enter, g.Mods{}, false, 0, 0},
+		{"Enter in many lines", true, enter, g.Mods{}, true, 1, 0},
+		{"keypad Enter in many lines", true, swt.KEYPAD_CR, g.Mods{}, true, 1, 0},
 		{"Shift+Enter in many lines types a break", true, enter, g.Mods{Shift: true}, false, 0, 0},
+		{"Shift+keypad Enter in many lines types a break", true, swt.KEYPAD_CR, g.Mods{Shift: true}, false, 0, 0},
+		{"Alt+Enter in many lines types a break", true, enter, g.Mods{Alt: true}, false, 0, 0},
 		{"Cmd+Enter in many lines", true, enter, g.Mods{Cmd: true}, true, 1, 0},
 		{"Ctrl+Enter in many lines", true, enter, g.Mods{Ctrl: true}, true, 1, 0},
 		{"Esc in one line", false, esc, g.Mods{}, true, 0, 1},

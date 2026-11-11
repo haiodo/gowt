@@ -37,6 +37,7 @@ const (
 // safe on the goroutine that commits, or inside Scene.Read.
 type Node struct {
 	id      int
+	name    string // caller's label, written as the group id by the SVG writer
 	parent  *Node
 	kids    []*Node
 	t       Affine
@@ -87,6 +88,9 @@ func NewNode(id int) *Node {
 
 // ID returns the id given to NewNode.
 func (n *Node) ID() int { return n.id }
+
+// Name returns the caller's label of n, set by Tx.SetName; empty when none.
+func (n *Node) Name() string { return n.name }
 
 // Parent returns the parent node, the scene root for a top level node.
 func (n *Node) Parent() *Node { return n.parent }
@@ -184,6 +188,7 @@ const (
 	txShape
 	txClip
 	txReparent
+	txName
 	txSuperseded // a txPicture followed by another one for the same node in this Commit
 )
 
@@ -193,6 +198,7 @@ type txOp struct {
 	m    Affine
 	f    float64
 	i    int
+	s    string
 	pic  *Picture
 	path *Path
 	r    Rect
@@ -282,6 +288,13 @@ func (tx *Tx) ClipPath(n *Node, p *Path) {
 
 // NoClip removes the clip of n.
 func (tx *Tx) NoClip(n *Node) { tx.ops = append(tx.ops, txOp{kind: txClip, n: n, ck: ClipNone}) }
+
+// SetName labels n; the SVG writer puts the label, escaped, into the id of the item's group,
+// so a caller's CSS can address the group by it. The caller must give names that are unique
+// CSS identifiers within the exported document. An empty name means no id.
+func (tx *Tx) SetName(n *Node, name string) {
+	tx.ops = append(tx.ops, txOp{kind: txName, n: n, s: name})
+}
 
 // Commit applies the queued transactions in order and returns the scene areas whose pixels
 // changed: the old and the new bounds of every node that moved or changed, lifted nodes aside.
@@ -493,6 +506,12 @@ func (s *Scene) apply(op *txOp, dirty *[]*Node, damage *[]Rect) {
 		*dirty = append(*dirty, n)
 	case txShape:
 		n.shape, n.hit = op.path, HitMode(op.i)
+	case txName:
+		if op.s != n.name {
+			n.name = op.s
+			n.rev++
+			s.bump(n.parent)
+		}
 	case txClip:
 		n.clip = nil
 		if op.ck != ClipNone {
@@ -710,7 +729,7 @@ type Items struct {
 func (b *Items) Reset() { b.List, b.clips, b.nodes = b.List[:0], b.clips[:0], b.nodes[:0] }
 
 func (b *Items) add(n *Node) {
-	it := Item{Pic: n.pic, M: n.world, Alpha: n.alpha}
+	it := Item{Pic: n.pic, M: n.world, Alpha: n.alpha, SVGID: n.name}
 	if n.hasClip {
 		i := len(b.clips)
 		b.clips = clipChain(n, b.clips)

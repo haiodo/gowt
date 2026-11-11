@@ -92,14 +92,13 @@ func TestToolbarQA(t *testing.T) {
 					t.Errorf("nodes %+v and %+v, want ToolItems titled New and Back", button, seg)
 				}
 			} else {
-				if button.Class != "Button" || seg.Class != "Button" {
-					t.Errorf("nodes %+v and %+v, want icon Buttons", button, seg)
+				if button.Class != "Canvas" || seg.Class != "Canvas" {
+					t.Errorf("nodes %+v and %+v, want pill segments", button, seg)
 				}
 				for _, n := range []qatree.Node{button, seg} {
-					// Native widget metrics win over the ControlHeight hint (GTK: 30 against 28), as for
-					// the Search field: the buttons stay square at the native size.
+					// The segment canvas takes the ControlHeight square of its Size hint.
 					if n.Bounds[2] != n.Bounds[3] || n.Bounds[2] <= 0 {
-						t.Errorf("%s bounds %v, want a square of the native size", n.ID, n.Bounds)
+						t.Errorf("%s bounds %v, want a square of the control height", n.ID, n.Bounds)
 					}
 				}
 			}
@@ -179,16 +178,15 @@ func TestToolbarOverflow(t *testing.T) {
 					}
 				}
 				client := w.Unwrap().GetClientArea()
-				for _, class := range []string{"Button", "ToolItem"} {
+				for _, class := range []string{"Canvas", "ToolItem"} {
 					buttons, _ := qatree.Find(d, qatree.Selector{Class: class})
 					for _, button := range buttons {
 						if button.Visible && int32(button.Bounds[0]+button.Bounds[2]) > client.X+client.Width {
 							fail("%s: %s ends past the client area: %v", step, button.ID, button.Bounds)
 						}
-						// Native widget metrics win over the ControlHeight hint (GTK: 30 against 28): the
-						// buttons stay square at the native size.
-						if class == "Button" && button.Visible && (button.Bounds[2] != button.Bounds[3] || button.Bounds[2] <= 0) {
-							fail("%s: %s bounds %v, want a square of the native size", step, button.ID, button.Bounds)
+						// The segment canvas takes the ControlHeight square of its Size hint.
+						if class == "Canvas" && button.Visible && (button.Bounds[2] != button.Bounds[3] || button.Bounds[2] <= 0) {
+							fail("%s: %s bounds %v, want a square of the control height", step, button.ID, button.Bounds)
 						}
 					}
 				}
@@ -298,10 +296,10 @@ func TestToolbarOverflow(t *testing.T) {
 					}
 					w.SetSize(int(wide), 600)
 					awaitSize(wide, 600, diag, func() {
-						check("wide", "Button")
+						check("wide", "Canvas")
 						restored, _ := qatree.Find(d, qatree.Selector{ID: "forward"})
-						if len(restored) != 1 || restored[0].Class != "Button" {
-							fail("restored group segment is %+v, want one Button with its ID", restored)
+						if len(restored) != 1 || restored[0].Class != "Canvas" {
+							fail("restored group segment is %+v, want one Canvas with its ID", restored)
 						}
 						w.SetSize(int(narrow), 600)
 						awaitSize(narrow, 600, diag, func() {

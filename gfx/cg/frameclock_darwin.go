@@ -164,3 +164,76 @@ func (c *FrameClock) timerMode() (tickLink, bool) {
 		}
 	}
 }
+
+// SubscribeFrames adds fn to the process-wide frame clock and returns a stop function. One
+// FrameClock - one CVDisplayLink or fallback timer - serves every subscriber; the clock stops when
+// the last subscriber leaves, so an app with nothing to show holds no display link. fn has the
+// DisplayLink contract: short, any thread, decides itself whether a frame is needed.
+//
+// Each clock iterates its own subscriber map: a subscriber that joins after a stop starts a new
+// clock and is never called by the old one. stop must not be called from fn (or from anything fn
+// calls): closing waits out the tick in flight, which cannot finish while fn runs. stop is safe
+// from any other goroutine and returns before the clock has fully stopped: a subscriber it removed
+// may still be called once afterwards, so a stopped subscriber must ignore late ticks itself.
+func SubscribeFrames(fn func(gfx.FrameInfo)) (stop func()) {
+	sharedClock.mu.Lock()
+	defer sharedClock.mu.Unlock()
+	if sharedClock.tick == nil {
+		t := &sharedTick{subs: map[uint64]func(gfx.FrameInfo){}}
+		t.clock = NewFrameClock(t.dispatch)
+		sharedClock.tick = t
+		t.clock.Start()
+	}
+	t := sharedClock.tick
+	id := sharedClock.next
+	sharedClock.next++
+	t.mu.Lock()
+	t.subs[id] = fn
+	t.mu.Unlock()
+	return func() { stopSub(t, id) }
+}
+
+// sharedTick is one shared clock and the subscribers that belong to it.
+type sharedTick struct {
+	clock *FrameClock
+	mu    sync.Mutex
+	subs  map[uint64]func(gfx.FrameInfo)
+}
+
+// dispatch hands a tick to the subscribers of this clock only; a newer clock never sees them.
+func (t *sharedTick) dispatch(fi gfx.FrameInfo) {
+	t.mu.Lock()
+	subs := make([]func(gfx.FrameInfo), 0, len(t.subs))
+	for _, f := range t.subs {
+		subs = append(subs, f)
+	}
+	t.mu.Unlock()
+	for _, f := range subs {
+		f(fi)
+	}
+}
+
+// stopSub removes a subscriber and closes the clock when the last one left. Lock order is
+// sharedClock-then-tick everywhere, so the emptiness check is atomic against new subscribers.
+func stopSub(t *sharedTick, id uint64) {
+	sharedClock.mu.Lock()
+	t.mu.Lock()
+	delete(t.subs, id)
+	last := len(t.subs) == 0 && sharedClock.tick == t
+	if last {
+		sharedClock.tick = nil
+	}
+	t.mu.Unlock()
+	sharedClock.mu.Unlock()
+	if last {
+		// asynchronous: called from a tick (via a subscriber's fn) this would wait out the very
+		// tick holding the caller; the clock stops by itself once the tick returns
+		go t.clock.Close()
+	}
+}
+
+var sharedClock = struct {
+	mu   sync.Mutex
+	tick *sharedTick
+	next uint64
+}{}

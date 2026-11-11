@@ -241,6 +241,12 @@ another window of the app counted as hidden. A hidden window becoming visible pa
 catch up. Idle windows draw no frames. Elsewhere `view.New` gives a plain canvas and never calls
 `init`.
 
+The compositor's options go in `view.NewWithOptions(scene, view.Options{...}, init, opts...)`,
+a `view.Options` being `gfx.Options` (TilePx, Workers, Margin, Settle, ExactZoom); they are fixed
+when the compositor is created, before the first frame. `view.New` is `NewWithOptions` with the
+zero options: the defaults described under Compositor above. `v.Compositor().Options()` reads the
+effective options back.
+
 On Linux the same call builds a `cairo.Host` that composites the tiles on the CPU in the paint
 callback of the canvas, and runs frames from the GTK frame clock (`gtk_widget_add_tick_callback`) while
 `NeedsFrame` is true. Text is Pango; a font name is a PostScript name that fontconfig knows (the

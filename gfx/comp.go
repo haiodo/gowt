@@ -395,6 +395,10 @@ func NewCompositor(s *Scene, r Renderer, h Host, o Options) *Compositor {
 	return c
 }
 
+// Options returns the effective options of the compositor: those it was created with, defaults
+// filled in.
+func (c *Compositor) Options() Options { return c.o }
+
 // Close stops the workers and removes every layer.
 func (c *Compositor) Close() {
 	// pool-then-compositor, the order take and enqueue use: no worker hands a job out of a

@@ -29,12 +29,12 @@ type platform struct {
 
 func traceOut(format string, a ...any) { cg.Tracef(format, a...) }
 
-func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
+func attach(cv *g.CanvasView, scene *gfx.Scene, o gfx.Options) (*View, error) {
 	v := &View{cv: cv, scene: scene}
 	v.nsview = uintptr(cv.Unwrap().View.Id)
 	v.dpr = cg.BackingScale(v.nsview)
 	v.host = cg.NewHost(cg.ViewLayer(v.nsview), v.dpr)
-	v.comp = gfx.NewCompositor(scene, cg.NewRenderer(cg.Options{TextCache: true, ShadowSprite: true, LOD: true}), v.host, gfx.Options{})
+	v.comp = gfx.NewCompositor(scene, cg.NewRenderer(cg.Options{TextCache: true, ShadowSprite: true, LOD: true}), v.host, o)
 	v.comp.SetCamera(gfx.Camera{Zoom: 1})
 	w, h := cv.Size()
 	v.comp.SetViewport(float64(w), float64(h), v.dpr)

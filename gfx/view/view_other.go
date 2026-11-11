@@ -11,10 +11,18 @@ import (
 	"github.com/haiodo/gowt/gfx"
 )
 
+// Options are the gfx.Compositor options of the view; not used on this OS.
+type Options = gfx.Options
+
 // View is not available on this OS.
 type View struct{}
 
 // New makes a plain canvas; init is never called.
 func New(scene *gfx.Scene, init func(*View), opts ...g.Option) g.Option {
+	return g.Canvas(nil, opts...)
+}
+
+// NewWithOptions makes a plain canvas; init is never called.
+func NewWithOptions(scene *gfx.Scene, comp Options, init func(*View), opts ...g.Option) g.Option {
 	return g.Canvas(nil, opts...)
 }

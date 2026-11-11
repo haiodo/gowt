@@ -63,7 +63,7 @@ func (h hostPaint) Commit() {
 	h.v.paint = h.Host.LastDraw + h.Host.LastPresent
 }
 
-func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
+func attach(cv *g.CanvasView, scene *gfx.Scene, o gfx.Options) (*View, error) {
 	rd, err := viewRenderer()
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 	if v.host, err = d2d.NewHost(rd, v.hwnd, wpx, hpx, v.dpr); err != nil {
 		return nil, err
 	}
-	v.comp = gfx.NewCompositor(scene, rd, hostPaint{v.host, v}, gfx.Options{})
+	v.comp = gfx.NewCompositor(scene, rd, hostPaint{v.host, v}, o)
 	v.comp.SetCamera(gfx.Camera{Zoom: 1})
 	v.comp.SetViewport(float64(wpx)/v.dpr, float64(hpx)/v.dpr, v.dpr)
 	v.resize.Store(true)

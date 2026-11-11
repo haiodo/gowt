@@ -70,12 +70,22 @@ func (v *View) PaintTime() time.Duration { return v.paint }
 // OnFrameReport sets f to run after every frame the view runs, on the UI goroutine.
 func (v *View) OnFrameReport(f func(FrameReport)) { v.report = f }
 
+// Options are the gfx.Compositor options of the view: TilePx, Workers, Margin, Settle and
+// ExactZoom; the zero value keeps the compositor defaults.
+type Options = gfx.Options
+
 // New returns an Option that creates the scene canvas in the widget tree, like g.Canvas does. init
 // runs on the UI goroutine once the view exists; it gets the View to set the camera and add overlay
 // sprites. A frame clock failure (no display) goes to App.OnError.
 func New(scene *gfx.Scene, init func(*View), opts ...g.Option) g.Option {
+	return NewWithOptions(scene, Options{}, init, opts...)
+}
+
+// NewWithOptions is New with the options of the view's compositor; they are fixed when the
+// compositor is created, before the first frame. The default zero Options is exactly New.
+func NewWithOptions(scene *gfx.Scene, comp Options, init func(*View), opts ...g.Option) g.Option {
 	return g.Canvas(nil, append(opts, g.Init(func(cv *g.CanvasView) {
-		v, err := attach(cv, scene)
+		v, err := attach(cv, scene, comp)
 		if err != nil {
 			panic(err)
 		}

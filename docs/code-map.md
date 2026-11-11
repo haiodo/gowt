@@ -191,7 +191,7 @@ Packages: `gfx`, `gfx/cg`, `gfx/cairo`, `gfx/d2d`, `gfx/internal/cache`, `gfx/in
 | PDF backend | `gfx/pdf/`, `gfx/pdf.go` | - | `gfx/pdf_test.go`, `gfx/pdf/*_test.go` | `examples/print` |
 | Pen stroke expansion | `gfx/pen/` | - | `gfx/pen/*_test.go` | [gfx.md](gfx.md) |
 | Synthetic rendering test corpus | `gfx/synth/` | - | `gfx/synth/*_test.go` | - |
-| Interactive view, overlays, autoscroll, idle windows | `gfx/view/` | per-OS `gfx/view/view_{darwin,linux,windows}.go`; macOS shared frame clock and window visibility in `gfx/cg/frameclock_darwin.go`, `gfx/cg/input_darwin.go` | `gfx/view/*_test.go`, `gfx/view/idle_gui_darwin_test.go` | `gfx/view/demo` |
+| Interactive view, overlays, autoscroll, idle windows | `gfx/view/` (`view.NewWithOptions` passes compositor `gfx.Options`: TilePx, Workers, Margin, Settle, ExactZoom) | per-OS `gfx/view/view_{darwin,linux,windows}.go`; macOS shared frame clock and window visibility in `gfx/cg/frameclock_darwin.go`, `gfx/cg/input_darwin.go` | `gfx/view/*_test.go`, `gfx/view/idle_gui_darwin_test.go` | `gfx/view/demo` |
 | Widgets built on gfx (avatar, badge) | `avatar.go`, `badge.go` (root) | - | `avatar_test.go`, `badge_test.go` | [widgets.md](widgets.md) |
 
 ## Printing

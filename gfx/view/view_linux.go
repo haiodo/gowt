@@ -38,7 +38,7 @@ func (f painter) PaintControl(e *swt.PaintEvent) { f(e) }
 
 // attach composites tiles on the CPU with cairo into the canvas and runs frames from the GTK frame
 // clock. The tick callback runs on the UI thread, so no hand-over is needed.
-func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
+func attach(cv *g.CanvasView, scene *gfx.Scene, o gfx.Options) (*View, error) {
 	bindGTK()
 	c := cv.Unwrap()
 	v := &View{cv: cv, scene: scene}
@@ -55,7 +55,7 @@ func attach(cv *g.CanvasView, scene *gfx.Scene) (*View, error) {
 		return nil, err
 	}
 	v.host = host
-	v.comp = gfx.NewCompositor(scene, r, host, gfx.Options{})
+	v.comp = gfx.NewCompositor(scene, r, host, o)
 	v.comp.SetCamera(gfx.Camera{Zoom: 1})
 	w, h := cv.Size()
 	v.comp.SetViewport(float64(w), float64(h), v.dpr)

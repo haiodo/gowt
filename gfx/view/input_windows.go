@@ -29,7 +29,7 @@ const (
 	vkControl = 0x11
 	vkMenu    = 0x12
 
-	imdtTouchpad = 4 // INPUT_MESSAGE_DEVICE_TYPE
+	imdtTouchpad = 16 // IMDT_TOUCHPAD
 	wheelDelta   = 120.0
 	// a gesture is over when no wheel message came for this long
 	wheelIdle = 120 * time.Millisecond

@@ -271,7 +271,7 @@ func FocusSearch(w *gowt.Window) bool {
 func SetGlassGroup(c Container, spacing float64) { setGlassGroup(c.AsComposite(), spacing) }
 
 // SetPanesOverlay opts into floating panes over content on macOS 26; other systems keep their layout.
-// Call before or after SetSidebar and SetInspector. Bottom panels stay below content.
+// The content then runs the whole client area: panes, bottom panel and toolbar draw over it in glass.
 func SetPanesOverlay(w *gowt.Window, on bool) {
 	on = on && sidebarInset() > 0
 	w.Unwrap().SetDataKeyValue("look.panesOverlay", on)
@@ -282,7 +282,8 @@ func SetPanesOverlay(w *gowt.Window, on bool) {
 	}
 }
 
-// SetSidebarFullHeight opts into a flush macOS sidebar; a top-aligned native list, table or tree scrolls under the toolbar.
+// SetSidebarFullHeight opts into a flush macOS sidebar: glass to the window edges; a top-aligned
+// native scrolls under the toolbar, the other children stay below it (in overlay, all of them).
 // Call before or after SetSidebar; false restores the default. Other systems ignore it.
 func SetSidebarFullHeight(w *gowt.Window, on bool) {
 	on = on && sidebarFullHeightAvailable()
@@ -292,6 +293,33 @@ func SetSidebarFullHeight(w *gowt.Window, on bool) {
 		l.sidebarFullHeight = on
 		if l.side != nil {
 			fullHeightSidebar(s, l.side.c, on)
+		}
+		s.Layout()
+	}
+}
+
+// SetBottomPanelFloating floats the bottom panel in a panes overlay window (the default); false
+// fills the central column edge to edge, square, like a non-overlay panel.
+func SetBottomPanelFloating(w *gowt.Window, on bool) {
+	on = on && bottomPanelFloatingAvailable()
+	s := w.Unwrap()
+	s.SetDataKeyValue(bottomFlushKey, !on)
+	if l := layoutOf(w); l != nil {
+		l.bottomFlush = !on
+		s.Layout()
+	}
+}
+
+// SetInspectorFullHeight is SetSidebarFullHeight for the inspector: the glass runs flush with the
+// window's top, trailing and bottom edges, no floating inset or corners. False restores the inset.
+func SetInspectorFullHeight(w *gowt.Window, on bool) {
+	on = on && inspectorFullHeightAvailable()
+	s := w.Unwrap()
+	s.SetDataKeyValue("look.inspectorFullHeight", on)
+	if l := layoutOf(w); l != nil {
+		l.inspectorFullHeight = on
+		if l.insp != nil {
+			fullHeightInspector(s, l.insp.c, on)
 		}
 		s.Layout()
 	}
@@ -359,6 +387,7 @@ func SetInspector(w *gowt.Window, content, inspector Container, width int) {
 	}
 	l.insp = l.newPane(ib, width, inspectorPane)
 	setInspectorChrome(w.Unwrap(), ib, &l.insp.sash.Control)
+	fullHeightInspector(w.Unwrap(), ib, l.inspectorFullHeight)
 	barOf(w).build()
 }
 
@@ -402,8 +431,10 @@ func panesOf(w *gowt.Window, content Container) *paneLayout {
 	SetFullSizeContent(w, true)
 	overlay, _ := s.GetDataKey("look.panesOverlay").(bool)
 	fullHeight, _ := s.GetDataKey("look.sidebarFullHeight").(bool)
+	inspFullHeight, _ := s.GetDataKey("look.inspectorFullHeight").(bool)
+	bottomFlush, _ := s.GetDataKey(bottomFlushKey).(bool)
 	fixed, _ := s.GetDataKey(inspectorFixedKey).(bool)
-	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct, overlay: overlay, sidebarFullHeight: fullHeight, inspFixed: fixed}
+	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct, overlay: overlay, sidebarFullHeight: fullHeight, inspectorFullHeight: inspFullHeight, bottomFlush: bottomFlush, inspFixed: fixed}
 	l.SetImpl_(l)
 	// The shell minimum is read once: on macOS 26 it read back 20 points taller than it was set, so a
 	// value read after each set grew.
@@ -442,6 +473,10 @@ const focusDefaultKey = "gowt.look.focus"
 
 // inspectorFixedKey holds the SetInspectorFixed state, so an inspector rebuilt by SetInspector keeps it.
 const inspectorFixedKey = "look.inspectorFixed"
+
+// bottomFlushKey holds SetBottomPanelFloating(false): the bottom panel fills the central column in
+// a panes overlay window instead of floating inset with rounded glass.
+const bottomFlushKey = "look.bottomFlush"
 
 // firstList returns the first visible List, Table or Tree under c, depth first, or nil.
 func firstList(c *swt.Composite) *swt.Control {
@@ -590,12 +625,14 @@ func bottomOf(w *gowt.Window) *pane {
 // bottom panel, inspector.
 type paneLayout struct {
 	*swt.Layout
-	w                  *gowt.Window
-	side, insp, bottom *pane // nil without SetSidebar, SetInspector, SetBottomPanel
-	content            *swt.Control
-	overlay            bool
-	sidebarFullHeight  bool
-	inspFixed          bool
+	w                   *gowt.Window
+	side, insp, bottom  *pane // nil without SetSidebar, SetInspector, SetBottomPanel
+	content             *swt.Control
+	overlay             bool
+	sidebarFullHeight   bool
+	inspectorFullHeight bool
+	bottomFlush         bool
+	inspFixed           bool
 	// column is the frame of the content and the bottom panel at the last layout, under the area behind
 	// a floating sidebar beside the content.
 	column, under [4]int32
@@ -676,7 +713,7 @@ func (p *pane) addChange(f func(visible bool, width int)) {
 func (p *pane) inset() int32 {
 	switch p.kind {
 	case inspectorPane:
-		if p.l != nil && p.l.overlay {
+		if p.l != nil && p.l.overlay && !p.l.inspectorFullHeight {
 			return sidebarInset()
 		}
 		return inspectorInset()
@@ -824,14 +861,11 @@ func (l *paneLayout) requiredWidth(content int32) int32 {
 	return content + room
 }
 
-func (l *paneLayout) overlayFrames(client [4]int32, top int32) (content [4]int32, paneHeight int32) {
-	content = [4]int32{client[0], client[1] + top, client[2], max(client[3]-top, 0)}
-	paneHeight = client[3]
-	if l.bottom.visible() {
-		paneHeight = max(top, paneHeight-l.bottom.shown()-sidebarDivider())
-	}
-	return
-}
+// overlayFrames is the content frame with panes floating: the whole client area, nothing taken
+// off the top for the toolbar or at the foot for the bottom panel - they draw over the content.
+// The side panes and the bottom panel keep to the central column between the side panes' inner
+// edges, so a bottom panel never reaches under them.
+func (l *paneLayout) overlayFrames(client [4]int32) [4]int32 { return client }
 
 func (l *paneLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) *swt.Point {
 	top := int32(topInset(c.GetShell()))
@@ -871,9 +905,6 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	l.fitMin()
 	top := int32(topInset(s))
 	paneHeight := r.Height
-	if l.overlay {
-		_, paneHeight = l.overlayFrames([4]int32{r.X, r.Y, r.Width, r.Height}, top)
-	}
 	ct := [4]int32{r.X, r.Y + top, r.Width, max(r.Height-top, 0)}
 	if p := l.side; p != nil {
 		bg, sb, rest, sh := p.sidebarFrames(r.X, r.Y, r.Width, paneHeight, top)
@@ -886,14 +917,17 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	var ib [4]int32
 	if p := l.insp; p != nil {
 		var bg, rest, sh [4]int32
-		bg, ib, rest, sh = inspectorFrames(ct[0], r.Y, ct[2], paneHeight, p.shown(), p.inset(), top, sidebarDivider())
+		bg, ib, rest, sh = p.inspectorFrames(ct[0], r.Y, ct[2], paneHeight, top)
 		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
 		p.sash.SetVisible(!p.hidden && !p.fixed)
-		syncInspector(p.c, bg, l.overlay)
+		syncInspector(p.c, bg, p.floats())
 		ct = rest
 	}
+	// The central column the floating bottom panel lives in: between the side panes, from the
+	// toolbar to the foot. The content itself spans the whole client area under everything.
+	column := ct
 	if l.overlay {
-		ct, _ = l.overlayFrames([4]int32{r.X, r.Y, r.Width, r.Height}, top)
+		ct = l.overlayFrames([4]int32{r.X, r.Y, r.Width, r.Height})
 		l.content.MoveBelow(nil)
 	}
 	ct, ib = barTop(s, ct, ib)
@@ -903,7 +937,18 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	l.column = ct
 	if p := l.bottom; p != nil {
 		var pb, sh [4]int32
-		ct, pb, sh = bottomFrames(ct[0], ct[1], ct[2], ct[3], p.shown(), sidebarDivider())
+		if l.overlay {
+			// The panel floats in the central column, inset from its sides and the foot; the
+			// drag runs against this same floating column, the height math is unchanged.
+			if !l.bottomFlush {
+				in := sidebarInset()
+				column = [4]int32{column[0] + in, column[1], max(column[2]-2*in, 0), max(column[3]-in, 0)}
+			}
+			_, pb, sh = bottomFrames(column[0], column[1], column[2], column[3], p.shown(), sidebarDivider())
+			l.column = column
+		} else {
+			ct, pb, sh = bottomFrames(ct[0], ct[1], ct[2], ct[3], p.shown(), sidebarDivider())
+		}
 		p.c.SetBounds(pb[0], pb[1], pb[2], pb[3])
 		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
 		p.sash.SetVisible(!p.hidden)
@@ -914,7 +959,7 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 			pb[0] = r.X
 			sb = l.side.c
 		}
-		syncBottom(p.c, pb, sb)
+		syncBottom(p.c, pb, sb, l.overlay && !l.bottomFlush)
 	}
 	l.content.SetBounds(ct[0], ct[1], ct[2], ct[3])
 	under := [4]int32{}
@@ -1005,9 +1050,28 @@ func sidebarFrames(x, y, w, h, width, in, top, div int32) (bg, sb, ct, sh [4]int
 
 func (p *pane) sidebarFrames(x, y, w, h, top int32) (bg, sb, ct, sh [4]int32) {
 	bg, sb, ct, sh = sidebarFrames(x, y, w, h, p.shown(), p.inset(), top, sidebarDivider())
+	if p.l != nil && p.l.overlay && p.inset() > 0 {
+		// floating glass rounds all four corners: keep the children off its bottom corners
+		sb[3] = max(sb[3]-p.inset(), 0)
+	}
 	if p.l != nil && p.l.sidebarFullHeight {
+		if p.l.overlay {
+			// Flush glass, but the children stay below the toolbar: native scrolls do not
+			// scroll under it in overlay, so the composite keeps the default top strip.
+			return
+		}
 		sb[1], sb[3] = y, max(h, 0)
 		sh[1], sh[3] = y, max(h, 0)
+	}
+	return
+}
+
+// inspectorFrames is the inspector's sidebarFrames; like the sidebar in overlay, a floating
+// inspector keeps its children off the glass's rounded bottom corners.
+func (p *pane) inspectorFrames(x, y, w, h, top int32) (bg, ib, rest, sh [4]int32) {
+	bg, ib, rest, sh = inspectorFrames(x, y, w, h, p.shown(), p.inset(), top, sidebarDivider())
+	if p.l != nil && p.l.overlay && p.inset() > 0 {
+		ib[3] = max(ib[3]-p.inset(), 0)
 	}
 	return
 }

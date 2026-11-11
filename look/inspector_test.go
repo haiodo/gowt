@@ -128,26 +128,36 @@ func TestPanesOverlayFrames(t *testing.T) {
 	client := [4]int32{10, 20, 900, 600}
 	for _, hidden := range []bool{false, true} {
 		l.side.hidden, l.insp.hidden = hidden, hidden
-		ct, height := l.overlayFrames(client, 52)
-		if ct != [4]int32{10, 72, 900, 548} || height != 600 {
-			t.Fatalf("hidden %v: content %v, pane height %d", hidden, ct, height)
+		if ct := l.overlayFrames(client); ct != client {
+			t.Fatalf("hidden %v: content %v, want the whole client %v", hidden, ct, client)
 		}
 		if got := l.requiredWidth(900); got != 900 {
 			t.Errorf("hidden %v: width %d", hidden, got)
 		}
 	}
 	l.side.hidden, l.insp.hidden = false, false
-	l.bottom = &pane{kind: bottomPane, width: 160}
-	ct, height := l.overlayFrames(client, 52)
-	ct, pb, _ := bottomFrames(ct[0], ct[1], ct[2], ct[3], l.bottom.shown(), sidebarDivider())
-	for _, frame := range []func(int32, int32, int32, int32, int32, int32, int32, int32) ([4]int32, [4]int32, [4]int32, [4]int32){sidebarFrames, inspectorFrames} {
-		bg, _, _, _ := frame(client[0], client[1], client[2], height, 220, 7, 52, sidebarDivider())
-		if bg[1]+bg[3] > pb[1] {
-			t.Errorf("glass %v overlaps bottom %v", bg, pb)
-		}
+	// The side panes run the full client height; the bottom panel floats at the foot of the
+	// central column between their inner edges, over the full-height content.
+	in := sidebarInset() // in overlay both side panes float with the sidebar's glass inset
+	_, sb, col, _ := sidebarFrames(client[0], client[1], client[2], client[3], 220, in, 52, sidebarDivider())
+	_, ib, col, _ := inspectorFrames(col[0], client[1], col[2], client[3], 260, in, 52, sidebarDivider())
+	if sb[1]+sb[3] != client[1]+client[3]-in {
+		t.Errorf("sidebar %v does not run to the client foot %d but for the inset %d", sb, client[1]+client[3], in)
 	}
-	if ct[2] != 900 || ct[1]+ct[3] != pb[1]-sidebarDivider() {
-		t.Errorf("content %v, bottom %v", ct, pb)
+	if ib[1]+ib[3] != client[1]+client[3]-in {
+		t.Errorf("inspector %v does not run to the client foot %d but for the inset %d", ib, client[1]+client[3], in)
+	}
+	l.bottom = &pane{kind: bottomPane, width: 160}
+	ct := l.overlayFrames(client)
+	_, pb, _ := bottomFrames(col[0], col[1], col[2], col[3], l.bottom.shown(), sidebarDivider())
+	if ct != client {
+		t.Errorf("content %v, want the whole client %v", ct, client)
+	}
+	if pb[0] != sb[0]+sb[2] || pb[0]+pb[2] != ib[0] {
+		t.Errorf("bottom %v, want between the sidebar edge %d and the inspector %v", pb, sb[0]+sb[2], ib)
+	}
+	if pb[3] != 160 || pb[1]+pb[3] != client[1]+client[3] {
+		t.Errorf("bottom %v, want 160 high at the client foot", pb)
 	}
 	l.overlay = false
 	if got := l.requiredWidth(900); got != 900+l.side.room()+l.insp.room() {
@@ -170,5 +180,46 @@ func TestPanesOverlayDragLimits(t *testing.T) {
 			t.Errorf("legacy limit %d, overlay %d", legacy, overlay)
 		}
 		l.overlay = true
+	}
+}
+
+// The full-height switch drops the pane's floating inset: the sidebar loses it always, the
+// inspector in a panes overlay window (elsewhere it is flush already).
+func TestPaneInsetFullHeight(t *testing.T) {
+	l := &paneLayout{overlay: true}
+	l.side = &pane{l: l, kind: sidebarPane}
+	l.insp = &pane{l: l, kind: inspectorPane}
+	if got := l.insp.inset(); got != sidebarInset() {
+		t.Errorf("floating overlay inspector inset %d, want the sidebar inset %d", got, sidebarInset())
+	}
+	l.inspectorFullHeight = true
+	if got := l.insp.inset(); got != inspectorInset() {
+		t.Errorf("full-height inspector inset %d, want the flush %d", got, inspectorInset())
+	}
+	l.sidebarFullHeight = true
+	if got := l.side.inset(); got != 0 {
+		t.Errorf("full-height sidebar inset %d, want 0", got)
+	}
+}
+
+// In a panes overlay the floating panes' children stay a glass inset off the rounded bottom
+// corners of the glass; the legacy layout keeps its frames.
+func TestPaneFramesFloatingCorners(t *testing.T) {
+	overlay := &paneLayout{overlay: true}
+	overlay.side = &pane{l: overlay, kind: sidebarPane, width: 220}
+	overlay.insp = &pane{l: overlay, kind: inspectorPane, width: 260}
+	_, sb, _, _ := overlay.side.sidebarFrames(10, 20, 900, 600, 52)
+	if want := int32(20 + 600 - 2*sidebarInset()); sb[1]+sb[3] != want {
+		t.Errorf("overlay sidebar children run to %d, want %d: off the rounded corners", sb[1]+sb[3], want)
+	}
+	_, ib, _, _ := overlay.insp.inspectorFrames(237, 20, 656, 600, 52)
+	if want := int32(20 + 600 - 2*sidebarInset()); ib[1]+ib[3] != want {
+		t.Errorf("overlay inspector children run to %d, want %d: off the rounded corners", ib[1]+ib[3], want)
+	}
+	legacy := &paneLayout{}
+	legacy.side = &pane{l: legacy, kind: sidebarPane, width: 220}
+	_, sb, _, _ = legacy.side.sidebarFrames(10, 20, 900, 600, 52)
+	if want := int32(20 + 600 - sidebarInset()); sb[1]+sb[3] != want {
+		t.Errorf("legacy sidebar children run to %d, want %d", sb[1]+sb[3], want)
 	}
 }

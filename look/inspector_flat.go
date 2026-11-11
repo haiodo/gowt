@@ -30,4 +30,4 @@ func setBottomChrome(s *swt.Shell, pb *swt.Composite, sash *swt.Control) {
 }
 
 // syncBottom does nothing: no sidebar floats here, and the panel paints its own background.
-func syncBottom(*swt.Composite, [4]int32, *swt.Composite) {}
+func syncBottom(*swt.Composite, [4]int32, *swt.Composite, bool) {}

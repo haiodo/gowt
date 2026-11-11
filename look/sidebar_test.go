@@ -97,9 +97,18 @@ func TestSidebarFullHeightFrames(t *testing.T) {
 	if p.floats() || p.inset() != 0 {
 		t.Fatal("overlay made full-height sidebar float")
 	}
+	// In overlay the flush glass still runs to the window edges, but the children stay below
+	// the toolbar: native scrolls do not scroll under it there.
+	_, sb, _, _ = p.sidebarFrames(10, 20, 900, 600, 52)
+	if sb != [4]int32{10, 72, 220, 548} {
+		t.Fatalf("overlay full-height sidebar %v, want the children below the toolbar", sb)
+	}
 	l.sidebarFullHeight = false
 	gotBG, gotSB, gotCT, gotSH := p.sidebarFrames(10, 20, 900, 600, 52)
 	wantBG, wantSB, wantCT, wantSH := sidebarFrames(10, 20, 900, 600, 220, sidebarInset(), 52, sidebarDivider())
+	if l.overlay { // floating overlay keeps the children off the glass's rounded bottom corners
+		wantSB[3] -= sidebarInset()
+	}
 	if gotBG != wantBG || gotSB != wantSB || gotCT != wantCT || gotSH != wantSH {
 		t.Fatalf("disabled mode changed default frames: %v %v %v %v", gotBG, gotSB, gotCT, gotSH)
 	}

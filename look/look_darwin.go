@@ -67,6 +67,7 @@ func setGlass(c *swt.Composite, on bool) {
 		k = cocoa.BackdropGlass
 	}
 	had := cocoa.InstallPanelBackdrop(c.View, k)
+	applyGlassTint(c)
 	if on {
 		applyGlassRadius(c)
 		cocoa.SyncBackdrop(c.View)
@@ -358,6 +359,19 @@ func setSidebarChrome(s *swt.Shell, sb *swt.Composite, sash *swt.Control) {
 
 func sidebarFullHeightAvailable() bool { return true }
 
+func inspectorFullHeightAvailable() bool { return true }
+
+func bottomPanelFloatingAvailable() bool { return true }
+
+// fullHeightInspector is the inspector's flush chrome: the glass clips at the window edges with
+// radius 0, like an AppKit split view item. Unlike fullHeightSidebar it leaves the lights alone.
+func fullHeightInspector(s *swt.Shell, ib *swt.Composite, on bool) {
+	cocoa.SetBackdropClipped(ib.View, on)
+	if on {
+		cocoa.SetGlassCornerRadius(ib.View, 0)
+	}
+}
+
 // trafficLightShift is the full-height window button shift: the 7-point glass inset the floating
 // sidebar keeps at the window edge, so the traffic lights follow the sidebar edge; 0 without full-height.
 func trafficLightShift(s *swt.Shell) float64 {
@@ -411,8 +425,14 @@ func setBottomChrome(s *swt.Shell, pb *swt.Composite, sash *swt.Control) {
 }
 
 // syncBottom gets bg 0 high for a hidden panel, and sb, the sidebar, when bg runs under it.
-func syncBottom(pb *swt.Composite, bg [4]int32, sb *swt.Composite) {
+// floating rounds the glass like the side panes; flush clips it square to the column.
+func syncBottom(pb *swt.Composite, bg [4]int32, sb *swt.Composite, floating bool) {
 	cocoa.SetBackdropFrame(pb.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
+	if floating {
+		cocoa.SetGlassCornerRadius(pb.View, sidebarRadius)
+	} else {
+		cocoa.SetGlassCornerRadius(pb.View, 0)
+	}
 	cocoa.SetTopLine(pb.View)
 	if sb != nil {
 		cocoa.KeepBackdropBelow(pb.View, sb.View)

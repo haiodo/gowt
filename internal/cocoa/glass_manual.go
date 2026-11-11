@@ -23,6 +23,9 @@ const (
 	styleMaskFullSize      = 1 << 15
 	bezelStyleGlass        = 16
 	materialUnderWindowBG  = 21
+	// materialUnderPageBackground is denser than UnderWindowBackground: the fallback when a tint
+	// is set on a system without NSGlassEffectView.
+	materialUnderPageBackground = 22
 )
 
 // NSWindowBelow is -1 as an NSInteger word.
@@ -38,6 +41,10 @@ var (
 // backdropKey is the associated-object key under which a host view retains its backdrop; it
 // goes away with the host, and a second install finds and replaces the first.
 func backdropKey() uintptr { return sel("gowtBackdrop") }
+
+// tintKey is the associated-object key under which a host view retains its glass tint (an
+// NSColor); it survives a backdrop reinstall, which reads it again.
+func tintKey() uintptr { return sel("gowtTint") }
 
 func initAssociated() {
 	objcInit()
@@ -102,6 +109,7 @@ func installBackdrop(view *NSView, kind int, window, child bool) (had bool) {
 		kind = BackdropTranslucent
 	}
 	inside := child && kind == BackdropGlass && GlassAvailable() && glassGroupContent(host, kind, window) == 0
+	tint := getAssociated(v, tintKey())
 	var bd uintptr
 	if inside {
 		bd = msg(msg(panelGlassClass(), "alloc"), "init")
@@ -109,9 +117,18 @@ func installBackdrop(view *NSView, kind int, window, child bool) (had bool) {
 		bd = msg(msg(class("NSGlassEffectView"), "alloc"), "init")
 	} else {
 		bd = msg(msg(class("NSVisualEffectView"), "alloc"), "init")
-		msg(bd, "setMaterial:", materialUnderWindowBG)
+		// The tint cannot reach a glass view on this system; a denser material is the fallback.
+		// Under Reduce transparency macOS 26 keeps the previous material, as without a tint.
+		material := uintptr(materialUnderWindowBG)
+		if tint != 0 && !GlassAvailable() {
+			material = materialUnderPageBackground
+		}
+		msg(bd, "setMaterial:", material)
 		msg(bd, "setBlendingMode:", 0)
 		msg(bd, "setState:", 1)
+	}
+	if tint != 0 && respondsTo(bd, "setTintColor:") {
+		msg(bd, "setTintColor:", tint)
 	}
 	if window {
 		msg(bd, "setAutoresizingMask:", viewWidthHeightSizable)
@@ -247,6 +264,63 @@ func SetBackdropClipped(view *NSView, on bool) {
 		return
 	}
 	msg(msg(bd, "layer"), "setMasksToBounds:", boolArg(on))
+}
+
+// SetBackdropTint keeps tint (sRGB, 0-1) as the glass tint of view and applies it to the backdrop
+// already installed: tintColor on NSGlassEffectView, the denser material on the NSVisualEffectView
+// fallback of a system without glass. off removes the tint. A backdrop installed later reads the
+// stored tint, so a reinstall keeps it.
+func SetBackdropTint(view *NSView, on bool, r, g, b, a float64) {
+	initAssociated()
+	if msg4F64 == nil {
+		purego.RegisterFunc(&msg4F64, objcMsgSend)
+	}
+	v := uintptr(view.Id)
+	tint := uintptr(0)
+	if on {
+		tint = msg4F64(class("NSColor"), sel("colorWithSRGBRed:green:blue:alpha:"), r, g, b, a)
+	}
+	setAssociated(v, tintKey(), tint, 1)
+	bd := backdropOf(v)
+	if bd == 0 {
+		return
+	}
+	if respondsTo(bd, "setTintColor:") {
+		msg(bd, "setTintColor:", tint)
+	}
+	if c := class("NSVisualEffectView"); c != 0 && msg(bd, "isKindOfClass:", c) != 0 && !GlassAvailable() {
+		material := uintptr(materialUnderWindowBG)
+		if on {
+			material = materialUnderPageBackground
+		}
+		msg(bd, "setMaterial:", material)
+	}
+}
+
+// backdropOf is the material view behind v, unwrapping the container ClipBackdrop added.
+func backdropOf(v uintptr) uintptr {
+	bd := getAssociated(v, backdropKey())
+	if className(bd) == "NSView" && msg(msg(bd, "subviews"), "count") == 1 {
+		bd = msg(msg(bd, "subviews"), "objectAtIndex:", 0)
+	}
+	return bd
+}
+
+// BackdropTint reports the tint SetBackdropTint stored for view and, when the backdrop answers
+// tintColor, its components as sRGB; ok is false without a stored tint.
+func BackdropTint(view *NSView) (rgba [4]float64, ok bool) {
+	initAssociated()
+	tint := getAssociated(uintptr(view.Id), tintKey())
+	if tint == 0 {
+		return rgba, false
+	}
+	bd := backdropOf(uintptr(view.Id))
+	if bd != 0 && respondsTo(bd, "tintColor") {
+		if c := msg(bd, "tintColor"); c != 0 {
+			return cgColorRGBA(msg(c, "CGColor")), true
+		}
+	}
+	return rgba, true
 }
 
 // SetGlassCornerRadius rounds the glass view InstallBackdrop added for view; no-op without one.

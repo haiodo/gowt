@@ -55,6 +55,12 @@ func startUnfocused(*swt.Shell) {}
 
 func sidebarFullHeightAvailable() bool { return false }
 
+func inspectorFullHeightAvailable() bool { return false }
+
+func bottomPanelFloatingAvailable() bool { return false }
+
 func fullHeightSidebar(*swt.Shell, *swt.Composite, bool) {}
+
+func fullHeightInspector(*swt.Shell, *swt.Composite, bool) {}
 
 func syncSidebarScrollUnderToolbar(*swt.Composite, bool) {}

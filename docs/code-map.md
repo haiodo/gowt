@@ -95,7 +95,8 @@ Packages: `look`, `internal/fluent` (the Windows look helpers).
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Window backdrop, material, corners, dark content | `look/look.go` | `look/look_{darwin,linux,windows,other}.go` | `look/material_*_test.go`, `look/glass*_test.go` | `cmd/glassdemo`, `cmd/backdropdemo`; [cross-platform-look.md](cross-platform-look.md), [theme-look.md](theme-look.md) |
-| Sidebar and bottom panel layouts | `look/inspector_flat.go`, `look/toolbar.go` | `look/look_*.go`, `look/windowdrag_*.go` | `look/sidebar*_test.go`, `look/bottompanel*_test.go`, `look/inspector_*_test.go`, `look/panes_overlay_gui_darwin_test.go` | `examples/apps`, `examples/sidebartable` |
+| Sidebar and bottom panel layouts | `look/inspector_flat.go`, `look/toolbar.go` | `look/look_*.go`, `look/windowdrag_*.go` | `look/sidebar*_test.go`, `look/bottompanel*_test.go`, `look/inspector_*_test.go` | `examples/apps`, `examples/sidebartable` |
+| Panes overlay (macOS 26): panes and toolbar float over the full-height content | `look/look.go` (`SetPanesOverlay`, `SetSidebarFullHeight`, `SetInspectorFullHeight`, `SetBottomPanelFloating`, `overlayFrames`) | `look/look_{darwin,other}.go`, `look/glass_tint_{darwin,other}.go` | `look/panes_overlay_gui_darwin_test.go`, `look/glass_tint_gui_darwin_test.go`, `look/sidebar_fullheight_gui_darwin_test.go` | [cross-platform-look.md](cross-platform-look.md) |
 | Inspector controls, fields, search | `look/inspector_flat.go` | - | `look/inspector_*_gui_darwin_test.go` | `examples/catalog` |
 | Window drag by background | `look/windowdrag.go` | `look/windowdrag_{darwin,linux,windows}.go` | `look/toolbar_diag_*_test.go` | [theme-look.md](theme-look.md) |
 | Glass button, icon button, caret | `look/look.go`, `look/toolbar.go` | - | `look/glass*_gui*_test.go`, `look/caret_gui_test.go`, `look/iconbutton_gui_darwin_test.go` | `cmd/glassdemo` |

@@ -12,6 +12,11 @@ Generated vs hand-written:
 - Hand-written code lives in `*_manual*.go` files and in the packages outside `swt/`, `internal/cocoa`, `internal/win32`, `internal/gtk`, `internal/webkit` (facade root, `look`, `icons`, `svg`, `rx`, `gfx`, `webview`, `qa`, `browser` bridge). In generated packages only `*_manual*.go` is hand-written, including in `jface` (the layout/widget factories are translated).
 - After a feature change, update its row in [docs/code-map.md](docs/code-map.md).
 
+Git:
+
+- Never push.
+- Commit only when the user explicitly asks.
+
 Agent limits:
 
 - Run at most 2 agents at the same time, including agents resumed from an earlier session.

@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.15.7 (2026-11-11)
+
+- New: on Windows and Linux the toolbar draws its items and groups as rounded pill segments with a subtle fill that darkens on hover and press, group segments split by a hairline; items that do not fit move into the `More` menu, and a one-segment group restored from the menu keeps its segment identity.
+- Changed: the sidebar minimum width is 88 points (was 120), and the window never packs narrower than the widget bar needs.
+- Changed: `look.SetPanesOverlay` on macOS now composites a gfx canvas in the content correctly beneath the floating sidebars and inspectors.
+- Performance: macOS gfx windows share one display frame clock for the whole app; miniaturized and fully occluded windows skip frames and paint a single catch-up frame when they become visible again.
+- Changed: on macOS toolbar image items lose the AppKit 26 bordered glass capsule and draw as bare icons, keeping the hover and press fills; a `Small` item without an icon keeps its title.
+- New: `gfx.SVGOptions.CSS` writes a `<style>` into the exported SVG, and `Tx.SetName(node, name)` gives the node's SVG group an `id` the CSS can address; names must be unique CSS identifiers.
+- Changed: in a multi-line inline `View.Edit`, Shift+Enter types a line break (Cmd+Enter and Ctrl+Enter still commit).
+- Tests: pill and toolbar overflow checks on Windows and Linux, panes-overlay compositing and the shared frame clock on macOS, and posted-key checks of the inline editor.
+
 ## v0.15.6 (2026-11-09)
 
 - Added: `CGO_ENABLED=1 -tags gowtcgo` selects direct cgo for generated AppKit, Win32 and GTK bindings and for the CoreGraphics, Direct2D and cairo renderers on all three operating systems. The default backends and cross-compilation remain unchanged, as do callbacks and the remaining hand-written bindings.

@@ -460,7 +460,14 @@ func (o *barOverflow) required(hidden []int) int32 {
 		if c.flex || c.widget == nil {
 			continue
 		}
-		width += barControl(c.widget).ComputeSize(swt.DEFAULT, swt.DEFAULT).X
+		ctl := barControl(c.widget)
+		// A hinted widget (the pill segments) measures at the SWT default 64 px without its hint;
+		// the layout data carries the width the layout would give it.
+		hint := swt.DEFAULT
+		if gd, ok := ctl.GetLayoutData().(*swt.GridData); ok {
+			hint = gd.WidthHint
+		}
+		width += ctl.ComputeSize(hint, swt.DEFAULT).X
 	}
 	if len(hidden) > 0 {
 		visible++
@@ -575,6 +582,9 @@ func setBarIDs(w gowt.Widget, it ToolbarItem, restore bool) {
 	case *gowt.TextView:
 		v.Unwrap().SetDataKeyValue("gowt.id", id)
 	case *gowt.CanvasView:
+		if restore && len(it.Group) == 1 {
+			id = it.Group[0].ID
+		}
 		v.Unwrap().SetDataKeyValue("gowt.id", id)
 	case *gowt.Panel:
 		for i, child := range v.Unwrap().GetChildren() {

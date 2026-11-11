@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/ebitengine/purego"
 )
@@ -317,8 +318,17 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		ti = msg(msg(class("NSToolbarItem"), "alloc"), "initWithItemIdentifier:", nsString(id))
 		msg(ti, "setTarget:", target)
 		msg(ti, "setAction:", sel("gowtClick:"))
-		img := symbolImage(it.Symbol, it.Label)
+		var img uintptr
+		if it.Small {
+			img = smallSymbolImage(it.Symbol, it.Label)
+		} else {
+			img = symbolImage(it.Symbol, it.Label)
+		}
 		switch {
+		case it.Small && (it.Text != "" || it.Symbol == ""):
+			// AppKit's own bordered text item exposes no font and has no view to set one on, so a
+			// Small text item gets a small toolbar button, as the control size cannot reach it.
+			s.smallTextButton(ti, target, id, it)
 		case it.Text != "":
 			// A title on an item without a custom view gives AppKit's own bordered text button.
 			msg(ti, "setTitle:", nsString(it.Text))
@@ -330,8 +340,6 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 				// is a bare icon, so the border goes and AppKit keeps the hover and press fills.
 				msg(ti, "setBordered:", 0)
 			}
-		case it.Small:
-			msg(msg(ti, "view"), "setTitle:", nsString(it.Label))
 		}
 		msg(ti, "setEnabled:", boolArg(!it.Disabled))
 		ti = msg(ti, "autorelease")
@@ -344,7 +352,56 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 	return ti
 }
 
-const controlSizeSmall = 1 // NSControlSizeSmall
+const (
+	controlSizeSmall = 1  // NSControlSizeSmall
+	bezelToolbar     = 11 // NSBezelStyleToolbar
+	pushIn           = 7  // NSButtonTypeMomentaryPushIn
+)
+
+var (
+	smallSymbolOnce sync.Once
+	// objc_msgSend with two float arguments needs a typed signature; msg only passes words.
+	msgSmallSymbolConfig func(self, sel uintptr, pointSize, weight float64, scale int64) uintptr
+)
+
+// smallSymbolImage is the symbol image of a Small item, drawn 12 pt: the item has no control size,
+// so the point size is baked into the image; 12 pt reports 13x12 against the 14x13 default. Template
+// keeps AppKit's hover and press tints.
+func smallSymbolImage(name, label string) uintptr {
+	img := symbolImage(name, label)
+	if img == 0 {
+		return 0
+	}
+	smallSymbolOnce.Do(func() { purego.RegisterFunc(&msgSmallSymbolConfig, objcMsgSend) })
+	cfg := msgSmallSymbolConfig(class("NSImageSymbolConfiguration"), sel("configurationWithPointSize:weight:scale:"), 12, 0, 2)
+	if cfg != 0 {
+		if configured := msg(img, "imageWithSymbolConfiguration:", cfg); configured != 0 {
+			img = configured
+		}
+	}
+	msg(img, "setTemplate:", 1)
+	return img
+}
+
+// smallTextButton gives item ti a bordered toolbar button of the small control size as its view:
+// AppKit's own text item has no font and no view to apply the 11-point one to.
+func (s *toolbarState) smallTextButton(ti, target uintptr, id string, it *ToolbarItem) {
+	b := msg(msg(class("NSButton"), "alloc"), "init")
+	msg(b, "setButtonType:", pushIn)
+	msg(b, "setBezelStyle:", bezelToolbar)
+	title := it.Text
+	if title == "" {
+		title = it.Label
+	}
+	msg(b, "setTitle:", nsString(title))
+	msg(b, "setIdentifier:", nsString(id))
+	msg(b, "setTarget:", target)
+	msg(b, "setAction:", sel("gowtClick:"))
+	msg(b, "setEnabled:", boolArg(!it.Disabled))
+	setSmall(b)
+	msg(ti, "setView:", b)
+	msg(b, "release")
+}
 
 // setSmall gives control v the small control size and the system font of that size, which a control
 // does not take by itself.
@@ -608,6 +665,9 @@ func SetToolbarItemText(view *NSView, item int, text string) {
 	for i, n := uintptr(0), msg(items, "count"); i < n; i++ {
 		if ti := msg(items, "objectAtIndex:", i); goString(msg(ti, "itemIdentifier")) == id {
 			msg(ti, "setTitle:", nsString(text))
+			if v := msg(ti, "view"); v != 0 && respondsTo(v, "setTitle:") {
+				msg(v, "setTitle:", nsString(text))
+			}
 		}
 	}
 }

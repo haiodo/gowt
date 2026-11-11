@@ -209,9 +209,9 @@ type ToolbarItem struct {
 	// following its changes, such as a zoom level "100%"; Title stays the tooltip.
 	Text rx.Reader[string]
 	// Small gives a push item, a text item, a Group or a search field the small control size
-	// (NSControlSizeSmall, an 11-point font on macOS); elsewhere smaller icons and text. On macOS the
-	// toolbar is the native one and a plain item has no control size, so Small reaches the search
-	// field only.
+	// (NSControlSizeSmall, an 11-point font on macOS); elsewhere smaller icons and text. On macOS a
+	// Small push item draws its symbol 12 pt (baked into the image, the item has no control size) or
+	// an 11-point bordered text button; items over the sidebar keep the bordered capsule.
 	Small bool
 	// OnSearch makes the item a search field (NSSearchToolbarItem) with Title as the placeholder. It
 	// gets the text after a typing pause, on Return and on clearing.

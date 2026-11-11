@@ -333,15 +333,17 @@ func TestInspectorDivider(t *testing.T) {
 	})
 }
 
-// A text item shows its text as a bordered title; a Small item without an icon keeps a title view;
-// a Small symbol item is a plain item, with the image of its symbol.
-// runs the item.
+// A text item shows its text as a bordered title; a Small text item is a small bordered button
+// with the 11-point font; a Small symbol item is a plain item with a smaller configured image.
+// The click routing reaches both kinds.
 func TestToolbarTextAndSmall(t *testing.T) {
 	onMain(func() {
 		registerToolbarClass()
 		d := msg(msg(toolbarClass, "alloc"), "init")
 		defer msg(d, "release")
 		clicks := 0
+		var pt func(self, sel uintptr) float64
+		purego.RegisterFunc(&pt, objcMsgSend)
 		s := &toolbarState{items: []ToolbarItem{
 			{Label: "Zoom", Text: "100%", Click: func() { clicks++ }},
 			{Label: "Fit", Text: "Fit", Small: true, Click: func() { clicks++ }},
@@ -354,8 +356,12 @@ func TestToolbarTextAndSmall(t *testing.T) {
 			t.Errorf("text item: title %q, bordered %d", goString(msg(text, "title")), msg(text, "isBordered")&0xff)
 		}
 		small := s.item(d, itemIDPrefix+"1")
-		if goString(msg(small, "title")) != "Fit" || msg(small, "isBordered")&0xff == 0 || msg(small, "view") != 0 {
-			t.Fatalf("small text item: title %q, bordered %d", goString(msg(small, "title")), msg(small, "isBordered"))
+		v := msg(small, "view")
+		if v == 0 || goString(msg(v, "title")) != "Fit" || msg(v, "isBordered")&0xff == 0 {
+			t.Fatalf("small text item: view %x, title %q, bordered %d", v, goString(msg(v, "title")), msg(v, "isBordered")&0xff)
+		}
+		if font := msg(v, "font"); font == 0 || pt(font, sel("pointSize")) != 11 {
+			t.Errorf("small text item font %x, want 11 pt", font)
 		}
 		s.clicked(itemIDPrefix+"1", -1)
 		if clicks != 1 {
@@ -364,6 +370,119 @@ func TestToolbarTextAndSmall(t *testing.T) {
 		add := s.item(d, itemIDPrefix+"2")
 		if msg(add, "view") != 0 || msg(add, "image") == 0 || msg(add, "isEnabled")&0xff != 0 {
 			t.Errorf("small symbol item: view %x, image %x, enabled %d", msg(add, "view"), msg(add, "image"), msg(add, "isEnabled")&0xff)
+		}
+	})
+}
+
+// The symbol image of a Small item is configured 14 pt, smaller than the regular one; groups and
+// the search field keep their Small handling.
+func TestToolbarSmallSymbolImage(t *testing.T) {
+	onMain(func() {
+		var size func(self, sel uintptr) NSSize
+		purego.RegisterFunc(&size, objcMsgSend)
+		var rect func(self, sel uintptr) NSRect
+		purego.RegisterFunc(&rect, objcMsgSend)
+		regular, small := symbolImage("plus", "add"), smallSymbolImage("plus", "add")
+		if regular == 0 || small == 0 {
+			t.Fatalf("images %x %x", regular, small)
+		}
+		rs, ss := size(regular, sel("size")), size(small, sel("size"))
+		if ss.Width >= rs.Width || ss.Height >= rs.Height {
+			t.Errorf("small %.1fx%.1f not smaller than regular %.1fx%.1f", ss.Width, ss.Height, rs.Width, rs.Height)
+		}
+		rr, sr := rect(regular, sel("alignmentRect")), rect(small, sel("alignmentRect"))
+		if sr.Width >= rr.Width || sr.Height >= rr.Height {
+			t.Errorf("small alignment %.1fx%.1f not smaller than regular %.1fx%.1f", sr.Width, sr.Height, rr.Width, rr.Height)
+		}
+		if msg(small, "isTemplate")&0xff == 0 {
+			t.Error("small symbol image is not a template")
+		}
+		s := &toolbarState{items: []ToolbarItem{
+			{Label: "nav", Small: true, Group: []ToolbarItem{{Label: "back", Symbol: "chevron.backward"}}},
+			{Label: "find", Small: true, Search: func(string) {}},
+		}}
+		// A group outside a toolbar has no view yet, so setSmall has nothing to reach; the search
+		// field exists at once and takes the small control size, as before.
+		g := s.item(0, itemIDPrefix+"0")
+		subs := msg(g, "subitems")
+		if msg(g, "isKindOfClass:", class("NSToolbarItemGroup"))&0xff == 0 || msg(subs, "count") != 1 {
+			t.Errorf("small group %+v subitems %d", g, msg(subs, "count"))
+		}
+		f := msg(s.item(0, itemIDPrefix+"1"), "searchField")
+		if f == 0 || msg(f, "controlSize") != controlSizeSmall {
+			t.Errorf("small search control size %d", msg(f, "controlSize"))
+		}
+	})
+}
+
+// In a real window the Small symbol shows smaller than the regular one while a Sidebar item keeps
+// its bordered capsule: the drawn sizes come from the image views AppKit puts inside the toolbar
+// buttons, not from the item frames, which are uniform across the bar.
+func TestToolbarSmallSymbolInWindow(t *testing.T) {
+	onMain(func() {
+		objcInit()
+		var size func(self, sel uintptr) NSSize
+		purego.RegisterFunc(&size, objcMsgSend)
+		win := msg(class("NSWindow"), "alloc")
+		msgRectOnly(win, sel("initWithContentRect:styleMask:backing:defer:"), NSRect{Width: 800, Height: 400})
+		msg(win, "setStyleMask:", uintptr(0xf))
+		defer msg(win, "release")
+		content := msg(win, "contentView")
+		v := NewNSViewOverload1(int64(content))
+		sidebarEdges[win] = 300
+		defer delete(sidebarEdges, win)
+		InstallToolbar(v, []ToolbarItem{
+			{Label: "add", Symbol: "plus", Click: func() {}},
+			{Label: "small", Symbol: "plus", Small: true, Click: func() {}},
+			{Label: "side", Symbol: "chevron.up", Small: true, Sidebar: true, Click: func() {}},
+		})
+		msg(win, "makeKeyAndOrderFront:", 0)
+		icon := map[string]NSSize{}
+		var capsule string
+		toolbarItemC := class("NSToolbarItem")
+		var walk func(v uintptr)
+		walk = func(v uintptr) {
+			if respondsTo(v, "item") {
+				it := msg(v, "item")
+				if it != 0 && msg(it, "isKindOfClass:", toolbarItemC)&0xff != 0 {
+					id := goString(msg(it, "itemIdentifier"))
+					if msg(it, "isBordered")&0xff != 0 {
+						capsule = id
+					}
+					subs := msg(v, "subviews")
+					for i, n := uintptr(0), msg(subs, "count"); i < n; i++ {
+						bsubs := msg(msg(subs, "objectAtIndex:", i), "subviews")
+						for j, m := uintptr(0), msg(bsubs, "count"); j < m; j++ {
+							iv := msg(bsubs, "objectAtIndex:", j)
+							if !respondsTo(iv, "image") {
+								continue
+							}
+							img := msg(iv, "image")
+							if img != 0 {
+								icon[id] = size(img, sel("size"))
+							}
+						}
+					}
+				}
+			}
+			subs := msg(v, "subviews")
+			for i, n := uintptr(0), msg(subs, "count"); i < n; i++ {
+				walk(msg(subs, "objectAtIndex:", i))
+			}
+		}
+		walk(msg(content, "superview"))
+		if icon[itemIDPrefix+"0"].Height == 0 || icon[itemIDPrefix+"1"].Height == 0 {
+			t.Fatalf("icon sizes %+v", icon)
+		}
+		if icon[itemIDPrefix+"1"].Height >= icon[itemIDPrefix+"0"].Height || icon[itemIDPrefix+"1"].Width >= icon[itemIDPrefix+"0"].Width {
+			t.Errorf("small %.1fx%.1f, want smaller than regular %.1fx%.1f",
+				icon[itemIDPrefix+"1"].Width, icon[itemIDPrefix+"1"].Height, icon[itemIDPrefix+"0"].Width, icon[itemIDPrefix+"0"].Height)
+		}
+		if icon[itemIDPrefix+"2"].Height >= icon[itemIDPrefix+"0"].Height {
+			t.Errorf("sidebar small glyph %.1f high, want smaller than regular %.1f", icon[itemIDPrefix+"2"].Height, icon[itemIDPrefix+"0"].Height)
+		}
+		if capsule != itemIDPrefix+"2" {
+			t.Errorf("bordered capsule on %q, want the sidebar item", capsule)
 		}
 	})
 }

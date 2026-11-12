@@ -368,8 +368,9 @@ func TestToolbarTextAndSmall(t *testing.T) {
 			t.Errorf("small text item clicks %d", clicks)
 		}
 		add := s.item(d, itemIDPrefix+"2")
-		if msg(add, "view") != 0 || msg(add, "image") == 0 || msg(add, "isEnabled")&0xff != 0 {
-			t.Errorf("small symbol item: view %x, image %x, enabled %d", msg(add, "view"), msg(add, "image"), msg(add, "isEnabled")&0xff)
+		av := msg(add, "view")
+		if av == 0 || msg(av, "isKindOfClass:", toolbarIconClass)&0xff == 0 || msg(av, "image") == 0 || msg(av, "isEnabled")&0xff != 0 {
+			t.Errorf("small symbol item: view %x, image %x, enabled %d", av, msg(av, "image"), msg(av, "isEnabled")&0xff)
 		}
 	})
 }
@@ -451,7 +452,14 @@ func TestToolbarSmallSymbolInWindow(t *testing.T) {
 					}
 					subs := msg(v, "subviews")
 					for i, n := uintptr(0), msg(subs, "count"); i < n; i++ {
-						bsubs := msg(msg(subs, "objectAtIndex:", i), "subviews")
+						sub := msg(subs, "objectAtIndex:", i)
+						// A bare icon item is a custom button: it answers image itself.
+						if respondsTo(sub, "image") {
+							if img := msg(sub, "image"); img != 0 {
+								icon[id] = size(img, sel("size"))
+							}
+						}
+						bsubs := msg(sub, "subviews")
 						for j, m := uintptr(0), msg(bsubs, "count"); j < m; j++ {
 							iv := msg(bsubs, "objectAtIndex:", j)
 							if !respondsTo(iv, "image") {
@@ -483,6 +491,101 @@ func TestToolbarSmallSymbolInWindow(t *testing.T) {
 		}
 		if capsule != itemIDPrefix+"2" {
 			t.Errorf("bordered capsule on %q, want the sidebar item", capsule)
+		}
+	})
+}
+
+// SidebarEnd items follow the Sidebar block, just past the sidebar end spacer; the Center items
+// lead the trailing block, the fitted center spacer right after them. Without a sidebar both are
+// ordinary items, and without Center items no center spacer exists.
+func TestToolbarZonesOrder(t *testing.T) {
+	items := []ToolbarItem{
+		{Label: "back", Nav: true},
+		{Label: "open", Sidebar: true},
+		{Label: "collapse", SidebarEnd: true},
+		{Label: "zoom", Center: true},
+		{Label: "add"},
+	}
+	order := func(s *toolbarState) string {
+		var ids []string
+		onMain(func() {
+			arr := s.ids()
+			for i, n := uintptr(0), msg(arr, "count"); i < n; i++ {
+				ids = append(ids, goString(msg(arr, "objectAtIndex:", i)))
+			}
+		})
+		return strings.Join(ids, " ")
+	}
+	want := "gowt.sidebar gowt.item.1 gowt.sidebar.end gowt.item.2 gowt.item.3 gowt.center gowt.item.0 gowt.item.4"
+	if got := order(&toolbarState{items: items, sidebar: true}); got != want {
+		t.Errorf("with sidebar: %s, want %s", got, want)
+	}
+	want = "gowt.item.3 gowt.center gowt.item.0 gowt.item.1 gowt.item.2 gowt.item.4"
+	if got := order(&toolbarState{items: items}); got != want {
+		t.Errorf("without sidebar: %s, want %s", got, want)
+	}
+	// A hidden sidebar drops the sidebar spacers; the Sidebar and SidebarEnd items stay at the
+	// leading edge, before the navigational ones, and the center spacer keeps its place after the
+	// Center items.
+	want = "gowt.item.1 gowt.item.2 gowt.item.3 gowt.center gowt.item.0 gowt.item.4"
+	if got := order(&toolbarState{items: items, sidebar: true, collapsed: true}); got != want {
+		t.Errorf("sidebar hidden: %s, want %s", got, want)
+	}
+	plain := []ToolbarItem{{Label: "a"}, {Label: "b"}}
+	want = "gowt.item.0 gowt.item.1"
+	if got := order(&toolbarState{items: plain}); got != want {
+		t.Errorf("no zones: %s, want %s", got, want)
+	}
+}
+
+// A bare single icon gets the hover button as its view: borderless, with a tracking area that is
+// active only in the key window; a content item is low visibility priority, so it overflows before
+// the sidebar cluster and the inspector separator.
+func TestToolbarBareIconItem(t *testing.T) {
+	onMain(func() {
+		s := &toolbarState{items: []ToolbarItem{{Label: "zoom", Symbol: "plus.magnifyingglass", Small: true}}}
+		ti := s.item(0, itemIDPrefix+"0")
+		if ti == 0 {
+			t.Fatal("no item")
+		}
+		v := msg(ti, "view")
+		if v == 0 || msg(v, "isKindOfClass:", toolbarIconClass)&0xff == 0 {
+			t.Fatalf("view %x is not the hover button", v)
+		}
+		if msg(v, "isBordered")&0xff != 0 {
+			t.Error("the hover button draws a bezel")
+		}
+		areas := msg(v, "trackingAreas")
+		if msg(areas, "count") == 0 {
+			t.Fatal("no tracking area")
+		}
+		area := msg(areas, "objectAtIndex:", 0)
+		if opts := msg(area, "options"); opts&trackingEnteredExited == 0 || opts&trackingActiveInKey == 0 {
+			t.Errorf("tracking options %#x, want entered/exited active in the key window", opts)
+		}
+		if respondsTo(ti, "visibilityPriority") {
+			if p := int64(msg(ti, "visibilityPriority")); p != visibilityPriorityLow {
+				t.Errorf("content item visibility priority %d, want %d", p, visibilityPriorityLow)
+			}
+		}
+		// The hover state drives a redraw, and leaves the bounds alone.
+		msg(v, "setTag:", 1)
+		if msg(v, "tag") != 1 {
+			t.Error("hover state not kept")
+		}
+		msg(v, "setTag:", 0)
+		// Nav and Sidebar items keep their priority and get no hover view.
+		sn := &toolbarState{items: []ToolbarItem{{Label: "back", Symbol: "chevron.backward", Nav: true}, {Label: "open", Symbol: "folder", Sidebar: true}}, sidebar: true}
+		tin := sn.item(0, itemIDPrefix+"0")
+		if v := msg(tin, "view"); v != 0 {
+			t.Errorf("a Nav item got a custom view %x", v)
+		}
+		if p := int64(msg(tin, "visibilityPriority")); p == visibilityPriorityLow {
+			t.Error("a Nav item is low priority")
+		}
+		ts := sn.item(0, itemIDPrefix+"1")
+		if p := int64(msg(ts, "visibilityPriority")); p == visibilityPriorityLow {
+			t.Error("a Sidebar item is low priority")
 		}
 	})
 }

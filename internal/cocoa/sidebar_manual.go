@@ -6,6 +6,8 @@ package cocoa
 import (
 	"fmt"
 	"math"
+	"strconv"
+	"strings"
 
 	"github.com/ebitengine/purego"
 )
@@ -354,11 +356,16 @@ func ReleaseSidebar(view *NSView) {
 	delete(sidebarEdges, w)
 	delete(sidebarHidden, w)
 	delete(inspectorSplits, w)
+	delete(inspectorDividers, w)
 	delete(trafficLightShifts, w)
 }
 
 // inspectorSplits holds, per window, the split view of InstallInspectorTracker, owned by the window.
 var inspectorSplits = map[uintptr]uintptr{}
+
+// inspectorDividers holds, per window, the x of the inspector divider, as last set by
+// SetInspectorDivider; fitCenter reads it.
+var inspectorDividers = map[uintptr]inspectorDividerInfo{}
 
 // InstallInspectorTracker gives the window of view an empty vertical NSSplitView whose divider
 // SetInspectorDivider keeps on the inspector edge: AppKit aligns toolbar items, through an
@@ -406,6 +413,8 @@ func SetInspectorDivider(view *NSView, x float64, hidden bool) {
 	if sv == 0 {
 		return
 	}
+	w := msg(uintptr(view.Id), "window")
+	inspectorDividers[w] = inspectorDividerInfo{x: x, hidden: hidden}
 	pane := msg(msg(sv, "subviews"), "objectAtIndex:", 1)
 	if hidden != (msg(pane, "isHidden")&0xff != 0) {
 		msg(pane, "setHidden:", boolArg(hidden))
@@ -418,6 +427,11 @@ func SetInspectorDivider(view *NSView, x float64, hidden bool) {
 		purego.RegisterFunc(&msgF64Index, objcMsgSend)
 	}
 	msgF64Index(sv, sel("setPosition:ofDividerAtIndex:"), x, 0)
+	// The center spacer is fitted on the divider: measure and refit after this layout.
+	if s := toolbarDelegates[getAssociated(w, toolbarKey())]; s != nil && s.center != 0 {
+		s.centerWidth = -1
+		msg(s.center, "performSelectorOnMainThread:withObject:waitUntilDone:", sel("gowtFit"), 0, 0)
+	}
 }
 
 // sidebarHidden holds the windows whose sidebar is hidden.
@@ -470,16 +484,26 @@ const (
 	sidebarEndWidth = 4
 )
 
-// fitSpacer sizes the spacer of the toolbar of w so that it ends spacerGap points past the sidebar edge.
-// Its own left edge is measured once it is in the window, before that taken as the zoom button's right
-// edge plus 8 points. With Sidebar items the spacer after them ends there instead.
+// fitSpacer refits the fitted spacers of the toolbar of w: the sidebar spacer, when the window has
+// a sidebar, and the center spacer, when the toolbar has Center items. Any spacer layout calls it
+// through the GowtToolbarSpacer gowtFit hook.
 func fitSpacer(w uintptr) {
 	initAssociated()
-	edge, ok := sidebarEdges[w]
 	s := toolbarDelegates[getAssociated(w, toolbarKey())]
-	if !ok || s == nil || s.width == 0 {
+	if s == nil {
 		return
 	}
+	if edge, ok := sidebarEdges[w]; ok && s.sidebar && s.width != 0 {
+		fitSidebarSpacer(w, s, edge)
+	}
+	s.fitCenter(w)
+}
+
+// fitSidebarSpacer sizes the spacer of the toolbar of w so that it ends spacerGap points past the
+// sidebar edge. Its own left edge is measured once it is in the window, before that taken as the
+// zoom button's right edge plus 8 points. With Sidebar items the spacer after them ends there
+// instead.
+func fitSidebarSpacer(w uintptr, s *toolbarState, edge float64) {
 	var x0 float64
 	if msg(s.spacer, "window") == w {
 		v := NewNSViewOverload1(int64(s.spacer))
@@ -512,6 +536,83 @@ func fitSpacer(w uintptr) {
 // minViewerWidth is the narrowest item viewer AppKit puts a toolbar item view in, even a 1-point
 // spacer: measured on macOS 26 (docs/theme-look.md), AppKit does not report it.
 const minViewerWidth = 44
+
+// inspectorDividerInfo is the position of the inspector divider of a window.
+type inspectorDividerInfo struct {
+	x      float64
+	hidden bool
+}
+
+// fitCenter sizes the center spacer of the toolbar of w so that the Center items sit in the middle
+// of the content column, between the sidebar edge and the inspector divider, like the sidebar
+// spacer it is measured after the toolbar laid out and adjusted until it settles.
+func (s *toolbarState) fitCenter(w uintptr) {
+	if s.center == 0 || s.centerC == 0 || msg(s.center, "window") != w {
+		return
+	}
+	left := 0.0
+	if s.sidebar && !s.collapsed {
+		left = sidebarEdges[w]
+	}
+	right := NewNSWindowOverload1(int64(w)).Frame().Width
+	if d, ok := inspectorDividers[w]; ok && !d.hidden {
+		right = d.x
+	}
+	lo, hi, ok := centerItemExtent(w, s)
+	if !ok || hi <= lo {
+		return
+	}
+	// AppKit packs the non-navigational items against the trailing cluster, so a wider spacer shifts
+	// the Center items left by the same amount; the width correction is the measured middle plus the
+	// current width (the middle at a zero-width spacer) minus the target middle of the content column.
+	target := (left + right) / 2
+	cur := NewNSViewOverload1(int64(s.center)).Bounds().Width
+	width := max(1, (lo+hi)/2+cur-target)
+	if math.Abs(width-s.centerWidth) < 0.5 {
+		return
+	}
+	s.centerWidth = width
+	msgF64(s.centerC, sel("setConstant:"), width)
+}
+
+// centerItemExtent is the left and right edge, in window points, of the block of Center items of
+// the toolbar of w, measured on the item viewers that show them; ok is false before the toolbar
+// laid them out.
+func centerItemExtent(w uintptr, s *toolbarState) (lo, hi float64, ok bool) {
+	content := msg(w, "contentView")
+	theme := msg(content, "superview")
+	if theme == 0 {
+		return 0, 0, false
+	}
+	toolbarItem := class("NSToolbarItem")
+	var walk func(v uintptr)
+	walk = func(v uintptr) {
+		if v == content {
+			return
+		}
+		if respondsTo(v, "item") {
+			if it := msg(v, "item"); it != 0 && msg(it, "isKindOfClass:", toolbarItem)&0xff != 0 {
+				if i, err := strconv.Atoi(strings.TrimPrefix(goString(msg(it, "itemIdentifier")), itemIDPrefix)); err == nil && s.centerIdx[i] {
+					nv := NewNSViewOverload1(int64(v))
+					r := nv.ConvertRect_toView_(nv.Bounds(), nil)
+					if !ok || r.X < lo {
+						lo = r.X
+					}
+					if !ok || r.X+r.Width > hi {
+						hi = r.X + r.Width
+					}
+					ok = true
+				}
+			}
+		}
+		subs := msg(v, "subviews")
+		for i, n := uintptr(0), msg(subs, "count"); i < n; i++ {
+			walk(msg(subs, "objectAtIndex:", i))
+		}
+	}
+	walk(theme)
+	return lo, hi, ok
+}
 
 // SidebarItemsMinEdge is the sidebar edge, in window points, below which the Sidebar items of the
 // toolbar of the window of view no longer end before it: the first spacer at its narrowest viewer.

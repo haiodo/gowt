@@ -161,31 +161,40 @@ func (b *toolbarBar) sideAdder() interface{ Add(...gowt.Option) } {
 // inspectorPane is the SetInspector pane of the window, nil without one.
 func (b *toolbarBar) inspectorPane() *pane { return inspectorOf(b.w) }
 
-// fill lays the items out as macOS does: Nav items, the window title, then the rest, and the Inspector
-// items in a strip of their own. The title takes the free width unless a Space item does.
-func (b *toolbarBar) fill() {
-	var lead, trail, over, insp []ToolbarItem
-	spaced := false
-	side := b.sideAdder()
-	inspector := b.inspectorPane() != nil
-	for _, it := range b.items {
-		if it.Sidebar && !it.Space && side != nil {
+// barZones splits the items into the rows and zones of the bar: the sidebar row (over at the
+// leading edge, sideEnd at its end), the bar itself (lead navigational items, then the centered
+// ones, then the trailing ones), and the inspector strip. Without a sidebar or an inspector the
+// respective items keep their places as ordinary trailing items.
+func barZones(items []ToolbarItem, hasSidebar, hasInspector bool) (over, sideEnd, lead, centered, trail, insp []ToolbarItem, spaced bool) {
+	for _, it := range items {
+		switch {
+		case it.Sidebar && !it.Space && hasSidebar:
 			over = append(over, it)
-			continue
-		}
-		if it.Inspector && inspector {
+		case it.SidebarEnd && !it.Space && hasSidebar:
+			sideEnd = append(sideEnd, it)
+		case it.Inspector && hasInspector:
 			insp = append(insp, it)
-			continue
-		}
-		if it.Nav {
+		case it.Nav:
 			lead = append(lead, it)
-			continue
+		case it.Center && !it.Space:
+			centered = append(centered, it)
+		default:
+			trail = append(trail, it)
+			spaced = spaced || it.Space
 		}
-		trail = append(trail, it)
-		spaced = spaced || it.Space
 	}
+	return over, sideEnd, lead, centered, trail, insp, spaced
+}
+
+// fill lays the items out as macOS does: Nav items, the window title, then the rest, and the Inspector
+// items in a strip of their own. The title takes the free width unless a Space item does. SidebarEnd
+// items end the row at the top of the sidebar; Center items sit centered in the bar, which spans the
+// content column.
+func (b *toolbarBar) fill() {
+	side := b.sideAdder()
+	over, sideEnd, lead, centered, trail, insp, spaced := barZones(b.items, side != nil, b.inspectorPane() != nil)
 	var p *gowt.Panel
-	b.w.Add(gowt.Grid(len(over)+len(lead)+len(trail)+2, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.Ref(&p)))
+	b.w.Add(gowt.Grid(len(over)+len(sideEnd)+len(lead)+len(centered)+len(trail)+4, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.Ref(&p)))
 	p.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
 	p.Unwrap().AddPaintListener(painter(func(e *swt.PaintEvent) {
 		r := p.Unwrap().GetClientArea()
@@ -204,11 +213,22 @@ func (b *toolbarBar) fill() {
 		}
 		cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
 	}
+	for _, it := range sideEnd {
+		// The copy stands at the leading edge while the sidebar is hidden, as on macOS.
+		it.ID = ""
+		c := b.item(p, it, &b.icons)
+		if c != nil {
+			c.SetVisible(!shown)
+			b.lead = append(b.lead, c)
+		}
+		cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
+	}
 	for _, it := range lead {
 		c := b.item(p, it, &b.icons)
 		cells = append(cells, barCell{item: it, widget: c, flex: it.Space})
 	}
-	p.Add(gowt.Label(b.w.Unwrap().GetText(), gowt.Cell(gowt.GridCell{GrowX: !spaced, Align: gowt.AlignFill, VAlign: gowt.AlignCenter}), gowt.Ref(&b.title)))
+	growTitle := !spaced && len(centered) == 0
+	p.Add(gowt.Label(b.w.Unwrap().GetText(), gowt.Cell(gowt.GridCell{GrowX: growTitle, Align: gowt.AlignFill, VAlign: gowt.AlignCenter}), gowt.Ref(&b.title)))
 	if gowt.ChosenDensity().Legacy() {
 		size := 0
 		if fd := b.title.Unwrap().GetFont().GetFontData(); len(fd) > 0 {
@@ -218,21 +238,43 @@ func (b *toolbarBar) fill() {
 	} else {
 		b.title.SetFont(gowt.Type.Subtitle)
 	}
-	cells = append(cells, barCell{widget: b.title, flex: !spaced})
+	cells = append(cells, barCell{widget: b.title, flex: growTitle})
+	if len(centered) > 0 {
+		// The bar spans the content column, so a flexible space on either side centers the items in
+		// the column, as the macOS center spacer does.
+		p.Add(gowt.Spacer())
+		cells = append(cells, barCell{flex: true})
+		for _, it := range centered {
+			c := b.item(p, it, &b.icons)
+			cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
+		}
+		p.Add(gowt.Spacer())
+		cells = append(cells, barCell{flex: true})
+	}
 	for _, it := range trail {
 		c := b.item(p, it, &b.icons)
 		cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
 	}
 	b.newOverflow(p, cells, &b.icons)
-	if len(over) > 0 {
-		// The row goes first in the sidebar, with commands at the leading edge as in a navigation pane.
-		side.Add(gowt.Grid(len(over)+1, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.GrowX(), gowt.Ref(&b.side)))
+	if len(over) > 0 || len(sideEnd) > 0 {
+		// The row goes first in the sidebar, with commands at the leading edge as in a navigation pane;
+		// a flexible space separates them from the SidebarEnd items at the row's end.
+		n := len(over) + len(sideEnd) + 1
+		side.Add(gowt.Grid(n, gowt.Padding(gowt.Scaled(8)), gowt.Gap(gowt.Scaled(6)), gowt.GrowX(), gowt.Ref(&b.side)))
 		b.side.Unwrap().MoveAbove(nil)
 		b.side.Unwrap().SetBackgroundMode(swt.INHERIT_DEFAULT)
 		cells = nil
 		for _, it := range over {
 			c := b.item(b.side, it, &b.sideIcons)
 			cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
+		}
+		if len(sideEnd) > 0 {
+			b.side.Add(gowt.Spacer())
+			cells = append(cells, barCell{flex: true})
+			for _, it := range sideEnd {
+				c := b.item(b.side, it, &b.sideIcons)
+				cells = append(cells, barCell{item: it, widget: c, overflow: true, flex: it.Space})
+			}
 		}
 		b.newOverflow(b.side, cells, &b.sideIcons)
 	}

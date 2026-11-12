@@ -49,3 +49,43 @@ func TestBarSymbolsRender(t *testing.T) {
 		}
 	}
 }
+
+// The bar splits the items into the zones of the three panes: the sidebar row (leading and
+// SidebarEnd trailing), the content bar (Nav leading, Center, the trailing rest) and the inspector
+// strip; without the pane the pinned items fall back to the trailing zone.
+func TestBarZones(t *testing.T) {
+	items := []ToolbarItem{
+		{Title: "open", Sidebar: true},
+		{Title: "collapse", SidebarEnd: true},
+		{Title: "back", Nav: true},
+		{Title: "zoom", Center: true},
+		{Title: "add"},
+		{Title: "info", Inspector: true},
+		{Space: true, Inspector: true},
+		{Title: "toggle", Inspector: true},
+	}
+	over, sideEnd, lead, centered, trail, insp, spaced := barZones(items, true, true)
+	if len(over) != 1 || over[0].Title != "open" {
+		t.Errorf("sidebar leading %v", over)
+	}
+	if len(sideEnd) != 1 || sideEnd[0].Title != "collapse" {
+		t.Errorf("sidebar trailing %v", sideEnd)
+	}
+	if len(lead) != 1 || lead[0].Title != "back" {
+		t.Errorf("content leading %v", lead)
+	}
+	if len(centered) != 1 || centered[0].Title != "zoom" {
+		t.Errorf("content center %v", centered)
+	}
+	if len(trail) != 1 || trail[0].Title != "add" || spaced {
+		t.Errorf("content trailing %v spaced %v", trail, spaced)
+	}
+	if len(insp) != 3 || !insp[1].Space {
+		t.Errorf("inspector strip %v", insp)
+	}
+	// Without the panes the pinned items are ordinary trailing ones.
+	_, sideEnd, _, centered, trail, insp, _ = barZones(items, false, false)
+	if len(sideEnd) != 0 || len(centered) != 1 || len(insp) != 0 || len(trail) != 6 {
+		t.Errorf("no panes: sideEnd %v centered %v trail %v insp %v", sideEnd, centered, trail, insp)
+	}
+}

@@ -20,13 +20,22 @@ import (
 // Search makes it a search field with Label as placeholder; Group makes it one segmented capsule of
 // the group's items, each with its own Label, Symbol and Click.
 type ToolbarItem struct {
-	Label     string
-	Symbol    string // SF Symbol name, "" for text only
-	Space     bool
-	Click     func()
-	Group     []ToolbarItem
-	Nav       bool   // navigational: placed before the window title
-	Sidebar   bool   // with SetSidebarEdge: placed over the sidebar, ending at its edge
+	Label   string
+	Symbol  string // SF Symbol name, "" for text only
+	Space   bool
+	Click   func()
+	Group   []ToolbarItem
+	Nav     bool // navigational: placed before the window title
+	Sidebar bool // with SetSidebarEdge: placed over the sidebar, ending at its edge
+	// SidebarEnd places the item just past the right edge of the sidebar, before the window title: a
+	// bare icon without the bordered capsule the Sidebar items keep. It follows the edge on a drag or
+	// resize and, with the sidebar hidden, sits at the leading edge, next to the traffic lights, as
+	// the way back. Without SetSidebarEdge it is an ordinary item.
+	SidebarEnd bool
+	// Center places the item in the middle of the content column, between the sidebar edge and the
+	// inspector divider, fitted as the sidebar spacers are. Without a sidebar or inspector it is the
+	// middle of the window.
+	Center    bool
 	Inspector bool   // with InstallInspectorTracker: after the separator on the inspector divider
 	Text      string // a push item shows this as a bordered title instead of its symbol; SetToolbarItemText changes it
 	Small     bool   // NSControlSizeSmall: the item gets a button view of that size
@@ -41,12 +50,18 @@ const (
 	flexibleSpaceID     = "NSToolbarFlexibleSpaceItem"
 	sidebarSpacerID     = "gowt.sidebar"
 	sidebarEndID        = "gowt.sidebar.end"
+	centerSpacerID      = "gowt.center"
 	inspectorID         = "gowt.inspector"
 	selectMomentary     = 2
 	representExpanded   = 1
 	displayIconOnly     = 2
 	searchButtonPrefix  = "gowt.searchbutton."
 	searchFieldWidth    = 220
+	// visibilityPriorityLow is NSToolbarItemVisibilityPriorityLow: content items collapse into the
+	// overflow chevron before the sidebar cluster, the title and the inspector separator do;
+	// visibilityPriorityHigh keeps the Inspector items on the divider through that.
+	visibilityPriorityLow  = -1000
+	visibilityPriorityHigh = 1000
 )
 
 type toolbarState struct {
@@ -56,7 +71,11 @@ type toolbarState struct {
 	spacer      uintptr // the spacer's view and width constraint, owned by the toolbar item
 	width       uintptr
 	spacerWidth float64
-	end         uintptr         // the spacer after the Sidebar items, the point the spacer width is fitted on
+	end         uintptr // the spacer after the Sidebar items, the point the spacer width is fitted on
+	center      uintptr // the spacer before the Center items, fitted on the middle of the content column
+	centerC     uintptr // the center spacer's width constraint
+	centerWidth float64
+	centerIdx   map[int]bool    // indexes in items of the Center items, to measure their extent when fitting
 	groups      map[int]uintptr // index in items to its NSToolbarItemGroup, owned by the toolbar
 	// index in items of a search item to its magnifier button and its NSSearchToolbarItem, owned by the toolbar
 	searchButtons, searchItems map[int]uintptr
@@ -75,18 +94,36 @@ func toolbarKey() uintptr { return sel("gowtToolbar") }
 // overSidebar reports whether it goes over the sidebar: a Sidebar item of a window with a sidebar.
 func (s *toolbarState) overSidebar(it ToolbarItem) bool { return s.sidebar && it.Sidebar && !it.Space }
 
+// overSidebarEnd reports whether it follows the sidebar edge: a SidebarEnd item of a window with a
+// sidebar. Without a sidebar the item is an ordinary one, as its look.ToolbarItem comment says.
+func (s *toolbarState) overSidebarEnd(it ToolbarItem) bool {
+	return s.sidebar && it.SidebarEnd && !it.Space
+}
+
 // overInspector reports whether it goes after the inspector separator: an Inspector item of a window
 // with an inspector.
 func (s *toolbarState) overInspector(it ToolbarItem) bool { return s.split != 0 && it.Inspector }
 
 // ids lists the items in toolbar order. With a sidebar that is the spacer, the Sidebar items, a second
-// spacer they end before, then the rest: all navigational up to the title, so AppKit keeps the order.
-// With an inspector the Inspector items come last, after the separator that tracks its divider.
+// spacer they end before, the SidebarEnd items just past the sidebar edge, then the rest: all
+// navigational up to the title, so AppKit keeps the order. The Center items lead the rest, followed
+// by the fitted center spacer. With an inspector the Inspector items come last, after the separator
+// that tracks its divider.
 func (s *toolbarState) ids() uintptr { return s.idList(!s.collapsed) }
+
+// hasCenter reports whether any item goes to the middle of the content column.
+func (s *toolbarState) hasCenter() bool {
+	for _, it := range s.items {
+		if it.Center && !it.Space {
+			return true
+		}
+	}
+	return false
+}
 
 // idList is ids without the two spacers when spacers is false, for a hidden sidebar.
 func (s *toolbarState) idList(spacers bool) uintptr {
-	arr := msg(class("NSMutableArray"), "arrayWithCapacity:", uintptr(len(s.items)+2))
+	arr := msg(class("NSMutableArray"), "arrayWithCapacity:", uintptr(len(s.items)+3))
 	add := func(i int, it ToolbarItem) {
 		id := itemIDPrefix + strconv.Itoa(i)
 		if it.Space {
@@ -111,12 +148,27 @@ func (s *toolbarState) idList(spacers bool) uintptr {
 		if over && spacers {
 			msg(arr, "addObject:", nsString(sidebarEndID))
 		}
-	}
-	for i, it := range s.items {
-		if !s.overSidebar(it) && !s.overInspector(it) {
-			add(i, it)
+		for i, it := range s.items {
+			if s.overSidebarEnd(it) {
+				add(i, it)
+			}
 		}
 	}
+	// The Center items lead the trailing block, the fitted spacer goes after them: AppKit packs the
+	// non-navigational items against the trailing cluster (up to the inspector separator), so a
+	// wider spacer shifts the Center items left, and fitCenter sizes it on that.
+	rest := func(center bool) {
+		for i, it := range s.items {
+			if !s.overSidebar(it) && !s.overSidebarEnd(it) && !s.overInspector(it) && (it.Center && !it.Space) == center {
+				add(i, it)
+			}
+		}
+	}
+	rest(true)
+	if s.hasCenter() {
+		msg(arr, "addObject:", nsString(centerSpacerID))
+	}
+	rest(false)
 	sep := false
 	for i, it := range s.items {
 		if !s.overInspector(it) {
@@ -232,7 +284,7 @@ func symbolImage(name, label string) uintptr {
 }
 
 func (s *toolbarState) item(target uintptr, id string) uintptr {
-	if id == sidebarSpacerID || id == sidebarEndID {
+	if id == sidebarSpacerID || id == sidebarEndID || id == centerSpacerID {
 		ti := msg(msg(class("NSToolbarItem"), "alloc"), "initWithItemIdentifier:", nsString(id))
 		v, width := newSpacer()
 		msg(ti, "setView:", v)
@@ -240,11 +292,17 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		if respondsTo(ti, "setBordered:") {
 			msg(ti, "setBordered:", 0)
 		}
-		msg(ti, "setNavigational:", 1)
-		if id == sidebarEndID {
+		if id != centerSpacerID {
+			// The center spacer stays inside the trailing block, between the Center items and the rest.
+			msg(ti, "setNavigational:", 1)
+		}
+		switch id {
+		case centerSpacerID:
+			s.center, s.centerC, s.centerWidth = v, width, -1
+		case sidebarEndID:
 			msgF64(width, sel("setConstant:"), sidebarEndWidth)
 			s.end = v
-		} else {
+		default:
 			s.spacer, s.width, s.spacerWidth = v, width, -1
 		}
 		return msg(ti, "autorelease")
@@ -253,7 +311,12 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 		if s.split == 0 {
 			return 0
 		}
-		return msg(class("NSTrackingSeparatorToolbarItem"), "trackingSeparatorToolbarItemWithIdentifier:splitView:dividerIndex:", nsString(id), s.split, 0)
+		ti := msg(class("NSTrackingSeparatorToolbarItem"), "trackingSeparatorToolbarItemWithIdentifier:splitView:dividerIndex:", nsString(id), s.split, 0)
+		if respondsTo(ti, "setVisibilityPriority:") {
+			high := int64(visibilityPriorityHigh)
+			msg(ti, "setVisibilityPriority:", uintptr(high))
+		}
+		return ti
 	}
 	if strings.HasPrefix(id, searchButtonPrefix) {
 		return s.searchButton(target, id)
@@ -333,20 +396,37 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 			// A title on an item without a custom view gives AppKit's own bordered text button.
 			msg(ti, "setTitle:", nsString(it.Text))
 			msg(ti, "setBordered:", 1)
+		case img != 0 && !it.Nav && !s.overSidebar(*it) && respondsTo(ti, "setBordered:"):
+			// AppKit 26+ draws an image item as a bordered glass capsule; the Harness rest state
+			// is a bare icon. AppKit draws no hover for such an item, so it gets its own button
+			// view, which tracks the pointer in the key window and draws the quiet fill.
+			v := bareIconButton(target, id, img)
+			msg(ti, "setView:", v)
+			msg(v, "release")
+			if it.Disabled {
+				msg(v, "setEnabled:", 0)
+			}
 		case img != 0:
 			msg(ti, "setImage:", img)
-			if !it.Nav && !s.overSidebar(*it) && respondsTo(ti, "setBordered:") {
-				// AppKit 26+ draws an image item as a bordered glass capsule; the Harness rest state
-				// is a bare icon, so the border goes and AppKit keeps the hover and press fills.
-				msg(ti, "setBordered:", 0)
-			}
 		}
 		msg(ti, "setEnabled:", boolArg(!it.Disabled))
+		// Content items give way before the sidebar, the title cluster and the inspector separator:
+		// on a narrow window AppKit hides the low-priority ones into the overflow chevron and brings
+		// them back when the window grows, instead of letting them cross the inspector divider.
+		// Inspector items stay: they keep a high priority, above the content ones.
+		if respondsTo(ti, "setVisibilityPriority:") {
+			low, high := int64(visibilityPriorityLow), int64(visibilityPriorityHigh)
+			if !it.Nav && !s.overSidebar(*it) && !s.overSidebarEnd(*it) && !s.overInspector(*it) {
+				msg(ti, "setVisibilityPriority:", uintptr(low))
+			} else if s.overInspector(*it) {
+				msg(ti, "setVisibilityPriority:", uintptr(high))
+			}
+		}
 		ti = msg(ti, "autorelease")
 	}
 	msg(ti, "setLabel:", nsString(it.Label))
 	msg(ti, "setToolTip:", nsString(it.Label))
-	if (it.Nav || s.overSidebar(*it)) && respondsTo(ti, "setNavigational:") {
+	if (it.Nav || s.overSidebar(*it) || s.overSidebarEnd(*it)) && respondsTo(ti, "setNavigational:") {
 		msg(ti, "setNavigational:", 1)
 	}
 	return ti
@@ -410,6 +490,112 @@ func setSmall(v uintptr) {
 	if respondsTo(v, "setFont:") {
 		msg(v, "setFont:", uintptr(NSFontSystemFontOfSize(NSFontSystemFontSizeForControlSize(controlSizeSmall)).Id))
 	}
+}
+
+const (
+	// NSTrackingArea options: mouseEntered/Exited, active only while the window is key, so an
+	// inactive window shows no hover. The gating covers exited too, so a hover left set when the
+	// window resigns key is cleared by the NSWindowDidResignKeyNotification observer below.
+	trackingEnteredExited = 0x01 // NSTrackingMouseEnteredAndExited
+	trackingActiveInKey   = 0x20 // NSTrackingActiveInKeyWindow
+)
+
+var (
+	toolbarIconClass uintptr
+	// iconButtonSuperDraw is NSButton's drawRect:, which draws the symbol image with its template
+	// tint and press dimming; the subclass draws the hover fill around it and forwards.
+	iconButtonSuperDraw func(self, sel uintptr, rect NSRect)
+	// iconButtonSuperUpdate is NSView's updateTrackingAreas, which the subclass forwards to after
+	// re-adding its tracking area: the button is created frameless, so the area of the creation
+	// time is empty and AppKit would never deliver entered or exited.
+	iconButtonSuperUpdate func(self, sel uintptr)
+	iconButtonTracking    func(self, sel uintptr, rect NSRect, options, owner, userInfo uintptr) uintptr
+	// iconButtonSuperDealloc is NSView's dealloc; the subclass drops the notification center
+	// observer first, so no notification reaches the freed button.
+	iconButtonSuperDealloc func(self, sel uintptr)
+)
+
+// bareIconButton is the view of a bare single-icon toolbar item. AppKit 26 draws no hover for a
+// borderless image item, so the button is a borderless NSButton subclass with a tracking area that
+// is active only in the key window: it draws the quiet rounded fill under the pointer and, darker,
+// while pressed; the rest state and the sizes stay untouched.
+func bareIconButton(target uintptr, id string, img uintptr) uintptr {
+	if toolbarIconClass == 0 {
+		purego.RegisterFunc(&iconButtonSuperDraw, uintptr(OSClass_getMethodImplementation(int64(class("NSButton")), int64(sel("drawRect:")))))
+		purego.RegisterFunc(&iconButtonSuperUpdate, uintptr(OSClass_getMethodImplementation(int64(class("NSView")), int64(sel("updateTrackingAreas")))))
+		purego.RegisterFunc(&iconButtonSuperDealloc, uintptr(OSClass_getMethodImplementation(int64(class("NSView")), int64(sel("dealloc")))))
+		purego.RegisterFunc(&iconButtonTracking, objcMsgSend)
+		draw := purego.NewCallback(func(self, cmd uintptr) {
+			if msg(self, "tag") != 0 || msg(self, "isHighlighted")&0xff != 0 {
+				if roundedRect == nil {
+					purego.RegisterFunc(&roundedRect, objcMsgSend)
+				}
+				fill := msg(class("NSColor"), "quaternaryLabelColor")
+				if msg(self, "isHighlighted")&0xff != 0 && respondsTo(class("NSColor"), "tertiarySystemFillColor") {
+					fill = msg(class("NSColor"), "tertiarySystemFillColor")
+				}
+				r := NewNSViewOverload1(int64(self)).Bounds()
+				r.X++
+				r.Y++
+				r.Width -= 2
+				r.Height -= 2
+				msg(fill, "setFill")
+				msg(roundedRect(class("NSBezierPath"), sel("bezierPathWithRoundedRect:xRadius:yRadius:"), r, 6, 6), "fill")
+			}
+			iconButtonSuperDraw(self, cmd, NewNSViewOverload1(int64(self)).Bounds())
+		})
+		entered := purego.NewCallback(func(self, _ uintptr) {
+			msg(self, "setTag:", 1)
+			msg(self, "setNeedsDisplay:", 1)
+		})
+		exited := purego.NewCallback(func(self, _ uintptr) {
+			msg(self, "setTag:", 0)
+			msg(self, "setNeedsDisplay:", 1)
+		})
+		resign := purego.NewCallback(func(self, _ uintptr) {
+			msg(self, "setTag:", 0)
+			msg(self, "setNeedsDisplay:", 1)
+		})
+		dealloc := purego.NewCallback(func(self, cmd uintptr) {
+			msg(msg(class("NSNotificationCenter"), "defaultCenter"), "removeObserver:", self)
+			iconButtonSuperDealloc(self, cmd)
+		})
+		update := purego.NewCallback(func(self, cmd uintptr) {
+			iconButtonSuperUpdate(self, cmd)
+			areas := msg(self, "trackingAreas")
+			for i, n := uintptr(0), msg(areas, "count"); i < n; i++ {
+				msg(self, "removeTrackingArea:", msg(areas, "objectAtIndex:", 0))
+			}
+			area := iconButtonTracking(msg(class("NSTrackingArea"), "alloc"), sel("initWithRect:options:owner:userInfo:"),
+				NewNSViewOverload1(int64(self)).Bounds(), trackingEnteredExited|trackingActiveInKey, self, 0)
+			msg(self, "addTrackingArea:", area)
+			msg(area, "release")
+		})
+		toolbarIconClass = allocClass(class("NSButton"), "GowtToolbarIcon", 0)
+		addMethod(toolbarIconClass, sel("drawRect:"), draw, "v@:{CGRect={CGPoint=dd}{CGSize=dd}}")
+		addMethod(toolbarIconClass, sel("mouseEntered:"), entered, "v@:@")
+		addMethod(toolbarIconClass, sel("mouseExited:"), exited, "v@:@")
+		addMethod(toolbarIconClass, sel("gowtResignKey:"), resign, "v@:@")
+		addMethod(toolbarIconClass, sel("updateTrackingAreas"), update, "v@:")
+		addMethod(toolbarIconClass, sel("dealloc"), dealloc, "v@:")
+		registerClass(toolbarIconClass)
+	}
+	b := msg(msg(toolbarIconClass, "alloc"), "init")
+	msg(b, "setTag:", 0) // NSControl starts at -1; the hover state is tag 1
+	msg(b, "setButtonType:", pushIn)
+	msg(b, "setBordered:", 0)
+	msg(b, "setImage:", img)
+	msg(b, "setImagePosition:", 1) // NSImageOnly
+	msg(b, "setIdentifier:", nsString(id))
+	msg(b, "setTarget:", target)
+	msg(b, "setAction:", sel("gowtClick:"))
+	area := iconButtonTracking(msg(class("NSTrackingArea"), "alloc"), sel("initWithRect:options:owner:userInfo:"),
+		NewNSViewOverload1(int64(b)).Bounds(), trackingEnteredExited|trackingActiveInKey, b, 0)
+	msg(b, "addTrackingArea:", area)
+	msg(area, "release")
+	msg(msg(class("NSNotificationCenter"), "defaultCenter"), "addObserver:selector:name:object:",
+		b, sel("gowtResignKey:"), nsString("NSWindowDidResignKeyNotification"), 0)
+	return b // retained by the toolbar item's setView
 }
 
 // groupItem is one momentary segmented capsule, the way Finder shows back and forward. It falls back
@@ -601,8 +787,17 @@ func InstallToolbar(view *NSView, items []ToolbarItem) bool {
 	registerToolbarClass()
 	d := msg(msg(toolbarClass, "alloc"), "init")
 	_, sidebar := sidebarEdges[w]
-	toolbarDelegates[d] = &toolbarState{items: append([]ToolbarItem(nil), items...), sidebar: sidebar, collapsed: sidebarHidden[w],
+	st := &toolbarState{items: append([]ToolbarItem(nil), items...), sidebar: sidebar, collapsed: sidebarHidden[w],
 		split: inspectorSplits[w]}
+	for i, it := range st.items {
+		if it.Center && !it.Space {
+			if st.centerIdx == nil {
+				st.centerIdx = map[int]bool{}
+			}
+			st.centerIdx[i] = true
+		}
+	}
+	toolbarDelegates[d] = st
 	setAssociated(w, toolbarKey(), d, 1)
 	msg(d, "release")
 	toolbarSeq++
@@ -645,6 +840,16 @@ func SetToolbarItemEnabled(view *NSView, item, segment int, on bool) {
 	}
 	if tb := msg(w, "toolbar"); tb != 0 {
 		msg(tb, "validateVisibleItems")
+		// A bare icon is a custom view; validation leaves the view's own enabled state alone.
+		id := itemIDPrefix + strconv.Itoa(item)
+		items := msg(tb, "items")
+		for i, n := uintptr(0), msg(items, "count"); i < n; i++ {
+			if ti := msg(items, "objectAtIndex:", i); goString(msg(ti, "itemIdentifier")) == id {
+				if v := msg(ti, "view"); v != 0 && respondsTo(v, "setEnabled:") {
+					msg(v, "setEnabled:", boolArg(on))
+				}
+			}
+		}
 	}
 }
 
@@ -935,4 +1140,63 @@ func (b *ToolbarButtons) Click(n int) bool {
 		return true
 	})
 	return ok
+}
+
+// toolbarIconButton is the bare icon button of the toolbar item with the user-visible ID of the
+// window of view; 0 without the item or before the toolbar has given it a view.
+func toolbarIconButton(view *NSView, id string) uintptr {
+	w, s := toolbarOf(view)
+	if s == nil || id == "" {
+		return 0
+	}
+	for i, it := range s.items {
+		if it.ID != id {
+			continue
+		}
+		tb := msg(w, "toolbar")
+		if tb == 0 {
+			return 0
+		}
+		items := msg(tb, "items")
+		for n, c := uintptr(0), msg(items, "count"); n < c; n++ {
+			ti := msg(items, "objectAtIndex:", n)
+			if goString(msg(ti, "itemIdentifier")) != itemIDPrefix+strconv.Itoa(i) {
+				continue
+			}
+			if v := msg(ti, "view"); v != 0 && respondsTo(v, "tag") {
+				return v
+			}
+		}
+	}
+	return 0
+}
+
+// ToolbarIconHovered reports the hover state of the bare icon button of the toolbar item with the
+// user-visible ID of the window of view, as mouseEntered: sets it; false without the item.
+func ToolbarIconHovered(view *NSView, id string) bool {
+	v := toolbarIconButton(view, id)
+	return v != 0 && msg(v, "tag") != 0
+}
+
+// ToolbarIconSendHover sends the button of the toolbar item with the user-visible ID the
+// mouseEntered: or mouseExited: message, as the tracking area delivers it in the key window.
+// The hover GUI checks drive the mechanism this way: moving the real pointer is off limits there.
+func ToolbarIconSendHover(view *NSView, id string, entered bool) bool {
+	v := toolbarIconButton(view, id)
+	if v == 0 {
+		return false
+	}
+	if entered {
+		msg(v, "mouseEntered:", 0)
+	} else {
+		msg(v, "mouseExited:", 0)
+	}
+	return true
+}
+
+// ToolbarPostResignKey posts NSWindowDidResignKeyNotification, as AppKit posts it when a window
+// resigns key, for the hover GUI checks.
+func ToolbarPostResignKey() {
+	msg(msg(class("NSNotificationCenter"), "defaultCenter"), "postNotificationName:object:",
+		nsString("NSWindowDidResignKeyNotification"), 0)
 }

@@ -318,3 +318,126 @@ func TestToolbarOverflow(t *testing.T) {
 		t.Error(e)
 	}
 }
+
+// The three-pane toolbar zones hold on macOS: the SidebarEnd item stands just past the sidebar
+// edge, the Center items sit in the middle of the content column, a hidden sidebar moves the
+// SidebarEnd item to the leading edge, and on a narrow window the content items overflow before
+// the inspector items and come back when the window grows.
+func TestToolbarZones(t *testing.T) {
+	if os.Getenv("GOWT_GUI_TEST") == "" {
+		t.Skip("set GOWT_GUI_TEST=1")
+	}
+	if runtime.GOOS != "darwin" {
+		t.Skip("native NSToolbar zones; the bar zones are covered by the unit tests")
+	}
+	var errs []string
+	fail := func(format string, a ...any) { errs = append(errs, fmt.Sprintf(format, a...)) }
+	var err error
+	onMain(func() {
+		err = gowt.Run(func(app *gowt.App) {
+			w := app.Window("toolbar zones")
+			var side, content, insp *gowt.Panel
+			w.Add(gowt.VBox(gowt.Ref(&side), gowt.Label("sidebar")),
+				gowt.VBox(gowt.Ref(&content), gowt.Label("content")),
+				gowt.VBox(gowt.Ref(&insp), gowt.Label("inspector")))
+			look.SetSidebar(w, side, content, 220)
+			look.SetInspector(w, content, insp, 260)
+			nop := func() {}
+			look.SetToolbar(w,
+				look.ToolbarItem{Title: "Open", ID: "open", Symbol: "folder", Sidebar: true, OnClick: nop},
+				look.ToolbarItem{Title: "Hide Sidebar", ID: "hide-sidebar", Symbol: "sidebar.left", SidebarEnd: true, OnClick: func() {
+					look.SetSidebarVisible(w, !look.SidebarVisible(w))
+				}},
+				look.ToolbarItem{Title: "Zoom Out", ID: "zoom-out", Symbol: "minus.magnifyingglass", Center: true, OnClick: nop},
+				look.ToolbarItem{Title: "Zoom In", ID: "zoom-in", Symbol: "plus.magnifyingglass", Center: true, OnClick: nop},
+				look.ToolbarItem{Title: "Fit", ID: "fit", Symbol: "arrow.up.left.and.arrow.down.right", OnClick: nop},
+				look.ToolbarItem{Title: "Info", ID: "info", Symbol: "info.circle", Inspector: true, OnClick: nop})
+			w.SetSize(1000, 600)
+			w.Show()
+			d := app.Unwrap()
+			node := func(step, id string) qatree.Node {
+				ns, ferr := qatree.Find(d, qatree.Selector{ID: id})
+				if ferr != nil || len(ns) != 1 {
+					fail("%s: find %s: %v, %d nodes", step, id, ferr, len(ns))
+					return qatree.Node{}
+				}
+				return ns[0]
+			}
+			// check verifies the zones against the sidebar and inspector edges of the window.
+			check := func(step string, sidebar bool) {
+				edge := int(w.Unwrap().GetClientArea().X)
+				if sidebar {
+					sb := side.Unwrap().GetBounds()
+					edge = int(sb.X + sb.Width)
+				}
+				iedge := int(insp.Unwrap().GetBounds().X)
+				hs := node(step, "hide-sidebar")
+				if sidebar {
+					// Just past the right edge of the sidebar, a bare icon before the title.
+					if hs.Bounds[0] < edge || hs.Bounds[0] > edge+40 {
+						fail("%s: hide-sidebar starts at %d, want just past the sidebar edge %d", step, hs.Bounds[0], edge)
+					}
+				} else if hs.Bounds[0] > 160 {
+					fail("%s: hide-sidebar starts at %d, want at the leading edge with the sidebar hidden", step, hs.Bounds[0])
+				}
+				if !hs.Visible {
+					fail("%s: hide-sidebar not visible", step)
+				}
+				out, in := node(step, "zoom-out"), node(step, "zoom-in")
+				mid := (out.Bounds[0] + in.Bounds[0] + in.Bounds[2]) / 2
+				want := (edge + iedge) / 2
+				if mid < want-30 || mid > want+30 {
+					fail("%s: center items mid %d, want about the content column middle %d", step, mid, want)
+				}
+				for _, id := range []string{"open", "zoom-out", "zoom-in", "fit"} {
+					if n := node(step, id); n.Visible && n.Bounds[0]+n.Bounds[2] > iedge {
+						fail("%s: %s ends at %d, past the inspector edge %d", step, id, n.Bounds[0]+n.Bounds[2], iedge)
+					}
+				}
+				if n := node(step, "info"); n.Visible && n.Bounds[0] < iedge {
+					fail("%s: info starts at %d, before the inspector edge %d", step, n.Bounds[0], iedge)
+				}
+			}
+			app.After(600*time.Millisecond, func() {
+				check("start", true)
+				// Hide the sidebar: the SidebarEnd item moves to the leading edge.
+				look.SetSidebarVisible(w, false)
+				app.After(600*time.Millisecond, func() {
+					check("hidden", false)
+					look.SetSidebarVisible(w, true)
+					// Narrow the window: the content items give way before the inspector items.
+					w.SetSize(620, 600)
+					app.After(600*time.Millisecond, func() {
+						nedge := int(insp.Unwrap().GetBounds().X)
+						if n := node("narrow", "fit"); n.Visible && n.Bounds[0]+n.Bounds[2] > nedge {
+							fail("narrow: fit crosses the inspector edge at %v", n.Bounds)
+						}
+						hidden := 0
+						for _, id := range []string{"zoom-out", "zoom-in", "fit"} {
+							if n := node("narrow", id); !n.Visible || n.Bounds[2] == 0 {
+								hidden++
+							}
+						}
+						if hidden == 0 {
+							fail("narrow: no content item overflowed at 620 pt")
+						}
+						if n := node("narrow", "info"); !n.Visible || n.Bounds[0] < nedge {
+							fail("narrow: info %v, want it on the inspector", n.Bounds)
+						}
+						w.SetSize(1000, 600)
+						app.After(600*time.Millisecond, func() {
+							check("wide", true)
+							for _, e := range errs {
+								t.Error(e)
+							}
+							w.Close()
+						})
+					})
+				})
+			})
+		})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}

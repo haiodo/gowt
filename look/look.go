@@ -200,10 +200,21 @@ type ToolbarItem struct {
 	// macOS in the title bar, level with the traffic lights (Finder, Mail), on Windows and Linux in a row
 	// at the top of the sidebar. Without SetSidebar it is an ordinary item.
 	Sidebar bool
+	// SidebarEnd places the item just past the right edge of the sidebar, before the window title: a
+	// bare icon without the bordered capsule the Sidebar items keep, following the edge on a drag or
+	// resize. With the sidebar hidden it sits at the leading edge, as the way back. On Windows and
+	// Linux it ends the row at the top of the sidebar; without SetSidebar it is an ordinary item.
+	SidebarEnd bool
+	// Center places the item in the middle of the content column, between the sidebar edge and the
+	// inspector divider (the window middle without either): on macOS fitted there like the sidebar
+	// spacers, on Windows and Linux centered in the bar, which spans the content column. A Space item
+	// is still the flexible separator inside a zone.
+	Center bool
 	// Inspector places the item over the inspector of a SetInspector window, starting at its left edge
 	// and following it; with the inspector hidden it sits at the right end. On macOS it comes after an
 	// NSTrackingSeparatorToolbarItem, on Windows and Linux in a row at the top of the inspector. Without
-	// SetInspector it is an ordinary item.
+	// SetInspector it is an ordinary item. Within the inspector, a Space item separates the leading
+	// items from the trailing ones, as it does in the content zone.
 	Inspector bool
 	// Text, when set, makes a push item a bordered button showing this text instead of a symbol and
 	// following its changes, such as a zoom level "100%"; Title stays the tooltip.

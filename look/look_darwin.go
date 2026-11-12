@@ -226,7 +226,8 @@ func toolbarItems(items []ToolbarItem) []cocoa.ToolbarItem {
 	ci := make([]cocoa.ToolbarItem, len(items))
 	for i, it := range items {
 		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick,
-			Group: toolbarItems(it.Group), Nav: it.Nav, Sidebar: it.Sidebar, Inspector: it.Inspector, Small: it.Small,
+			Group: toolbarItems(it.Group), Nav: it.Nav, Sidebar: it.Sidebar, SidebarEnd: it.SidebarEnd,
+			Center: it.Center, Inspector: it.Inspector, Small: it.Small,
 			Search: it.OnSearch, ID: it.ID, Disabled: it.Enabled != nil && !it.Enabled.Peek()}
 		if it.Text != nil {
 			ci[i].Text = it.Text.Peek()

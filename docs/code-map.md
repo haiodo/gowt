@@ -182,7 +182,7 @@ Packages: `gfx`, `gfx/cg`, `gfx/cairo`, `gfx/d2d`, `gfx/internal/cache`, `gfx/in
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
-| Scene graph, paths, paints, effects (shadow in `gfx/picture.go`) | `gfx/scene.go`, `gfx/path.go`, `gfx/paint.go`, `gfx/comp.go`, `gfx/picture.go`, `gfx/curve.go` | - | `gfx/*_test.go` (`scene`, `path`, `svg`, `curve`, `shadow*`) | [gfx.md](gfx.md), `examples/gfxcanvas`, `examples/gfxeditor` |
+| Scene graph, paths, paints, effects (shadow in `gfx/picture.go`); tile compositor and the opt-in one-pass `Direct` mode in `gfx/comp.go` | `gfx/scene.go`, `gfx/path.go`, `gfx/paint.go`, `gfx/comp.go`, `gfx/picture.go`, `gfx/curve.go` | - | `gfx/*_test.go` (`scene`, `path`, `svg`, `curve`, `shadow*`, `direct`, `options`) | [gfx.md](gfx.md), `examples/gfxcanvas`, `examples/gfxeditor` |
 | CoreGraphics renderer (macOS) | `gfx/cg/` | darwin; `gfx/cg/bind_darwin.go` (purego), `gfx/cg/bind_cgo_darwin.go` and `gfx/cg/host_cgo_darwin.go` (`gowtcgo`) | `gfx/cg/*_darwin_test.go` | [gfx.md](gfx.md) |
 | cairo/Pango renderer (Linux) | `gfx/cairo/` | linux; `gfx/cairo/bind_linux.go` (purego), `gfx/cairo/bind_cgo_linux.go` (`gowtcgo`) | `gfx/cairo/*_linux_test.go` | [gfx.md](gfx.md) |
 | Direct2D renderer (Windows) | `gfx/d2d/` | windows; `gfx/d2d/call_windows_{amd64,arm64}.go` (default), `gfx/d2d/call_cgo_windows.go` (`gowtcgo`) | `gfx/d2d/*_windows_test.go` | [gfx.md](gfx.md) |
@@ -191,7 +191,7 @@ Packages: `gfx`, `gfx/cg`, `gfx/cairo`, `gfx/d2d`, `gfx/internal/cache`, `gfx/in
 | PDF backend | `gfx/pdf/`, `gfx/pdf.go` | - | `gfx/pdf_test.go`, `gfx/pdf/*_test.go` | `examples/print` |
 | Pen stroke expansion | `gfx/pen/` | - | `gfx/pen/*_test.go` | [gfx.md](gfx.md) |
 | Synthetic rendering test corpus | `gfx/synth/` | - | `gfx/synth/*_test.go` | - |
-| Interactive view, overlays, autoscroll, idle windows | `gfx/view/` (`view.NewWithOptions` passes compositor `gfx.Options`: TilePx, Workers, Margin, Settle, ExactZoom) | per-OS `gfx/view/view_{darwin,linux,windows}.go`; macOS shared frame clock and window visibility in `gfx/cg/frameclock_darwin.go`, `gfx/cg/input_darwin.go` | `gfx/view/*_test.go`, `gfx/view/idle_gui_darwin_test.go` | `gfx/view/demo` |
+| Interactive view, overlays, autoscroll, idle windows | `gfx/view/` (`view.NewWithOptions` passes compositor `gfx.Options`: TilePx, Workers, Margin, Settle, ExactZoom, Direct) | per-OS `gfx/view/view_{darwin,linux,windows}.go`; macOS shared frame clock and window visibility in `gfx/cg/frameclock_darwin.go`, `gfx/cg/input_darwin.go` | `gfx/view/*_test.go`, `gfx/view/idle_gui_darwin_test.go` | `gfx/view/demo` |
 | Widgets built on gfx (avatar, badge) | `avatar.go`, `badge.go` (root) | - | `avatar_test.go`, `badge_test.go` | [widgets.md](widgets.md) |
 
 ## Printing

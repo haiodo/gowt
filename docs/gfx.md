@@ -186,6 +186,18 @@ comp.Frame(frameInfo) // on the UI goroutine, once per display frame
   of device pixels per scene unit. During a zoom gesture the existing tiles are scaled; 120 ms after
   the last zoom change the tiles are drawn again at the new level, and the old ones leave when the
   new ones cover the view. `Options.ExactZoom` draws at exactly the zoom instead.
+- **Direct**: `Options.Direct` draws the visible part of the scene in one pass per frame or damage
+  instead of tiles: one image of the viewport at exactly `zoom*dpr`, no tile pool, no tile reuse,
+  no power-of-two snap. The redraw is whole - on every camera move, resize and scene damage - and
+  synchronous on the frame goroutine, so a drag shows the moved content immediately. Camera, HUD,
+  sprites, lifts, input and QA work as in the tile mode; the shadow keeps its exact size at every
+  zoom. On macOS the viewport image is shared with the display without a copy (the target rotates
+  through three buffers). The raster itself runs in parallel strips on macOS - one strip per
+  worker (`Options.Workers`) into consecutive rows of that bitmap, meeting exactly at the seams -
+  and a rounded-rectangle `FillShadowPath` draws from the cached 9-slice sprite, as
+  `FillShadowRRect` does. Renderers without strip support draw the viewport on one target. The
+  tile mode stays the default and is the faster mode for large scenes that pan more than they
+  change.
 - **Pan** moves tile edges by whole device pixels; neighbours meet exactly.
 - **Active layer**: `comp.Lift(nodes...)` takes nodes (with subtrees) out of the tiles into
   sprites that follow their nodes. Pass the dragged nodes and the connectors that depend on them.
@@ -242,10 +254,11 @@ catch up. Idle windows draw no frames. Elsewhere `view.New` gives a plain canvas
 `init`.
 
 The compositor's options go in `view.NewWithOptions(scene, view.Options{...}, init, opts...)`,
-a `view.Options` being `gfx.Options` (TilePx, Workers, Margin, Settle, ExactZoom); they are fixed
-when the compositor is created, before the first frame. `view.New` is `NewWithOptions` with the
-zero options: the defaults described under Compositor above. `v.Compositor().Options()` reads the
-effective options back.
+a `view.Options` being `gfx.Options` (TilePx, Workers, Margin, Settle, ExactZoom, Direct); they
+are fixed when the compositor is created, before the first frame. `view.New` is `NewWithOptions`
+with the zero options: the defaults described under Compositor above. `v.Compositor().Options()`
+reads the effective options back. `Direct: true` opts into the one-pass Direct mode for views
+whose shadows must not change size between zoom levels.
 
 On Linux the same call builds a `cairo.Host` that composites the tiles on the CPU in the paint
 callback of the canvas, and runs frames from the GTK frame clock (`gtk_widget_add_tick_callback`) while

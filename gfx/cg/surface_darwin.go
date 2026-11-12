@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"unsafe"
 
 	"github.com/haiodo/gowt/gfx"
@@ -116,7 +117,9 @@ type Surface struct {
 	eff    float64 // scale times the scale of the item transform being drawn
 	it     gfx.Iter
 	layers int
-	screen float64 // device pixels per screen point of a Shadow.Screen; 0 is 1
+	screen float64      // device pixels per screen point of a Shadow.Screen; 0 is 1
+	imgs   atomic.Int32 // shared images over the bitmap still alive; Close waits for them
+	closed bool         // Close ran with images alive; the last image frees the bitmap
 }
 
 // SetScreenScale sets the device pixels one screen point of a gfx.Shadow with Screen is.
@@ -144,6 +147,16 @@ func (r *Renderer) NewSurface(wpx, hpx int) *Surface {
 
 // Close frees the bitmap.
 func (s *Surface) Close() {
+	if s.closed {
+		return
+	}
+	s.closed = true
+	if s.imgs.Load() == 0 {
+		s.free()
+	}
+}
+
+func (s *Surface) free() {
 	if s.ctx != 0 {
 		cgContextRelease(s.ctx)
 		s.ctx = 0
@@ -175,6 +188,27 @@ func (s *Surface) Begin(scale, ox, oy float64, bg gfx.Color) {
 	s.dashed = false
 }
 
+// BeginStrip is Begin for a strip of a shared Direct viewport bitmap: the surface shows rows
+// [bottom-h, bottom) of a larger bitmap, and the translate by the absolute bottom row keeps
+// the device coordinates of every scene point exactly the single-target values, so the strips
+// meet byte-exactly.
+func (s *Surface) BeginStrip(scale, ox, oy float64, bottom int, bg gfx.Color) {
+	cgRestoreGSt(s.ctx)
+	cgSaveGState(s.ctx)
+	full := cgRect{0, 0, float64(s.W), float64(s.H)}
+	if bg.A == 0 {
+		cgClearRect(s.ctx, full)
+	} else {
+		cgFillColor(s.ctx, bg.R, bg.G, bg.B, bg.A)
+		cgFillRect(s.ctx, full)
+	}
+	cgTranslate(s.ctx, 0, float64(bottom))
+	cgScale(s.ctx, scale, -scale)
+	cgTranslate(s.ctx, -ox, -oy)
+	s.scale, s.eff = scale, scale
+	s.dashed = false
+}
+
 // BeginClipped is Begin for a partial redraw: only the scene rectangle dirty is cleared
 // and drawn into, the rest of the bitmap is left as it was.
 func (s *Surface) BeginClipped(scale, ox, oy float64, dirty gfx.Rect) {
@@ -194,6 +228,33 @@ func (s *Surface) BeginClipped(scale, ox, oy float64, dirty gfx.Rect) {
 // Snapshot returns the current bitmap as an image of the given size in points.
 func (s *Surface) Snapshot(wpt, hpt float64) *Image {
 	return &Image{cgBitmapContextCreateImage(s.ctx), wpt, hpt}
+}
+
+// SnapshotShared returns the current bitmap as an image of the given size in points without
+// copying: the image reads the surface memory directly and keeps the surface alive until the
+// image is garbage-collected. The caller must not draw into the surface again until two
+// display frames passed; the Direct mode rotates a few surfaces for that.
+func (s *Surface) SnapshotShared(wpt, hpt float64) *Image {
+	prov := cgDataProviderCreateWithData(0, s.data, uintptr(s.W*s.H*4), 0)
+	ref := cgImageCreate(uintptr(s.W), uintptr(s.H), 8, 32, uintptr(s.W*4), s.r.cs, bitmapInfoBGRA, prov)
+	cgDataProviderRelease(prov)
+	s.imgs.Add(1)
+	im := &Image{ref, wpt, hpt}
+	runtime.AddCleanup(im, func(s *Surface) { s.imageGone() }, s)
+	return im
+}
+
+// SnapshotSharedImage is SnapshotShared as a gfx.Image, for the gfx sharedSnapshotter hook.
+func (s *Surface) SnapshotSharedImage(wpt, hpt float64) gfx.Image {
+	return s.SnapshotShared(wpt, hpt)
+}
+
+// imageGone drops a shared-image reference; the last one frees a bitmap whose Close waited
+// for it.
+func (s *Surface) imageGone() {
+	if s.imgs.Add(-1) == 0 && s.closed {
+		s.free()
+	}
 }
 
 // Composite draws img with its top left at (x, y) in device pixels, ignoring the CTM set by

@@ -206,6 +206,14 @@ func (s *Surface) replayOps(p *gfx.Picture) {
 		case gfx.OpShadowBox:
 			s.shadowBox(op)
 		case gfx.OpFillShadow:
+			if s.r.opts.ShadowSprite && !op.Shadow.Screen {
+				if x, y, w, h, r, ok := op.Path.RRect(); ok && gfxPeq(r[0], r[1]) && gfxPeq(r[1], r[2]) && gfxPeq(r[2], r[3]) &&
+					w > 2*(r[0]+1.5*op.Shadow.Blur) && h > 2*(r[0]+1.5*op.Shadow.Blur) {
+					// a rounded rect shadow draws from the cached 9-slice sprite, as OpShadowBox does
+					s.shadowBox(&gfx.Op{A: x, B: y, C: w, D: h, E: r[0], Shadow: op.Shadow, Color: op.Color})
+					break
+				}
+			}
 			s.withShadow(op.Shadow, func() { s.fill(op.Path, op.Color) })
 		case gfx.OpStrokeShadow:
 			s.withShadow(op.Shadow, func() { s.stroke(op.Path, op.Style, op.Color) })
@@ -427,6 +435,16 @@ func (s *Surface) shadowState(sh gfx.Shadow) {
 }
 
 func (s *Surface) clearShadow() { cgSetShadow(s.ctx, cgSize{}, 0, 0) }
+
+// gfxPeq compares two coordinates that may have been rebuilt by a subtraction one rounding
+// step apart.
+func gfxPeq(a, b float64) bool {
+	d := a - b
+	if d < 0 {
+		d = -d
+	}
+	return d <= 1e-5*max(1, max(math.Abs(a), math.Abs(b)))
+}
 
 // withShadow runs draw with the shadow of sh under what it paints.
 func (s *Surface) withShadow(sh gfx.Shadow, draw func()) {

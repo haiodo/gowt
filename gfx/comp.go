@@ -18,6 +18,13 @@ type Options struct {
 	// ExactZoom draws tiles at exactly the zoom after a gesture instead of the next power of two
 	// above it. Sharper at in-between zooms, but no tile is reused when the zoom comes back.
 	ExactZoom bool
+	// Direct draws the visible part of the scene in one pass per frame or damage instead of tiles:
+	// no tile pool, no tile reuse, no snap to powers of two - every draw is at exactly zoom*dpr.
+	// The view is one image covering the viewport, drawn again on every camera move, resize and
+	// scene damage. Everything else - camera, HUD, sprites, lifts, input, QA - works as in the
+	// tile mode. The viewport in device pixels must fit the renderer's target limit (32767 per
+	// side), which a window on one screen always does.
+	Direct bool
 }
 
 func (o *Options) fill() {
@@ -347,7 +354,24 @@ type Compositor struct {
 	hudState    hudState
 	ticking     atomic.Bool // OnFrame is set: frames run on every display tick
 
-	cur, prev  *tileSet
+	cur, prev *tileSet
+	// direct is the Direct mode state: one image of the viewport, redrawn whole on a camera move,
+	// a resize or scene damage; damage and lift rects wait in direct.damage for the next Frame.
+	direct struct {
+		layer  Layer
+		damage []Rect
+		drawn  bool
+		items  Items
+		// rot is the rotating viewport target of the Direct mode; when the snapshot shares the
+		// target memory, a target is not drawn into again for two frames. sets is the same
+		// rotation for the parallel-strip rasterization; only one of them is in use.
+		rot    []Target
+		sets   []StripSet
+		setPx  [][2]int // pixel size of each set in sets
+		rotN   int
+		rotSet bool // the first target decided whether the snapshot shares memory
+		bitems []Items
+	}
 	zoomT      time.Duration
 	zooming    bool
 	lastZoom   float64
@@ -416,6 +440,27 @@ func (c *Compositor) Close() {
 		c.dropSet(set)
 	}
 	c.cur, c.prev = nil, nil
+	for _, t := range c.direct.rot {
+		if t != nil {
+			t.Close()
+		}
+	}
+	for _, set := range c.direct.sets {
+		if set != nil {
+			set.Close()
+		}
+	}
+	c.direct.rot = nil
+	c.direct.sets = nil
+	c.direct.setPx = nil
+	c.direct.bitems = nil
+	c.direct.rotN = 0
+	c.direct.rotSet = false
+	if c.direct.layer != nil {
+		c.direct.layer.Remove()
+		c.direct.layer = nil
+	}
+	c.direct.drawn = false
 	for _, l := range c.lifts {
 		l.layer.Remove()
 	}
@@ -557,15 +602,23 @@ func (c *Compositor) Frame(fi FrameInfo) {
 	if camMoved {
 		v := c.viewRect().Center()
 		c.snap.Store(&camSnap{v, c.vw / c.cam.Zoom / 2, c.vh / c.cam.Zoom / 2})
-		c.layoutDrty = true
+		if !c.o.Direct {
+			c.layoutDrty = true
+		}
 	}
-	c.handleZoom(fi)
+	if !c.o.Direct {
+		c.handleZoom(fi)
+	}
 	if len(damage) > 0 {
 		c.invalidate(damage)
 	}
 	c.applyLifts()
-	c.ensureTiles(camMoved || len(damage) > 0)
-	c.drain()
+	if c.o.Direct {
+		c.stepDirect(camMoved)
+	} else {
+		c.ensureTiles(camMoved || len(damage) > 0)
+		c.drain()
+	}
 	c.stepSprites(fi, camMoved)
 	c.stepHUD()
 	if c.layoutDrty {
@@ -573,8 +626,220 @@ func (c *Compositor) Frame(fi FrameInfo) {
 		c.layoutDrty = false
 	}
 	c.host.Commit()
-	c.busy = c.zooming || len(c.lifts) > 0 && c.anyLanding() || c.animating()
+	if c.o.Direct {
+		c.busy = len(c.lifts) > 0 && c.anyLanding() || c.animating()
+	} else {
+		c.busy = c.zooming || len(c.lifts) > 0 && c.anyLanding() || c.animating()
+	}
 	c.stats.FrameTime = time.Since(t0)
+}
+
+// stepDirect brings the single viewport image up to date. The redraw is whole: one Collect of the
+// view rect and one draw at exactly zoom*dpr. Lifts and landings are synchronous here, so the
+// base image and the sprite layer always change in one host transaction: no hold-back queue of
+// the tile mode is needed. After a redraw every hold is released, so the frame is settled.
+func (c *Compositor) stepDirect(camMoved bool) {
+	view := c.viewRect()
+	need := camMoved || !c.direct.drawn
+	if !need {
+		for _, d := range c.direct.damage {
+			if d.Intersects(view) {
+				need = true
+				break
+			}
+		}
+	}
+	for _, l := range c.lifts {
+		if (l.hold || l.landing) && l.hrect.Intersects(view) {
+			need = true
+		}
+	}
+	c.settled = true
+	if need {
+		c.drawDirect(view)
+		c.direct.damage = c.direct.damage[:0]
+	}
+	for _, l := range c.lifts {
+		if l.hold && (need || !l.hrect.Intersects(view)) {
+			l.hold = false
+			l.layer.SetHidden(false)
+		}
+	}
+}
+
+// sharedSnapshotter is implemented by Targets whose snapshots share the target memory instead
+// of copying it; the Direct mode rotates such targets so one is not drawn into again until the
+// display has dropped the previous frame's image.
+type sharedSnapshotter interface {
+	SnapshotSharedImage(wpt, hpt float64) Image
+}
+
+// directTarget returns the viewport target to draw this frame into: a fresh position of a
+// three-target rotation when the snapshot shares the target memory, the reused single target
+// otherwise. The kind of target is decided once, on the first frame.
+func (c *Compositor) directTarget(wpx, hpx int) Target {
+	if !c.direct.rotSet {
+		c.direct.rotSet = true
+		t := c.r.NewTarget(wpx, hpx)
+		if _, ok := t.(sharedSnapshotter); ok {
+			c.direct.rot = []Target{t, nil, nil}
+			c.direct.rotN = 1
+		} else {
+			c.scr[0].t = t
+		}
+		return t
+	}
+	if c.direct.rot == nil {
+		t := c.scr[0].t
+		if t != nil {
+			if w, h := t.Size(); w != wpx || h != hpx {
+				t.Close()
+				t = nil
+			}
+		}
+		if t == nil {
+			t = c.r.NewTarget(wpx, hpx)
+		}
+		c.scr[0].t = t
+		return t
+	}
+	t := c.direct.rot[c.direct.rotN]
+	if t != nil {
+		if w, h := t.Size(); w != wpx || h != hpx {
+			t.Close()
+			t = nil
+		}
+	}
+	if t == nil {
+		t = c.r.NewTarget(wpx, hpx)
+	}
+	c.direct.rot[c.direct.rotN] = t
+	c.direct.rotN = (c.direct.rotN + 1) % len(c.direct.rot)
+	return t
+}
+
+// directStripSet returns the rotated strip set for the parallel rasterization, or false when
+// the renderer has no strip support. The rotation matches directTarget: a set is drawn into
+// again only two frames later.
+func (c *Compositor) directStripSet(wpx, hpx int) (StripSet, bool) {
+	sr, ok := c.r.(StripRenderer)
+	if !ok {
+		return nil, false
+	}
+	n := min(max(c.o.Workers, 1), 8, max(1, hpx/32))
+	if !c.direct.rotSet {
+		c.direct.rotSet = true
+		set := sr.NewStripSet(n, wpx, hpx)
+		c.direct.sets = []StripSet{set, nil, nil}
+		c.direct.setPx = [][2]int{{wpx, hpx}, {}, {}}
+		c.direct.rotN = 1
+		return set, true
+	}
+	i := c.direct.rotN
+	set := c.direct.sets[i]
+	if set != nil && c.direct.setPx[i] != [2]int{wpx, hpx} {
+		set.Close()
+		set = nil
+	}
+	if set == nil {
+		set = sr.NewStripSet(n, wpx, hpx)
+		c.direct.setPx[i] = [2]int{wpx, hpx}
+	}
+	c.direct.sets[i] = set
+	c.direct.rotN = (c.direct.rotN + 1) % len(c.direct.sets)
+	return set, true
+}
+
+// drawStrips rasterizes the viewport in the set's parallel strips: one Collect per strip on
+// this goroutine, then the strip draws on worker goroutines into consecutive device-pixel
+// rows of one bitmap. A scene point maps to the same device pixel as in the single-target
+// draw (the strip origin shifts the CTM by the row offset), so the strips meet exactly and a
+// node crossing a seam is drawn by both, each half clipped to its rows by the bitmap bounds.
+func (c *Compositor) drawStrips(set StripSet, view Rect, scale float64, wpx, hpx int) Image {
+	n := set.Strips()
+	for len(c.direct.bitems) < n {
+		c.direct.bitems = append(c.direct.bitems, Items{})
+	}
+	bitems := c.direct.bitems[:n]
+	eps := 1e-3 / scale
+	type band struct {
+		origin Point
+		rect   Rect
+	}
+	bands := make([]band, n)
+	for i := 0; i < n; i++ {
+		y0, y1 := i*hpx/n, (i+1)*hpx/n
+		// every strip uses the view origin: the strip targets translate by the strip's
+		// absolute bottom row (BeginStrip), which keeps every device coordinate exactly the
+		// single-target value, so the strips meet byte-exactly. The collect rect covers the
+		// strip's rows; what sticks out past them is clipped by the strip bitmap's bounds.
+		bands[i] = band{view.Min, R(view.Min.X-eps, view.Min.Y+float64(y0)/scale-eps, view.W()+2*eps, float64(y1-y0)/scale+2*eps)}
+		c.scene.Collect(bands[i].rect, &bitems[i])
+	}
+	var wg sync.WaitGroup
+	draw := func(i int) {
+		t := set.Target(i)
+		if ss, ok := t.(ScreenScaler); ok {
+			ss.SetScreenScale(c.dpr)
+		}
+		t.Begin(scale, bands[i].origin, Color{})
+		t.Draw(bitems[i].List)
+	}
+	for i := 1; i < n; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			draw(i)
+		}()
+	}
+	draw(0)
+	wg.Wait()
+	return set.Image(float64(wpx)/c.dpr, float64(hpx)/c.dpr)
+}
+
+// drawDirect redraws the viewport image at exactly zoom*dpr and puts it on the layer.
+func (c *Compositor) drawDirect(view Rect) {
+	scale := c.cam.Zoom * c.dpr
+	wpx, hpx := int(math.Ceil(c.vw*c.dpr)), int(math.Ceil(c.vh*c.dpr))
+	if wpx < 1 || hpx < 1 {
+		return
+	}
+	c.scene.Collect(view, &c.direct.items)
+	if len(c.direct.items.List) == 0 {
+		if c.direct.layer != nil {
+			c.direct.layer.SetHidden(true)
+		}
+		c.direct.drawn = true
+		return
+	}
+	t0 := time.Now()
+	var img Image
+	if set, ok := c.directStripSet(wpx, hpx); ok && set != nil {
+		img = c.drawStrips(set, view, scale, wpx, hpx)
+	} else {
+		t := c.directTarget(wpx, hpx)
+		if ss, ok := t.(ScreenScaler); ok {
+			ss.SetScreenScale(c.dpr)
+		}
+		t.Begin(scale, view.Min, Color{})
+		t.Draw(c.direct.items.List)
+		if sh, ok := t.(sharedSnapshotter); ok {
+			img = sh.SnapshotSharedImage(float64(wpx)/c.dpr, float64(hpx)/c.dpr)
+		} else {
+			img = t.Snapshot(float64(wpx)/c.dpr, float64(hpx)/c.dpr)
+		}
+	}
+	if c.direct.layer == nil {
+		c.direct.layer = c.host.NewLayer(GroupTiles)
+	}
+	c.direct.layer.SetImage(img)
+	Release(img)
+	c.direct.layer.Set(Rect{Point{0, 0}, Point{float64(wpx) / c.dpr, float64(hpx) / c.dpr}}, Point{}, Identity())
+	c.direct.layer.SetHidden(false)
+	c.direct.drawn = true
+	c.stats.TilesApplied++
+	c.rastered.Add(1)
+	c.rasterNs.Add(int64(time.Since(t0)))
 }
 
 func (c *Compositor) handleZoom(fi FrameInfo) {
@@ -596,8 +861,13 @@ func (c *Compositor) handleZoom(fi FrameInfo) {
 	}
 }
 
-// invalidate marks the tiles under the damaged scene areas for redraw.
+// invalidate marks what the next Frame must redraw: in the tile mode the tiles under the damaged
+// scene areas, in the Direct mode the damage list itself.
 func (c *Compositor) invalidate(damage []Rect) {
+	if c.o.Direct {
+		c.direct.damage = append(c.direct.damage, damage...)
+		return
+	}
 	for _, set := range []*tileSet{c.cur, c.prev} {
 		if set == nil {
 			continue
@@ -887,7 +1157,10 @@ func (c *Compositor) Lift(nodes ...*Node) {
 	// draw now, before the frame applies the moves that follow the lift
 	c.refreshLifts(fresh)
 	for _, l := range fresh {
-		if l.has && c.cur != nil {
+		// hold the sprite hidden until the static base is redrawn without the node, so the node
+		// is not in the base and in the sprite in one commit; the base is the tiles or, in the
+		// Direct mode, the viewport image redrawn from direct.damage
+		if l.has && (c.cur != nil || c.o.Direct) {
 			l.hold = true
 			l.layer.SetHidden(true)
 		}

@@ -70,6 +70,60 @@ func (p *Path) Rect(x, y, w, h float64) {
 	p.Close()
 }
 
+// RRect recognizes the path as a rounded rectangle or a plain rectangle, as built by
+// RoundRect, RoundRect4 (equal or distinct corner radii) or Rect, and returns its geometry:
+// the top left corner (x, y), the size, and the corner radii in the order top left, top right,
+// bottom right, bottom left. ok is false for any other shape. Backends use it to draw the
+// shadow of such a path from a cached sprite instead of a live blur.
+func (p *Path) RRect() (x, y, w, h float64, r [4]float64, ok bool) {
+	v := p.Verbs
+	if len(v) == 5 && v[0] == MoveTo && v[1] == LineTo && v[2] == LineTo && v[3] == LineTo && v[4] == ClosePath {
+		q := p.Pts
+		if q[0].Y != q[1].Y || q[1].X != q[2].X || q[2].Y != q[3].Y || q[3].X != q[0].X {
+			return 0, 0, 0, 0, r, false
+		}
+		return q[0].X, q[0].Y, q[1].X - q[0].X, q[2].Y - q[0].Y, r, true
+	}
+	if len(v) != 10 || v[0] != MoveTo || v[1] != LineTo || v[2] != CubicTo || v[3] != LineTo || v[4] != CubicTo ||
+		v[5] != LineTo || v[6] != CubicTo || v[7] != LineTo || v[8] != CubicTo || v[9] != ClosePath {
+		return 0, 0, 0, 0, r, false
+	}
+	q := p.Pts
+	// the layout RoundRect4 builds: q0 top edge start, q1 top edge end, q4/q5 the right edge,
+	// q8/q9 the bottom, q12/q13 the left, q16 back at q0
+	if !peq(q[0].Y, q[1].Y) || !peq(q[4].X, q[5].X) || !peq(q[8].Y, q[9].Y) || !peq(q[12].X, q[13].X) || q[16] != q[0] {
+		return 0, 0, 0, 0, r, false
+	}
+	x, y = q[12].X, q[0].Y // the left and top edges
+	w, h = q[4].X-x, q[8].Y-y
+	if w < 0 || h < 0 {
+		return 0, 0, 0, 0, r, false
+	}
+	r[0] = q[16].X - x // top left: the last cubic ends x+r0 on the top edge
+	r[1] = q[4].Y - y
+	r[2] = x + w - q[8].X
+	r[3] = y + h - q[12].Y
+	const k = 1 - kappa
+	ok = peq(q[2].X, x+w-r[1]*k) && peq(q[2].Y, y) && peq(q[3].X, x+w) && peq(q[3].Y, y+r[1]*k) &&
+		peq(q[6].X, x+w) && peq(q[6].Y, y+h-r[2]*k) && peq(q[7].X, x+w-r[2]*k) && peq(q[7].Y, y+h) &&
+		peq(q[10].X, x+r[3]*k) && peq(q[10].Y, y+h) && peq(q[11].X, x) && peq(q[11].Y, y+h-r[3]*k) &&
+		peq(q[14].X, x) && peq(q[14].Y, y+r[0]*k) && peq(q[15].X, x+r[0]*k) && peq(q[15].Y, y)
+	if !ok {
+		return 0, 0, 0, 0, [4]float64{}, false
+	}
+	return x, y, w, h, r, true
+}
+
+// peq compares coordinates rebuilt by subtraction with the originals: they can differ by one
+// rounding step.
+func peq(a, b float64) bool {
+	d := a - b
+	if d < 0 {
+		d = -d
+	}
+	return d <= 1e-5*max(1, max(math.Abs(a), math.Abs(b)))
+}
+
 // RoundRect adds a rectangle with corner radius r (clamped to half the shorter side).
 func (p *Path) RoundRect(x, y, w, h, r float64) {
 	r = math.Min(r, math.Min(w, h)/2)

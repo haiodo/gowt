@@ -13,14 +13,17 @@ type cgAffine struct{ A, B, C, D, Tx, Ty float64 }
 // colors, images and fonts travel as raw uintptr references. bind in bind_darwin.go (purego)
 // or bind_cgo_darwin.go (cgo) fills them.
 var (
-	cgColorSpaceCreateDeviceRGB func() uintptr
-	cgColorSpaceRelease         func(cs uintptr)
-	cgBitmapContextCreate       func(data uintptr, w, h, bpc, bpr uintptr, cs uintptr, info uint32) uintptr
-	cgBitmapContextGetData      func(ctx uintptr) uintptr
-	cgBitmapContextCreateImage  func(ctx uintptr) uintptr
-	cgContextRelease            func(ctx uintptr)
-	cgImageRelease              func(img uintptr)
-	cgImageCreateWithImageInRct func(img uintptr, r cgRect) uintptr
+	cgColorSpaceCreateDeviceRGB  func() uintptr
+	cgColorSpaceRelease          func(cs uintptr)
+	cgBitmapContextCreate        func(data uintptr, w, h, bpc, bpr uintptr, cs uintptr, info uint32) uintptr
+	cgBitmapContextGetData       func(ctx uintptr) uintptr
+	cgBitmapContextCreateImage   func(ctx uintptr) uintptr
+	cgContextRelease             func(ctx uintptr)
+	cgImageRelease               func(img uintptr)
+	cgImageCreateWithImageInRct  func(img uintptr, r cgRect) uintptr
+	cgDataProviderCreateWithData func(info, data, size, release uintptr) uintptr
+	cgDataProviderRelease        func(provider uintptr)
+	cgImageCreate                func(w, h, bpc, bpp, bpr, cs, info, provider uintptr) uintptr
 
 	cgSaveGState  func(ctx uintptr)
 	cgRestoreGSt  func(ctx uintptr)

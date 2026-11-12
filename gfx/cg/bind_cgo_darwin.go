@@ -35,6 +35,13 @@ static void wtImageRelease(uintptr_t img) { CGImageRelease((CGImageRef)img); }
 static uintptr_t wtImageInRect(uintptr_t img, const wtRect *r) {
 	return (uintptr_t)CGImageCreateWithImageInRect((CGImageRef)img, wtCGRect(r));
 }
+static uintptr_t wtDataProviderCreateWithData(uintptr_t info, uintptr_t data, uintptr_t size, uintptr_t release) {
+	return (uintptr_t)CGDataProviderCreateWithData((void *)info, (void *)data, (size_t)size, (CGDataProviderReleaseDataCallback)release);
+}
+static void wtDataProviderRelease(uintptr_t provider) { CGDataProviderRelease((CGDataProviderRef)provider); }
+static uintptr_t wtImageCreate(uintptr_t w, uintptr_t h, uintptr_t bpc, uintptr_t bpp, uintptr_t bpr, uintptr_t cs, uintptr_t info, uintptr_t provider) {
+	return (uintptr_t)CGImageCreate((size_t)w, (size_t)h, (size_t)bpc, (size_t)bpp, (size_t)bpr, (CGColorSpaceRef)cs, (CGBitmapInfo)info, (CGDataProviderRef)provider, NULL, false, 0);
+}
 
 static void wtSaveGState(uintptr_t ctx) { CGContextSaveGState((CGContextRef)ctx); }
 static void wtRestoreGState(uintptr_t ctx) { CGContextRestoreGState((CGContextRef)ctx); }
@@ -241,6 +248,13 @@ func bind() {
 		}
 		cgContextRelease = func(ctx uintptr) { C.wtContextRelease(C.uintptr_t(ctx)) }
 		cgImageRelease = func(img uintptr) { C.wtImageRelease(C.uintptr_t(img)) }
+		cgDataProviderCreateWithData = func(info, data, size, release uintptr) uintptr {
+			return uintptr(C.wtDataProviderCreateWithData(C.uintptr_t(info), C.uintptr_t(data), C.uintptr_t(size), C.uintptr_t(release)))
+		}
+		cgDataProviderRelease = func(provider uintptr) { C.wtDataProviderRelease(C.uintptr_t(provider)) }
+		cgImageCreate = func(w, h, bpc, bpp, bpr, cs, info, provider uintptr) uintptr {
+			return uintptr(C.wtImageCreate(C.uintptr_t(w), C.uintptr_t(h), C.uintptr_t(bpc), C.uintptr_t(bpp), C.uintptr_t(bpr), C.uintptr_t(cs), C.uintptr_t(info), C.uintptr_t(provider)))
+		}
 		cgImageCreateWithImageInRct = func(img uintptr, r cgRect) uintptr {
 			return uintptr(C.wtImageInRect(C.uintptr_t(img), wtRectP(&r)))
 		}

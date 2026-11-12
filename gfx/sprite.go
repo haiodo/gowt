@@ -464,7 +464,9 @@ func (c *Compositor) liftNow(l *lift) {
 	l.pending = false
 	l.hrect = c.scene.liftNode(l.node)
 	c.invalidate([]Rect{l.hrect})
-	if l.has && c.cur != nil {
+	// hold the sprite hidden until the static base is redrawn without the node, like in Lift; the
+	// base is the tiles or, in the Direct mode, the viewport image
+	if l.has && (c.cur != nil || c.o.Direct) {
 		l.hold = true
 		l.layer.SetHidden(true)
 	} else if l.has {

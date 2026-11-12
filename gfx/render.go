@@ -46,6 +46,30 @@ type Target interface {
 // before every tile; a Target that was not told uses 1.
 type ScreenScaler interface{ SetScreenScale(devicePerPoint float64) }
 
+// StripSet is a viewport bitmap the Direct mode draws in parallel horizontal strips: Target(i)
+// draws into the strip's rows of one shared bitmap, so the strips rasterize concurrently into
+// consecutive device-pixel rows without overlap. Strip i covers rows [i*hpx/n, (i+1)*hpx/n) of
+// the bitmap, top first. Image wraps the whole bitmap without copying once the strips are
+// drawn; it stays valid after Close until two display frames passed, the rotation the Direct
+// mode keeps.
+type StripSet interface {
+	// Target returns the target of strip i; it draws into the strip's rows only, clipped by
+	// the bitmap bounds.
+	Target(i int) Target
+	// Strips is the number of strips.
+	Strips() int
+	// Image wraps the whole bitmap as an image of the given size in points.
+	Image(wpt, hpt float64) Image
+	Close()
+}
+
+// StripRenderer is implemented by Renderers that rasterize the Direct viewport in parallel
+// strips (the cg renderer). The Direct mode uses it when the option is there and falls back
+// to one target otherwise.
+type StripRenderer interface {
+	NewStripSet(strips, wpx, hpx int) StripSet
+}
+
 // Renderer is a drawing backend: CoreGraphics on macOS. It is safe for concurrent use, its Targets
 // are not shared.
 type Renderer interface {

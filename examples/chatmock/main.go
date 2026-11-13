@@ -17,22 +17,20 @@ import (
 	"github.com/haiodo/gowt/rx"
 )
 
-// person is a chat participant: name, avatar initials, avatar colour and the avatar
-// photo cut from the reference (photoDM is the sidebar crop, photo the feed one).
+// person is a chat participant: name, avatar initials and avatar colour.
 type person struct {
 	name, initials string
 	color          gowt.RGB
-	photo, photoDM string
 }
 
 var (
-	me      = person{name: "Alex Rivera", initials: "AR", color: gowt.RGB{R: 30, G: 30, B: 40}, photo: "alex.png"}
-	maya    = person{name: "Maya Chen", initials: "MC", color: gowt.RGB{R: 130, G: 80, B: 230}, photo: "maya.png", photoDM: "maya-dm.png"}
-	jordan  = person{name: "Jordan Brooks", initials: "JB", color: gowt.RGB{R: 245, G: 140, B: 10}, photo: "jordan.png", photoDM: "jordan-dm.png"}
-	camille = person{name: "Camille Dubois", initials: "CD", color: gowt.RGB{R: 40, G: 170, B: 190}, photo: "camille.png"}
-	fizz    = person{name: "Fizz", initials: "FZ", color: gowt.RGB{R: 48, G: 176, B: 78}, photo: "fizz.png"}
-	priya   = person{name: "Priya Shah", initials: "PS", color: gowt.RGB{R: 230, G: 76, B: 60}, photo: "priya-dm.png"}
-	honey   = person{name: "Honey", initials: "HN", color: gowt.RGB{R: 250, G: 190, B: 40}, photo: "fizz.png"}
+	me      = person{name: "Alex Rivera", initials: "AR", color: gowt.RGB{R: 30, G: 30, B: 40}}
+	maya    = person{name: "Maya Chen", initials: "MC", color: gowt.RGB{R: 130, G: 80, B: 230}}
+	jordan  = person{name: "Jordan Brooks", initials: "JB", color: gowt.RGB{R: 245, G: 140, B: 10}}
+	camille = person{name: "Camille Dubois", initials: "CD", color: gowt.RGB{R: 40, G: 170, B: 190}}
+	fizz    = person{name: "Fizz", initials: "FZ", color: gowt.RGB{R: 48, G: 176, B: 78}}
+	priya   = person{name: "Priya Shah", initials: "PS", color: gowt.RGB{R: 230, G: 76, B: 60}}
+	honey   = person{name: "Honey", initials: "HN", color: gowt.RGB{R: 250, G: 190, B: 40}}
 )
 
 // reaction is one pill under a message: a symbol icon and a count.
@@ -123,7 +121,10 @@ func main() {
 		})
 		qa.HandleValue("errors", func(qa.Args) (any, error) { return uiErrors, nil })
 		theApp = app
-		w := app.Window(" ", gowt.Padding(0))
+		// The window background is the warm tone: without a window-level glass backdrop
+		// the window stays opaque, so the tone shows in the title bar strip above the
+		// content and behind the sidebar.
+		w := app.Window(" ", gowt.Padding(0), gowt.Background(sidebarBg))
 		w.SetMinSize(880, 560)
 		w.SetSize(1160, 780)
 		// CHATMOCK_SIZE="WxH" starts the window at another size (QA: the min-size check).
@@ -133,23 +134,28 @@ func main() {
 				w.SetSize(x, y)
 			}
 		}
+		look.SetRoundedCorners(w, true)
+		look.SetFullSizeContent(w, true) // the inset must be measurable before the sidebar builds
 
 		header := rx.New("# flight-path")
 		sel := rx.New("flight-path")
 
 		// The house layout: a flush full-height sidebar (material to the window edges,
 		// under the traffic lights) and the content filling the rest; the white card
-		// floats inside the content with a small inset.
+		// floats inside the content with a small inset. The sidebar's own children start
+		// below the title bar strip, the material runs on to the window top.
 		var side, cont *gowt.Panel
 		w.Add(
 			gowt.VBox(gowt.ID("sidebar"), gowt.Ref(&side),
-				sidebar(app, header, sel)),
+				sidebar(app, header, sel, contentTopInset(w))),
 			gowt.VBox(gowt.Ref(&cont),
 				content(app, header)))
 		look.SetSidebar(w, side, cont, gowt.Scaled(280))
 		look.SetSidebarFullHeight(w, true)
-		look.SetBackdrop(w, look.BackdropGlass)
-		look.SetRoundedCorners(w, true)
+		qa.HandleValue("inset", func(qa.Args) (any, error) { return contentTopInset(w), nil })
+		// QA resize hook: the regression test for the row width drives the sidebar splitter
+		// programmatically, no physical pointer.
+		qa.Handle("sidebar-width", func(a qa.Args) error { look.SetSidebarWidth(w, a.Int("width")); return nil })
 		render(feedPanel)
 		w.Show()
 	})

@@ -87,23 +87,62 @@ func TestBottomZonesVisible(t *testing.T) {
 	shell := app.Find(qa.Class("Shell")).Node()
 	side := app.Find(qa.ID("sidebar")).Node()
 	card := app.Find(qa.ID("card")).Node()
+	search := app.Find(qa.ID("search")).Node()
+	var inset int
+	if err := json.Unmarshal(app.State("inset"), &inset); err != nil {
+		t.Fatalf("inset state: %v", err)
+	}
 	if side.Bounds[0] != 0 {
 		t.Errorf("sidebar x = %d, want 0 (flush left)", side.Bounds[0])
 	}
+	// The material is full height: it runs under the traffic lights to the window top.
 	if side.Bounds[1] > 2 {
-		t.Errorf("sidebar y = %d, want near the top edge", side.Bounds[1])
+		t.Errorf("sidebar y = %d, want the top edge", side.Bounds[1])
 	}
 	if bottom := side.Bounds[1] + side.Bounds[3]; bottom < shell.Bounds[3]-2 {
 		t.Errorf("sidebar bottom = %d, want the bottom edge %d", bottom, shell.Bounds[3])
 	}
+	// The search starts below the title bar strip the traffic lights sit in.
+	if search.Bounds[1] < inset-2 {
+		t.Errorf("search top = %d, want it below the title bar strip (%d)", search.Bounds[1], inset)
+	}
 	if card.Bounds[0] < side.Bounds[0]+side.Bounds[2] {
 		t.Errorf("card x = %d, want it right of the sidebar", card.Bounds[0])
+	}
+	if card.Bounds[1] < inset-2 {
+		t.Errorf("card top = %d, want it below the title bar strip (%d)", card.Bounds[1], inset)
 	}
 	if right := card.Bounds[0] + card.Bounds[2]; right > shell.Bounds[2]-2 {
 		t.Errorf("card right = %d, want an inset from the window edge %d", right, shell.Bounds[2])
 	}
 	if bottom := card.Bounds[1] + card.Bounds[3]; bottom > shell.Bounds[3]-2 {
 		t.Errorf("card bottom = %d, want an inset from the bottom edge %d", bottom, shell.Bounds[3])
+	}
+}
+
+// TestSidebarResize pins the row width contract: widening the sidebar with the splitter
+// (driven programmatically through the "sidebar-width" handler) must stretch the channel
+// rows with it, not leave them at their start width.
+func TestSidebarResize(t *testing.T) {
+	guiOnly(t)
+	app := qatest.App(t)
+	bounds := func(id string) [4]int { return app.Find(qa.ID(id)).Node().Bounds }
+	dump := func(tag string) {
+		for _, id := range []string{"sidebar", "rows-scroll", "rows", "ch-flight-path", "search"} {
+			t.Logf("%s %s: %v", tag, id, bounds(id))
+		}
+	}
+	dump("before")
+	rowBefore := bounds("ch-flight-path")
+	app.State("sidebar-width", "width", 340)
+	dump("after")
+	rowAfter := bounds("ch-flight-path")
+	sideAfter := bounds("sidebar")
+	if rowAfter[2] <= rowBefore[2] {
+		t.Errorf("row width = %d after widening the sidebar to 340, want it above %d", rowAfter[2], rowBefore[2])
+	}
+	if rowAfter[2] > sideAfter[2] {
+		t.Errorf("row width = %d, wider than the sidebar %d", rowAfter[2], sideAfter[2])
 	}
 }
 

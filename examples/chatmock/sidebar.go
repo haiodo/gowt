@@ -23,8 +23,10 @@ var channelRows = map[string]*gowt.CanvasView{}
 
 // sidebar is the translucent left pane: search, Inbox/Agents, grouped channels, direct
 // messages and the current user block at the bottom. The panel is glass with a warm tint;
-// rows are transparent except the selected one, which is a rounded pill.
-func sidebar(app *gowt.App, header, sel *rx.State[string]) gowt.Option {
+// sidebar is the flush full-height left pane: the material runs under the traffic
+// lights, the search and rows start below the title bar strip, and only the selected
+// row draws a background - a rounded pill.
+func sidebar(app *gowt.App, header, sel *rx.State[string], topInset int) gowt.Option {
 	rows := []gowt.Option{}
 	for _, g := range groups {
 		first := true
@@ -44,11 +46,15 @@ func sidebar(app *gowt.App, header, sel *rx.State[string]) gowt.Option {
 	// SetSidebar gives the panel its flush material; the warm background keeps the
 	// sidebar distinct from the white card, rows fill the same tone so they read as
 	// transparent.
-	return gowt.VBox(gowt.GrowY(), gowt.Padding(6), gowt.Gap(1),
+	return gowt.VBox(gowt.Grow(), gowt.Padding(6), gowt.Gap(1),
+		gowt.Indent(0, topInset),
 		gowt.Background(sidebarBg),
-		gowt.Text(gowt.Small(), gowt.Hint("Search everything"), gowt.GrowX(), gowt.Size(0, gowt.Scaled(28)),
-			gowt.PrefixImage(icons.Get(app, "search", icons.Size(14)))),
-		gowt.Scroll(gowt.GrowY(), gowt.VBox(append([]gowt.Option{gowt.Gap(1), gowt.GrowX()}, rows...)...)),
+		// The search is a small rounded card, like the content card; the Text is
+		// borderless so no white rectangle cuts the card.
+		gowt.Section(gowt.GrowX(),
+			gowt.Text(gowt.Small(), gowt.ID("search"), gowt.NoBorder(), gowt.Hint("Search everything"),
+				gowt.GrowX(), gowt.PrefixImage(icons.Get(app, "search", icons.Size(14))))),
+		gowt.Scroll(gowt.ID("rows-scroll"), gowt.Grow(), gowt.VBox(append([]gowt.Option{gowt.ID("rows"), gowt.Gap(1), gowt.GrowX()}, rows...)...)),
 		userBlock(app))
 }
 
@@ -65,8 +71,8 @@ func groupHeader(app *gowt.App, g string) gowt.Option {
 	}
 }
 
-// channelRow is one selectable channel or direct message row drawn on a canvas: a "#" or a
-// photo/avatar icon, the name, a trailing badge. Only the selected row paints a background,
+// channelRow is one selectable channel or direct message row drawn on a canvas: a "#" or an
+// avatar icon, the name, a trailing badge. Only the selected row paints a background,
 // a rounded pill. A canvas is used because a macOS button centres its image+title, which no
 // option of the facade overrides.
 func channelRow(app *gowt.App, c channel, header, sel *rx.State[string]) gowt.Option {
@@ -106,7 +112,9 @@ func channelRow(app *gowt.App, c channel, header, sel *rx.State[string]) gowt.Op
 			tw, _ := g.TextSize(c.badge)
 			g.Text(c.badge, w-tw-10, (h-th)/2-1)
 		}
-	}, gowt.ID("ch-"+c.id), gowt.Size(gowt.Scaled(252), gowt.Scaled(24)),
+		// GrowX: the row follows the sidebar width when the splitter moves; the drawing
+		// reads g.Size(), so the pill and the badges follow.
+	}, gowt.ID("ch-"+c.id), gowt.GrowX(), gowt.Size(0, gowt.Scaled(24)),
 		gowt.Ref(&cv),
 		gowt.Init(func(*gowt.CanvasView) {
 			channelRows[c.id] = cv
@@ -120,17 +128,10 @@ func channelRow(app *gowt.App, c channel, header, sel *rx.State[string]) gowt.Op
 		}))
 }
 
-// rowImage is the leading icon of a channel row: "#" for channels, a photo for direct
+// rowImage is the leading icon of a channel row: "#" for channels, an avatar for direct
 // messages, a symbol for the special top rows.
 func rowImage(app *gowt.App, c channel) *gowt.Image {
 	if c.dm {
-		p := *c.who
-		if p.photoDM != "" {
-			p.photo = p.photoDM
-		}
-		if img := photo(app, p, 20); img != nil {
-			return img
-		}
 		return app.AvatarImage(c.who.initials, c.who.color, 20)
 	}
 	switch c.id {
@@ -151,17 +152,13 @@ func hashText(app *gowt.App) *gowt.Image {
 	return icons.FromSVG(app, []byte(svg), 14, grayIcon)
 }
 
-// userBlock is the current user at the bottom of the sidebar: photo avatar with a green
-// status dot, name and workspace.
+// userBlock is the current user at the bottom of the sidebar: avatar with a green status
+// dot, name and workspace.
 func userBlock(app *gowt.App) gowt.Option {
 	return gowt.HBox(gowt.ID("user"), gowt.Gap(gowt.Spacing.SM), gowt.Padding(3),
 		gowt.Canvas(func(g *gowt.GC) {
 			w, h := g.Size()
-			img := photo(app, me, 34)
-			if img == nil {
-				img = app.AvatarImage(me.initials, me.color, 34)
-			}
-			g.Image(img, 0, 0)
+			g.Image(app.AvatarImage(me.initials, me.color, 34), 0, 0)
 			g.SetFill(gowt.RGB{R: 52, G: 199, B: 89})
 			g.FillOval(w-11, h-11, 10, 10)
 		}, gowt.Size(34, 34)),

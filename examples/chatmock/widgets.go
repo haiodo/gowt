@@ -49,13 +49,9 @@ func dot(app *gowt.App, c gowt.RGB, size int) *gowt.Image {
 	return icons.FromSVG(app, []byte(svg), size, c)
 }
 
-// avatar is the round avatar of p: the photo asset when there is one, else initials.
+// avatar is the round avatar of p: initials on the person's colour.
 func avatar(app *gowt.App, p person, size int) gowt.Option {
 	return gowt.Label("", gowt.Size(size, size), gowt.Init(func(l *gowt.LabelView) {
-		if img := photo(app, p, size); img != nil {
-			l.SetImage(img)
-			return
-		}
 		l.SetImage(app.AvatarImage(p.initials, p.color, size))
 	}))
 }

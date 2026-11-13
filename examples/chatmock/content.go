@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/haiodo/gowt"
-	"github.com/haiodo/gowt/look"
 	"github.com/haiodo/gowt/rx"
 )
 
@@ -16,33 +15,25 @@ var (
 func content(app *gowt.App, header *rx.State[string]) gowt.Option {
 	hint := rx.Compute(func() string { return "Message " + header.Get() })
 	// Outer wrapper takes the inset from the window edge and carries the warm tone of
-	// the sidebar. The card floats inside it: glass with rounded corners, and an opaque
-	// white inner panel, because a Background on a glass panel does not paint.
+	// the sidebar. The card is a Section: installCard gives it the card colour and
+	// roundCard clips it (and its rows) to the rounded rectangle - no underlay layers.
 	return gowt.VBox(gowt.Grow(), gowt.Padding(6),
 		gowt.Background(sidebarBg),
-		// A white panel under the glass card: the card's glass tints everything under
-		// it, so only an opaque layer behind the card keeps it white on the warm wrapper.
-		gowt.VBox(gowt.Grow(),
-			gowt.Background(cardBg),
-			gowt.VBox(gowt.ID("card"), gowt.Grow(),
-				gowt.Init(func(p *gowt.Panel) {
-					look.SetGlass(p, true)
-					look.SetGlassRadius(p, 12)
-				}),
-				gowt.VBox(gowt.Grow(), gowt.Gap(6), gowt.Padding(10),
-					gowt.HBox(gowt.GrowX(), gowt.Gap(gowt.Spacing.SM), gowt.Size(0, gowt.Scaled(30)),
-						gowt.Label("", gowt.ID("header"), gowt.BindText(header), gowt.Typeface(gowt.Font{Scale: 1.15, Weight: gowt.Semibold})),
-						gowt.Spacer(),
-						gowt.HBox(gowt.Gap(2), gowt.Place(gowt.AlignCenter, gowt.AlignCenter),
-							headerButton(app, pathUsers, "Members"),
-							gowt.Label("9", gowt.Typeface(gowt.Font{Scale: 0.85}), gowt.Foreground(gowt.SecondaryText))),
-						headerButton(app, pathHeadphones, "Huddle"),
-						headerButton(app, pathSliders, "Channel settings")),
-					gowt.Scroll(gowt.ID("feed"), gowt.Grow(), gowt.VBox(gowt.Ref(&feedPanel), gowt.Gap(gowt.Spacing.MD))),
-					composerBar(app, rx.Reader[string](hint)),
-					gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Size(0, gowt.Scaled(18)),
-						gowt.Label("", gowt.Init(func(l *gowt.LabelView) { l.SetImage(dot(app, honey.color, 9)) })),
-						gowt.Label("Honey: Working", gowt.ID("honey"), gowt.Typeface(gowt.Font{Scale: 0.8}), gowt.Foreground(gowt.SecondaryText)))))))
+		gowt.Section(gowt.ID("card"), gowt.Grow(),
+			gowt.VBox(gowt.Grow(), gowt.Gap(6), gowt.Padding(4),
+				gowt.HBox(gowt.GrowX(), gowt.Gap(gowt.Spacing.SM), gowt.Size(0, gowt.Scaled(30)),
+					gowt.Label("", gowt.ID("header"), gowt.BindText(header), gowt.Typeface(gowt.Font{Scale: 1.15, Weight: gowt.Semibold})),
+					gowt.Spacer(),
+					gowt.HBox(gowt.Gap(2), gowt.Place(gowt.AlignCenter, gowt.AlignCenter),
+						headerButton(app, pathUsers, "Members"),
+						gowt.Label("9", gowt.Typeface(gowt.Font{Scale: 0.85}), gowt.Foreground(gowt.SecondaryText))),
+					headerButton(app, pathHeadphones, "Huddle"),
+					headerButton(app, pathSliders, "Channel settings")),
+				gowt.Scroll(gowt.ID("feed"), gowt.Grow(), gowt.VBox(gowt.Ref(&feedPanel), gowt.Gap(gowt.Spacing.MD))),
+				composerBar(app, rx.Reader[string](hint)),
+				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Size(0, gowt.Scaled(18)),
+					gowt.Label("", gowt.Init(func(l *gowt.LabelView) { l.SetImage(dot(app, honey.color, 9)) })),
+					gowt.Label("Honey: Working", gowt.ID("honey"), gowt.Typeface(gowt.Font{Scale: 0.8}), gowt.Foreground(gowt.SecondaryText))))))
 }
 
 // headerButton is one of the three icon actions at the top right of the content card.
@@ -89,9 +80,9 @@ func newDivider() gowt.Option {
 	}, gowt.GrowX(), gowt.Size(0, gowt.Scaled(18)))
 }
 
-// composerBar is the glass capsule, two rows as in the reference: the message field on
-// top, the @/clip/refresh/AA icons and the round send button below. Send appends the
-// typed text to the feed, on click and on Enter.
+// composerBar is the rounded white card, two rows as in the reference: the message
+// field on top, the @/clip/refresh/AA icons and the round send button below. Send
+// appends the typed text to the feed, on click and on Enter.
 func composerBar(app *gowt.App, hint rx.Reader[string]) gowt.Option {
 	var text *gowt.TextView
 	var sendBtn *gowt.CanvasView
@@ -104,33 +95,30 @@ func composerBar(app *gowt.App, hint rx.Reader[string]) gowt.Option {
 		render(feedPanel)
 		text.SetText("")
 	}
-	return gowt.VBox(gowt.GrowX(), gowt.Padding(7), gowt.Gap(4), gowt.Size(0, gowt.Scaled(76)),
-		gowt.Init(func(p *gowt.Panel) {
-			look.SetGlass(p, true)
-			look.SetGlassRadius(p, look.Capsule)
-		}),
-		gowt.Text(gowt.ID("composer"), gowt.NoBorder(), gowt.GrowX(), gowt.Ref(&text),
-			gowt.Init(func(t *gowt.TextView) { gowt.Watch(t, hint, t.SetHint) }),
-			gowt.OnActivate(send)),
-		gowt.HBox(gowt.GrowX(), gowt.Gap(2),
-			composerIcon(app, pathAt, "Mention"),
-			composerIcon(app, pathClip, "Attach"),
-			composerIcon(app, pathRefresh, "Remind"),
-			gowt.Label("AA", gowt.Indent(3, 0), gowt.Typeface(gowt.Font{Scale: 0.78, Weight: gowt.Semibold}), gowt.Foreground(gowt.SecondaryText)),
-			gowt.Spacer(),
-			gowt.Canvas(func(g *gowt.GC) {
-				w, h := g.Size()
-				g.SetFill(gowt.RGB{R: 226, G: 226, B: 231})
-				g.FillOval(0, 0, w, h)
-				g.SetColor(gowt.RGB{R: 100, G: 100, B: 110})
-				g.SetLineWidth(2)
-				cx := w / 2
-				g.Line(cx, h-9, cx, 9)
-				g.Line(cx, 9, cx-5, 14)
-				g.Line(cx, 9, cx+5, 14)
-			}, gowt.ID("send"), gowt.Size(28, 28), gowt.Place(gowt.AlignEnd, gowt.AlignCenter),
-				gowt.Ref(&sendBtn),
-				gowt.Init(func(*gowt.CanvasView) { sendBtn.OnMouseDown(func(gowt.Mouse) { send() }) }))))
+	return gowt.Section(gowt.GrowX(), gowt.Size(0, gowt.Scaled(76)),
+		gowt.VBox(gowt.Grow(), gowt.Gap(6),
+			gowt.Text(gowt.ID("composer"), gowt.NoBorder(), gowt.GrowX(), gowt.Ref(&text),
+				gowt.Init(func(t *gowt.TextView) { gowt.Watch(t, hint, t.SetHint) }),
+				gowt.OnActivate(send)),
+			gowt.HBox(gowt.GrowX(), gowt.Gap(2),
+				composerIcon(app, pathAt, "Mention"),
+				composerIcon(app, pathClip, "Attach"),
+				composerIcon(app, pathRefresh, "Remind"),
+				gowt.Label("AA", gowt.Indent(3, 0), gowt.Typeface(gowt.Font{Scale: 0.78, Weight: gowt.Semibold}), gowt.Foreground(gowt.SecondaryText)),
+				gowt.Spacer(),
+				gowt.Canvas(func(g *gowt.GC) {
+					w, h := g.Size()
+					g.SetFill(gowt.RGB{R: 226, G: 226, B: 231})
+					g.FillOval(0, 0, w, h)
+					g.SetColor(gowt.RGB{R: 100, G: 100, B: 110})
+					g.SetLineWidth(2)
+					cx := w / 2
+					g.Line(cx, h-9, cx, 9)
+					g.Line(cx, 9, cx-5, 14)
+					g.Line(cx, 9, cx+5, 14)
+				}, gowt.ID("send"), gowt.Size(28, 28), gowt.Place(gowt.AlignEnd, gowt.AlignCenter),
+					gowt.Ref(&sendBtn),
+					gowt.Init(func(*gowt.CanvasView) { sendBtn.OnMouseDown(func(gowt.Mouse) { send() }) })))))
 }
 
 func composerIcon(app *gowt.App, path, tip string) gowt.Option {

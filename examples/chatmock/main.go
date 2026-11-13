@@ -121,9 +121,8 @@ func main() {
 		})
 		qa.HandleValue("errors", func(qa.Args) (any, error) { return uiErrors, nil })
 		theApp = app
-		// The window background is the warm tone: without a window-level glass backdrop
-		// the window stays opaque, so the tone shows in the title bar strip above the
-		// content and behind the sidebar.
+		// Without a window-level glass backdrop the window stays opaque, so the warm
+		// tone shows in the title bar strip and behind the sidebar.
 		w := app.Window(" ", gowt.Padding(0), gowt.Background(sidebarBg))
 		w.SetMinSize(880, 560)
 		w.SetSize(1160, 780)
@@ -140,10 +139,8 @@ func main() {
 		header := rx.New("# flight-path")
 		sel := rx.New("flight-path")
 
-		// The house layout: a flush full-height sidebar (material to the window edges,
-		// under the traffic lights) and the content filling the rest; the white card
-		// floats inside the content with a small inset. The sidebar's own children start
-		// below the title bar strip, the material runs on to the window top.
+		// Flush full-height sidebar to the window edges, content filling the rest; the
+		// sidebar children start below the title bar strip, the material runs on to the top.
 		var side, cont *gowt.Panel
 		w.Add(
 			gowt.VBox(gowt.ID("sidebar"), gowt.Ref(&side),
@@ -152,6 +149,14 @@ func main() {
 				content(app, header)))
 		look.SetSidebar(w, side, cont, gowt.Scaled(280))
 		look.SetSidebarFullHeight(w, true)
+		// SetGlass clears the window background; restore the warm tone under the glass, or the strip
+		// refracts the grey default. The window stays opaque, with no desktop bleed.
+		glassTint := gowt.RGBA{R: 232, G: 232, B: 206, A: 220} // sidebarBg, translucent: the glass stays glass
+		look.SetGlass(w, true)
+		look.SetGlassRadius(w, 0)
+		look.SetGlassTint(w, glassTint)
+		look.SetGlassTint(side, glassTint)
+		w.SetBackground(sidebarBg)
 		qa.HandleValue("inset", func(qa.Args) (any, error) { return contentTopInset(w), nil })
 		// QA resize hook: the regression test for the row width drives the sidebar splitter
 		// programmatically, no physical pointer.
@@ -175,6 +180,11 @@ func render(feedBox *gowt.Panel) {
 			feedBox.Add(newDivider())
 		}
 		feedBox.Add(messageRow(m))
+	}
+	// Rows go into the scroll's content panel, not through ScrollView.Add, so the scrollable
+	// range is recomputed here; without it the feed renders but never scrolls.
+	if feedScroll != nil {
+		feedScroll.Fit()
 	}
 }
 

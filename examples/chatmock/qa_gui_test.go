@@ -2,11 +2,8 @@
 
 package main_test
 
-// GUI checks of the chatmock demo. Build the app first:
-//
-//	go build -tags gowtqa -o .work/ui-mockup/ui-builder/chatmock ./examples/chatmock
-//	CHATMOCK_BIN=.work/ui-mockup/ui-builder/chatmock GOWT_GUI_TEST=1 \
-//	  GOWT_QA_ARTIFACTS=.work/ui-mockup/ui-builder go test -tags gowtqa ./examples/chatmock
+// GUI checks of the chatmock demo. Build: go build -tags gowtqa -o <bin> ./examples/chatmock,
+// then: CHATMOCK_BIN=<bin> GOWT_GUI_TEST=1 go test -tags gowtqa ./examples/chatmock
 
 import (
 	"encoding/json"
@@ -58,9 +55,8 @@ func TestSend(t *testing.T) {
 	}
 }
 
-// TestBottomZonesVisible pins the layout contract of the acceptance: the composer, the
-// Honey status and the sidebar user block are fully inside the window, at the start size
-// and at the min size.
+// TestBottomZonesVisible pins the acceptance layout contract: composer, Honey status and
+// sidebar user block fully inside the window, at the start size and at the min size.
 func TestBottomZonesVisible(t *testing.T) {
 	guiOnly(t)
 	app := qatest.App(t)
@@ -120,9 +116,44 @@ func TestBottomZonesVisible(t *testing.T) {
 	}
 }
 
+// TestFeedScroll pins that the feed actually scrolls: the first message moves up while the
+// header stays put. Checked at the start size and at the min size.
+func TestFeedScroll(t *testing.T) {
+	for _, size := range []string{"", "880x560"} {
+		t.Run(size, func(t *testing.T) {
+			guiOnly(t)
+			if size != "" {
+				t.Setenv("CHATMOCK_SIZE", size)
+			}
+			app := qatest.App(t)
+			y := func() int { return app.Find(qa.Text("Perfect. That's the move.")).Node().Bounds[1] }
+			header := func() int { return app.Find(qa.ID("header")).Node().Bounds[1] }
+			before, headerBefore := y(), header()
+			app.Find(qa.ID("feed")).ScrollBy(0, 100000)
+			after, headerAfter := y(), header()
+			t.Logf("size %q: message y %d -> %d, header y %d -> %d", size, before, after, headerBefore, headerAfter)
+			if after >= before {
+				t.Errorf("feed did not scroll: message y = %d before, %d after", before, after)
+			}
+			if headerAfter != headerBefore {
+				t.Errorf("header moved with the scroll: %d -> %d", headerBefore, headerAfter)
+			}
+			// A message sent after the scroll must come into view by scrolling to the bottom.
+			app.Find(qa.ID("composer")).Type("scroll probe")
+			app.Find(qa.ID("send")).Click()
+			app.Find(qa.ID("feed")).ScrollBy(0, 100000)
+			fb := app.Find(qa.ID("feed")).Node().Bounds
+			nb := app.Find(qa.Text("scroll probe")).Node().Bounds
+			if nb[1] < fb[1] || nb[1]+nb[3] > fb[1]+fb[3] {
+				t.Errorf("sent message y=%d h=%d outside the feed viewport %v after scrolling to the bottom", nb[1], nb[3], fb)
+			}
+			app.Shot("scrolled")
+		})
+	}
+}
+
 // TestSidebarResize pins the row width contract: widening the sidebar with the splitter
-// (driven programmatically through the "sidebar-width" handler) must stretch the channel
-// rows with it, not leave them at their start width.
+// (driven through the "sidebar-width" handler) must stretch the channel rows with it.
 func TestSidebarResize(t *testing.T) {
 	guiOnly(t)
 	app := qatest.App(t)

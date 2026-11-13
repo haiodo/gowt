@@ -6,17 +6,17 @@ import (
 )
 
 var (
-	cardBg    = gowt.RGB{R: 255, G: 255, B: 255}
-	feedPanel *gowt.Panel
+	cardBg     = gowt.RGB{R: 255, G: 255, B: 255}
+	feedPanel  *gowt.Panel
+	feedScroll *gowt.ScrollView
 )
 
 // content is the white card on the right: the channel header, the message feed, the glass
 // composer and the Honey status line at the bottom.
 func content(app *gowt.App, header *rx.State[string]) gowt.Option {
 	hint := rx.Compute(func() string { return "Message " + header.Get() })
-	// Outer wrapper takes the inset from the window edge and carries the warm tone of
-	// the sidebar. The card is a Section: installCard gives it the card colour and
-	// roundCard clips it (and its rows) to the rounded rectangle - no underlay layers.
+	// The card is a Section: installCard gives it the card colour and roundCard clips it
+	// (and its rows) to the rounded rectangle - no underlay layers.
 	return gowt.VBox(gowt.Grow(), gowt.Padding(6),
 		gowt.Background(sidebarBg),
 		gowt.Section(gowt.ID("card"), gowt.Grow(),
@@ -29,7 +29,7 @@ func content(app *gowt.App, header *rx.State[string]) gowt.Option {
 						gowt.Label("9", gowt.Typeface(gowt.Font{Scale: 0.85}), gowt.Foreground(gowt.SecondaryText))),
 					headerButton(app, pathHeadphones, "Huddle"),
 					headerButton(app, pathSliders, "Channel settings")),
-				gowt.Scroll(gowt.ID("feed"), gowt.Grow(), gowt.VBox(gowt.Ref(&feedPanel), gowt.Gap(gowt.Spacing.MD))),
+				gowt.Scroll(gowt.ID("feed"), gowt.Grow(), gowt.Ref(&feedScroll), gowt.VBox(gowt.Ref(&feedPanel), gowt.Gap(gowt.Spacing.MD))),
 				composerBar(app, rx.Reader[string](hint)),
 				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Size(0, gowt.Scaled(18)),
 					gowt.Label("", gowt.Init(func(l *gowt.LabelView) { l.SetImage(dot(app, honey.color, 9)) })),
@@ -80,9 +80,8 @@ func newDivider() gowt.Option {
 	}, gowt.GrowX(), gowt.Size(0, gowt.Scaled(18)))
 }
 
-// composerBar is the rounded white card, two rows as in the reference: the message
-// field on top, the @/clip/refresh/AA icons and the round send button below. Send
-// appends the typed text to the feed, on click and on Enter.
+// composerBar is the rounded white card, two rows as in the reference; send appends
+// the typed text to the feed, on click and on Enter.
 func composerBar(app *gowt.App, hint rx.Reader[string]) gowt.Option {
 	var text *gowt.TextView
 	var sendBtn *gowt.CanvasView

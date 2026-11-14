@@ -771,6 +771,7 @@ gowt TableView.Clear()
 gowt TableView.Column(title string, width int, opts ...Option) *Column
 gowt TableView.Deselect()
 gowt TableView.Dispose()
+gowt TableView.Edit(r *TableRow, onCommit func(string), onCancel func())
 gowt TableView.Enabled() bool
 gowt TableView.FitColumns()
 gowt TableView.Focus() bool
@@ -1097,6 +1098,7 @@ gowt func MultiSelect() Option
 gowt func Multiline() Option
 gowt func NoBackground() Option
 gowt func NoBorder() Option
+gowt func NoHScroll() Option
 gowt func Nodes[T, K comparable](list github.com/haiodo/gowt/rx.Reader[[]T], key func(T) K, children func(T) []T, fill func(n *Node, item T, created bool)) Option
 gowt func Number(min float64, max float64, opts ...Option) Option
 gowt func OnActivate[F func() | func(int) | func(*Node)](f F) Option
@@ -1263,6 +1265,7 @@ gowt/icons func Names() []string
 gowt/icons func Size(points int) Option
 gowt/icons type Option func(*iconConfig)
 gowt/look Container.AsComposite() *github.com/haiodo/gowt/swt.Composite
+gowt/look ToolbarItem.Center field bool
 gowt/look ToolbarItem.Enabled field github.com/haiodo/gowt/rx.Reader[bool]
 gowt/look ToolbarItem.Group field []ToolbarItem
 gowt/look ToolbarItem.ID field string
@@ -1273,6 +1276,7 @@ gowt/look ToolbarItem.Nav field bool
 gowt/look ToolbarItem.OnClick field func()
 gowt/look ToolbarItem.OnSearch field func(text string)
 gowt/look ToolbarItem.Sidebar field bool
+gowt/look ToolbarItem.SidebarEnd field bool
 gowt/look ToolbarItem.Small field bool
 gowt/look ToolbarItem.Space field bool
 gowt/look ToolbarItem.Symbol field string
@@ -1296,6 +1300,7 @@ gowt/look func OnInspectorChange(w *github.com/haiodo/gowt.Window, f func(visibl
 gowt/look func OnSidebarChange(w *github.com/haiodo/gowt.Window, f func(visible bool, width int))
 gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
 gowt/look func SetBottomPanel(w *github.com/haiodo/gowt.Window, content Container, panel Container, height int)
+gowt/look func SetBottomPanelFloating(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetBottomPanelHeight(w *github.com/haiodo/gowt.Window, height int)
 gowt/look func SetBottomPanelVisible(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)
@@ -1305,7 +1310,10 @@ gowt/look func SetGlassBorder(c Container, on bool)
 gowt/look func SetGlassFocusRing(c Container, on bool)
 gowt/look func SetGlassGroup(c Container, spacing float64)
 gowt/look func SetGlassRadius(c Container, r float64)
+gowt/look func SetGlassTint(c Container, tint github.com/haiodo/gowt.RGBA)
 gowt/look func SetInspector(w *github.com/haiodo/gowt.Window, content Container, inspector Container, width int)
+gowt/look func SetInspectorFixed(w *github.com/haiodo/gowt.Window, on bool)
+gowt/look func SetInspectorFullHeight(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetInspectorVisible(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetInspectorWidth(w *github.com/haiodo/gowt.Window, width int)
 gowt/look func SetMaterial(c Container, on bool)

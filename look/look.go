@@ -384,8 +384,10 @@ func padSidebar(sb *swt.Composite) {
 // sidebar. On macOS 26 the inspector is edge-to-edge Liquid Glass alongside the content, as AppKit
 // draws an NSSplitViewController inspector: flush with the top, right and bottom window edges and
 // running under the toolbar, its children starting below it. Older macOS shows a flush material;
-// Windows and Linux a plain panel. Without a sidebar there, the window also gets full-size content,
-// and on Windows and Linux the SetToolbar items as a bar above the content.
+// Windows a plain panel, Linux a plain panel that takes the window background as its own, so a
+// NoBackground StyledText on it shows the pane rather than the theme's white base. Without a sidebar
+// there, the window also gets full-size content, and on Windows and Linux the SetToolbar items as a
+// bar above the content.
 //
 // The user resizes the inspector by dragging its left edge, which stops at 160 points and leaves the
 // content at least 200. Read and change that with InspectorVisible, SetInspectorVisible,

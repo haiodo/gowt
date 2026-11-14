@@ -219,7 +219,7 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Prefix(s)`, `PrefixImage(img)`, `Suffix(s)` | single-line Text, Number |
 | `Step(x)` | Number |
 | `MultiSelect()` | List, Table, Tree |
-| `NoBackground()` | StyledText |
+| `NoBackground()` | Text, StyledText |
 | `CellSelect()` | Tree |
 | `Simple()` | Combo |
 | `Vertical()` | Scale, Slider, Progress, Split, Sash, Separator, Flow, Fill |

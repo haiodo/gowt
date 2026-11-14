@@ -39,7 +39,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Bind(state)` | two-way: `*rx.State[string]` Text, Combo; `[bool]` Switch, Check or Toggle Button, Disclosure expanded; `[int]` Scale, Slider, Spinner, Combo, List, Segmented index (Progress one way) |
 | `BindText(r)`, `BindEnabled(r)`, `BindVisible(r)` | Label, Button, Link text; enabled and visible state of any widget, see [events.md](events.md) |
 | `NoBorder()` | drops the frame of List, Table, Tree, and the one `Border()` gives a Text or StyledText (it wins over `Border()` in either order) |
-| `NoBackground()` | StyledText paints no background of its own: a `look.SetMaterial` pane or a coloured panel under it shows through; selected text and `TextStyle` backgrounds are still drawn |
+| `NoBackground()` | Text and StyledText paint no background of their own: a `look.SetMaterial` pane or a coloured panel under it shows through; selected text and `TextStyle` backgrounds are still drawn |
 | `NoHScroll()` | `Scroll`: no horizontal bar, the content scrolls vertically only |
 | `CellSelect()` | Tree selects only the node text instead of the whole row |
 | `Search()` | Text as a search field with a magnifier icon and a clear button |
@@ -67,7 +67,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | Link | `Link(html, opts...)` | text with `<a href="...">`; `OnClick(func(href string))` gets the href |
 | Combo | `Combo(items)` | `Index` (-1 if none), `Items`, `Select`, `Text`, `OnSelect(func(int))`, `OnChange(func(string))` |
 | List | `List(items)` | `Add`, `Remove`, `Clear`, `Index`, `Selected`, `Select(i...)`, `Deselect()`, `OnSelect`, `OnActivate` (double click) |
-| Table | `Table()` | `Column(title, width, opts...)` (`Fit()` keeps it to the content; `FitColumns()` once), `Row(cells...)` returns `*TableRow` (`TextAt(col)`, `SetTextAt(col, s)`, `SetImageAt(col, img)`, `SetData`, `Data`, `SetChecked`), `RowAt(i)`, selection as for List, `ShowHeader`, `ShowLines`, `ShowRowLines`, `SetSort(col, dir)`, `CellAt(x, y)`, `OnCellClick`; `Column` also has `SetResizable` |
+| Table | `Table()` | `Column(title, width, opts...)` (`Fit()` keeps it to the content; `FitColumns()` once), `Row(cells...)` returns `*TableRow` (`TextAt(col)`, `SetTextAt(col, s)`, `SetImageAt(col, img)`, `SetData`, `Data`, `SetChecked`), `RowAt(i)`, `Edit(row, onCommit, onCancel)` (in place), selection as for List, `ShowHeader`, `ShowLines`, `ShowRowLines`, `SetSort(col, dir)`, `CellAt(x, y)`, `OnCellClick`; `Column` also has `SetResizable` |
 | Tree | `Tree()` | `Node(text)` on the tree and on a node; callbacks get `*Node` (`Text`, `SetExpanded`, `Children`, `SetData`, `Remove`); `Roots`, `Selected`, `Select(node)` (nil clears), `Deselect()`, `Clear`; `OnSelect`, `OnActivate`, `OnExpand`, `OnCollapse`. Columns as in Table: `Column(title, width, opts...)` returns the same `*Column` type (the first holds the tree), `ShowHeader`, `ShowRowLines`, `SetSort`, `CellAt`, `OnCellClick`; per-column cells `Node.TextAt(col)`, `SetTextAt`, `SetImageAt` |
 | Scale, Slider, Spinner | `Scale(min, max, opts...)` | start value with the option `Value(n)` (default `min`); `Value`, `SetValue`, `OnChange(func(int))` |
 | Progress | `Progress(max, opts...)` | option `Value(n)`; `SetValue`, `SetMax`, `Value` |
@@ -117,7 +117,7 @@ Options of `Field` after the control go to the label (`Foreground`, `Typeface`, 
 
 ## Columns that fit
 
-`t.Column("Subject", gowt.Scaled(200), gowt.Fit())` sizes the column to its header and its widest cell, now and after every `Row`, `Remove`, `Clear`, `Rows`, `Nodes`, expand and collapse (once per event-loop turn). The width argument is only the first width. `t.FitColumns()` does it once for every column. Every row is measured: with tens of thousands of rows call `Column.Pack` once after loading instead. macOS and Windows use the toolkit's autosize; on Linux gowt measures the texts with the control's font, since the toolkit's `Pack` gave only the header width there (cell padding 12 points, 24 per tree level, images and their 6 point gap included).
+`t.Column("Subject", gowt.Scaled(200), gowt.Fit())` sizes the column to its header and its widest cell, now and after every `Row`, `Remove`, `Clear`, `Rows`, `Nodes`, expand and collapse (once per event-loop turn). The width argument is only the first width. `t.FitColumns()` does it once for every column. Every row is measured: with tens of thousands of rows call `Column.Pack` once after loading instead. Windows uses the toolkit's autosize; macOS and Linux measure the texts with the control's font, since the toolkit's `Pack` saw only the cached cells on macOS and gave only the header width on Linux (cell padding 10 and 12 points, 18 and 24 per tree level, images and their 6 point gap included).
 
 ## Badges and chips
 
@@ -154,9 +154,11 @@ Every widget (`Window` and containers included) has these methods, which are als
 
 `Table.OnCellClick` and `Tree.OnCellClick` run on every mouse press with the row (or node), the column index from the item's per-column bounds, `Button` (SWT numbering: 1 left, 2 middle, 3 right), `Count` (2 on a double click) and the modifier keys `Ctrl`, `Shift`, `Alt`, `Cmd` (a macOS Ctrl-click is Button 1 with Ctrl), so a handler ignores what it does not need. The cell comes from a hit test, not from the selection, which may not have moved yet. `CellAt(x, y)` does the same for any point, e.g. a context menu; the expander arrow maps to its cell, but a point right of the last column has `Col` -1 (empty space is never a cell). `Tree` selects whole rows so that a click in any column finds its node.
 
-## Tree editing
+## In-place editing
 
 `TreeView.Edit(node, onCommit, onCancel)` reveals the node and overlays its first-column text with a focused editor. The current text is selected. Enter and focus loss call `onCommit(text)` once; Esc calls `onCancel()` once. The callbacks may be nil. The editor never changes the node itself: validate the value and call `node.SetText(text)` in `onCommit`. Empty values are passed unchanged. Starting another edit cancels the active editor, but an already scheduled commit or cancellation completes before the next editor opens; programmatically collapsing an ancestor, removing the node, or disposing the editor cancels it. Key and focus completion runs on the next UI turn. The editor closes before callbacks run, so callbacks may start another edit.
+
+`TableView.Edit(row, onCommit, onCancel)` does the same over the first cell of a row, with the cell's current text selected; the row is scrolled into view first. A commit or a cancel belongs to the app the same way: call `row.SetTextAt(0, text)` in `onCommit`. Removing the row or disposing the table cancels the edit.
 
 ## Logs in Text and StyledText
 

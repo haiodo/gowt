@@ -51,8 +51,34 @@ func (q *Queue[T]) Pop() (T, error) {
 }
 `
 
+const mainSource = `package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"example.com/gowt-sample/queue"
+)
+
+func main() {
+	q := &queue.Queue[string]{}
+	for _, a := range os.Args[1:] {
+		q.Push(a)
+	}
+	for {
+		v, err := q.Pop()
+		if err != nil {
+			break
+		}
+		fmt.Println(v)
+	}
+	log.Print("done")
+}
+`
+
 var (
-	keywords = []string{"package", "import", "var", "type", "struct", "func", "defer", "return", "if", "any"}
+	keywords = []string{"package", "import", "var", "type", "struct", "func", "defer", "return", "if", "any", "for", "range", "break", "const", "log"}
 	kwColor  = gowt.RGB{R: 170, G: 50, B: 150}
 	strColor = gowt.RGB{R: 200, G: 60, B: 40}
 	cmtColor = gowt.RGB{R: 100, G: 140, B: 100}
@@ -84,7 +110,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Tree(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TreeView) {
-			t.Column("", gowt.Scaled(220))
+			t.Column("", gowt.Scaled(200))
 			t.ShowHeader(false)
 			folder := icons.Get(app, "folder", icons.Size(18))
 			file := icons.Get(app, "file", icons.Size(18))
@@ -109,19 +135,20 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 func contentPane(ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.CTabs(gowt.Grow(), gowt.Selected(1), gowt.Background(gowt.Adaptive{Light: gowt.RGB{R: 255, G: 255, B: 255}, Dark: gowt.RGB{R: 30, G: 30, B: 30}}),
-			gowt.Tab("main.go", gowt.Closable()),
+			gowt.Tab("main.go", gowt.Closable(), gowt.Padding(0), gowt.Gap(0),
+				gowt.StyledText(gowt.Scrollbars(), gowt.Grow(), gowt.LineNumbers(), gowt.Init(func(ed *gowt.StyledTextView) { editor(ed, mainSource) }))),
 			gowt.Tab("queue.go", gowt.Closable(), gowt.Padding(0), gowt.Gap(0),
-				gowt.StyledText(gowt.Scrollbars(), gowt.Grow(), gowt.LineNumbers(), gowt.Init(editor)))),
+				gowt.StyledText(gowt.Scrollbars(), gowt.Grow(), gowt.LineNumbers(), gowt.Init(func(ed *gowt.StyledTextView) { editor(ed, source) })))),
 		gowt.Separator(gowt.GrowX()),
 		gowt.HBox(gowt.Gap(gowt.Spacing.LG), gowt.GrowX(), gowt.Padding(gowt.Spacing.SM),
 			gowt.Label("Ln 27, Col 14", gowt.Typeface(gowt.Type.Caption)), gowt.Label("UTF-8", gowt.Typeface(gowt.Type.Caption)), gowt.Label("Go", gowt.Typeface(gowt.Type.Caption)),
 			gowt.Spacer(), gowt.Label("0 problems", kit.Faint(), gowt.Typeface(gowt.Type.Caption))))
 }
 
-func editor(ed *gowt.StyledTextView) {
+func editor(ed *gowt.StyledTextView, src string) {
 	ed.SetFont(gowt.Type.Mono)
 	ed.SetTabs(4)
-	ed.SetText(source)
+	ed.SetText(src)
 	ed.OnStyle(func(line string) []gowt.StyleSpan {
 		var spans []gowt.StyleSpan
 		add := func(byteStart, byteLen int, c gowt.RGB) {

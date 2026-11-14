@@ -61,7 +61,7 @@ func main() {
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	return gowt.VBox(gowt.Ref(ref), gowt.Padding(0), gowt.Gap(0),
 		gowt.Tree(gowt.NoBorder(), gowt.Grow(), gowt.Init(func(t *gowt.TreeView) {
-			t.Column("", gowt.Scaled(220))
+			t.Column("", gowt.Scaled(200))
 			t.ShowHeader(false)
 			folder := icons.Get(app, "folder", icons.Size(18))
 			home := t.Node("Home")

@@ -135,9 +135,9 @@ func composer(app *gowt.App, hint string) gowt.Option {
 	return gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.GrowX(),
 		gowt.Button("", look.GlassButton(), gowt.Circle(), gowt.Size(gowt.Scaled(36), gowt.Scaled(36)), gowt.Tooltip("Attach"),
 			gowt.Init(func(b *gowt.ButtonView) { b.SetImage(kit.Symbol(app, kit.PathClip, 18, kit.Gray)) })),
-		gowt.HBox(gowt.Ref(&cap), gowt.GrowX(), gowt.Padding(gowt.Spacing.XS), gowt.Gap(gowt.Spacing.XS),
+		gowt.HBox(gowt.Ref(&cap), gowt.GrowX(), gowt.Padding(gowt.Spacing.XS), gowt.Gap(gowt.Spacing.SM),
 			gowt.Init(func(p *gowt.Panel) { look.SetGlass(p, true); look.SetGlassRadius(p, look.Capsule) }),
-			gowt.Text(gowt.NoBorder(), gowt.GrowX(), gowt.GrowY(), gowt.Hint(hint)),
+			gowt.Text(gowt.NoBorder(), gowt.NoBackground(), gowt.Inset(gowt.Scaled(6), 0), gowt.GrowX(), gowt.GrowY(), gowt.Hint(hint)),
 			gowt.Button("", gowt.Borderless(), gowt.Size(gowt.Scaled(32), gowt.Scaled(32)), gowt.Tooltip("Send"),
 				gowt.Init(func(b *gowt.ButtonView) { b.SetImage(kit.Symbol(app, kit.PathSend, 18, kit.Blue)) }))))
 }

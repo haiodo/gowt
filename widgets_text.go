@@ -352,17 +352,23 @@ func LineNumbers() Option {
 	})
 }
 
-// NoBackground makes a StyledText paint no background of its own, so what is under it shows through:
-// the material of a look.SetMaterial pane, a coloured Panel. Selected text and TextStyle backgrounds
-// are still drawn. It is an alpha-0 background colour, which SWT draws as the background of the parent.
+// NoBackground makes a Text field or a StyledText paint no background of its own, so what is under it
+// shows through: the material of a look.SetMaterial pane, a coloured Panel, a glass capsule. Selected
+// text and TextStyle backgrounds are still drawn. It is an alpha-0 background colour, which SWT draws
+// as the background of the parent.
 func NoBackground() Option {
 	return hook(func(w Widget) error {
-		t, ok := w.(*StyledTextView)
-		if !ok {
-			return fmt.Errorf("gowt: NoBackground applies to StyledText, not to %s", nameOf(w.control()))
+		var c *swt.Control
+		switch v := w.(type) {
+		case *TextView:
+			c = &v.t.Control
+		case *StyledTextView:
+			c = &v.t.Control
+		default:
+			return fmt.Errorf("gowt: NoBackground applies to Text and StyledText, not to %s", nameOf(w.control()))
 		}
 		// White, not black: the GTK port takes an all-zero GdkRGBA for a disposed Color.
-		t.t.SetBackgroundWithColor(swt.NewColorDeviceRedGreenBlueAlpha(t.t.GetDisplay(), 255, 255, 255, 0))
+		c.SetBackgroundWithColor(swt.NewColorDeviceRedGreenBlueAlpha(c.GetDisplay(), 255, 255, 255, 0))
 		return nil
 	})
 }

@@ -700,8 +700,18 @@ func (p *pane) setVisible(on bool) {
 func (p *pane) visible() bool { return p != nil && !p.hidden }
 
 func (p *pane) setWidth(width int) {
-	if p != nil && p.width != max(int32(width), p.minWidth()) {
-		p.width = max(int32(width), p.minWidth())
+	if p == nil {
+		return
+	}
+	w := int32(width)
+	if p.l != nil {
+		// A pane wider than the window leaves no room for the content and makes the window grow
+		// past the screen, so the glass of the pane runs off the window edge.
+		most := p.l.paneLimit(p, p.l.w.Unwrap().GetClientArea().Width)
+		w = min(w, most)
+	}
+	if p.width != max(w, p.minWidth()) {
+		p.width = max(w, p.minWidth())
 		p.apply()
 		p.notify()
 	}

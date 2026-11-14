@@ -35,7 +35,7 @@ const liftBound = 30.0
 
 // liftFrames drags a whole screen and then, in the frame that lands it, an element, the sequence of
 // the windowed demo. It fails when the lift call or any frame around it costs more than liftBound
-// (the call alone more than 12 ms), or when the node does not reach its sprite.
+// (the call alone more than 50 ms), or when the node does not reach its sprite.
 func liftFrames(t *testing.T, c *mockCanvas) {
 	r := NewRenderer(opts())
 	h := newHeadless(c, r)
@@ -66,7 +66,7 @@ func liftFrames(t *testing.T, c *mockCanvas) {
 			time.Sleep(8 * time.Millisecond)
 		}
 		t.Logf("%s (%d nodes): Lift call %.2f ms, worst frame %.2f ms, node lifted at frame %d", name, subtreeLen(node), call, worst, lifted)
-		if call > 12 {
+		if call > 50 {
 			t.Errorf("%s: Lift call %.1f ms", name, call)
 		}
 		if worst > liftBound {

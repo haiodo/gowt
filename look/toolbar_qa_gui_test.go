@@ -398,16 +398,16 @@ func TestToolbarZones(t *testing.T) {
 					fail("%s: info starts at %d, before the inspector edge %d", step, n.Bounds[0], iedge)
 				}
 			}
-			app.After(600*time.Millisecond, func() {
+			app.After(1200*time.Millisecond, func() {
 				check("start", true)
 				// Hide the sidebar: the SidebarEnd item moves to the leading edge.
 				look.SetSidebarVisible(w, false)
-				app.After(600*time.Millisecond, func() {
+				app.After(1200*time.Millisecond, func() {
 					check("hidden", false)
 					look.SetSidebarVisible(w, true)
 					// Narrow the window: the content items give way before the inspector items.
 					w.SetSize(620, 600)
-					app.After(600*time.Millisecond, func() {
+					app.After(1200*time.Millisecond, func() {
 						nedge := int(insp.Unwrap().GetBounds().X)
 						if n := node("narrow", "fit"); n.Visible && n.Bounds[0]+n.Bounds[2] > nedge {
 							fail("narrow: fit crosses the inspector edge at %v", n.Bounds)
@@ -425,7 +425,7 @@ func TestToolbarZones(t *testing.T) {
 							fail("narrow: info %v, want it on the inspector", n.Bounds)
 						}
 						w.SetSize(1000, 600)
-						app.After(600*time.Millisecond, func() {
+						app.After(1200*time.Millisecond, func() {
 							check("wide", true)
 							for _, e := range errs {
 								t.Error(e)

@@ -76,6 +76,8 @@ type toolbarState struct {
 	centerC     uintptr // the center spacer's width constraint
 	centerWidth float64
 	centerIdx   map[int]bool    // indexes in items of the Center items, to measure their extent when fitting
+	fitTries    int             // fits posted and not yet settled, see postFit
+	fitPending  bool            // a posted fit is on the run loop
 	groups      map[int]uintptr // index in items to its NSToolbarItemGroup, owned by the toolbar
 	// index in items of a search item to its magnifier button and its NSSearchToolbarItem, owned by the toolbar
 	searchButtons, searchItems map[int]uintptr

@@ -429,7 +429,7 @@ func SetInspectorDivider(view *NSView, x float64, hidden bool) {
 	msgF64Index(sv, sel("setPosition:ofDividerAtIndex:"), x, 0)
 	// The center spacer is fitted on the divider: measure and refit after this layout.
 	if s := toolbarDelegates[getAssociated(w, toolbarKey())]; s != nil && s.center != 0 {
-		s.centerWidth = -1
+		s.centerWidth, s.fitTries, s.fitPending = -1, 0, false
 		msg(s.center, "performSelectorOnMainThread:withObject:waitUntilDone:", sel("gowtFit"), 0, 0)
 	}
 }
@@ -547,7 +547,12 @@ type inspectorDividerInfo struct {
 // of the content column, between the sidebar edge and the inspector divider, like the sidebar
 // spacer it is measured after the toolbar laid out and adjusted until it settles.
 func (s *toolbarState) fitCenter(w uintptr) {
-	if s.center == 0 || s.centerC == 0 || msg(s.center, "window") != w {
+	if s.center == 0 || s.centerC == 0 {
+		return
+	}
+	s.fitPending = false
+	if msg(s.center, "window") != w {
+		s.postFit(w)
 		return
 	}
 	left := 0.0
@@ -560,6 +565,7 @@ func (s *toolbarState) fitCenter(w uintptr) {
 	}
 	lo, hi, ok := centerItemExtent(w, s)
 	if !ok || hi <= lo {
+		s.postFit(w)
 		return
 	}
 	// AppKit packs the non-navigational items against the trailing cluster, so a wider spacer shifts
@@ -573,6 +579,40 @@ func (s *toolbarState) fitCenter(w uintptr) {
 	}
 	s.centerWidth = width
 	msgF64(s.centerC, sel("setConstant:"), width)
+	// The items move on the toolbar's next layout pass, so the measurement above is stale: ask for
+	// another fit until the width settles.
+	s.postFit(w)
+}
+
+// maxFitPosts bounds the fits a toolbar asks for beyond its layout passes: a toolbar that places the
+// Center items at a width it cannot correct, or an item in the overflow menu, must not keep the run
+// loop busy. InstallToolbar makes a new state, so a rebuilt bar starts with the full budget.
+const maxFitPosts = 20
+
+// postFit asks for another fit 20 ms later on a spacer in the window: the toolbar places the items on
+// its own layout pass, and a fit that ran before it measured stale frames.
+func (s *toolbarState) postFit(w uintptr) {
+	if s.fitPending || s.fitTries >= maxFitPosts {
+		return
+	}
+	for _, v := range []uintptr{s.center, s.spacer, s.end} {
+		if v != 0 && msg(v, "window") == w {
+			s.fitPending = true
+			s.fitTries++
+			postAfter(v, sel("gowtFit"), 0.02)
+			return
+		}
+	}
+}
+
+// postAfter asks v to run selector delay seconds later, on the main run loop.
+var postAfterMsg func(self, sel, aSelector, obj uintptr, delay float64)
+
+func postAfter(v, selector uintptr, delay float64) {
+	if postAfterMsg == nil {
+		purego.RegisterFunc(&postAfterMsg, objcMsgSend)
+	}
+	postAfterMsg(v, sel("performSelector:withObject:afterDelay:"), selector, 0, delay)
 }
 
 // centerItemExtent is the left and right edge, in window points, of the block of Center items of
@@ -662,11 +702,17 @@ func DescribeSidebarToolbar(view *NSView) string {
 	for _, v := range []struct {
 		name string
 		v    uintptr
-	}{{"spacer", s.spacer}, {"end spacer", s.end}} {
+	}{{"spacer", s.spacer}, {"end spacer", s.end}, {"center spacer", s.center}} {
 		out += v.name + " " + frame(v.v) + "\n"
 		if v.v != 0 {
 			out += v.name + " superview " + goString(msg(msg(v.v, "superview"), "className")) + " " + frame(msg(v.v, "superview")) + "\n"
 		}
+	}
+	out += fmt.Sprintf("center width %.1f tries %d\n", s.centerWidth, s.fitTries)
+	if lo, hi, ok := centerItemExtent(w, s); ok {
+		out += fmt.Sprintf("center items x %.1f to %.1f\n", lo, hi)
+	} else {
+		out += "center items not measured\n"
 	}
 	return out
 }

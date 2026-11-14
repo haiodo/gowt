@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/qatree"
 	"github.com/haiodo/gowt/look"
 	"github.com/haiodo/gowt/rx"
@@ -387,7 +388,7 @@ func TestToolbarZones(t *testing.T) {
 				mid := (out.Bounds[0] + in.Bounds[0] + in.Bounds[2]) / 2
 				want := (edge + iedge) / 2
 				if mid < want-30 || mid > want+30 {
-					fail("%s: center items mid %d, want about the content column middle %d", step, mid, want)
+					fail("%s: center items mid %d, want about the content column middle %d\n%s", step, mid, want, cocoa.DescribeSidebarToolbar(w.Unwrap().View))
 				}
 				for _, id := range []string{"open", "zoom-out", "zoom-in", "fit"} {
 					if n := node(step, id); n.Visible && n.Bounds[0]+n.Bounds[2] > iedge {
@@ -398,16 +399,16 @@ func TestToolbarZones(t *testing.T) {
 					fail("%s: info starts at %d, before the inspector edge %d", step, n.Bounds[0], iedge)
 				}
 			}
-			app.After(1200*time.Millisecond, func() {
+			app.After(2000*time.Millisecond, func() {
 				check("start", true)
 				// Hide the sidebar: the SidebarEnd item moves to the leading edge.
 				look.SetSidebarVisible(w, false)
-				app.After(1200*time.Millisecond, func() {
+				app.After(2000*time.Millisecond, func() {
 					check("hidden", false)
 					look.SetSidebarVisible(w, true)
 					// Narrow the window: the content items give way before the inspector items.
 					w.SetSize(620, 600)
-					app.After(1200*time.Millisecond, func() {
+					app.After(2000*time.Millisecond, func() {
 						nedge := int(insp.Unwrap().GetBounds().X)
 						if n := node("narrow", "fit"); n.Visible && n.Bounds[0]+n.Bounds[2] > nedge {
 							fail("narrow: fit crosses the inspector edge at %v", n.Bounds)
@@ -425,7 +426,7 @@ func TestToolbarZones(t *testing.T) {
 							fail("narrow: info %v, want it on the inspector", n.Bounds)
 						}
 						w.SetSize(1000, 600)
-						app.After(1200*time.Millisecond, func() {
+						app.After(2000*time.Millisecond, func() {
 							check("wide", true)
 							for _, e := range errs {
 								t.Error(e)

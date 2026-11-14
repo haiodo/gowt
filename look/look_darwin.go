@@ -367,7 +367,6 @@ func bottomPanelFloatingAvailable() bool { return true }
 // fullHeightInspector is the inspector's flush chrome: the glass clips at the window edges with
 // radius 0, like an AppKit split view item. Unlike fullHeightSidebar it leaves the lights alone.
 func fullHeightInspector(s *swt.Shell, ib *swt.Composite, on bool) {
-	cocoa.SetBackdropClipped(ib.View, on)
 	if on {
 		cocoa.SetGlassCornerRadius(ib.View, 0)
 	}
@@ -443,10 +442,12 @@ func syncBottom(pb *swt.Composite, bg [4]int32, sb *swt.Composite, floating bool
 // inspectorInset is 0: the inspector is flush with the window edges, see setInspectorChrome.
 func inspectorInset() int32 { return 0 }
 
-// syncInspector also moves the divider the Inspector toolbar items follow to the inspector edge, or
-// collapses it for a hidden inspector (bg 0 wide).
+// syncInspector moves the divider the Inspector toolbar items follow to the inspector edge, or collapses
+// it for a hidden inspector (bg 0 wide). A floating inspector keeps its glass shadow, which the clip of
+// a flush one would cut; a flush glass has no shadow to spill on the title bar band as a grey gradient.
 func syncInspector(ib *swt.Composite, bg [4]int32, floating bool) {
 	cocoa.SetBackdropFrame(ib.View, float64(bg[0]), float64(bg[1]), float64(bg[2]), float64(bg[3]))
+	cocoa.SetBackdropClipped(ib.View, !floating)
 	radius := float64(0)
 	if floating {
 		radius = sidebarRadius

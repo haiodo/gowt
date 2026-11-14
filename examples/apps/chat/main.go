@@ -5,6 +5,7 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	"github.com/haiodo/gowt"
 	"github.com/haiodo/gowt/examples/apps/internal/kit"
@@ -65,7 +66,9 @@ func main() {
 }
 
 func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
-	nav := func(h int, sel int, rows ...[2]any) gowt.Option {
+	// nav puts rows in a table of its own; rename opens an in-place editor on a double click, as Slack
+	// and Finder do, and keeps the name the editor commits.
+	nav := func(h, sel int, rename bool, rows ...[2]any) gowt.Option {
 		return gowt.Table(gowt.NoBorder(), gowt.GrowX(), gowt.Size(0, gowt.Scaled(h)), gowt.Init(func(t *gowt.TableView) {
 			t.Column("", gowt.Scaled(220))
 			t.ShowHeader(false)
@@ -76,6 +79,16 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 			if sel >= 0 {
 				t.Select(sel)
 			}
+			if rename {
+				t.OnActivate(func(i int) {
+					r := t.RowAt(i)
+					t.Edit(r, func(name string) {
+						if name = strings.TrimSpace(name); name != "" {
+							r.SetTextAt(0, name)
+						}
+					}, func() {})
+				})
+			}
 		}))
 	}
 	ic := func(n string) *gowt.Image { return icons.Get(app, n, icons.Size(18)) }
@@ -83,11 +96,11 @@ func sidebarPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	dm := func(c gowt.RGB) *gowt.Image { return kit.Dot(app, c, 22) }
 	return gowt.VBox(gowt.Ref(ref), gowt.Gap(gowt.Spacing.SM),
 		gowt.Label("Chats", gowt.Typeface(gowt.Type.BodyStrong), gowt.Place(gowt.AlignCenter, gowt.AlignStart)),
-		nav(96, -1, [2]any{"Inbox", sym(kit.PathInbox)}, [2]any{"Discussions", sym(kit.PathMail)}, [2]any{"Saved", ic("star")}),
+		nav(96, -1, false, [2]any{"Inbox", sym(kit.PathInbox)}, [2]any{"Discussions", sym(kit.PathMail)}, [2]any{"Saved", ic("star")}),
 		gowt.Label("Starred", kit.Faint()),
-		nav(112, 0, [2]any{"develop", sym(kit.PathHash)}, [2]any{"orbit-private", ic("lock")}, [2]any{"ios & android builds", sym(kit.PathHash)}),
+		nav(112, 0, true, [2]any{"develop", sym(kit.PathHash)}, [2]any{"orbit-private", ic("lock")}, [2]any{"ios & android builds", sym(kit.PathHash)}),
 		gowt.Label("Direct messages", kit.Faint()),
-		nav(192, -1, [2]any{"Sofia Lindqvist", dm(kit.Green)}, [2]any{"Diego Salazar", dm(kit.Blue)}, [2]any{"Nadia Haddad", dm(kit.Purple)},
+		nav(192, -1, false, [2]any{"Sofia Lindqvist", dm(kit.Green)}, [2]any{"Diego Salazar", dm(kit.Blue)}, [2]any{"Nadia Haddad", dm(kit.Purple)},
 			[2]any{"Rohan Deshmukh", dm(kit.Teal)}, [2]any{"Emeka Obi", dm(kit.Orange)}),
 		gowt.Spacer())
 }

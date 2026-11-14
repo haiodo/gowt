@@ -125,7 +125,8 @@ func (l *ListView) OnActivate(f func(index int)) {
 // TableView is a multi-column grid with a header; rows are added with Row. Check makes rows checkable.
 type TableView struct {
 	base
-	t *swt.Table
+	t          *swt.Table
+	cancelEdit func() bool
 }
 
 // Table creates a table with a visible header and grid lines.
@@ -137,7 +138,7 @@ func Table(opts ...Option) Option {
 		t.SetHeaderVisible(true)
 		t.SetLinesVisible(true)
 		fluentTable(t)
-		return &TableView{base{&t.Control}, t}
+		return &TableView{base: base{&t.Control}, t: t}
 	})
 }
 
@@ -215,6 +216,102 @@ func (t *TableView) Row(cells ...string) *TableRow {
 	it.SetTexts(cells)
 	contentChanged(&t.t.Control)
 	return &TableRow{it}
+}
+
+// Edit opens a focused editor on the first cell of r; callbacks own updating the row. Enter and focus
+// loss commit, Esc cancels. Another edit cancels the active editor, but waits for an already scheduled
+// completion.
+func (t *TableView) Edit(r *TableRow, onCommit func(string), onCancel func()) {
+	if r == nil || r.it == nil || t.t.IsDisposed() || r.it.IsDisposed() || r.it.GetParent() != t.t {
+		return
+	}
+	if t.cancelEdit != nil {
+		if !t.cancelEdit() {
+			t.t.GetDisplay().AsyncExec(jrt.NewRunnable(func() { t.Edit(r, onCommit, onCancel) }))
+			return
+		}
+		if t.cancelEdit != nil || t.t.IsDisposed() || r.it.IsDisposed() {
+			return
+		}
+	}
+	t.t.ShowItem(r.it)
+	if t.cancelEdit != nil || t.t.IsDisposed() || r.it.IsDisposed() {
+		return
+	}
+	value := r.TextAt(0)
+	text := swt.NewText(t.t, swt.SINGLE)
+	text.SetText(value)
+	text.SetFont(t.t.GetFont())
+	centreField(text)
+	setAccessibleLabel(&text.Control, "Edit "+value)
+	editor := swt.NewTableEditor(t.t)
+	editor.HorizontalAlignment = swt.LEFT
+	editor.GrabHorizontal = true
+	finished, ending, disposingText := false, false, false
+	var disposed listenerFunc
+	finish := func(commit bool) {
+		if finished {
+			return
+		}
+		finished = true
+		t.cancelEdit = nil
+		value := ""
+		if commit && !text.IsDisposed() && !r.it.IsDisposed() && !t.t.IsDisposed() {
+			value = text.GetText()
+		} else {
+			commit = false
+		}
+		if !r.it.IsDisposed() {
+			r.it.RemoveListener(swt.Dispose, &disposed)
+		}
+		editor.Dispose()
+		if !disposingText && !text.IsDisposed() {
+			text.Dispose()
+		}
+		if commit && onCommit != nil {
+			onCommit(value)
+		} else if !commit && onCancel != nil {
+			onCancel()
+		}
+	}
+	t.cancelEdit = func() bool {
+		if ending {
+			return false
+		}
+		finish(false)
+		return true
+	}
+	disposed = func(*swt.Event) { finish(false) }
+	r.it.AddListener(swt.Dispose, &disposed)
+	text.AddListener(swt.Dispose, listenerFunc(func(*swt.Event) {
+		disposingText = true
+		finish(false)
+	}))
+	finishLater := func(commit bool) {
+		if ending || finished {
+			return
+		}
+		ending = true
+		// Native key and focus dispatch still use the control after its listeners return.
+		t.t.GetDisplay().AsyncExec(jrt.NewRunnable(func() { finish(commit) }))
+	}
+	text.AddListener(swt.FocusOut, listenerFunc(func(*swt.Event) { finishLater(true) }))
+	text.AddListener(swt.KeyDown, listenerFunc(func(e *swt.Event) {
+		if e.Character == swt.CR || e.Character == swt.ESC {
+			e.Doit = false
+			finishLater(e.Character == swt.CR)
+		}
+	}))
+	text.AddListener(swt.Traverse, listenerFunc(func(e *swt.Event) {
+		if e.Detail == swt.TRAVERSE_RETURN || e.Detail == swt.TRAVERSE_ESCAPE {
+			e.Doit = false
+			finishLater(e.Detail == swt.TRAVERSE_RETURN)
+		}
+	}))
+	editor.SetEditorEditorItemColumn(text, r.it, 0)
+	raiseTableEditor(&text.Control)
+	text.SelectAll()
+	text.SetFocus()
 }
 
 // OnSelect runs f with the first selected row.

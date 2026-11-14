@@ -321,6 +321,7 @@ func (m *monitor) procCard() gowt.Option {
 		head("Processes", gowt.Spacer(), gowt.Label("CPU is percent of one core", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
 		gowt.Table(gowt.Grow(), gowt.Size(0, gowt.Scaled(110)), gowt.Tooltip("100% is one core fully busy, as in Activity Monitor"), gowt.Init(func(t *gowt.TableView) {
 			m.table = t
+			t.ShowLines(false)
 			for i, c := range columns {
 				opts := []gowt.Option{}
 				if c.right {

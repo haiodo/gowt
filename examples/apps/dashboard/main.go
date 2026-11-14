@@ -58,9 +58,10 @@ func card(title, value, note string, noteColor gowt.RGB, pct int) gowt.Option {
 
 func activity() gowt.Option {
 	return gowt.Table(gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
-		t.Column("Event", gowt.Scaled(250), gowt.Fit())
-		t.Column("Who", gowt.Scaled(110), gowt.Fit())
-		t.Column("When", gowt.Scaled(60), gowt.Right(), gowt.Fit())
+		t.ShowLines(false)
+		t.Column("Event", gowt.Scaled(250))
+		t.Column("Who", gowt.Scaled(110))
+		t.Column("When", gowt.Scaled(60), gowt.Right())
 		for _, r := range [][]string{
 			{"Plan upgraded to Team", "Priya Raman", "2h"},
 			{"New project created", "Tomas Weber", "3h"},

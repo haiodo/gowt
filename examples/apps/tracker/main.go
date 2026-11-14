@@ -70,6 +70,7 @@ func filterBar() gowt.Option {
 
 func table(app *gowt.App) gowt.Option {
 	return gowt.Table(gowt.Grow(), gowt.Init(func(t *gowt.TableView) {
+		t.ShowLines(false)
 		t.Column("ID", gowt.Scaled(92), gowt.Fit())
 		title := t.Column("Title", gowt.Scaled(400), gowt.Fit())
 		t.Column("Status", gowt.Scaled(120), gowt.Fit())

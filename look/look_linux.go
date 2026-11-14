@@ -40,7 +40,13 @@ func syncSidebar(*swt.Shell, *swt.Composite, [4]int32, bool) {}
 
 func inspectorInset() int32 { return 0 }
 
-func syncInspector(*swt.Composite, [4]int32, bool) {}
+// syncInspector gives the pane a background of its own: an alpha-0 StyledText over a pane that only
+// inherits the shell's background drew the theme's white base instead.
+func syncInspector(ib *swt.Composite, _ [4]int32, _ bool) {
+	if _, ok := ib.GetDataKey(materialKey).(*material); !ok {
+		setMaterial(ib, true)
+	}
+}
 
 // sidebarDivider leaves a gap for the sash: an SWT sash here paints its own background and would cover
 // the content edge.

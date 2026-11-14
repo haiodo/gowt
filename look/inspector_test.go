@@ -153,8 +153,11 @@ func TestPanesOverlayFrames(t *testing.T) {
 	if ct != client {
 		t.Errorf("content %v, want the whole client %v", ct, client)
 	}
-	if pb[0] != sb[0]+sb[2] || pb[0]+pb[2] != ib[0] {
-		t.Errorf("bottom %v, want between the sidebar edge %d and the inspector %v", pb, sb[0]+sb[2], ib)
+	// The column starts and ends past the divider gap the platform's sidebarDivider() gives
+	// (0 on darwin, 4 elsewhere): flush to the pane glass edges only where the divider is 0.
+	div := sidebarDivider()
+	if pb[0] != sb[0]+sb[2]+div || pb[0]+pb[2] != ib[0]-div {
+		t.Errorf("bottom %v, want between the sidebar edge %d and the inspector %v, divider %d", pb, sb[0]+sb[2], ib, div)
 	}
 	if pb[3] != 160 || pb[1]+pb[3] != client[1]+client[3] {
 		t.Errorf("bottom %v, want 160 high at the client foot", pb)

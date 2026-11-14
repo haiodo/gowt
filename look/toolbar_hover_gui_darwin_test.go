@@ -46,7 +46,7 @@ func TestToolbarHoverActiveWindow(t *testing.T) {
 						fail("mouseExited: kept the hover")
 					}
 					cocoa.ToolbarIconSendHover(w.Unwrap().View, "zoom-in", true)
-					cocoa.ToolbarPostResignKey()
+					cocoa.ToolbarPostResignKey(w.Unwrap().View)
 					if hovered() {
 						fail("the resign-key notification kept the hover")
 					}

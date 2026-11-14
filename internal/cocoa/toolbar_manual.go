@@ -1194,9 +1194,9 @@ func ToolbarIconSendHover(view *NSView, id string, entered bool) bool {
 	return true
 }
 
-// ToolbarPostResignKey posts NSWindowDidResignKeyNotification, as AppKit posts it when a window
-// resigns key, for the hover GUI checks.
-func ToolbarPostResignKey() {
+// ToolbarPostResignKey posts NSWindowDidResignKeyNotification with the window as the object,
+// as AppKit does: observers such as NSRemoteView assert an NSWindow and raise on nil.
+func ToolbarPostResignKey(view *NSView) {
 	msg(msg(class("NSNotificationCenter"), "defaultCenter"), "postNotificationName:object:",
-		nsString("NSWindowDidResignKeyNotification"), 0)
+		nsString("NSWindowDidResignKeyNotification"), msg(uintptr(view.Id), "window"))
 }

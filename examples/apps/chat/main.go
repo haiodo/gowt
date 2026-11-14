@@ -51,10 +51,10 @@ func main() {
 
 		var sidebar, content, thread *gowt.Panel
 		w.Add(sidebarPane(app, &sidebar), contentPane(app, &content), threadPane(app, &thread))
-		look.SetToolbar(w, look.ToolbarItem{Title: "Hide Sidebar", Symbol: "sidebar.left", Sidebar: true, OnClick: func() {}},
+		look.SetToolbar(w, look.ToolbarItem{Title: "Hide Sidebar", Symbol: "sidebar.left", Sidebar: true, OnClick: func() { look.SetSidebarVisible(w, !look.SidebarVisible(w)) }},
 			look.ToolbarItem{Space: true},
 			look.ToolbarItem{Title: "Search channels", OnSearch: func(string) {}},
-			look.ToolbarItem{Title: "Hide Thread", Symbol: "sidebar.right", OnClick: func() {}})
+			look.ToolbarItem{Title: "Hide Thread", Symbol: "sidebar.right", OnClick: func() { look.SetInspectorVisible(w, !look.InspectorVisible(w)) }})
 		look.SetSidebar(w, sidebar, content, gowt.Scaled(260))
 		look.SetInspector(w, content, thread, gowt.Scaled(340))
 		w.Show()
@@ -107,7 +107,7 @@ func messageRow(app *gowt.App, m message) gowt.Option {
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label(m.who.name, gowt.Typeface(gowt.Type.BodyStrong)), gowt.Label(m.time, kit.Faint(), gowt.Typeface(gowt.Type.Caption)))}
 	for _, l := range m.lines {
 		if len(l) > 8 && l[:8] == "https://" {
-			body = append(body, gowt.Link(`<a href="`+l+`">`+l+`</a>`, gowt.Wrap(), gowt.GrowX()))
+			body = append(body, gowt.Link(`<a href="`+l+`">`+l+`</a>`, gowt.GrowX()))
 		} else {
 			body = append(body, gowt.Label(l, gowt.Wrap(), gowt.GrowX()))
 		}
@@ -137,8 +137,8 @@ func composer(app *gowt.App, hint string) gowt.Option {
 			gowt.Init(func(b *gowt.ButtonView) { b.SetImage(kit.Symbol(app, kit.PathClip, 18, kit.Gray)) })),
 		gowt.HBox(gowt.Ref(&cap), gowt.GrowX(), gowt.Padding(gowt.Spacing.XS), gowt.Gap(gowt.Spacing.XS),
 			gowt.Init(func(p *gowt.Panel) { look.SetGlass(p, true); look.SetGlassRadius(p, look.Capsule) }),
-			gowt.Text(gowt.Borderless(), gowt.GrowX(), gowt.Hint(hint)),
-			gowt.Button("", gowt.Flat(), gowt.Size(gowt.Scaled(32), gowt.Scaled(32)), gowt.Tooltip("Send"),
+			gowt.Text(gowt.NoBorder(), gowt.GrowX(), gowt.GrowY(), gowt.Hint(hint)),
+			gowt.Button("", gowt.Borderless(), gowt.Size(gowt.Scaled(32), gowt.Scaled(32)), gowt.Tooltip("Send"),
 				gowt.Init(func(b *gowt.ButtonView) { b.SetImage(kit.Symbol(app, kit.PathSend, 18, kit.Blue)) }))))
 }
 
@@ -146,7 +146,7 @@ func threadPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 	code := "Hello,\n\nThis is a sample message for the demo thread. It describes an invented review with a few issues that need attention. See below for the details.\n\nReference: SAMPLE-0000-0001\nReview date: January 1, 2000\nVersion reviewed: 1.0 (100)"
 	return gowt.VBox(gowt.Ref(ref), gowt.Gap(gowt.Spacing.MD), gowt.Padding(gowt.Spacing.MD),
 		gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label("Thread", gowt.Typeface(gowt.Type.Subtitle)), gowt.Label("develop", kit.Faint()), gowt.Spacer(),
-			gowt.Button("", gowt.Flat(), gowt.Size(gowt.Scaled(28), gowt.Scaled(28)), gowt.Init(func(b *gowt.ButtonView) { b.SetImage(icons.Get(app, "close", icons.Size(14))) }))),
+			gowt.Button("", gowt.Borderless(), gowt.Size(gowt.Scaled(28), gowt.Scaled(28)), gowt.Init(func(b *gowt.ButtonView) { b.SetImage(icons.Get(app, "close", icons.Size(14))) }))),
 		gowt.HBox(gowt.Gap(gowt.Spacing.MD), gowt.GrowX(), gowt.Place(gowt.AlignStart, gowt.AlignStart),
 			kit.Avatar(app, me.initials, me.color, gowt.Scaled(36)),
 			gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.GrowX(),
@@ -158,7 +158,7 @@ func threadPane(app *gowt.App, ref **gowt.Panel) gowt.Option {
 			kit.Avatar(app, me.initials, me.color, gowt.Scaled(36)),
 			gowt.VBox(gowt.Gap(gowt.Spacing.XS), gowt.Grow(),
 				gowt.HBox(gowt.Gap(gowt.Spacing.SM), gowt.Label(me.name, gowt.Typeface(gowt.Type.BodyStrong)), gowt.Label("21:30", kit.Faint(), gowt.Typeface(gowt.Type.Caption))),
-				gowt.StyledText(gowt.ReadOnly(), gowt.Wrap(), gowt.Grow(), gowt.Borderless(),
+				gowt.StyledText(gowt.ReadOnly(), gowt.Wrap(), gowt.Grow(), gowt.NoBorder(),
 					gowt.Init(func(t *gowt.StyledTextView) {
 						t.SetFont(gowt.Type.Mono)
 						t.SetText(code)

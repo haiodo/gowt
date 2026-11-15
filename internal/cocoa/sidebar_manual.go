@@ -574,6 +574,11 @@ func (s *toolbarState) fitCenter(w uintptr) {
 	target := (left + right) / 2
 	cur := NewNSViewOverload1(int64(s.center)).Bounds().Width
 	width := max(1, (lo+hi)/2+cur-target)
+	// AppKit packs the content items at the inspector divider; where it does not, they run under the
+	// inspector, so the spacer gives that room back instead of widening the row.
+	if over := contentOverflow(w, s, right); over > 0 {
+		width = max(1, cur-over)
+	}
 	if math.Abs(width-s.centerWidth) < 0.5 {
 		return
 	}
@@ -615,14 +620,14 @@ func postAfter(v, selector uintptr, delay float64) {
 	postAfterMsg(v, sel("performSelector:withObject:afterDelay:"), selector, 0, delay)
 }
 
-// centerItemExtent is the left and right edge, in window points, of the block of Center items of
-// the toolbar of w, measured on the item viewers that show them; ok is false before the toolbar
-// laid them out.
-func centerItemExtent(w uintptr, s *toolbarState) (lo, hi float64, ok bool) {
+// itemRects maps the index of each toolbar item on screen to its frame in window points, measured on
+// the item viewers that show them.
+func itemRects(w uintptr) map[int]NSRect {
+	out := map[int]NSRect{}
 	content := msg(w, "contentView")
 	theme := msg(content, "superview")
 	if theme == 0 {
-		return 0, 0, false
+		return out
 	}
 	toolbarItem := class("NSToolbarItem")
 	var walk func(v uintptr)
@@ -632,16 +637,10 @@ func centerItemExtent(w uintptr, s *toolbarState) (lo, hi float64, ok bool) {
 		}
 		if respondsTo(v, "item") {
 			if it := msg(v, "item"); it != 0 && msg(it, "isKindOfClass:", toolbarItem)&0xff != 0 {
-				if i, err := strconv.Atoi(strings.TrimPrefix(goString(msg(it, "itemIdentifier")), itemIDPrefix)); err == nil && s.centerIdx[i] {
+				id := goString(msg(it, "itemIdentifier"))
+				if i, err := strconv.Atoi(strings.TrimPrefix(id, itemIDPrefix)); err == nil {
 					nv := NewNSViewOverload1(int64(v))
-					r := nv.ConvertRect_toView_(nv.Bounds(), nil)
-					if !ok || r.X < lo {
-						lo = r.X
-					}
-					if !ok || r.X+r.Width > hi {
-						hi = r.X + r.Width
-					}
-					ok = true
+					out[i] = nv.ConvertRect_toView_(nv.Bounds(), nil)
 				}
 			}
 		}
@@ -651,7 +650,39 @@ func centerItemExtent(w uintptr, s *toolbarState) (lo, hi float64, ok bool) {
 		}
 	}
 	walk(theme)
+	return out
+}
+
+// centerItemExtent is the left and right edge of the block of Center items, in window points; ok is
+// false before the toolbar laid them out.
+func centerItemExtent(w uintptr, s *toolbarState) (lo, hi float64, ok bool) {
+	for i, r := range itemRects(w) {
+		if !s.centerIdx[i] {
+			continue
+		}
+		if !ok || r.X < lo {
+			lo = r.X
+		}
+		if !ok || r.X+r.Width > hi {
+			hi = r.X + r.Width
+		}
+		ok = true
+	}
 	return lo, hi, ok
+}
+
+// contentOverflow is how far past right the content items of the toolbar end: the items that belong to
+// the column, not the Inspector ones. AppKit keeps them at the inspector divider; on macOS 26 they ran
+// to the window edge (measured on the CI runner), over the inspector.
+func contentOverflow(w uintptr, s *toolbarState, right float64) float64 {
+	edge := 0.0
+	for i, r := range itemRects(w) {
+		if i < 0 || i >= len(s.items) || s.overInspector(s.items[i]) {
+			continue
+		}
+		edge = math.Max(edge, r.X+r.Width)
+	}
+	return math.Max(0, edge-right)
 }
 
 // SidebarItemsMinEdge is the sidebar edge, in window points, below which the Sidebar items of the
@@ -713,6 +744,9 @@ func DescribeSidebarToolbar(view *NSView) string {
 		out += fmt.Sprintf("center items x %.1f to %.1f\n", lo, hi)
 	} else {
 		out += "center items not measured\n"
+	}
+	for i, r := range itemRects(w) {
+		out += fmt.Sprintf("item %d x %.1f to %.1f\n", i, r.X, r.X+r.Width)
 	}
 	return out
 }

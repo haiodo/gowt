@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/haiodo/gowt"
-	"github.com/haiodo/gowt/internal/cocoa"
 	"github.com/haiodo/gowt/internal/qatree"
 	"github.com/haiodo/gowt/look"
 	"github.com/haiodo/gowt/rx"
@@ -388,7 +387,7 @@ func TestToolbarZones(t *testing.T) {
 				mid := (out.Bounds[0] + in.Bounds[0] + in.Bounds[2]) / 2
 				want := (edge + iedge) / 2
 				if mid < want-30 || mid > want+30 {
-					fail("%s: center items mid %d, want about the content column middle %d\n%s", step, mid, want, cocoa.DescribeSidebarToolbar(w.Unwrap().View))
+					fail("%s: center items mid %d, want about the content column middle %d\n%s", step, mid, want, toolbarDump(w))
 				}
 				for _, id := range []string{"open", "zoom-out", "zoom-in", "fit"} {
 					if n := node(step, id); n.Visible && n.Bounds[0]+n.Bounds[2] > iedge {

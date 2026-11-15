@@ -31,7 +31,7 @@ SWT's translated JUnit tests, `make test-swt`, counted from `tests/expected*.txt
 | macOS (`expected.txt`) | 3818 | 4 (+3 flaky) | 69 |
 | Windows (`expected_windows.txt`, recorded under Wine) | 3728 | 70 (+7 flaky) | 89 |
 | Windows 11 arm64 VM (`expected_windows_vm.txt`) | 3799 | 0 (+6 flaky) | 89 |
-| Linux (`expected_linux.txt`) | 3840 | 2 (+1 flaky) | 58 |
+| Linux (`expected_linux.txt`) | 3839 | 3 (+1 flaky) | 58 |
 | Linux desktop (`expected_linux_desktop.txt`, Ubuntu 26.04 GNOME, Wayland) | 3836 | 4 (+1 flaky) | 60 |
 
 3894 tests in all. JFace tests (`expected_jface*.txt`): 86 pass, 1 skip on macOS; 85 pass, 1 fail, 1 skip on Linux and Windows.

@@ -159,7 +159,7 @@ SWT's own JUnit tests, translated to Go and run per OS by `make test-swt` agains
 | macOS | 3818 | 4 (+3 flaky) | 69 |
 | Windows (`expected_windows.txt`, recorded under Wine) | 3728 | 70 (61 Browser tests, 9 others) (+7 flaky) | 89 |
 | Windows 11 arm64 VM (`expected_windows_vm.txt`) | 3799 | 0 (+6 flaky) | 89 |
-| Linux (Docker, Xvfb) | 3840 | 2 (+1 flaky) | 58 |
+| Linux (Docker, Xvfb) | 3839 | 3 (+1 flaky) | 58 |
 | Linux desktop (`expected_linux_desktop.txt`, Ubuntu 26.04 GNOME, Wayland) | 3836 | 4 (+1 flaky) | 60 |
 
 3894 tests in all. The two rows from real machines are gate files recorded from two identical full runs: Windows 11 arm64 in a UTM virtual machine and Ubuntu 26.04.1 arm64 with GNOME on Wayland in a UTM virtual machine with a GPU.

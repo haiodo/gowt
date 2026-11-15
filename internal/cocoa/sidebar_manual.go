@@ -574,11 +574,6 @@ func (s *toolbarState) fitCenter(w uintptr) {
 	target := (left + right) / 2
 	cur := NewNSViewOverload1(int64(s.center)).Bounds().Width
 	width := max(1, (lo+hi)/2+cur-target)
-	// AppKit packs the content items at the inspector divider; where it does not, they run under the
-	// inspector, so the spacer gives that room back instead of widening the row.
-	if over := contentOverflow(w, s, right); over > 0 {
-		width = max(1, cur-over)
-	}
 	if math.Abs(width-s.centerWidth) < 0.5 {
 		return
 	}
@@ -669,20 +664,6 @@ func centerItemExtent(w uintptr, s *toolbarState) (lo, hi float64, ok bool) {
 		ok = true
 	}
 	return lo, hi, ok
-}
-
-// contentOverflow is how far past right the content items of the toolbar end: the items that belong to
-// the column, not the Inspector ones. AppKit keeps them at the inspector divider; on macOS 26 they ran
-// to the window edge (measured on the CI runner), over the inspector.
-func contentOverflow(w uintptr, s *toolbarState, right float64) float64 {
-	edge := 0.0
-	for i, r := range itemRects(w) {
-		if i < 0 || i >= len(s.items) || s.overInspector(s.items[i]) {
-			continue
-		}
-		edge = math.Max(edge, r.X+r.Width)
-	}
-	return math.Max(0, edge-right)
 }
 
 // SidebarItemsMinEdge is the sidebar edge, in window points, below which the Sidebar items of the

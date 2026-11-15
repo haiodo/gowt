@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.15.8 (2026-11-15)
+## v0.16.0 (2026-11-15)
 
 - Changed: in a `look.SetPanesOverlay` window on macOS the content now spans the whole client area, and the sidebar, inspector, bottom panel and the native toolbar draw over it in glass. The bottom panel floats inset in the central column by default; `look.SetBottomPanelFloating(w, false)` fills the column flush and square, and the new `look.SetInspectorFullHeight(w, on)` runs the inspector glass to the window edges with its children below the toolbar, as `SetSidebarFullHeight` already does for the sidebar. The default non-overlay layouts, the sash drag limits and the Windows and Linux looks are unchanged.
 - New: `look.SetGlassTint(c, rgba)` tints the glass of one sidebar, inspector or glass panel: the tint colour on the macOS 26 glass, a denser material on the fallback of systems without glass; the default look is unchanged and Reduce transparency keeps its previous fallback.

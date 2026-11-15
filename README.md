@@ -182,6 +182,16 @@ JFace tests: 86 pass on macOS, 85 pass and 1 fail on Linux and Windows. Counts a
 
 - Known gaps, unverified platform items and how CI covers the three OSes: [docs/platforms.md](docs/platforms.md).
 
+## Contributing
 Contributing (build, tests, generated code, DCO sign-off): [CONTRIBUTING.md](CONTRIBUTING.md). To help test on a real Windows, Linux or Mac: [docs/field-check.md](docs/field-check.md).
+
+## Support
+
+An a open-source work requires some essential community support, so if you like my work in some case, please helm me on this way:
+
+* https://web.tribute.tg/d/Uag
+* https://boosty.to/haiodo
+
+## License
 
 License: EPL-2.0, see `LICENSE` and `NOTICE`.

@@ -10,6 +10,42 @@ import (
 
 const phW, phH = 240, 80
 
+func TestMultilineFieldStyleWithoutWindow(t *testing.T) {
+	onMain(func() {
+		pool := msg(msg(class("NSAutoreleasePool"), "alloc"), "init")
+		defer msg(pool, "drain")
+		scroll := msg(msg(class("NSScrollView"), "alloc"), "init")
+		defer msg(scroll, "release")
+		tv := msg(msg(class("NSTextView"), "alloc"), "init")
+		defer msg(tv, "release")
+		msg(scroll, "setDocumentView:", tv)
+		view := NewNSViewOverload1(int64(tv))
+		if got := fieldStyleHost(tv); got != scroll {
+			t.Fatalf("host %x, want scroll %x", got, scroll)
+		}
+		for _, color := range []string{"redColor", "blueColor"} {
+			msg(tv, "setBackgroundColor:", msg(class("NSColor"), color))
+			SetFieldFill(view, 7)
+			SetFieldStroke(view, 0.1, 0.2, 0.3, 1, 1)
+			if radius := FieldFillRadius(view); radius != 7 {
+				t.Errorf("radius %v, want 7", radius)
+			}
+			fill, ok := FieldFillRGBA(view)
+			index := 0
+			if color == "blueColor" {
+				index = 2
+			}
+			if !ok || fill[index] < 0.99 {
+				t.Errorf("%s fill %v (%v)", color, fill, ok)
+			}
+			layer := msg(scroll, "layer")
+			if width := msgToF64(layer, sel("borderWidth")); width != 1 || msg(layer, "borderColor") == 0 {
+				t.Errorf("border width %v or color missing", width)
+			}
+		}
+	})
+}
+
 // placeholderInk draws the placeholder of tv into a flipped 1x bitmap, as the text view's drawRect
 // would, and returns the box of the drawn pixels and their highest alpha (ok false: nothing drawn).
 func placeholderInk(tv uintptr, s string) (minX, minY, maxY int, alpha float64, ok bool) {

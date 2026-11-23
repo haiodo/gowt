@@ -80,7 +80,7 @@ func fieldLook(t *TextView, noBorder bool) {
 		t.aff.drag = nil // nothing to scrub on
 	}
 	styled := t.fill != nil || t.stroke != nil || t.padX > 0
-	if styled && runtime.GOOS == "darwin" {
+	if styled && runtime.GOOS == "darwin" && !t.multi() {
 		if t.aff == nil {
 			t.aff = &affix{}
 		}
@@ -111,7 +111,7 @@ func fieldLook(t *TextView, noBorder bool) {
 	if t.padX > 0 {
 		setFieldInset(t.t, t.padX)
 	}
-	if styled {
+	if styled && !t.multi() {
 		t.t.AddListener(swt.FocusIn, listenerFunc(func(*swt.Event) { placeFieldEditor(t.t) }))
 	}
 	if noBorder && t.t.GetStyle()&swt.MULTI == 0 && t.t.GetDataKey("gowt.fieldAffix") == nil {

@@ -38,7 +38,7 @@ Packages: `.`.
 | Popover, overlays | `popover.go`, `popover_shell.go` | `popover_{darwin,linux,windows}.go` | `popover_test.go`, `popover_gui_test.go`, `popover_draw_darwin_test.go` | `examples/dialogs` |
 | Pills, sections, disclosure, segmented, CTabFolder extras | `section.go`, `disclosure.go`, `segmented.go`, `ctabs_render.go`, `hint.go` | `section_{darwin,other}.go`, `segmented_{darwin,other}.go`, `ctabs_look_{darwin,windows,other}.go`, `hint_{darwin,linux,windows,other}.go` | `section_test.go`, `disclosure_test.go`, `segmented*_test.go`, `ctabs_gui_test.go`, `hint_gui_test.go` | `examples/widgets`, `examples/catalog` |
 | Field editor, form fields | `fields.go` | `fieldeditor_{darwin,other}.go`, `fieldstyle_{darwin,linux,windows,other}.go` | `fields_test.go`, `fieldstyle_linux_test.go` | `cmd/form`; [widgets.md](widgets.md) |
-| Scroll behaviour, affix | `affix.go` | `scroll_{darwin,other}.go`, `overlay_scroll_windows.go` | `scroll_gui_test.go`, `scroll_*_test.go`, `affix_test.go`, `affix_darwin_test.go` | [windows-layouts.md](windows-layouts.md) |
+| Scroll behaviour, affix, macOS multi-line field styling | `affix.go` | `scroll_{darwin,other}.go`, `overlay_scroll_windows.go`, `fieldstyle_darwin.go`, `internal/cocoa/fieldstyle_manual.go` | `scroll_gui_test.go`, `scroll_*_test.go`, `affix_test.go`, `affix_darwin_test.go` | [windows-layouts.md](windows-layouts.md) |
 | Line numbers, styled text helpers | `widgets_text.go` | `textscroll_{linux,other}.go` | `linenumbers_test.go`, `styledtext_bg_gui_test.go` | [widgets.md](widgets.md) |
 | App monitor, snapshots (facade side) | `snap.go`, `qa_on.go`, `qa_off.go` | `snap_{darwin,other}.go` | `qatree_*_gui_test.go` | [qa.md](qa.md) |
 

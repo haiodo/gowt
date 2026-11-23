@@ -6,18 +6,31 @@ import "github.com/ebitengine/purego"
 
 var msg4F64 func(id, sel uintptr, a, b, c, d float64) uintptr
 
+func fieldStyleHost(v uintptr) uintptr {
+	if msg(v, "isKindOfClass:", class("NSTextView")) != 0 {
+		return msg(v, "enclosingScrollView")
+	}
+	return v
+}
+
 // SetFieldFill gives a single-line field a rounded fill behind its text: the bezel and the field's
 // own background go, a layer takes the background colour already set on the field and the radius.
 func SetFieldFill(view *NSView, radius float64) {
 	v := uintptr(view.Id)
-	msg(v, "setBezeled:", 0)
-	msg(v, "setBordered:", 0)
-	msg(v, "setDrawsBackground:", 0)
-	if e := msg(v, "currentEditor"); e != 0 {
-		msg(e, "setDrawsBackground:", 0)
+	target := fieldStyleHost(v)
+	if target != v {
+		msg(target, "setBorderType:", 0)
+		ClearTextViewBackground(view)
+	} else {
+		msg(v, "setBezeled:", 0)
+		msg(v, "setBordered:", 0)
+		msg(v, "setDrawsBackground:", 0)
+		if e := msg(v, "currentEditor"); e != 0 {
+			msg(e, "setDrawsBackground:", 0)
+		}
 	}
-	msg(v, "setWantsLayer:", 1)
-	l := msg(v, "layer")
+	msg(target, "setWantsLayer:", 1)
+	l := msg(target, "layer")
 	if l == 0 {
 		return
 	}
@@ -35,6 +48,10 @@ func SetFieldFill(view *NSView, radius float64) {
 // SetFieldStroke draws a border of the RGBA colour around the field's fill, width in points.
 func SetFieldStroke(view *NSView, red, green, blue, alpha, width float64) {
 	v := uintptr(view.Id)
+	if host := fieldStyleHost(v); host != v {
+		v = host
+		msg(v, "setBorderType:", 0)
+	}
 	msg(v, "setWantsLayer:", 1)
 	l := msg(v, "layer")
 	if l == 0 {
@@ -64,7 +81,8 @@ func SetFieldInset(view *NSView, inset float64) {
 
 // FieldFillRadius is the corner radius of the layer SetFieldFill added, 0 without one.
 func FieldFillRadius(view *NSView) float64 {
-	l := msg(uintptr(view.Id), "layer")
+	v := fieldStyleHost(uintptr(view.Id))
+	l := msg(v, "layer")
 	if l == 0 || !respondsTo(l, "cornerRadius") {
 		return 0
 	}
@@ -76,7 +94,8 @@ func FieldFillRadius(view *NSView) float64 {
 
 // FieldFillRGBA is the fill of SetFieldFill as sRGB; ok is false without a layer background.
 func FieldFillRGBA(view *NSView) ([4]float64, bool) {
-	l := msg(uintptr(view.Id), "layer")
+	v := fieldStyleHost(uintptr(view.Id))
+	l := msg(v, "layer")
 	if l == 0 {
 		return [4]float64{}, false
 	}

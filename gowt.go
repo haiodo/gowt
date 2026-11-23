@@ -481,6 +481,7 @@ func Search() Option {
 // FieldFill gives a single-line Text or Number a rounded fill instead of the native bezel: the text,
 // caret, focus ring and Prefix stay native, and Radius rounds the fill. Pair it with Inset for the
 // padding of the text.
+// On macOS it also styles a multi-line Text.
 func FieldFill(c Paint) Option {
 	return hook(func(w Widget) error {
 		t, err := fieldOf(w, "FieldFill")
@@ -494,6 +495,7 @@ func FieldFill(c Paint) Option {
 
 // FieldStroke draws a border of paint around the FieldFill of a single-line field; RGB.Alpha sets a
 // translucent border such as the 25% black of an inspector field.
+// On macOS it also styles a multi-line Text.
 func FieldStroke(c Paint) Option {
 	return hook(func(w Widget) error {
 		t, err := fieldOf(w, "FieldStroke")

@@ -59,6 +59,10 @@ type bandTarget struct {
 	bottom int
 }
 
+func (r *Renderer) NewDirectBand(wpx, hpx, bottom int) gfx.Target {
+	return bandTarget{target{r.NewSurface(wpx, hpx)}, bottom}
+}
+
 func (b bandTarget) Begin(scale float64, origin gfx.Point, bg gfx.Color) {
 	b.Surface.BeginStrip(scale, origin.X, origin.Y, b.bottom, bg)
 }

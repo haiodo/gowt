@@ -18,10 +18,10 @@ type Options struct {
 	// ExactZoom draws tiles at exactly the zoom after a gesture instead of the next power of two
 	// above it. Sharper at in-between zooms, but no tile is reused when the zoom comes back.
 	ExactZoom bool
-	// Direct draws the visible part of the scene in one pass per frame or damage instead of tiles:
+	// Direct draws the visible part of the scene instead of tiles:
 	// no tile pool, no tile reuse, no snap to powers of two - every draw is at exactly zoom*dpr.
-	// The view is one image covering the viewport, drawn again on every camera move, resize and
-	// scene damage. Everything else - camera, HUD, sprites, lifts, input, QA - works as in the
+	// The viewport is redrawn on camera moves and resize; CoreGraphics redraws only damaged
+	// horizontal bands for scene changes. Everything else - camera, HUD, sprites, lifts, input, QA - works as in the
 	// tile mode. The viewport in device pixels must fit the renderer's target limit (32767 per
 	// side), which a window on one screen always does.
 	Direct bool
@@ -355,13 +355,16 @@ type Compositor struct {
 	ticking     atomic.Bool // OnFrame is set: frames run on every display tick
 
 	cur, prev *tileSet
-	// direct is the Direct mode state: one image of the viewport, redrawn whole on a camera move,
-	// a resize or scene damage; damage and lift rects wait in direct.damage for the next Frame.
+	// direct holds the viewport image or CoreGraphics bands; damage and lift rects wait in
+	// direct.damage for the next Frame.
 	direct struct {
-		layer  Layer
-		damage []Rect
-		drawn  bool
-		items  Items
+		layer   Layer
+		bands   []directBand
+		bandPx  [2]int
+		bandDPR float64
+		damage  []Rect
+		drawn   bool
+		items   Items
 		// rot is the rotating viewport target of the Direct mode; when the snapshot shares the
 		// target memory, a target is not drawn into again for two frames. sets is the same
 		// rotation for the parallel-strip rasterization; only one of them is in use.
@@ -410,6 +413,15 @@ type Compositor struct {
 	stats    Stats
 }
 
+type directBand struct {
+	target Target
+	layer  Layer
+}
+
+type directBandRenderer interface {
+	NewDirectBand(wpx, hpx, bottom int) Target
+}
+
 // NewCompositor returns a compositor that draws s with r onto h. Most apps get one from view.New.
 func NewCompositor(s *Scene, r Renderer, h Host, o Options) *Compositor {
 	o.fill()
@@ -456,6 +468,11 @@ func (c *Compositor) Close() {
 	c.direct.bitems = nil
 	c.direct.rotN = 0
 	c.direct.rotSet = false
+	for _, b := range c.direct.bands {
+		b.target.Close()
+		b.layer.Remove()
+	}
+	c.direct.bands = nil
 	if c.direct.layer != nil {
 		c.direct.layer.Remove()
 		c.direct.layer = nil
@@ -634,8 +651,7 @@ func (c *Compositor) Frame(fi FrameInfo) {
 	c.stats.FrameTime = time.Since(t0)
 }
 
-// stepDirect brings the single viewport image up to date. The redraw is whole: one Collect of the
-// view rect and one draw at exactly zoom*dpr. Lifts and landings are synchronous here, so the
+// stepDirect brings the viewport up to date at exactly zoom*dpr. Lifts and landings are synchronous here, so the
 // base image and the sprite layer always change in one host transaction: no hold-back queue of
 // the tile mode is needed. After a redraw every hold is released, so the frame is settled.
 func (c *Compositor) stepDirect(camMoved bool) {
@@ -656,7 +672,11 @@ func (c *Compositor) stepDirect(camMoved bool) {
 	}
 	c.settled = true
 	if need {
-		c.drawDirect(view)
+		if r, ok := c.r.(directBandRenderer); ok {
+			c.drawDirectBands(r, view, camMoved || !c.direct.drawn)
+		} else {
+			c.drawDirect(view)
+		}
 		c.direct.damage = c.direct.damage[:0]
 	}
 	for _, l := range c.lifts {
@@ -665,6 +685,92 @@ func (c *Compositor) stepDirect(camMoved bool) {
 			l.layer.SetHidden(false)
 		}
 	}
+}
+
+func (c *Compositor) drawDirectBands(r directBandRenderer, view Rect, full bool) {
+	wpx, hpx := int(math.Ceil(c.vw*c.dpr)), int(math.Ceil(c.vh*c.dpr))
+	if wpx < 1 || hpx < 1 {
+		return
+	}
+	n := min(max(c.o.Workers, 1), 8, max(1, hpx/32))
+	if len(c.direct.bands) != n || c.direct.bandPx != [2]int{wpx, hpx} || c.direct.bandDPR != c.dpr {
+		for _, b := range c.direct.bands {
+			b.target.Close()
+			b.layer.Remove()
+		}
+		c.direct.bands = nil
+	}
+	if len(c.direct.bands) == 0 {
+		c.direct.bandPx = [2]int{wpx, hpx}
+		c.direct.bandDPR = c.dpr
+		for i := 0; i < n; i++ {
+			y0, y1 := i*hpx/n, (i+1)*hpx/n
+			c.direct.bands = append(c.direct.bands, directBand{r.NewDirectBand(wpx, y1-y0, y1), c.host.NewLayer(GroupTiles)})
+		}
+		full = true
+	}
+	for len(c.direct.bitems) < n {
+		c.direct.bitems = append(c.direct.bitems, Items{})
+	}
+	scale := c.cam.Zoom * c.dpr
+	t0 := time.Now()
+	type result struct {
+		img   Image
+		dirty bool
+	}
+	results := make([]result, n)
+	var wg sync.WaitGroup
+	for i := range n {
+		y0, y1 := i*hpx/n, (i+1)*hpx/n
+		eps := 1e-3 / scale
+		rect := R(view.Min.X-eps, view.Min.Y+float64(y0)/scale-eps, view.W()+2*eps, float64(y1-y0)/scale+2*eps)
+		dirty := full
+		for _, d := range c.direct.damage {
+			if d.Intersects(rect) {
+				dirty = true
+				break
+			}
+		}
+		if !dirty {
+			continue
+		}
+		c.scene.Collect(rect, &c.direct.bitems[i])
+		if len(c.direct.bitems[i].List) == 0 {
+			results[i].dirty = true
+			continue
+		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			t := c.direct.bands[i].target
+			if ss, ok := t.(ScreenScaler); ok {
+				ss.SetScreenScale(c.dpr)
+			}
+			t.Begin(scale, view.Min, Color{})
+			t.Draw(c.direct.bitems[i].List)
+			results[i] = result{t.Snapshot(float64(wpx)/c.dpr, float64(y1-y0)/c.dpr), true}
+		}()
+	}
+	wg.Wait()
+	for i, result := range results {
+		if !result.dirty {
+			continue
+		}
+		y0, y1 := i*hpx/n, (i+1)*hpx/n
+		l := c.direct.bands[i].layer
+		if result.img == nil {
+			l.SetHidden(true)
+			continue
+		}
+		l.SetImage(result.img)
+		Release(result.img)
+		l.Set(R(0, float64(y0)/c.dpr, float64(wpx)/c.dpr, float64(y1-y0)/c.dpr), Point{}, Identity())
+		l.SetHidden(false)
+	}
+	c.stats.TilesApplied++
+	c.direct.drawn = true
+	c.rastered.Add(1)
+	c.rasterNs.Add(int64(time.Since(t0)))
 }
 
 // sharedSnapshotter is implemented by Targets whose snapshots share the target memory instead

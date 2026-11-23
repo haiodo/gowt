@@ -184,7 +184,7 @@ Packages: `gfx`, `gfx/cg`, `gfx/cairo`, `gfx/d2d`, `gfx/internal/cache`, `gfx/in
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Scene graph, paths, paints, effects (shadow in `gfx/picture.go`); tile compositor and the opt-in one-pass `Direct` mode in `gfx/comp.go` | `gfx/scene.go`, `gfx/path.go`, `gfx/paint.go`, `gfx/comp.go`, `gfx/picture.go`, `gfx/curve.go` | - | `gfx/*_test.go` (`scene`, `path`, `svg`, `curve`, `shadow*`, `direct`, `options`) | [gfx.md](gfx.md), `examples/gfxcanvas`, `examples/gfxeditor` |
-| CoreGraphics renderer (macOS) | `gfx/cg/` | darwin; `gfx/cg/bind_darwin.go` (purego), `gfx/cg/bind_cgo_darwin.go` and `gfx/cg/host_cgo_darwin.go` (`gowtcgo`) | `gfx/cg/*_darwin_test.go` | [gfx.md](gfx.md) |
+| CoreGraphics renderer and Direct damage bands (macOS) | `gfx/cg/`, `gfx/comp.go` | darwin; `gfx/cg/bind_darwin.go` (purego), `gfx/cg/bind_cgo_darwin.go` and `gfx/cg/host_cgo_darwin.go` (`gowtcgo`) | `gfx/cg/*_darwin_test.go`, `gfx/cg/strip_test.go` | [gfx.md](gfx.md) |
 | cairo/Pango renderer (Linux) | `gfx/cairo/` | linux; `gfx/cairo/bind_linux.go` (purego), `gfx/cairo/bind_cgo_linux.go` (`gowtcgo`) | `gfx/cairo/*_linux_test.go` | [gfx.md](gfx.md) |
 | Direct2D renderer (Windows) | `gfx/d2d/` | windows; `gfx/d2d/call_windows_{amd64,arm64}.go` (default), `gfx/d2d/call_cgo_windows.go` (`gowtcgo`) | `gfx/d2d/*_windows_test.go` | [gfx.md](gfx.md) |
 | Offscreen buffers, HUD | `gfx/offscreen/`, `gfx/hud.go` | per-OS backends in `gfx/offscreen/` | `gfx/offscreen/*_test.go`, `gfx/hud_test.go` | [gfx.md](gfx.md) |

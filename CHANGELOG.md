@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.16.2 (2026-11-23)
+
+- Performance: dragging in a Direct gfx view on macOS redraws only the affected horizontal bands. Moving the camera, zooming or resizing redraws the full viewport at the exact display scale.
+
 ## v0.16.1 (2026-11-23)
 
 - Fixed: styled multi-line `Text` fields on macOS no longer crash on creation or focus, including inline `View.Edit` editors. Fill, stroke, radius, inset and placeholder use the multi-line view's native layout.

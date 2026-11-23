@@ -20,6 +20,7 @@ type captureLayer struct {
 	refs    []uintptr
 	hidden  bool
 	removed bool
+	frame   gfx.Rect
 }
 
 func (l *captureLayer) SetImage(img gfx.Image) {
@@ -27,10 +28,10 @@ func (l *captureLayer) SetImage(img gfx.Image) {
 		l.refs = append(l.refs, cgImageCreateWithImageInRct(im.ref, cgRect{0, 0, 2800, 1800}))
 	}
 }
-func (l *captureLayer) Set(gfx.Rect, gfx.Point, gfx.Affine) {}
-func (l *captureLayer) SetOpacity(float64)                  {}
-func (l *captureLayer) SetHidden(h bool)                    { l.hidden = h }
-func (l *captureLayer) Remove()                             { l.removed = true }
+func (l *captureLayer) Set(f gfx.Rect, _ gfx.Point, _ gfx.Affine) { l.frame = f }
+func (l *captureLayer) SetOpacity(float64)                        {}
+func (l *captureLayer) SetHidden(h bool)                          { l.hidden = h }
+func (l *captureLayer) Remove()                                   { l.removed = true }
 
 func (h *captureHost) NewLayer(gfx.Group) gfx.Layer {
 	l := &captureLayer{h: h}
@@ -40,15 +41,28 @@ func (h *captureHost) NewLayer(gfx.Group) gfx.Layer {
 func (h *captureHost) Begin()  {}
 func (h *captureHost) Commit() {}
 
+func (h *captureHost) release() {
+	for _, l := range h.layers {
+		for _, ref := range l.refs {
+			cgImageRelease(ref)
+		}
+	}
+}
+
 // pixels rasterizes a retained CGImage into a fresh surface and returns its bytes.
 func (h *captureHost) pixels(t *testing.T, r *Renderer, i int) []byte {
 	t.Helper()
-	l := h.layers[i]
-	if len(l.refs) == 0 {
+	if len(h.layers[i].refs) == 0 {
 		t.Fatal("no image on the layer")
 	}
 	s := r.NewSurface(2800, 1800)
-	cgDrawImage(s.ctx, cgRect{0, 0, 2800, 1800}, l.refs[len(l.refs)-1])
+	for _, l := range h.layers[i:] {
+		if l.hidden || l.removed || len(l.refs) == 0 {
+			continue
+		}
+		f := l.frame
+		cgDrawImage(s.ctx, cgRect{f.Min.X * 2, 1800 - f.Max.Y*2, f.W() * 2, f.H() * 2}, l.refs[len(l.refs)-1])
+	}
 	px := s.Pixels()
 	out := make([]byte, len(px))
 	copy(out, px)
@@ -208,6 +222,76 @@ func TestDirectStripsMatchSingleTarget(t *testing.T) {
 			if n > 16 {
 				t.Fatalf("workers %d zoom %v: %d bytes differ, want at most a few one-unit AA pixels", workers, z, n)
 			}
+		}
+	}
+}
+
+func TestDirectBandsDamage(t *testing.T) {
+	r := NewRenderer(Options{TextCache: true, ShadowSprite: true, LOD: true})
+	s := stripScene()
+	card := s.Root().Children()[2]
+	h := &captureHost{}
+	defer h.release()
+	c := gfx.NewCompositor(s, r, h, gfx.Options{Direct: true, Workers: 4})
+	defer c.Close()
+	c.SetViewport(1400, 900, 2)
+	c.SetCamera(gfx.Camera{Origin: gfx.Point{X: -13.7, Y: 7.3}, Zoom: 1.3})
+	c.Frame(gfx.FrameInfo{})
+	for step, y := range []float64{170, 30, 400} {
+		before := make([]int, len(h.layers))
+		for i, l := range h.layers {
+			before[i] = len(l.refs)
+		}
+		s.Update(func(tx *gfx.Tx) { tx.Move(card, 60, y) })
+		c.Frame(gfx.FrameInfo{})
+		if step == 0 {
+			changed := 0
+			for i, l := range h.layers {
+				if len(l.refs) > before[i] {
+					changed++
+				}
+			}
+			if changed == 0 || changed == len(h.layers) {
+				t.Fatalf("updated %d of %d bands", changed, len(h.layers))
+			}
+		}
+		got := h.pixels(t, r, 0)
+		fresh := &captureHost{}
+		other := gfx.NewCompositor(s, r, fresh, gfx.Options{Direct: true, Workers: 4})
+		other.SetViewport(1400, 900, 2)
+		other.SetCamera(gfx.Camera{Origin: gfx.Point{X: -13.7, Y: 7.3}, Zoom: 1.3})
+		other.Frame(gfx.FrameInfo{})
+		want := fresh.pixels(t, r, 0)
+		other.Close()
+		fresh.release()
+		if n, max := diffStats(got, want); n != 0 {
+			t.Fatalf("move to y=%v: %d bytes differ, max delta %d", y, n, max)
+		}
+	}
+}
+
+func TestDirectBandsResizeAndScale(t *testing.T) {
+	r := NewRenderer(Options{})
+	h := &captureHost{}
+	defer h.release()
+	c := gfx.NewCompositor(stripScene(), r, h, gfx.Options{Direct: true, Workers: 4})
+	defer c.Close()
+	c.SetViewport(1400, 900, 2)
+	c.Frame(gfx.FrameInfo{})
+	old := append([]*captureLayer(nil), h.layers...)
+	c.SetViewport(1400.1, 900, 2)
+	c.Frame(gfx.FrameInfo{})
+	for _, l := range old {
+		if !l.removed {
+			t.Fatal("pixel resize retained an old band")
+		}
+	}
+	old = append([]*captureLayer(nil), h.layers[len(old):]...)
+	c.SetViewport(2800.2, 1800, 1)
+	c.Frame(gfx.FrameInfo{})
+	for _, l := range old {
+		if !l.removed {
+			t.Fatal("DPR change retained an old band")
 		}
 	}
 }

@@ -3394,7 +3394,7 @@ Translator changes the tests needed, all general: text blocks (`TextBlock.getLit
 try-with-resources variable; a pattern variable named like a Go builtin (`instanceof String string`) is renamed at its declaration too; `Fprintln` of a constant ending in a newline
 becomes `Fprint` (vet); `Double.intValue/doubleValue/equals/toString`, `Number.doubleValue`, `Long.toString`, `String.getBytes/toLowerCase(Locale)`, `new String(byte[], charset)`,
 `OutputStream.write(byte[])`, `System.runFinalization`. `internal/jrt` gained `Instant`/`Duration`, `Atomic*Array`, the `Collections` wrappers, `List.RemoveAll`/`new ArrayList<>(coll)`,
-`Path.toUri`, and `http.go` (`HttpServer`/`HttpExchange` over `net/http`) for `EchoHttpServer`, which is translated too.
+`Path.toUri` and URL helpers. `internal/jrthttp/http.go` (`HttpServer`/`HttpExchange` over `net/http`) supports `EchoHttpServer`, which is translated too.
 
 `Test_org_eclipse_swt_browser_Browser` (and `EchoHttpServer`) join `TEST_FILES`. Hand-written parts: `tests/swttests/browser_manual.go` (JVM diagnostics, `test_setJavascriptEnabled`).
 

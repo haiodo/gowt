@@ -14,14 +14,15 @@ package swttests
 import (
 	"fmt"
 	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/internal/jrthttp"
 	"os"
 	"strings"
 )
 
 type EchoHttpServerImpl interface {
-	handleGetEcho_(a0 *jrt.HttpExchange)
-	handlePostEcho_(a0 *jrt.HttpExchange)
-	setResponseHeaders_(a0 *jrt.HttpExchange)
+	handleGetEcho_(a0 *jrthttp.HttpExchange)
+	handlePostEcho_(a0 *jrthttp.HttpExchange)
+	setResponseHeaders_(a0 *jrthttp.HttpExchange)
 }
 
 // j2go: wraps a subclass from another package; its exported hook names override the defaults.
@@ -37,8 +38,10 @@ func (this *echoHttpServerHooked) enter(name string) func() {
 	return func() { this.active = prev }
 }
 
-func (this *echoHttpServerHooked) handleGetEcho_(a0 *jrt.HttpExchange) {
-	if h, ok := this.hook.(interface{ HandleGetEcho_(a0 *jrt.HttpExchange) }); ok && this.active != "handleGetEcho_" {
+func (this *echoHttpServerHooked) handleGetEcho_(a0 *jrthttp.HttpExchange) {
+	if h, ok := this.hook.(interface {
+		HandleGetEcho_(a0 *jrthttp.HttpExchange)
+	}); ok && this.active != "handleGetEcho_" {
 		defer this.enter("handleGetEcho_")()
 		h.HandleGetEcho_(a0)
 		return
@@ -46,8 +49,10 @@ func (this *echoHttpServerHooked) handleGetEcho_(a0 *jrt.HttpExchange) {
 	this.EchoHttpServerImpl.handleGetEcho_(a0)
 }
 
-func (this *echoHttpServerHooked) handlePostEcho_(a0 *jrt.HttpExchange) {
-	if h, ok := this.hook.(interface{ HandlePostEcho_(a0 *jrt.HttpExchange) }); ok && this.active != "handlePostEcho_" {
+func (this *echoHttpServerHooked) handlePostEcho_(a0 *jrthttp.HttpExchange) {
+	if h, ok := this.hook.(interface {
+		HandlePostEcho_(a0 *jrthttp.HttpExchange)
+	}); ok && this.active != "handlePostEcho_" {
 		defer this.enter("handlePostEcho_")()
 		h.HandlePostEcho_(a0)
 		return
@@ -55,8 +60,10 @@ func (this *echoHttpServerHooked) handlePostEcho_(a0 *jrt.HttpExchange) {
 	this.EchoHttpServerImpl.handlePostEcho_(a0)
 }
 
-func (this *echoHttpServerHooked) setResponseHeaders_(a0 *jrt.HttpExchange) {
-	if h, ok := this.hook.(interface{ SetResponseHeaders_(a0 *jrt.HttpExchange) }); ok && this.active != "setResponseHeaders_" {
+func (this *echoHttpServerHooked) setResponseHeaders_(a0 *jrthttp.HttpExchange) {
+	if h, ok := this.hook.(interface {
+		SetResponseHeaders_(a0 *jrthttp.HttpExchange)
+	}); ok && this.active != "setResponseHeaders_" {
 		defer this.enter("setResponseHeaders_")()
 		h.SetResponseHeaders_(a0)
 		return
@@ -65,7 +72,7 @@ func (this *echoHttpServerHooked) setResponseHeaders_(a0 *jrt.HttpExchange) {
 }
 
 type EchoHttpServer struct {
-	server *jrt.HttpServer
+	server *jrthttp.HttpServer
 	impl   EchoHttpServerImpl
 }
 
@@ -88,8 +95,8 @@ func NewEchoHttpServer() *EchoHttpServer {
 }
 
 func (this *EchoHttpServer) initEchoHttpServer() {
-	var addr *jrt.InetSocketAddress = jrt.NewInetSocketAddress(jrt.InetAddressGetLoopbackAddress(), 0)
-	this.server = jrt.HttpServerCreate(addr, 0)
+	var addr *jrthttp.InetSocketAddress = jrthttp.NewInetSocketAddress(jrthttp.InetAddressGetLoopbackAddress(), 0)
+	this.server = jrthttp.HttpServerCreate(addr, 0)
 	this.CreateHandlers()
 	this.server.Start()
 }
@@ -115,11 +122,11 @@ func (this *EchoHttpServer) PostEchoUrl() string {
 	return fmt.Sprintf("http://localhost:%d/post/echo", this.Port())
 }
 
-func (this *EchoHttpServer) HandleGetEcho(exchange *jrt.HttpExchange) {
+func (this *EchoHttpServer) HandleGetEcho(exchange *jrthttp.HttpExchange) {
 	this.impl.handleGetEcho_(exchange)
 }
 
-func (this *EchoHttpServer) handleGetEcho_(exchange *jrt.HttpExchange) {
+func (this *EchoHttpServer) handleGetEcho_(exchange *jrthttp.HttpExchange) {
 	if !strings.EqualFold("GET", exchange.GetRequestMethod()) {
 		exchange.SendResponseHeaders(405, int64(-1))
 		return
@@ -128,11 +135,11 @@ func (this *EchoHttpServer) handleGetEcho_(exchange *jrt.HttpExchange) {
 	this.Respond(exchange, msg)
 }
 
-func (this *EchoHttpServer) HandlePostEcho(exchange *jrt.HttpExchange) {
+func (this *EchoHttpServer) HandlePostEcho(exchange *jrthttp.HttpExchange) {
 	this.impl.handlePostEcho_(exchange)
 }
 
-func (this *EchoHttpServer) handlePostEcho_(exchange *jrt.HttpExchange) {
+func (this *EchoHttpServer) handlePostEcho_(exchange *jrthttp.HttpExchange) {
 	if !strings.EqualFold("POST", exchange.GetRequestMethod()) {
 		exchange.SendResponseHeaders(405, int64(-1))
 		return
@@ -154,7 +161,7 @@ func (this *EchoHttpServer) ExtractMessageFromQuery(query string) string {
 	return ""
 }
 
-func (this *EchoHttpServer) Respond(exchange *jrt.HttpExchange, text string) {
+func (this *EchoHttpServer) Respond(exchange *jrthttp.HttpExchange, text string) {
 	this.impl.setResponseHeaders_(exchange)
 	var html string = this.ExpectedResponse(text)
 	var bytes []int8 = jrt.GetBytes(html)
@@ -166,11 +173,11 @@ func (this *EchoHttpServer) Respond(exchange *jrt.HttpExchange, text string) {
 	}
 }
 
-func (this *EchoHttpServer) SetResponseHeaders(exchange *jrt.HttpExchange) {
+func (this *EchoHttpServer) SetResponseHeaders(exchange *jrthttp.HttpExchange) {
 	this.impl.setResponseHeaders_(exchange)
 }
 
-func (this *EchoHttpServer) setResponseHeaders_(exchange *jrt.HttpExchange) {
+func (this *EchoHttpServer) setResponseHeaders_(exchange *jrthttp.HttpExchange) {
 	exchange.GetResponseHeaders().Set("Content-Type", "text/html; charset=UTF-8")
 }
 

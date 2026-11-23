@@ -3,6 +3,7 @@
 ## v0.16.1 (2026-11-23)
 
 - Fixed: styled multi-line `Text` fields on macOS no longer crash on creation or focus, including inline `View.Edit` editors. Fill, stroke, radius, inset and placeholder use the multi-line view's native layout.
+- Changed: the SWT test HTTP server now lives in `internal/jrthttp` outside the Java runtime; j2go and the translated tests use the new package.
 
 ## v0.16.0 (2026-11-15)
 

@@ -163,7 +163,7 @@ Packages: `swt`, `swt/swtreflect`.
 `syscall.SyscallN` by default), `internal/gtk` (GTK 3/GLib/Pango/cairo, purego by default, GIR-generated),
 all with opt-in direct cgo. `internal/webkit` (WebKitGTK 4.1, GIR-generated). Architecture: [internals.md](internals.md).
 
-Packages: `internal/cocoa`, `internal/win32`, `internal/gtk`, `internal/webkit`, `internal/jrt`, `internal/dbus`.
+Packages: `internal/cocoa`, `internal/win32`, `internal/gtk`, `internal/webkit`, `internal/jrt`, `internal/jrthttp`, `internal/dbus`.
 
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
@@ -172,6 +172,7 @@ Packages: `internal/cocoa`, `internal/win32`, `internal/gtk`, `internal/webkit`,
 | GTK 3 bindings | `internal/gtk/gen_funcs.go`, `internal/gtk/gen_funcs_<family>.go`, `internal/gtk/gen_consts.go`, `internal/gtk/glue_*.go` | linux; purego by default, generated `internal/gtk/gen_funcs_<family>_cgo.go` with `CGO_ENABLED=1 -tags gowtcgo` | `internal/gtk/*_test.go` | [internals.md](internals.md) |
 | WebKitGTK bindings | `internal/webkit/gen_funcs.go`, `internal/webkit/{load,signals,view,window}.go` | linux only | driven by `webview` GUI tests in the Linux stand | [webview-browser.md](webview-browser.md) |
 | Java runtime subset | `internal/jrt/` | all platforms | `internal/jrt/*_test.go` | - |
+| Test HTTP server | `internal/jrthttp/http.go` | all platforms | `tests/swttests/junit_echohttpserver.go` and its Browser tests | - |
 | D-Bus helpers | `internal/dbus/` | linux | `internal/dbus/*_test.go` | - |
 
 ## gfx

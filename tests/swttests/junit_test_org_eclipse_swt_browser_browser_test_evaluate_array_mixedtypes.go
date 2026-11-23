@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"github.com/haiodo/gowt/browser"
 	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/internal/jrthttp"
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 	"os"
@@ -657,7 +658,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_connection_cl
 		anon155 := &Test_org_eclipse_swt_browser_BrowserAnon11{}
 		anon155.impl = anon155
 		anon155.initEchoHttpServer()
-		anon155.fnhandlePostEcho_ = func(exchange *jrt.HttpExchange) {
+		anon155.fnhandlePostEcho_ = func(exchange *jrthttp.HttpExchange) {
 			exchange.Close()
 		}
 		var server *EchoHttpServer = &anon155.EchoHttpServer
@@ -688,10 +689,10 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_post_connection_cl
 // j2go: anonymous EchoHttpServer subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon11 struct {
 	EchoHttpServer
-	fnhandlePostEcho_ func(a0 *jrt.HttpExchange)
+	fnhandlePostEcho_ func(a0 *jrthttp.HttpExchange)
 }
 
-func (this *Test_org_eclipse_swt_browser_BrowserAnon11) handlePostEcho_(a0 *jrt.HttpExchange) {
+func (this *Test_org_eclipse_swt_browser_BrowserAnon11) handlePostEcho_(a0 *jrthttp.HttpExchange) {
 	this.fnhandlePostEcho_(a0)
 }
 

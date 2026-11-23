@@ -44,6 +44,7 @@ public class Manual {
 	private static final String SWT_EVENT_LISTENER = "org.eclipse.swt.internal.SWTEventListener";
 	// Read from Config at class init, so Main must set Config before Manual is first used.
 	public static final String JRT_IMPORT = Config.runtimeImport;
+	public static final String JRTHTTP_IMPORT = JRT_IMPORT + "http";
 	public static final String JUNIT_IMPORT = Config.junitImport;
 
 	// Round 9 images: java.io surface ImageLoader.java's own translated code needs (field/param
@@ -161,11 +162,15 @@ public class Manual {
 		}
 		// System.out/err are *os.File, a constructed one jrt.CapturedStream: both io.Writer (internal/jrt/printstream.go).
 		reg("java.io.PrintStream", "jrt.PrintStream", JRT_IMPORT, true);
-		// EchoHttpServer (internal/jrt/http.go).
+		// EchoHttpServer (internal/jrthttp/http.go).
 		for (String q : new String[]{"com.sun.net.httpserver.HttpExchange", "com.sun.net.httpserver.HttpServer", "com.sun.net.httpserver.Headers",
-				"java.net.InetSocketAddress", "java.net.InetAddress", "java.net.URLEncoder", "java.net.URLDecoder", "java.nio.charset.Charset",
+				"java.net.InetSocketAddress", "java.net.InetAddress"}) {
+			String go = q.endsWith("Headers") ? "HttpHeaders" : q.substring(q.lastIndexOf('.') + 1);
+			reg(q, "jrthttp." + go, JRTHTTP_IMPORT, false);
+		}
+		for (String q : new String[]{"java.net.URLEncoder", "java.net.URLDecoder", "java.nio.charset.Charset",
 				"java.nio.charset.StandardCharsets"}) {
-			String go = q.endsWith("Headers") ? "HttpHeaders" : q.endsWith("StandardCharsets") ? "StandardCharsets" : q.substring(q.lastIndexOf('.') + 1);
+			String go = q.endsWith("StandardCharsets") ? "StandardCharsets" : q.substring(q.lastIndexOf('.') + 1);
 			reg(q, "jrt." + go, JRT_IMPORT, false);
 		}
 		reg("java.time.Instant", "jrt.Instant", JRT_IMPORT, false);

@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"github.com/haiodo/gowt/browser"
 	"github.com/haiodo/gowt/internal/jrt"
+	"github.com/haiodo/gowt/internal/jrthttp"
 	"github.com/haiodo/gowt/internal/junit"
 	"github.com/haiodo/gowt/swt"
 	"os"
@@ -29,7 +30,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post_n
 		anon154 := &Test_org_eclipse_swt_browser_BrowserAnon10{}
 		anon154.impl = anon154
 		anon154.initEchoHttpServer()
-		anon154.fnsetResponseHeaders_ = func(exchange *jrt.HttpExchange) {
+		anon154.fnsetResponseHeaders_ = func(exchange *jrthttp.HttpExchange) {
 		}
 		var server *EchoHttpServer = &anon154.EchoHttpServer
 		defer server.Close()
@@ -67,10 +68,10 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_setUrl_remote_with_post_n
 // j2go: anonymous EchoHttpServer subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon10 struct {
 	EchoHttpServer
-	fnsetResponseHeaders_ func(a0 *jrt.HttpExchange)
+	fnsetResponseHeaders_ func(a0 *jrthttp.HttpExchange)
 }
 
-func (this *Test_org_eclipse_swt_browser_BrowserAnon10) setResponseHeaders_(a0 *jrt.HttpExchange) {
+func (this *Test_org_eclipse_swt_browser_BrowserAnon10) setResponseHeaders_(a0 *jrthttp.HttpExchange) {
 	this.fnsetResponseHeaders_(a0)
 }
 
@@ -80,7 +81,7 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 		anon164 := &Test_org_eclipse_swt_browser_BrowserAnon20{}
 		anon164.impl = anon164
 		anon164.initEchoHttpServer()
-		anon164.fnhandleGetEcho_ = func(exchange *jrt.HttpExchange) {
+		anon164.fnhandleGetEcho_ = func(exchange *jrthttp.HttpExchange) {
 			func() {
 				defer func() {
 					r := recover()
@@ -138,10 +139,10 @@ func (this *Test_org_eclipse_swt_browser_Browser) Test_stop() {
 // j2go: anonymous EchoHttpServer subclass.
 type Test_org_eclipse_swt_browser_BrowserAnon20 struct {
 	EchoHttpServer
-	fnhandleGetEcho_ func(a0 *jrt.HttpExchange)
+	fnhandleGetEcho_ func(a0 *jrthttp.HttpExchange)
 }
 
-func (this *Test_org_eclipse_swt_browser_BrowserAnon20) handleGetEcho_(a0 *jrt.HttpExchange) {
+func (this *Test_org_eclipse_swt_browser_BrowserAnon20) handleGetEcho_(a0 *jrthttp.HttpExchange) {
 	this.fnhandleGetEcho_(a0)
 }
 

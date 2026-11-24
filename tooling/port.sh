@@ -441,6 +441,15 @@ owner_grep_count() { # <BRE> <file>...
 	grep -h "$pat" "$@" | wc -l | tr -d ' '
 }
 
+# SWT wheel listeners can dispose their control before the second axis or native handling.
+if [ "$PLATFORM" = cocoa ]; then
+ WHEEL_CONTROL=$(swt_owner platform widgets_control '^func \(this \*Control\) scrollWheel_\(')
+ WHEEL_COMPOSITE=$(swt_owner platform widgets_composite '^func \(this \*Composite\) scrollWheel_\(')
+ perl -0pi -e 's/(if !this\.impl\.sendMouseEvent_\(nsEvent, Mouse(?:Horizontal)?Wheel, true\) \{\n\s*handled = true\n\s*\}\n)/$1\t\t\t\t\tif this.IsDisposed() { return }\n/g' "$WHEEL_CONTROL"
+ perl -0pi -e 's/(doit = this\.impl\.sendMouseEvent_\(nsEvent, Mouse(?:Horizontal)?Wheel, true\)\n)/$1\t\t\t\t\t\tif this.IsDisposed() { return }\n/g; s/(bar\.SendSelectionEventEventTypeEventSend\(Selection, event, true\)\n)/$1\t\t\t\t\t\tif this.IsDisposed() { return }\n/g' "$WHEEL_COMPOSITE"
+ [ "$(grep -c 'if this.IsDisposed() { return }' "$WHEEL_CONTROL")" = 2 ] && [ "$(grep -c 'if this.IsDisposed() { return }' "$WHEEL_COMPOSITE")" = 4 ] || { echo "port.sh: wheel disposal rewrite did not apply" >&2; exit 1; }
+fi
+
 # StyledText.reset (setText) places the caret, which lays out the caret's line at the wrap width. A WRAP StyledText not
 # sized yet wraps at 1 pixel, a glyph per line: that layout was half the cost of creating a chat row with a StyledText.
 # handleResize places the caret again once the width is known, so reset leaves it to handleResize while there is no width.

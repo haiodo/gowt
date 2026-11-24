@@ -476,6 +476,9 @@ func (this *Composite) scrollWheel_(id int64, sel int64, theEvent int64) {
 					var doit bool = true
 					if this.Hooks(MouseWheel) || this.Filters(MouseWheel) {
 						doit = this.impl.sendMouseEvent_(nsEvent, MouseWheel, true)
+						if this.IsDisposed() {
+							return
+						}
 					}
 					var bar *ScrollBar = this.verticalBar
 					if doit && bar != (nil) && bar.GetEnabled() {
@@ -494,6 +497,9 @@ func (this *Composite) scrollWheel_(id int64, sel int64, theEvent int64) {
 							event.Detail = PAGE_DOWN
 						}
 						bar.SendSelectionEventEventTypeEventSend(Selection, event, true)
+						if this.IsDisposed() {
+							return
+						}
 						handled = true
 					}
 					if !doit {
@@ -504,6 +510,9 @@ func (this *Composite) scrollWheel_(id int64, sel int64, theEvent int64) {
 					var doit bool = true
 					if this.Hooks(MouseHorizontalWheel) || this.Filters(MouseHorizontalWheel) {
 						doit = this.impl.sendMouseEvent_(nsEvent, MouseHorizontalWheel, true)
+						if this.IsDisposed() {
+							return
+						}
 					}
 					var bar *ScrollBar = this.horizontalBar
 					if doit && bar != (nil) && bar.GetEnabled() {
@@ -522,6 +531,9 @@ func (this *Composite) scrollWheel_(id int64, sel int64, theEvent int64) {
 							event.Detail = PAGE_DOWN
 						}
 						bar.SendSelectionEventEventTypeEventSend(Selection, event, true)
+						if this.IsDisposed() {
+							return
+						}
 						handled = true
 					}
 					if !doit {

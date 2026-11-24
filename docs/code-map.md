@@ -32,7 +32,7 @@ Packages: `.`.
 | Options, placement, `Ref`/`Init` | `gowt.go`, `sizehint.go`, `spacing.go`, `density.go` | `density_sys.go`, `mono_{linux,other}.go`, `style_{linux,other}.go`, `fit_{linux,other}.go` | `sizehint_gui_test.go`, `spacing_test.go`, `density_test.go` | [agents.md](agents.md) "Placement" |
 | Reactive bindings, `Each` | `bind.go`, `each.go` | - | `bind_test.go`, `each_test.go`, `each_gui_test.go` | `examples/counter`, `examples/timer`; [events.md](events.md) |
 | Error surface, `Boundary` | `boundary.go` | - | `boundary_test.go` | [events.md](events.md#boundary-errors-shown-in-place) |
-| Canvas, `GC` drawing, images | `graphics.go`, `canvaschild.go` | `textfit_{darwin,linux,windows}.go` | `canvassize_test.go`, `textfit_test.go`, `textfit_gui_test.go` | `cmd/paint`, `examples/gfxcanvas`; [graphics.md](graphics.md) |
+| Canvas, `GC` drawing, images | `graphics.go`, `canvaschild.go`, `on.go` | `textfit_{darwin,linux,windows}.go` | `canvassize_test.go`, `textfit_test.go`, `textfit_gui_test.go` | `cmd/paint`, `examples/gfxcanvas`; [graphics.md](graphics.md) |
 | Theme, colours, fonts, appearance | `theme.go`, `linkcolor.go` | `theme_{darwin,other}.go`, `textbg_{linux,other}.go`, `rowlines_{darwin,other}.go` | `theme_test.go`, `appearance_test.go` | [theme-look.md](theme-look.md), [graphics.md](graphics.md) |
 | Badges, avatars, buttons kind | `badge.go`, `avatar.go`, `buttonkind.go` | `badge_{linux,other}.go`, `iconbutton_{darwin,linux,windows}.go` | `badge_test.go`, `badge_linux_test.go`, `avatar_test.go`, `buttonkind*_test.go`, `iconbutton*_test.go` | [widgets.md](widgets.md#badges-and-chips) |
 | Popover, overlays | `popover.go`, `popover_shell.go` | `popover_{darwin,linux,windows}.go` | `popover_test.go`, `popover_gui_test.go`, `popover_draw_darwin_test.go` | `examples/dialogs` |
@@ -61,11 +61,11 @@ Facade widget families; the view types end in `View`. SWT widget classes are in
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Common widget base, labels, buttons, links | `widgets_common.go` | per-widget `*_{darwin,linux,windows,other}.go` files in root | `example_test.go`, `text_test.go` | `examples/widgets`; [widgets.md](widgets.md) |
-| Containers (Group, Scroll, Split, Tabs, CTabs, Boundary shells) | `widgets_container.go` | `section_{darwin,other}.go`, `ctabs_look_*` | `layout_test.go`, `ctabs_gui_test.go` | `examples/widgets` |
-| Lists, tables, combos | `widgets_list.go` | `fit_{darwin,linux,other}.go`, `fit_measure.go`, `table_edit_{darwin,other}.go` | `fitcolumns_test.go`, `table_edit_gui_test.go`, `qatree_*_gui_test.go` | `examples/rows`, `examples/sidebartable`, `cmd/tree`; [view-based-table.md](view-based-table.md) |
+| Containers (Group, Scroll, Split, Tabs, CTabs, Boundary shells) | `widgets_container.go`, `on.go` | `section_{darwin,other}.go`, `ctabs_look_*` | `layout_test.go`, `ctabs_gui_test.go` | `examples/widgets` |
+| Lists, tables, combos | `widgets_list.go`, `on.go` | `fit_{darwin,linux,other}.go`, `fit_measure.go`, `table_edit_{darwin,other}.go` | `fitcolumns_test.go`, `table_edit_gui_test.go`, `qatree_*_gui_test.go` | `examples/rows`, `examples/sidebartable`, `cmd/tree`; [view-based-table.md](view-based-table.md) |
 | Tree | `tree.go` | `tree_edit_{darwin,other}.go` | `tree_test.go`, `tree_edit_gui_test.go`, `tree_edit_gui_darwin_test.go` | `cmd/tree`; [widgets.md](widgets.md) |
 | Tool bar | `look/toolbar.go`, `look/pill.go` (Harness pill segments of the widget bar), `widgets_container.go` (ToolBarView) | `look/toolbar.go` platform sections, `look/pill_tabstop_{windows,other}.go`, `internal/cocoa/*toolbar*` (native NSToolbar items: unbordered image items, Small items with a 12 pt configured symbol image or an 11 pt text button, segmented group capsule) | `look/toolbar_test.go`, `look/toolbar_*_gui_test.go`, `look/small_toolbar_gui_darwin_test.go`, `look/pill*_test.go` | `cmd/gowtdemo`, `examples/panesoverlay`; [widgets.md](widgets.md) |
-| Text, styled text, search fields, spinners, scales, progress | `widgets_text.go`, `widgets_range.go` | `fieldeditor_*`, `textfit_*`, `scroll_*` | `text_test.go`, `textfit*_test.go`, `sizehint_gui_test.go` | `examples/widgets`; [widgets.md](widgets.md) |
+| Text, styled text, search fields, spinners, scales, progress | `widgets_text.go`, `widgets_range.go`, `on.go` | `fieldeditor_*`, `textfit_*`, `scroll_*` | `text_test.go`, `textfit*_test.go`, `sizehint_gui_test.go` | `examples/widgets`; [widgets.md](widgets.md) |
 | Canvas and drawing widgets | `graphics.go`, `canvaschild.go` | - | `canvassize_test.go` | `examples/gfxcanvas`, `examples/graphics`, `examples/puzzle` |
 | ControlExample (widget zoo on `swt`) | - | - | - | `examples/controlexample`, `cmd/controlexample` |
 

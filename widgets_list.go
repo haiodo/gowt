@@ -130,7 +130,7 @@ type TableView struct {
 }
 
 // Table creates a table with a visible header and grid lines.
-// Options: Check, MultiSelect, NoBorder, Selected, OnSelect, OnActivate.
+// Options: Check, MultiSelect, NoBorder, Selected, OnSelect, OnActivate, OnCellClick.
 func Table(opts ...Option) Option {
 	return leaf("Table", sCheck|sMultiSelect|sNoBorder, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTable(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.FULL_SELECTION|swt.BORDER, opts))
@@ -358,8 +358,7 @@ func (t *TableView) SetSort(col *Column, dir SortDir) {
 // Mods are the modifier keys held during a mouse press. On macOS a Ctrl-click arrives as Button 1 with Ctrl set.
 type Mods struct{ Ctrl, Shift, Alt, Cmd bool }
 
-func modsOf(e *swt.MouseEvent) Mods {
-	m := e.StateMask
+func modsOf(m int32) Mods {
 	return Mods{m&swt.CTRL != 0, m&swt.SHIFT != 0, m&swt.ALT != 0, m&swt.COMMAND != 0}
 }
 
@@ -439,7 +438,7 @@ func hscroll(b *swt.ScrollBar) int {
 func (t *TableView) OnCellClick(f func(TableClick)) {
 	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
 		row, col := t.CellAt(int(e.X), int(e.Y))
-		f(TableClick{Row: row, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e)})
+		f(TableClick{Row: row, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e.StateMask)})
 	}))
 }
 
@@ -512,7 +511,7 @@ type TreeView struct {
 
 // Tree creates a tree. Rows select as a whole (CellSelect() opts out) so that a click in any column finds its node. With
 // Column, the first column holds the tree and the header is shown until ShowHeader(false).
-// Options: Check, MultiSelect, NoBorder, CellSelect, OnSelect, OnActivate.
+// Options: Check, MultiSelect, NoBorder, CellSelect, OnSelect, OnActivate, OnCellClick, OnExpand, OnCollapse.
 func Tree(opts ...Option) Option {
 	return leaf("Tree", sCheck|sMultiSelect|sNoBorder|sCellSelect, opts, func(p *swt.Composite) Widget {
 		t := swt.NewTree(p, resolve(swt.V_SCROLL|swt.H_SCROLL|swt.BORDER|swt.FULL_SELECTION, opts))
@@ -601,7 +600,7 @@ func (t *TreeView) CellAt(x, y int) (*Node, int) {
 func (t *TreeView) OnCellClick(f func(TreeClick)) {
 	t.t.AddMouseListener(swt.MouseListenerMouseDownAdapter(func(e *swt.MouseEvent) {
 		n, col := t.CellAt(int(e.X), int(e.Y))
-		f(TreeClick{Node: n, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e)})
+		f(TreeClick{Node: n, Col: col, Button: int(e.Button), Count: int(e.Count), X: int(e.X), Y: int(e.Y), Mods: modsOf(e.StateMask)})
 	}))
 }
 

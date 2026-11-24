@@ -915,3 +915,68 @@ func TestAsyncAfterLoopEndedDoesNotRun(t *testing.T) {
 		t.Error("an Async callback queued at window disposal ran after Run ended")
 	}
 }
+
+func TestAdditionalEventOptions(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		var down, move, up, leave Mouse
+		var wheel Wheel
+		var expanded, collapsed *Node
+		var tableClick TableClick
+		var treeClick TreeClick
+		var errors []error
+		app.OnError(func(err error) { errors = append(errors, err) })
+		c := put[*CanvasView](w, Canvas(nil, OnMouseDown(func(m Mouse) { down = m }), OnMouseMove(func(m Mouse) { move = m }), OnMouseUp(func(m Mouse) { up = m }), OnMouseLeave(func(m Mouse) { leave = m }), OnWheel(func(e Wheel) bool { wheel = e; return true })))
+		e := swt.NewEvent()
+		e.X = 12
+		e.Y = 19
+		e.Button = 1
+		e.StateMask = swt.SHIFT
+		for _, typ := range []int32{swt.MouseDown, swt.MouseMove, swt.MouseUp, swt.MouseExit} {
+			c.Unwrap().NotifyListeners(typ, e)
+		}
+		if down.X != 12 || move.Y != 19 || up.Button != 1 || !leave.Shift {
+			t.Errorf("mouse: %v %v %v %v", down, move, up, leave)
+		}
+		e = swt.NewEvent()
+		e.X = 8
+		e.Count = -3
+		e.StateMask = swt.CTRL
+		c.Unwrap().NotifyListeners(swt.MouseHorizontalWheel, e)
+		if wheel.X != 8 || wheel.Delta != -3 || !wheel.Horizontal || !wheel.Ctrl || e.Doit {
+			t.Errorf("wheel: %+v doit=%v", wheel, e.Doit)
+		}
+		tb := put[*TableView](w, Table(OnCellClick(func(c TableClick) { tableClick = c })))
+		tr := put[*TreeView](w, Tree(OnCellClick(func(c TreeClick) { treeClick = c }), OnExpand(func(n *Node) { expanded = n }), OnCollapse(func(n *Node) { collapsed = n })))
+		n := tr.Node("root")
+		e = swt.NewEvent()
+		e.Button = 3
+		e.Count = 2
+		tb.Unwrap().NotifyListeners(swt.MouseDown, e)
+		tr.Unwrap().NotifyListeners(swt.MouseDown, e)
+		if tableClick.Button != 3 || treeClick.Count != 2 {
+			t.Errorf("clicks: %+v %+v", tableClick, treeClick)
+		}
+		e = swt.NewEvent()
+		e.Item = &n.Unwrap().Widget
+		tr.Unwrap().NotifyListeners(swt.Expand, e)
+		tr.Unwrap().NotifyListeners(swt.Collapse, e)
+		if expanded == nil || collapsed == nil || expanded.Text() != "root" || collapsed.Text() != "root" {
+			t.Error("tree events")
+		}
+		var start, length, caret int
+		st := put[*StyledTextView](w, StyledText(Value("a🙂bc"), OnSelect(func(s, l int) { start, length = s, l }), OnCaret(func(i int) { caret = i })))
+		st.SetSelection(1, 2)
+		notify(st.Unwrap(), swt.Selection)
+		if start != 1 || length != 2 {
+			t.Errorf("selection: %d %d", start, length)
+		}
+		st.SetCaret(2)
+		if caret != 2 {
+			t.Errorf("caret: %d", caret)
+		}
+		put[*TextView](w, Text(OnCellClick(func(TableClick) {}), OnCaret(func(int) {}), OnClose(func(int) bool { return true })))
+		if len(errors) != 3 {
+			t.Errorf("misfit errors: %v", errors)
+		}
+	})
+}

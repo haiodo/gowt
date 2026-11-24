@@ -34,8 +34,7 @@ func TestCanvasOnResize(t *testing.T) {
 	type size struct{ w, h int }
 	var got []size
 	guiRun(t, func(app *App, w *Window) {
-		cv := put[*CanvasView](w, Canvas(nil, Grow()))
-		cv.OnResize(func(cw, ch int) { got = append(got, size{cw, ch}) })
+		put[*CanvasView](w, Canvas(nil, Grow(), OnResize(func(cw, ch int) { got = append(got, size{cw, ch}) })))
 		w.SetSize(300, 200)
 		app.After(100*time.Millisecond, func() { w.SetSize(520, 420) })
 	})

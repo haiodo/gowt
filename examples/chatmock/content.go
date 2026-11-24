@@ -117,7 +117,7 @@ func composerBar(app *gowt.App, hint rx.Reader[string]) gowt.Option {
 					g.Line(cx, 9, cx+5, 14)
 				}, gowt.ID("send"), gowt.Size(28, 28), gowt.Place(gowt.AlignEnd, gowt.AlignCenter),
 					gowt.Ref(&sendBtn),
-					gowt.Init(func(*gowt.CanvasView) { sendBtn.OnMouseDown(func(gowt.Mouse) { send() }) })))))
+					gowt.OnMouseDown(func(gowt.Mouse) { send() })))))
 }
 
 func composerIcon(app *gowt.App, path, tip string) gowt.Option {

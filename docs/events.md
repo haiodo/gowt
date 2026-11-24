@@ -23,9 +23,19 @@ gowt.Tree(gowt.OnSelect(func(n *gowt.Node) { show(n.Text()) }))
 |---|---|
 | `OnClick(func())` | Button; `OnClick(func(href string))` Link |
 | `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; Number `func(float64)` or `func(int)`; DateTime `func(time.Time)` |
-| `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)` |
+| `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)`; StyledText `func(start, length int)` |
+| `OnMouseDown`, `OnMouseMove`, `OnMouseUp`, `OnMouseLeave` | Canvas `func(Mouse)` |
+| `OnWheel(func(Wheel) bool)` | Canvas; true consumes the native event, false leaves it to native handling |
+| `OnResize(func(width, height int))` | Canvas client size |
+| `OnCellClick(f)` | Table `func(TableClick)`; Tree `func(TreeClick)` |
+| `OnExpand`, `OnCollapse` | Tree `func(*Node)` |
+| `OnCaret(func(int))` | StyledText caret position |
+| `OnScroll(func(x, y int))` | Scroll origin |
+| `OnClose(func(int) bool)` | CTabs close button; false keeps the tab |
 | `OnFocus(func(bool))` | any widget: true on gaining keyboard focus, false on losing it; a container reports its own focus only |
 | `OnActivate(f)` | Text `func()` (Enter); List, Table `func(int)`; Tree `func(*Node)` |
+
+On macOS a diagonal wheel event reaches the vertical handler first. The horizontal handler runs next, even if the vertical handler returns true. If either returns true, SWT consumes the whole native event, so the parent receives neither axis. Returning false for every axis lets native handling continue; the parent scrolls only if the native responder chain forwards the event.
 
 The initial state goes in options too: `Hint(s)` for Text, `Checked(b)` for Switch and Check/Radio Button, `Selected(i)` for Combo, List, Table, Tabs and CTabs, `Value(v)` for Scale, Slider, Spinner and Progress (int), Number (float64 or int), for Text, Combo and StyledText (string) and for DateTime (`time.Time`).
 
@@ -209,7 +219,7 @@ go func() { for v := range updates { count.Post(v) } }()    // from any goroutin
 | `rx.Batch(fn)`, `rx.Flush()` | run the pending effects now instead of after the current event handler |
 | `app.Flush()` | `rx.Flush()`, then the layouts the bindings put off (a longer `BindText` text) instead of on the next event-loop turn: for timing one update or measuring a widget right after a change |
 | `gowt.Bind(state)` | option, two-way: `*rx.State[string]` Text and Combo text, `[bool]` Switch and Check Button, `[int]` Scale, Slider, Spinner value or Combo and List index (Progress one way), `[float64]` or `[int]` Number |
-| `gowt.BindText(r)` | option: the text of a Label, Button, Link or Text follows an `rx.Reader[string]` (a `State` or a `Derived`) |
+| `gowt.BindText(r)` | option: text of a widget with `SetText` follows an `rx.Reader[string]` (a `State` or a `Derived`) |
 | `gowt.BindValue(r)` | option: a Progress value follows an `rx.Reader[int]` |
 | `gowt.BindEnabled(r)`, `gowt.BindVisible(r)` | options on any widget, `rx.Reader[bool]` |
 | `gowt.Rows(list, key, fill)`, `gowt.Nodes(list, key, children, fill)`, `gowt.Items(list)` | options: one Table row, Tree node or List/Combo entry per element of an `rx.Reader[[]T]`, matched by key, see below |
@@ -222,7 +232,7 @@ Rules:
 - Values that change together go into one `State` (a whole poll result) and are split with `Derived`s; separate `Post`s may reach the UI thread in different batches.
 - A binding is disposed with its widget. An `Effect` or `Derived` made inside an `Effect` or `Scope` is disposed with it; a top-level `Effect` lives until its `dispose` is called. A `Derived` subscribes to its sources only while an effect observes it; read elsewhere, it is recomputed after any `Set`.
 - An effect that panics does not stop the others: the flush finishes, then the panic goes to `App.OnError` like one from a callback, or to the nearest `gowt.Boundary` around its widget. A failed `Derived` is recomputed on its next read. Effects that keep invalidating each other for 100 rounds panic with "rx: effects did not settle"; a `Derived` that reads itself and a `Set` inside a `Derived` panic too.
-- `BindText`, like `Label.SetText`, lays the parents out again on the next event-loop turn when the text changes the widget's size, so a growing label is not cut.
+- `BindText` uses the widget's `SetText`: Label, Button, Switch and Link relayout when their preferred size changes; Text, Combo and StyledText keep their size.
 
 ### Rows bound to state
 

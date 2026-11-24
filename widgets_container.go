@@ -129,7 +129,7 @@ type CTabsView struct {
 
 // CTabs creates a custom tab folder whose children are Tab pages; Border() draws a frame and
 // Closable() on a Tab adds a close button to it.
-// Options: Bottom, Border, Selected, OnSelect, children (Tab only).
+// Options: Bottom, Border, Selected, OnSelect, OnClose, children (Tab only).
 func CTabs(opts ...Option) Option {
 	return leaf("CTabs", sBottom|sBorder, opts, func(p *swt.Composite) Widget {
 		f := swt.NewCTabFolder(p, resolve(swt.NONE, opts))
@@ -279,7 +279,7 @@ type ScrollView struct {
 }
 
 // Scroll creates a scrolled area whose children stack as in a VBox; Border() draws a frame.
-// Options: Border, NoHScroll, Gap, Padding, children.
+// Options: Border, NoHScroll, Gap, Padding, OnScroll, children.
 func Scroll(opts ...Option) Option {
 	return &node{"Scroll", func(h host) Widget {
 		s := swt.NewScrolledComposite(h.into(), resolve(swt.V_SCROLL|swt.H_SCROLL, opts))

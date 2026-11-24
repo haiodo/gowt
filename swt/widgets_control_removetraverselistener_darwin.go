@@ -129,12 +129,18 @@ func (this *Control) scrollWheel_(id int64, sel int64, theEvent int64) {
 					if !this.impl.sendMouseEvent_(nsEvent, MouseWheel, true) {
 						handled = true
 					}
+					if this.IsDisposed() {
+						return
+					}
 				}
 			}
 			if this.Hooks(MouseHorizontalWheel) || this.Filters(MouseHorizontalWheel) {
 				if nsEvent.DeltaX() != 0 {
 					if !this.impl.sendMouseEvent_(nsEvent, MouseHorizontalWheel, true) {
 						handled = true
+					}
+					if this.IsDisposed() {
+						return
 					}
 				}
 			}

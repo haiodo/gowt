@@ -79,8 +79,8 @@ func OnChange[F func(string) | func(bool) | func(int) | func(float64) | func(tim
 
 // OnSelect runs f when the selection changes: with the index of the selected item of a Combo,
 // List, Table, Tabs or CTabs or of the segment of a Segmented (func(int)), with the selected node of
-// a Tree (func(*Node)).
-func OnSelect[F func(int) | func(*Node)](f F) Option {
+// a Tree (func(*Node)), or the start and length of a StyledText selection (func(int, int)).
+func OnSelect[F func(int) | func(*Node) | func(int, int)](f F) Option {
 	return hook(func(w Widget) error {
 		switch g := any(f).(type) {
 		case func(int):
@@ -90,6 +90,11 @@ func OnSelect[F func(int) | func(*Node)](f F) Option {
 			}
 		case func(*Node):
 			if t, ok := w.(*TreeView); ok {
+				t.OnSelect(g)
+				return nil
+			}
+		case func(int, int):
+			if t, ok := w.(*StyledTextView); ok {
 				t.OnSelect(g)
 				return nil
 			}
@@ -213,4 +218,144 @@ func (f focusFunc) HandleEvent(e *swt.Event) { f(e.Type == swt.FocusIn) }
 
 func misfit(opt string, f any, w Widget) error {
 	return fmt.Errorf("gowt: %s(%T) does not apply to %s", opt, f, nameOf(w.control()))
+}
+
+// OnMouseDown runs f on a Canvas mouse press.
+func OnMouseDown(f func(Mouse)) Option {
+	return hook(func(w Widget) error {
+		if c, ok := w.(*CanvasView); ok {
+			c.OnMouseDown(f)
+			return nil
+		}
+		return misfit("OnMouseDown", f, w)
+	})
+}
+
+// OnMouseMove runs f on a Canvas mouse move.
+func OnMouseMove(f func(Mouse)) Option {
+	return hook(func(w Widget) error {
+		if c, ok := w.(*CanvasView); ok {
+			c.OnMouseMove(f)
+			return nil
+		}
+		return misfit("OnMouseMove", f, w)
+	})
+}
+
+// OnMouseUp runs f on a Canvas mouse release.
+func OnMouseUp(f func(Mouse)) Option {
+	return hook(func(w Widget) error {
+		if c, ok := w.(*CanvasView); ok {
+			c.OnMouseUp(f)
+			return nil
+		}
+		return misfit("OnMouseUp", f, w)
+	})
+}
+
+// OnResize runs f with the Canvas client size; see CanvasView.OnResize.
+func OnResize(f func(int, int)) Option {
+	return hook(func(w Widget) error {
+		if c, ok := w.(*CanvasView); ok {
+			c.OnResize(f)
+			return nil
+		}
+		return misfit("OnResize", f, w)
+	})
+}
+
+// OnCellClick runs f on a Table or Tree mouse press.
+func OnCellClick[F func(TableClick) | func(TreeClick)](f F) Option {
+	return hook(func(w Widget) error {
+		switch g := any(f).(type) {
+		case func(TableClick):
+			if t, ok := w.(*TableView); ok {
+				t.OnCellClick(g)
+				return nil
+			}
+		case func(TreeClick):
+			if t, ok := w.(*TreeView); ok {
+				t.OnCellClick(g)
+				return nil
+			}
+		}
+		return misfit("OnCellClick", f, w)
+	})
+}
+
+// OnExpand runs f when a Tree node expands.
+func OnExpand(f func(*Node)) Option {
+	return hook(func(w Widget) error {
+		if t, ok := w.(*TreeView); ok {
+			t.OnExpand(f)
+			return nil
+		}
+		return misfit("OnExpand", f, w)
+	})
+}
+
+// OnCollapse runs f when a Tree node collapses.
+func OnCollapse(f func(*Node)) Option {
+	return hook(func(w Widget) error {
+		if t, ok := w.(*TreeView); ok {
+			t.OnCollapse(f)
+			return nil
+		}
+		return misfit("OnCollapse", f, w)
+	})
+}
+
+// OnCaret runs f when the StyledText caret moves.
+func OnCaret(f func(int)) Option {
+	return hook(func(w Widget) error {
+		if t, ok := w.(*StyledTextView); ok {
+			t.OnCaret(f)
+			return nil
+		}
+		return misfit("OnCaret", f, w)
+	})
+}
+
+// OnScroll runs f when a Scroll origin changes; see ScrollView.OnScroll.
+func OnScroll(f func(int, int)) Option {
+	return hook(func(w Widget) error {
+		if s, ok := w.(*ScrollView); ok {
+			s.OnScroll(f)
+			return nil
+		}
+		return misfit("OnScroll", f, w)
+	})
+}
+
+// OnClose runs f when a CTabs close button is pressed; false keeps the tab.
+func OnClose(f func(int) bool) Option {
+	return hook(func(w Widget) error {
+		if t, ok := w.(*CTabsView); ok {
+			t.OnClose(f)
+			return nil
+		}
+		return misfit("OnClose", f, w)
+	})
+}
+
+// OnMouseLeave runs f when the pointer leaves a Canvas.
+func OnMouseLeave(f func(Mouse)) Option {
+	return hook(func(w Widget) error {
+		if c, ok := w.(*CanvasView); ok {
+			c.OnMouseLeave(f)
+			return nil
+		}
+		return misfit("OnMouseLeave", f, w)
+	})
+}
+
+// OnWheel runs f for a Canvas wheel event; true consumes the event.
+func OnWheel(f func(Wheel) bool) Option {
+	return hook(func(w Widget) error {
+		if c, ok := w.(*CanvasView); ok {
+			c.OnWheel(f)
+			return nil
+		}
+		return misfit("OnWheel", f, w)
+	})
 }

@@ -30,8 +30,7 @@ func TestScrollOnScroll(t *testing.T) {
 			var s *ScrollView
 			w := app.Window("scroll")
 			w.SetSize(240, 160)
-			w.Add(Scroll(Grow(), Ref(&s), Label("tall", Size(600, 3000))))
-			s.OnScroll(func(x, y int) { calls = append(calls, scrollCall{x, y, time.Now()}) })
+			w.Add(Scroll(Grow(), Ref(&s), OnScroll(func(x, y int) { calls = append(calls, scrollCall{x, y, time.Now()}) }), Label("tall", Size(600, 3000))))
 			w.Show()
 			step := 150 * time.Millisecond
 			app.After(step, func() {

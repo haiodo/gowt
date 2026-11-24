@@ -72,3 +72,45 @@ func TestCTabsRendererOverride(t *testing.T) {
 		t.Errorf("tab height %d, want the ControlHeight token %d", height, want)
 	}
 }
+
+func TestCTabsCloseOptionVeto(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		var calls int
+		allow := false
+		tabs := put[*CTabsView](w, CTabs(Size(220, 100), Tab("one", Closable()), OnClose(func(i int) bool {
+			if i != 0 {
+				t.Errorf("index = %d", i)
+			}
+			calls++
+			return allow
+		})))
+		w.Show()
+		f := tabs.Unwrap()
+		f.Update()
+		bounds := f.GetItem(0).GetBounds()
+		click := func(x, y int32) {
+			e := swt.NewEvent()
+			e.X, e.Y, e.Button = x, y, 1
+			f.NotifyListeners(swt.MouseDown, e)
+			f.NotifyListeners(swt.MouseUp, e)
+		}
+		var closeX, closeY int32
+		for y := bounds.Y; y < bounds.Y+bounds.Height && calls == 0; y++ {
+			for x := bounds.X; x < bounds.X+bounds.Width && calls == 0; x++ {
+				click(x, y)
+				if calls > 0 {
+					closeX, closeY = x, y
+				}
+			}
+		}
+		if calls != 1 || f.GetItemCount() != 1 {
+			t.Errorf("veto calls=%d tabs=%d", calls, f.GetItemCount())
+			return
+		}
+		allow = true
+		click(closeX, closeY)
+		if calls != 2 || f.GetItemCount() != 0 {
+			t.Errorf("close calls=%d tabs=%d", calls, f.GetItemCount())
+		}
+	})
+}

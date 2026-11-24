@@ -179,7 +179,7 @@ func (f painter) PaintControl(e *swt.PaintEvent) { f(e) }
 
 // Canvas creates a drawing area. onPaint draws the whole area (clipped to the damaged part) and
 // must not keep g; it may be nil. Call Redraw after the model changes.
-// Options: Border.
+// Options: Border, OnMouseDown, OnMouseMove, OnMouseUp, OnMouseLeave, OnWheel, OnResize.
 func Canvas(onPaint func(g *GC), opts ...Option) Option {
 	return leaf("Canvas", sBorder, opts, func(p *swt.Composite) Widget {
 		c := swt.NewCanvasParentStyle(p, resolve(swt.DOUBLE_BUFFERED, opts))
@@ -200,7 +200,7 @@ type Mouse struct {
 }
 
 func mouseOf(e *swt.MouseEvent) Mouse {
-	return Mouse{X: int(e.X), Y: int(e.Y), Button: int(e.Button), Count: int(e.Count), Mods: modsOf(e)}
+	return Mouse{X: int(e.X), Y: int(e.Y), Button: int(e.Button), Count: int(e.Count), Mods: modsOf(e.StateMask)}
 }
 
 // OnMouseDown runs f when a button is pressed.
@@ -252,4 +252,32 @@ func (c *CanvasView) Unwrap() *swt.Canvas { return c.c }
 func (c *CanvasView) Size() (w, h int) {
 	r := c.c.GetClientArea()
 	return int(r.Width), int(r.Height)
+}
+
+// OnMouseLeave runs f when the pointer leaves the canvas.
+func (c *CanvasView) OnMouseLeave(f func(Mouse)) {
+	c.c.AddListener(swt.MouseExit, listenerFunc(func(e *swt.Event) {
+		f(Mouse{X: int(e.X), Y: int(e.Y), Button: int(e.Button), Count: int(e.Count), Mods: modsOf(e.StateMask)})
+	}))
+}
+
+// Wheel is an SWT wheel event. Delta is in SWT scroll units.
+type Wheel struct {
+	X, Y       int
+	Delta      int
+	Horizontal bool
+	Mods
+}
+
+// OnWheel runs f for each vertical or horizontal wheel event. Return true to consume it;
+// false leaves the event to native handling. On macOS, a diagonal native event sends the vertical
+// event first and the horizontal event second. Consuming either axis consumes the whole native event.
+func (c *CanvasView) OnWheel(f func(Wheel) bool) {
+	l := listenerFunc(func(e *swt.Event) {
+		if f(Wheel{X: int(e.X), Y: int(e.Y), Delta: int(e.Count), Horizontal: e.Type == swt.MouseHorizontalWheel, Mods: modsOf(e.StateMask)}) {
+			e.Doit = false
+		}
+	})
+	c.c.AddListener(swt.MouseWheel, l)
+	c.c.AddListener(swt.MouseHorizontalWheel, l)
 }

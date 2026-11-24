@@ -123,21 +123,19 @@ func circleDraw() gowt.Option {
 			}
 			g.SetColor(black)
 			g.Rect(0, 0, w-1, h-1)
-		}, gowt.Size(500, 400), gowt.Ref(&canvas), gowt.Init(func(c *gowt.CanvasView) {
-			c.OnMouseDown(func(m gowt.Mouse) {
-				if m.Button != 1 {
-					return
-				}
-				if i := topmost(circles, m.X, m.Y); i >= 0 {
-					sel = i
-					refresh()
-					return
-				}
-				hist.record(snapshot())
-				circles = append(circles, circle{x: m.X, y: m.Y, d: circleDiameter})
-				sel = len(circles) - 1
+		}, gowt.Size(500, 400), gowt.Ref(&canvas), gowt.OnMouseDown(func(m gowt.Mouse) {
+			if m.Button != 1 {
+				return
+			}
+			if i := topmost(circles, m.X, m.Y); i >= 0 {
+				sel = i
 				refresh()
-			})
+				return
+			}
+			hist.record(snapshot())
+			circles = append(circles, circle{x: m.X, y: m.Y, d: circleDiameter})
+			sel = len(circles) - 1
+			refresh()
 		})),
 		gowt.HBox(
 			gowt.Button("Undo", gowt.Ref(&undoBtn), gowt.OnClick(func() {

@@ -715,7 +715,7 @@ func Switch(text string, opts ...Option) Option {
 }
 
 // Text creates an edit field.
-// Options: Multiline, Password, ReadOnly, Search, Border, NoBorder, Scrollbars, Hint, Prefix, PrefixImage, Suffix, Small, Value, OnChange, OnActivate, Bind (string), BindText.
+// Options: Multiline, Password, ReadOnly, Search, Border, NoBorder, Scrollbars, Hint, Prefix, PrefixImage, Suffix, Small, Value, OnChange, OnEdit, OnActivate, Bind (string), BindText.
 // Windows 11: a Text has the WinUI 3 text box frame (4 px radius, hairline, accent line on focus) unless NoBorder.
 func Text(opts ...Option) Option {
 	noBorder := hasStyle(opts, sNoBorder)
@@ -967,6 +967,7 @@ func (s *SwitchView) OnChange(f func(on bool)) {
 type TextView struct {
 	base
 	t      *swt.Text
+	writes int
 	inset  [2]int
 	grow   *autoGrow
 	aff    *affix // Prefix, Suffix, Small; nil without them
@@ -988,7 +989,11 @@ func lf(s string) string {
 }
 
 // SetText replaces the content.
-func (t *TextView) SetText(s string) { t.t.SetText(s) }
+func (t *TextView) SetText(s string) {
+	t.writes++
+	defer func() { t.writes-- }()
+	t.t.SetText(s)
+}
 
 // SetHint sets the placeholder shown while the field is empty.
 func (t *TextView) SetHint(s string) {
@@ -1011,13 +1016,26 @@ func (t *TextView) OnChange(f func(text string)) {
 	t.t.AddModifyListener(&modifier{func() { f(lf(t.t.GetText())) }})
 }
 
+// OnEdit runs f for Modify events outside facade text writes.
+func (t *TextView) OnEdit(f func(text string)) {
+	t.t.AddModifyListener(&modifier{func() {
+		if t.writes == 0 {
+			f(t.Text())
+		}
+	}})
+}
+
 // OnActivate runs f when the user presses Enter in a single-line field.
 func (t *TextView) OnActivate(f func()) {
 	onActivate(t.t, func(*swt.SelectionEvent) { f() })
 }
 
 // Append adds s at the end without rewriting the content.
-func (t *TextView) Append(s string) { t.t.Append(s) }
+func (t *TextView) Append(s string) {
+	t.writes++
+	defer func() { t.writes-- }()
+	t.t.Append(s)
+}
 
 // Lines returns the number of lines; a trailing newline starts an empty last line.
 func (t *TextView) Lines() int { return int(t.t.GetLineCount()) }
@@ -1035,6 +1053,8 @@ func (t *TextView) TrimHead(keep int) {
 	if int(t.t.GetLineCount()) <= keep {
 		return
 	}
+	t.writes++
+	defer func() { t.writes-- }()
 	drop := headUnits(t.t.GetText(), keep)
 	// Insert is refused on a read-only field on some systems, so lift the flag for the edit.
 	ro := !t.t.GetEditable()

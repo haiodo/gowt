@@ -38,13 +38,18 @@ func TestTemperatureConversion(t *testing.T) {
 				steps := []struct{ from, input, want string }{
 					{"0", "100", "212"},
 					{"212", "32", "0"},
-					{"0", "invalid", "32"},
+					{"0", "001.50", "34.7"},
+					{"001.50", "invalid", "34.7"},
 				}
 				for _, step := range steps {
 					sel := qatree.Selector{Class: "Text", Text: step.from}
 					if err := qatree.Act(app.Unwrap(), sel, "type", []byte(`{"text":"`+step.input+`"}`)); err != nil {
 						t.Error(err)
 						return
+					}
+					source, err := qatree.Find(app.Unwrap(), qatree.Selector{Class: "Text", Text: step.input})
+					if err != nil || len(source) != 1 {
+						t.Errorf("source %q: found %d, error %v", step.input, len(source), err)
 					}
 					matches, err := qatree.Find(app.Unwrap(), qatree.Selector{Class: "Text", Text: step.want})
 					if err != nil || len(matches) != 1 {

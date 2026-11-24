@@ -22,6 +22,7 @@ gowt.Tree(gowt.OnSelect(func(n *gowt.Node) { show(n.Text()) }))
 | Option | Widgets |
 |---|---|
 | `OnClick(func())` | Button; `OnClick(func(href string))` Link |
+| `OnEdit(func(string))` | Text Modify events outside facade text writes |
 | `OnChange(f)` | Text, Combo, StyledText `func(string)`; Switch, Check/Radio Button `func(bool)`; Scale, Slider, Spinner `func(int)`; Number `func(float64)` or `func(int)`; DateTime `func(time.Time)` |
 | `OnSelect(f)` | Combo, List, Table, Tabs, CTabs `func(int)`; Tree `func(*Node)`; StyledText `func(start, length int)` |
 | `OnMouseDown`, `OnMouseMove`, `OnMouseUp`, `OnMouseLeave` | Canvas `func(Mouse)` |
@@ -38,6 +39,8 @@ gowt.Tree(gowt.OnSelect(func(n *gowt.Node) { show(n.Text()) }))
 On macOS a diagonal wheel event reaches the vertical handler first. The horizontal handler runs next, even if the vertical handler returns true. If either returns true, SWT consumes the whole native event, so the parent receives neither axis. Returning false for every axis lets native handling continue; the parent scrolls only if the native responder chain forwards the event.
 
 The initial state goes in options too: `Hint(s)` for Text, `Checked(b)` for Switch and Check/Radio Button, `Selected(i)` for Combo, List, Table, Tabs and CTabs, `Value(v)` for Scale, Slider, Spinner and Progress (int), Number (float64 or int), for Text, Combo and StyledText (string) and for DateTime (`time.Time`).
+
+`Text.OnEdit` ignores Modify events during `SetText`, `Append`, `TrimHead`, and writes through `Value`, `Bind`, or `BindText`. `OnChange` keeps reporting Modify events. Calls made directly through `Unwrap` bypass this guarantee.
 
 The `OnX` methods of the same names (`text.OnChange(f)`, `table.OnSelect(f)`) add a handler to a widget that exists already, through `Ref`. Calling `OnX` again adds another listener; nothing is replaced. Menu and tool items take their callback as an argument: `menu.Item("Quit", app.Quit)`; `nil` means none.
 

@@ -10,38 +10,26 @@ import (
 
 func tempConv() gowt.Option {
 	var celsius, fahrenheit *gowt.TextView
-	// SetText fires OnChange on macOS, so a programmatic write must not bounce back.
-	updating := false
 
 	setFahrenheit := func(s string) {
-		if updating {
-			return
-		}
 		v, err := strconv.ParseFloat(s, 64)
 		if err != nil {
 			return
 		}
-		updating = true
 		fahrenheit.SetText(strconv.FormatFloat(v*9/5+32, 'f', -1, 64))
-		updating = false
 	}
 	setCelsius := func(s string) {
-		if updating {
-			return
-		}
 		v, err := strconv.ParseFloat(s, 64)
 		if err != nil {
 			return
 		}
-		updating = true
 		celsius.SetText(strconv.FormatFloat((v-32)*5/9, 'f', -1, 64))
-		updating = false
 	}
 	return gowt.Fields(gowt.GrowX(),
 		gowt.Field("Celsius",
-			gowt.Text(gowt.Value("0"), gowt.Size(140, 0), gowt.GrowX(), gowt.Ref(&celsius), gowt.OnChange(setFahrenheit))),
+			gowt.Text(gowt.Value("0"), gowt.Size(140, 0), gowt.GrowX(), gowt.Ref(&celsius), gowt.OnEdit(setFahrenheit))),
 		gowt.Field("Fahrenheit",
-			gowt.Text(gowt.Value("32"), gowt.Size(140, 0), gowt.GrowX(), gowt.Ref(&fahrenheit), gowt.OnChange(setCelsius))))
+			gowt.Text(gowt.Value("32"), gowt.Size(140, 0), gowt.GrowX(), gowt.Ref(&fahrenheit), gowt.OnEdit(setCelsius))))
 }
 
 func main() {

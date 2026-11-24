@@ -3,6 +3,7 @@ package gowt
 import (
 	"testing"
 
+	"github.com/haiodo/gowt/rx"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -293,5 +294,58 @@ func TestStyledTextParagraphSpacing(t *testing.T) {
 		heights(h, h, h+6, h, h+6)
 		st.SetText("a\nb\nc")
 		heights(h, h)
+	})
+}
+
+func TestTextOnEdit(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		var edits, changes []string
+		state := rx.New("bound")
+		text := put[*TextView](w, Text(Multiline(), OnEdit(func(s string) { edits = append(edits, s) }), OnChange(func(s string) {
+			changes = append(changes, s)
+		})))
+		text.OnEdit(func(s string) { edits = append(edits, "method:"+s) })
+		text.SetText("one\ntwo")
+		text.Append("\nthree")
+		text.TrimHead(1)
+		if len(edits) != 0 {
+			t.Errorf("facade writes fired OnEdit: %v", edits)
+		}
+		if len(changes) == 0 {
+			t.Error("facade writes did not fire OnChange")
+		}
+		text.Unwrap().SetSelection(text.Unwrap().GetCharCount())
+		text.Unwrap().Insert("!")
+		if len(edits) != 2 || edits[0] != "three!" || edits[1] != "method:three!" {
+			t.Errorf("edit callbacks: %v", edits)
+		}
+		if len(changes) == 0 || changes[len(changes)-1] != "three!" {
+			t.Errorf("OnChange after edit: %v", changes)
+		}
+		var boundEdits int
+		bound := put[*TextView](w, Text(OnEdit(func(string) { boundEdits++ }), Bind(state)))
+		state.Set("updated")
+		app.Flush()
+		if bound.Text() != "updated" || boundEdits != 0 {
+			t.Errorf("Bind: text %q, edits %d", bound.Text(), boundEdits)
+		}
+		var shownEdits int
+		shown := put[*TextView](w, Text(OnEdit(func(string) { shownEdits++ }), BindText(state), Value("initial")))
+		state.Set("again")
+		app.Flush()
+		if shown.Text() != "again" || shownEdits != 0 {
+			t.Errorf("BindText/Value: text %q, edits %d", shown.Text(), shownEdits)
+		}
+		var nestedEdits int
+		var nested *TextView
+		nested = put[*TextView](w, Text(OnEdit(func(string) { nestedEdits++ }), OnChange(func(s string) {
+			if s == "outer" {
+				nested.SetText("inner")
+			}
+		})))
+		nested.SetText("outer")
+		if nestedEdits != 0 || nested.Text() != "inner" {
+			t.Errorf("nested writes: text %q, edits %d", nested.Text(), nestedEdits)
+		}
 	})
 }

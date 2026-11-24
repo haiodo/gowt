@@ -9,6 +9,23 @@ import (
 	"github.com/haiodo/gowt/swt"
 )
 
+func TestPopoverAnchorIntersection(t *testing.T) {
+	anchor := swt.NewRectangle(10, 100, 80, 20)
+	for _, tc := range []struct {
+		name     string
+		bounds   *swt.Rectangle
+		overlaps bool
+	}{
+		{"below", swt.NewRectangle(10, 120, 80, 52), false},
+		{"above", swt.NewRectangle(10, 48, 80, 52), false},
+		{"overlap", swt.NewRectangle(10, 119, 80, 52), true},
+	} {
+		if got := tc.bounds.IntersectsRect(anchor); got != tc.overlaps {
+			t.Errorf("%s: overlaps = %v, want %v", tc.name, got, tc.overlaps)
+		}
+	}
+}
+
 // TestPopoverGUI checks focus, placement and the ways to close a popover shown over a window.
 func TestPopoverGUI(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
@@ -76,10 +93,12 @@ func TestPopoverGUI(t *testing.T) {
 					}
 					walk(&p.shell.Composite)
 					a := btn.ctl.ToDisplay(0, 0)
+					size := btn.ctl.GetSize()
+					anchor := swt.NewRectangle(a.X, a.Y, size.X, size.Y)
 					b := p.native.bounds(p)
 					t.Logf("popover %d,%d %dx%d", b.X, b.Y, b.Width, b.Height)
-					if b.Y < a.Y+btn.ctl.GetSize().Y {
-						fail("the popover overlaps its anchor")
+					if b.IntersectsRect(anchor) {
+						fail(fmt.Sprintf("the popover %v overlaps its anchor %v", b, anchor))
 					}
 					area := btn.ctl.GetMonitor().GetClientArea()
 					if b.X < area.X || b.Y < area.Y || b.X+b.Width > area.X+area.Width || b.Y+b.Height > area.Y+area.Height {

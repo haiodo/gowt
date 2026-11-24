@@ -77,6 +77,17 @@ func OnChange[F func(string) | func(bool) | func(int) | func(float64) | func(tim
 	})
 }
 
+// OnEdit runs f when a Text receives a Modify event outside a facade text write.
+func OnEdit(f func(string)) Option {
+	return hook(func(w Widget) error {
+		if t, ok := w.(*TextView); ok {
+			t.OnEdit(f)
+			return nil
+		}
+		return misfit("OnEdit", f, w)
+	})
+}
+
 // OnSelect runs f when the selection changes: with the index of the selected item of a Combo,
 // List, Table, Tabs or CTabs or of the segment of a Segmented (func(int)), with the selected node of
 // a Tree (func(*Node)), or the start and length of a StyledText selection (func(int, int)).

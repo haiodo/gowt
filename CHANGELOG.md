@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16.3 (2026-11-24)
+
+- `Text.OnEdit` and the `OnEdit` option report edits outside facade text writes. A handler can update another field with `SetText` without triggering its `OnEdit` handler.
+- `BindText` accepts computed text for a `Text` field, and `BindValue` accepts a computed integer for `Progress`. Five 7GUIs examples and a sliding puzzle demonstrate the facade.
+- Canvas mouse, wheel and resize handlers can be supplied as options. Event options also cover table and tree cell clicks, tree expansion and collapse, styled text selection and caret movement, scrolling, and tab close requests.
+- On macOS, a wheel handler can dispose its control during diagonal scrolling without dispatching the next axis to the disposed control.
+
 ## v0.16.2 (2026-11-23)
 
 - Performance: dragging in a Direct gfx view on macOS redraws only the affected horizontal bands. Moving the camera, zooming or resizing redraws the full viewport at the exact display scale.

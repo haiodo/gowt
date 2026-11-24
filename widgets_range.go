@@ -122,7 +122,7 @@ type ProgressView struct {
 }
 
 // Progress creates a progress bar over [0, max].
-// Options: Vertical, Smooth, Indeterminate, Value.
+// Options: Vertical, Smooth, Indeterminate, Value, Bind (int), BindValue.
 func Progress(max int, opts ...Option) Option {
 	opts = fluentRange(opts)
 	return leaf("Progress", sVertical|sSmooth|sIndeterminate, opts, func(p *swt.Composite) Widget {

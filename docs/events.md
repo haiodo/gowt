@@ -209,7 +209,8 @@ go func() { for v := range updates { count.Post(v) } }()    // from any goroutin
 | `rx.Batch(fn)`, `rx.Flush()` | run the pending effects now instead of after the current event handler |
 | `app.Flush()` | `rx.Flush()`, then the layouts the bindings put off (a longer `BindText` text) instead of on the next event-loop turn: for timing one update or measuring a widget right after a change |
 | `gowt.Bind(state)` | option, two-way: `*rx.State[string]` Text and Combo text, `[bool]` Switch and Check Button, `[int]` Scale, Slider, Spinner value or Combo and List index (Progress one way), `[float64]` or `[int]` Number |
-| `gowt.BindText(r)` | option: the text of a Label, Button or Link follows an `rx.Reader[string]` (a `State` or a `Derived`) |
+| `gowt.BindText(r)` | option: the text of a Label, Button, Link or Text follows an `rx.Reader[string]` (a `State` or a `Derived`) |
+| `gowt.BindValue(r)` | option: a Progress value follows an `rx.Reader[int]` |
 | `gowt.BindEnabled(r)`, `gowt.BindVisible(r)` | options on any widget, `rx.Reader[bool]` |
 | `gowt.Rows(list, key, fill)`, `gowt.Nodes(list, key, children, fill)`, `gowt.Items(list)` | options: one Table row, Tree node or List/Combo entry per element of an `rx.Reader[[]T]`, matched by key, see below |
 | `gowt.Watch(w, r, apply)` | call `apply` with `r`'s value whenever it changes, for as long as `w` lives: the binding for what no option covers |

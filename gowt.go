@@ -715,7 +715,7 @@ func Switch(text string, opts ...Option) Option {
 }
 
 // Text creates an edit field.
-// Options: Multiline, Password, ReadOnly, Search, Border, NoBorder, Scrollbars, Hint, Prefix, PrefixImage, Suffix, Small, Value, OnChange, OnActivate, Bind (string).
+// Options: Multiline, Password, ReadOnly, Search, Border, NoBorder, Scrollbars, Hint, Prefix, PrefixImage, Suffix, Small, Value, OnChange, OnActivate, Bind (string), BindText.
 // Windows 11: a Text has the WinUI 3 text box frame (4 px radius, hairline, accent line on focus) unless NoBorder.
 func Text(opts ...Option) Option {
 	noBorder := hasStyle(opts, sNoBorder)

@@ -29,7 +29,7 @@ if err != nil {
 ```
 
 - A constructor (`gowt.Label`, `gowt.Button`, `gowt.HBox`, ...) returns a description, a `gowt.Option`. The widget is created when the description is passed to its parent: to a container constructor, to `app.Window(title, ...)` or to `container.Add(...)`. The nesting of the calls is the nesting on screen.
-- Everything about a widget goes into its option list: placement, style, events (`OnClick`, `OnChange`, `OnSelect`, `OnActivate`), initial state (`Hint`, `Checked`, `Selected`, `Value`) and rx bindings (`Bind`, `BindText`, `BindEnabled`, `BindVisible`).
+- Everything about a widget goes into its option list: placement, style, events (`OnClick`, `OnChange`, `OnSelect`, `OnActivate`), initial state (`Hint`, `Checked`, `Selected`, `Value`) and rx bindings (`Bind`, `BindText`, `BindValue`, `BindEnabled`, `BindVisible`).
 - Data the screen shares lives in `rx` state (`rx.New`, `rx.Compute`); widgets bind to it, callbacks `Set` it. No variable per widget.
 - Rows of a Table or Tree that show rx state are declared with `Rows`, `Nodes` (and `Items` for a List or Combo), see below. Imperative setup (columns, fixed rows, `Split.SetWeights`, tool bar items) goes in `gowt.Init(func(t *gowt.TableView) {...})`, which runs once the widget and its children exist. Widget types end in `View`; containers are `*gowt.Panel`.
 - `gowt.Ref(&x)` (`var x *gowt.PagesView`) is for a widget a later callback calls into (`pages.Show`, `canvas.Redraw`) when no state fits. Ref is set by the `Add` or `app.Window` call that creates the widget.
@@ -132,7 +132,7 @@ row.OnDispose(stop)                // runs when row is disposed or its window cl
 
 `Enabled()` and `Visible()` read the state back. A colour is an `RGB`, an `Adaptive{Light, Dark}`, which the widget switches with the system theme by itself, or `gowt.SecondaryText`, the system's dimmed text colour (a second line, a value next to its name), which follows the theme as well; a background on a container also shows behind its labels and boxes. A `Font` with `Scale` and no `Size` is sized from the system font (`Font{Scale: 1.2, Weight: gowt.Semibold}` for a heading), and widgets with equal fonts share one native font. Widget-specific setters are methods too: `label.SetText`, `text.Text`, `button.SetChecked`, `progress.SetValue`. Tool items and menu items have their own `SetEnabled`.
 
-A setter that changes a widget's size lays its parents out again by itself, on the next event-loop turn (or at `app.Flush()`), once for all the changes of that turn: `SetText` of a Label, Button, Switch, Link or tool item, `SetImage`, `SetFont`, a Group's `SetTitle`, a Combo's `SetItems`, and `BindText`. A setter that leaves the size as it was costs no layout. A `Text` or `List` keeps its size and scrolls. A `Wrap()` label breaks its text at the width its cell gets and grows in height: give it `GrowX()` and let its containers fill the width (`GrowX()` up to the window), or give it `Size(w, 0)`; otherwise its one-line width widens the column and the text is cut at the window edge.
+A setter that changes a widget's size lays its parents out again by itself, on the next event-loop turn (or at `app.Flush()`), once for all the changes of that turn: `SetText` of a Label, Button, Switch, Link or tool item, `SetImage`, `SetFont`, a Group's `SetTitle`, a Combo's `SetItems`, and `BindText` on those widgets. A setter that leaves the size as it was costs no layout. A `Text` or `List` keeps its size and scrolls. A `Wrap()` label breaks its text at the width its cell gets and grows in height: give it `GrowX()` and let its containers fill the width (`GrowX()` up to the window), or give it `Size(w, 0)`; otherwise its one-line width widens the column and the text is cut at the window edge.
 
 A container has `Add(children...)` (create more children at its end, also after Show), `Relayout()` (lay the children out again after a change made through `Unwrap()`) and `Clear()` (dispose every child, for content that is rebuilt). `table.Batch(f)` and `tree.Batch(f)` repaint once after many row changes in `f`.
 
@@ -250,8 +250,9 @@ The common options work on every widget: `Disabled()`, `Tooltip(s)`, `Background
 | `Checked(b)` | Switch, Check/Radio/Toggle Button |
 | `Selected(i)` | Combo, List, Table, Tabs, CTabs, Segmented |
 | `Value(n)` | Scale, Slider, Spinner, Progress, Number |
-| `Bind(state)` | Text, Combo (`string`); Switch, Check or Toggle Button, Disclosure (`bool`); Scale, Slider, Spinner, Combo, List, Segmented (`int`); Number (`float64` or `int`) |
-| `BindText(r)` | Label, Button, Link |
+| `Bind(state)` | Text, Combo (`string`); Switch, Check or Toggle Button, Disclosure (`bool`); Scale, Slider, Spinner, Progress, Combo, List, Segmented (`int`); Number (`float64` or `int`) |
+| `BindText(r)` | widgets with `SetText`: Label, Button, Switch, Link, Text, Combo, StyledText |
+| `BindValue(r)` | Progress |
 | `Rows(list, key, fill)` | Table |
 | `Nodes(list, key, children, fill)` | Tree |
 | `Items(list)` | List, Combo |

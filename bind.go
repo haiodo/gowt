@@ -145,13 +145,13 @@ func onModify(x modifiable) func(func()) func() {
 	}
 }
 
-// BindText shows r as the text of a Label, Button or Link. As with SetText, a text that changes the
-// widget's size lays its parents out again on the next event-loop turn, so a text that grows is not cut.
+// BindText shows r as the text of a widget with SetText, including Label, Button, Switch, Link,
+// Text, Combo and StyledText. Label, Button, Switch and Link relayout when their preferred size changes.
 func BindText(r rx.Reader[string]) Option {
 	return hook(func(w Widget) error {
 		t, ok := w.(interface{ SetText(string) })
-		if _, field := w.(*TextView); !ok || field {
-			return fmt.Errorf("gowt: BindText applies to Label, Button and Link, not to %s; a Text takes Bind", nameOf(w.control()))
+		if !ok {
+			return fmt.Errorf("gowt: BindText requires a widget with SetText, not %s", nameOf(w.control()))
 		}
 		last := ""
 		first := true
@@ -162,6 +162,18 @@ func BindText(r rx.Reader[string]) Option {
 			first, last = false, s
 			t.SetText(s)
 		})
+		return nil
+	})
+}
+
+// BindValue shows r as the value of a Progress.
+func BindValue(r rx.Reader[int]) Option {
+	return hook(func(w Widget) error {
+		p, ok := w.(*ProgressView)
+		if !ok {
+			return fmt.Errorf("gowt: BindValue applies to Progress, not to %s", nameOf(w.control()))
+		}
+		Watch(w, r, p.SetValue)
 		return nil
 	})
 }

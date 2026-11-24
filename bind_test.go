@@ -325,3 +325,31 @@ func BenchmarkHeaderManual(b *testing.B) {
 		w.Close()
 	})
 }
+
+func TestReaderBindings(t *testing.T) {
+	guiRun(t, func(app *App, w *Window) {
+		n := rx.New(1)
+		value := rx.Compute(func() string { return strconv.Itoa(n.Get()) })
+		text := put[*TextView](w, Text(BindText(value)))
+		progress := put[*ProgressView](w, Progress(100, BindValue(n)))
+		if text.Text() != "1" || progress.Value() != 1 {
+			t.Errorf("initial values: text %q, progress %d", text.Text(), progress.Value())
+		}
+		text.SetText("edit")
+		if n.Peek() != 1 {
+			t.Errorf("text edit changed state: %d", n.Peek())
+		}
+		n.Set(42)
+		rx.Flush()
+		if text.Text() != "42" || progress.Value() != 42 {
+			t.Errorf("updated values: text %q, progress %d", text.Text(), progress.Value())
+		}
+		state := rx.New(7)
+		bound := put[*ProgressView](w, Progress(100, Bind(state)))
+		state.Set(9)
+		rx.Flush()
+		if bound.Value() != 9 {
+			t.Errorf("Bind state progress: %d", bound.Value())
+		}
+	})
+}

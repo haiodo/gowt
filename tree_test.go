@@ -256,14 +256,14 @@ func TestEventOptions(t *testing.T) {
 
 		errs = nil
 		put[*LabelView](w, Label("x", OnClick(func() {}), Hint("h"), Bind(name), Value(1)))
-		put[*TextView](w, Text(OnChange(func(int) {}), BindText(title), Value(2)))
+		put[*TextView](w, Text(OnChange(func(int) {}), BindValue(count), Value(2)))
 		want := []string{
 			"gowt: OnClick(func()) does not apply to Label",
 			"gowt: Hint applies to Text, not to Label",
 			"gowt: Bind(*rx.State[string]) applies to Text and Combo, not to Label",
 			"gowt: Value(int) does not apply to Label",
 			"gowt: OnChange(func(int)) does not apply to Text",
-			"gowt: BindText applies to Label, Button and Link, not to Text; a Text takes Bind",
+			"gowt: BindValue applies to Progress, not to Text",
 			"gowt: Value(int) does not apply to Text",
 		}
 		if strings.Join(errs, "\n") != strings.Join(want, "\n") {

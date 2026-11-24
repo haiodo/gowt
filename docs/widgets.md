@@ -37,7 +37,7 @@ Options go last in the call. Some set a style that must be known at creation, th
 | `Hint(s)`, `Checked(b)`, `Selected(i)` | initial state: Text placeholder; Switch and Check/Radio/Toggle Button; Combo, List, Table, Tabs, CTabs, Segmented |
 | `Value(v)` | initial value: string for Text, Combo, StyledText; int for Scale, Slider, Spinner, Progress; `time.Time` for DateTime |
 | `Bind(state)` | two-way: `*rx.State[string]` Text, Combo; `[bool]` Switch, Check or Toggle Button, Disclosure expanded; `[int]` Scale, Slider, Spinner, Combo, List, Segmented index (Progress one way) |
-| `BindText(r)`, `BindEnabled(r)`, `BindVisible(r)` | Label, Button, Link text; enabled and visible state of any widget, see [events.md](events.md) |
+| `BindText(r)`, `BindValue(r)`, `BindEnabled(r)`, `BindVisible(r)` | text of widgets with `SetText` (Label, Button, Switch, Link, Text, Combo, StyledText); Progress value; enabled and visible state of any widget, see [events.md](events.md) |
 | `NoBorder()` | drops the frame of List, Table, Tree, and the one `Border()` gives a Text or StyledText (it wins over `Border()` in either order) |
 | `NoBackground()` | Text and StyledText paint no background of their own: a `look.SetMaterial` pane or a coloured panel under it shows through; selected text and `TextStyle` backgrounds are still drawn |
 | `NoHScroll()` | `Scroll`: no horizontal bar, the content scrolls vertically only |

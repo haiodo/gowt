@@ -432,9 +432,9 @@ func (this *Combo) defaultForeground_() *Color {
 
 func (this *Combo) defaultNSFont_() *cocoa.NSFont {
 	if (this.style & READ_ONLY) != 0 {
-		return this.display.popUpButtonFont
+		return this.display.cachedWidgetFont(&this.display.popUpButtonFont, cocoa.OSClass_NSPopUpButton, cocoa.OSSel_font)
 	}
-	return this.display.comboBoxFont
+	return this.display.cachedWidgetFont(&this.display.comboBoxFont, cocoa.OSClass_NSComboBox, cocoa.OSSel_font)
 }
 
 func (this *Combo) deregister_() {

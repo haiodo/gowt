@@ -228,7 +228,7 @@ func (this *Spinner) Cut() {
 }
 
 func (this *Spinner) defaultNSFont_() *cocoa.NSFont {
-	return this.display.textFieldFont
+	return this.display.cachedWidgetFont(&this.display.textFieldFont, cocoa.OSClass_NSTextField, cocoa.OSSel_font)
 }
 
 func (this *Spinner) deregister_() {

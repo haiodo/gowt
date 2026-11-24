@@ -83,7 +83,7 @@ func (this *ProgressBar) createHandle_() {
 }
 
 func (this *ProgressBar) defaultNSFont_() *cocoa.NSFont {
-	return this.display.progressIndicatorFont
+	return this.display.cachedWidgetFont(&this.display.progressIndicatorFont, cocoa.OSClass_NSProgressIndicator, cocoa.OSSel_font)
 }
 
 func (this *ProgressBar) _drawThemeProgressArea_(id int64, sel int64, arg0 int64) {

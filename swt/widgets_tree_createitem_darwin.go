@@ -251,7 +251,7 @@ func (this *Tree) defaultForeground_() *Color {
 }
 
 func (this *Tree) defaultNSFont_() *cocoa.NSFont {
-	return this.display.outlineViewFont
+	return this.display.cachedWidgetFont(&this.display.outlineViewFont, cocoa.OSClass_NSOutlineView, cocoa.OSSel_font)
 }
 
 func (this *Tree) deregister_() {

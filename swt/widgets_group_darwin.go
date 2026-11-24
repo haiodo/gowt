@@ -95,7 +95,7 @@ func (this *Group) createHandle_() {
 }
 
 func (this *Group) defaultNSFont_() *cocoa.NSFont {
-	return this.display.boxFont
+	return this.display.cachedWidgetFont(&this.display.boxFont, cocoa.OSClass_NSBox, cocoa.OSSel_titleFont)
 }
 
 func (this *Group) deregister_() {

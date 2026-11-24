@@ -148,6 +148,7 @@ Packages: `swt`, `swt/swtreflect`.
 | Feature | Primary | Platform | Tests | Example / docs |
 |---|---|---|---|---|
 | Widget classes (Button, Label, Table, Tree, ToolBar, Shell, Display, ...) | `swt/widgets_<class>_*.go` | the per-OS part of the same family | `tests/swttests/junit_test_org_eclipse_swt_widgets_*.go` | [swt-direct.md](swt-direct.md), `examples/swtdirect` |
+| Default widget fonts on macOS | `swt/widgets_display_fonts_manual_darwin.go` | `tooling/port.sh` generates the lazy reads | `swt/widgets_display_fonts_manual_darwin_test.go` | [swt-direct.md](swt-direct.md) |
 | Tree / Table (view-based rewrite, macOS default) | `swt/widgets_tree_*.go`, `swt/widgets_table_*.go` | same families; `swt/widgets_tree_manual_linux.go`, `swt/widgets_table_manual_darwin.go` | `tests/swttests/junit_test_org_eclipse_swt_widgets_{tree,table}*.go` | [view-based-table.md](view-based-table.md) |
 | StyledText and custom widgets | `swt/custom_*.go` | per-platform parts of the same families | `tests/swttests/junit_test_org_eclipse_swt_custom_*.go` | `examples/styledtext` |
 | Graphics classes (Image, GC, TextLayout, Path, Transform, ...) | `swt/graphics_<class>_*.go` | per-platform parts; `swt/graphics_imagecodec_manual.go` (codecs) | `tests/swttests/junit_test_org_eclipse_swt_graphics_*.go` | [graphics.md](graphics.md) |

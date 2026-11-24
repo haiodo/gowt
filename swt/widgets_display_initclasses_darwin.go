@@ -587,21 +587,6 @@ func (this *Display) InitColors0() {
 
 func (this *Display) InitFonts() {
 	this.smallFonts = jrt.GetProperty("org.eclipse.swt.internal.carbon.smallFonts", "") != ""
-	this.buttonFont = this.GetFont(cocoa.OSClass_NSButton, cocoa.OSSel_font)
-	this.popUpButtonFont = this.GetFont(cocoa.OSClass_NSPopUpButton, cocoa.OSSel_font)
-	this.textFieldFont = this.GetFont(cocoa.OSClass_NSTextField, cocoa.OSSel_font)
-	this.secureTextFieldFont = this.GetFont(cocoa.OSClass_NSSecureTextField, cocoa.OSSel_font)
-	this.searchFieldFont = this.GetFont(cocoa.OSClass_NSSearchField, cocoa.OSSel_font)
-	this.comboBoxFont = this.GetFont(cocoa.OSClass_NSComboBox, cocoa.OSSel_font)
-	this.sliderFont = this.GetFont(cocoa.OSClass_NSSlider, cocoa.OSSel_font)
-	this.scrollerFont = this.GetFont(cocoa.OSClass_NSScroller, cocoa.OSSel_font)
-	this.textViewFont = this.GetFont(cocoa.OSClass_NSTextView, cocoa.OSSel_font)
-	this.tableViewFont = this.GetFont(cocoa.OSClass_NSTableView, cocoa.OSSel_font)
-	this.outlineViewFont = this.GetFont(cocoa.OSClass_NSOutlineView, cocoa.OSSel_font)
-	this.datePickerFont = this.GetFont(cocoa.OSClass_NSDatePicker, cocoa.OSSel_font)
-	this.boxFont = this.GetFont(cocoa.OSClass_NSBox, cocoa.OSSel_titleFont)
-	this.tabViewFont = this.GetFont(cocoa.OSClass_NSTabView, cocoa.OSSel_font)
-	this.progressIndicatorFont = this.GetFont(cocoa.OSClass_NSProgressIndicator, cocoa.OSSel_font)
 }
 
 func (this *Display) InitUseNativeItemHeight() bool {

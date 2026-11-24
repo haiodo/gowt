@@ -100,7 +100,7 @@ func (this *Slider) createWidget_() {
 }
 
 func (this *Slider) defaultNSFont_() *cocoa.NSFont {
-	return this.display.scrollerFont
+	return this.display.cachedWidgetFont(&this.display.scrollerFont, cocoa.OSClass_NSScroller, cocoa.OSSel_font)
 }
 
 func (this *Slider) enableWidget_(enabled bool) {

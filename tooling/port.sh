@@ -556,6 +556,26 @@ if [ "$PLATFORM" = cocoa ]; then
 	[ "$(grep -c 'this.registerGlassButtonClass(' "$DS_GO")" = 1 ] || { echo "port.sh: SWTGlassButton registration did not apply" >&2; exit 1; }
 fi
 
+# Query native widget fonts on first use. AppKit initializes each temporary control when it is created.
+if [ "$PLATFORM" = cocoa ]; then
+	FONT_INIT=$(swt_owner platform widgets_display '^func \(this \*Display\) InitFonts\(\)')
+	mapfile -t FONT_READS < <(grep -lE 'return this\.display\.[[:alnum:]_]+Font$' swt/widgets_*_darwin.go)
+	FONT_INIT="$FONT_INIT" perl -0pi -e '
+		BEGIN {
+			open my $init, "<", $ENV{FONT_INIT} or die "port.sh: $ENV{FONT_INIT}: $!";
+			my $source = <$init>;
+			%fonts = $source =~ /^\tthis\.(\w+Font) = this\.GetFont\(([^\n]*)\)$/mg;
+			die "port.sh: expected 15 native widget font initializers\n" unless keys(%fonts) == 15;
+		}
+		if ($ARGV eq $ENV{FONT_INIT}) {
+			s/^\tthis\.\w+Font = this\.GetFont\([^\n]*\)\n//mg;
+		} else {
+			$reads += s/return this\.display\.(\w+Font)$/return this.display.cachedWidgetFont(\&this.display.$1, $fonts{$1})/mg;
+		}
+		END { die "port.sh: expected 18 native widget font reads\n" unless $reads == 18; }
+	' "$FONT_INIT" "${FONT_READS[@]}"
+fi
+
 # cocoa Composite.drawBackground(GC, ...) fills with the GC background when no control up the tree has a visible background,
 # and GC fills ignore a colour's alpha: a StyledText with an alpha-0 background (look.SetGlass) painted its lines opaque black.
 # A fully transparent GC background fills nothing.

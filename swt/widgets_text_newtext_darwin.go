@@ -759,15 +759,15 @@ func (this *Text) defaultForeground_() *Color {
 
 func (this *Text) defaultNSFont_() *cocoa.NSFont {
 	if (this.style & MULTI) != 0 {
-		return this.display.textViewFont
+		return this.display.cachedWidgetFont(&this.display.textViewFont, cocoa.OSClass_NSTextView, cocoa.OSSel_font)
 	}
 	if (this.style & SEARCH) != 0 {
-		return this.display.searchFieldFont
+		return this.display.cachedWidgetFont(&this.display.searchFieldFont, cocoa.OSClass_NSSearchField, cocoa.OSSel_font)
 	}
 	if (this.style & PASSWORD) != 0 {
-		return this.display.secureTextFieldFont
+		return this.display.cachedWidgetFont(&this.display.secureTextFieldFont, cocoa.OSClass_NSSecureTextField, cocoa.OSSel_font)
 	}
-	return this.display.textFieldFont
+	return this.display.cachedWidgetFont(&this.display.textFieldFont, cocoa.OSClass_NSTextField, cocoa.OSSel_font)
 }
 
 func (this *Text) deregister_() {

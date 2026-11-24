@@ -587,7 +587,7 @@ func (this *Table) defaultForeground_() *Color {
 }
 
 func (this *Table) defaultNSFont_() *cocoa.NSFont {
-	return this.display.tableViewFont
+	return this.display.cachedWidgetFont(&this.display.tableViewFont, cocoa.OSClass_NSTableView, cocoa.OSSel_font)
 }
 
 func (this *Table) deregister_() {

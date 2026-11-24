@@ -89,7 +89,7 @@ func (this *Scale) createHandle_() {
 }
 
 func (this *Scale) defaultNSFont_() *cocoa.NSFont {
-	return this.display.sliderFont
+	return this.display.cachedWidgetFont(&this.display.sliderFont, cocoa.OSClass_NSSlider, cocoa.OSSel_font)
 }
 
 func (this *Scale) deregister_() {

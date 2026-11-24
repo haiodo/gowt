@@ -194,7 +194,7 @@ func (this *List) defaultForeground_() *Color {
 }
 
 func (this *List) defaultNSFont_() *cocoa.NSFont {
-	return this.display.tableViewFont
+	return this.display.cachedWidgetFont(&this.display.tableViewFont, cocoa.OSClass_NSTableView, cocoa.OSSel_font)
 }
 
 func (this *List) Deselect(index int32) {

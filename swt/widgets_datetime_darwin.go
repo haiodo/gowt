@@ -198,7 +198,7 @@ func (this *DateTime) CreatePopupShell(year int32, month int32, day int32) {
 }
 
 func (this *DateTime) defaultNSFont_() *cocoa.NSFont {
-	return this.display.datePickerFont
+	return this.display.cachedWidgetFont(&this.display.datePickerFont, cocoa.OSClass_NSDatePicker, cocoa.OSSel_font)
 }
 
 func (this *DateTime) deregister_() {

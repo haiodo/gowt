@@ -213,7 +213,7 @@ func (this *Label) CreateAttributedText() *cocoa.NSAttributedString {
 }
 
 func (this *Label) defaultNSFont_() *cocoa.NSFont {
-	return this.display.textFieldFont
+	return this.display.cachedWidgetFont(&this.display.textFieldFont, cocoa.OSClass_NSTextField, cocoa.OSSel_font)
 }
 
 func (this *Label) deregister_() {

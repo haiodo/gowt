@@ -121,7 +121,7 @@ func (this *TabFolder) createWidget_() {
 }
 
 func (this *TabFolder) defaultNSFont_() *cocoa.NSFont {
-	return this.display.tabViewFont
+	return this.display.cachedWidgetFont(&this.display.tabViewFont, cocoa.OSClass_NSTabView, cocoa.OSSel_font)
 }
 
 func (this *TabFolder) DestroyItem(itemLike TabItemLike) {

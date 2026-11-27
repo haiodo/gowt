@@ -88,4 +88,12 @@ func TestBarZones(t *testing.T) {
 	if len(sideEnd) != 0 || len(centered) != 1 || len(insp) != 0 || len(trail) != 6 {
 		t.Errorf("no panes: sideEnd %v centered %v trail %v insp %v", sideEnd, centered, trail, insp)
 	}
+	// SidebarLead keeps a Sidebar item in the leading over-sidebar row on Windows and Linux.
+	over, _, _, _, _, _, _ = barZones([]ToolbarItem{
+		{Title: "open", Sidebar: true},
+		{Title: "lead", Sidebar: true, SidebarLead: true},
+	}, true, true)
+	if len(over) != 2 || over[1].Title != "lead" {
+		t.Errorf("sidebar lead row %v", over)
+	}
 }

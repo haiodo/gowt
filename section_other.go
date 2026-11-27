@@ -18,3 +18,6 @@ func mix(a, b int32) int32 { return a + (b-a)*6/100 }
 
 // roundCard does nothing here: the card's corners are painted in the parent's colour.
 func roundCard(*swt.Composite) bool { return false }
+
+// strokeCard reports that this port paints the outline with drawCard instead.
+func strokeCard(*swt.Composite, RGB) bool { return false }

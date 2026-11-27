@@ -226,7 +226,8 @@ func toolbarItems(items []ToolbarItem) []cocoa.ToolbarItem {
 	ci := make([]cocoa.ToolbarItem, len(items))
 	for i, it := range items {
 		ci[i] = cocoa.ToolbarItem{Label: it.Title, Symbol: it.Symbol, Space: it.Space, Click: it.OnClick,
-			Group: toolbarItems(it.Group), Nav: it.Nav, Sidebar: it.Sidebar, SidebarEnd: it.SidebarEnd,
+			Group: toolbarItems(it.Group), Nav: it.Nav, Sidebar: it.Sidebar, SidebarLead: it.SidebarLead,
+			Plain: it.Plain, SidebarEnd: it.SidebarEnd,
 			Center: it.Center, Inspector: it.Inspector, Small: it.Small,
 			Search: it.OnSearch, ID: it.ID, Disabled: it.Enabled != nil && !it.Enabled.Peek()}
 		if it.Text != nil {
@@ -288,6 +289,10 @@ func setToolbar(s *swt.Shell, items []ToolbarItem) bool {
 		}))
 	}
 	s.Layout()
+	// The rebuild moves the buttons during this layout; restore the full-height shift in the same frame.
+	if s.IsVisible() {
+		cocoa.SetTrafficLightInset(s.View, trafficLightShift(s))
+	}
 	return ok
 }
 
@@ -363,6 +368,8 @@ func sidebarFullHeightAvailable() bool { return true }
 func inspectorFullHeightAvailable() bool { return true }
 
 func bottomPanelFloatingAvailable() bool { return true }
+
+func contentFullHeightAvailable() bool { return true }
 
 // fullHeightInspector is the inspector's flush chrome: the glass clips at the window edges with
 // radius 0, like an AppKit split view item. Unlike fullHeightSidebar it leaves the lights alone.

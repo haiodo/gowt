@@ -27,6 +27,11 @@ type ToolbarItem struct {
 	Group   []ToolbarItem
 	Nav     bool // navigational: placed before the window title
 	Sidebar bool // with SetSidebarEdge: placed over the sidebar, ending at its edge
+	// SidebarLead packs a Sidebar item at the leading edge of the sidebar zone, right after the window
+	// buttons, without the spacer before it.
+	SidebarLead bool
+	// Plain draws the item as a bare icon without the bordered capsule, also over the sidebar.
+	Plain bool
 	// SidebarEnd places the item just past the right edge of the sidebar, before the window title: a
 	// bare icon without the bordered capsule the Sidebar items keep. It follows the edge on a drag or
 	// resize and, with the sidebar hidden, sits at the leading edge, next to the traffic lights, as
@@ -106,11 +111,11 @@ func (s *toolbarState) overSidebarEnd(it ToolbarItem) bool {
 // with an inspector.
 func (s *toolbarState) overInspector(it ToolbarItem) bool { return s.split != 0 && it.Inspector }
 
-// ids lists the items in toolbar order. With a sidebar that is the spacer, the Sidebar items, a second
-// spacer they end before, the SidebarEnd items just past the sidebar edge, then the rest: all
-// navigational up to the title, so AppKit keeps the order. The Center items lead the rest, followed
-// by the fitted center spacer. With an inspector the Inspector items come last, after the separator
-// that tracks its divider.
+// ids lists the items in toolbar order. With a sidebar that is the SidebarLead items, the spacer, the
+// Sidebar items, a second spacer they end before, the SidebarEnd items just past the sidebar edge,
+// then the rest: all navigational up to the title, so AppKit keeps the order. The Center items lead
+// the rest, followed by the fitted center spacer. With an inspector the Inspector items come last,
+// after the separator that tracks its divider.
 func (s *toolbarState) ids() uintptr { return s.idList(!s.collapsed) }
 
 // hasCenter reports whether any item goes to the middle of the content column.
@@ -137,18 +142,53 @@ func (s *toolbarState) idList(spacers bool) uintptr {
 		msg(arr, "addObject:", nsString(id))
 	}
 	if s.sidebar {
+		lead := false
 		if spacers {
-			msg(arr, "addObject:", nsString(sidebarSpacerID))
-		}
-		over := false
-		for i, it := range s.items {
-			if s.overSidebar(it) {
-				add(i, it)
-				over = true
+			for _, it := range s.items {
+				if s.overSidebar(it) && it.SidebarLead {
+					lead = true
+					break
+				}
 			}
 		}
-		if over && spacers {
-			msg(arr, "addObject:", nsString(sidebarEndID))
+		if lead {
+			for i, it := range s.items {
+				if s.overSidebar(it) && it.SidebarLead {
+					add(i, it)
+				}
+			}
+			rest := false
+			for _, it := range s.items {
+				if s.overSidebar(it) && !it.SidebarLead {
+					rest = true
+					break
+				}
+			}
+			if rest && spacers {
+				msg(arr, "addObject:", nsString(sidebarSpacerID))
+			}
+			for i, it := range s.items {
+				if s.overSidebar(it) && !it.SidebarLead {
+					add(i, it)
+				}
+			}
+			if spacers {
+				msg(arr, "addObject:", nsString(sidebarEndID))
+			}
+		} else {
+			if spacers {
+				msg(arr, "addObject:", nsString(sidebarSpacerID))
+			}
+			over := false
+			for i, it := range s.items {
+				if s.overSidebar(it) {
+					add(i, it)
+					over = true
+				}
+			}
+			if over && spacers {
+				msg(arr, "addObject:", nsString(sidebarEndID))
+			}
 		}
 		for i, it := range s.items {
 			if s.overSidebarEnd(it) {
@@ -398,7 +438,7 @@ func (s *toolbarState) item(target uintptr, id string) uintptr {
 			// A title on an item without a custom view gives AppKit's own bordered text button.
 			msg(ti, "setTitle:", nsString(it.Text))
 			msg(ti, "setBordered:", 1)
-		case img != 0 && !it.Nav && !s.overSidebar(*it) && respondsTo(ti, "setBordered:"):
+		case img != 0 && (it.Plain || (!it.Nav && !s.overSidebar(*it))) && respondsTo(ti, "setBordered:"):
 			// AppKit 26+ draws an image item as a bordered glass capsule; the Harness rest state
 			// is a bare icon. AppKit draws no hover for such an item, so it gets its own button
 			// view, which tracks the pointer in the key window and draws the quiet fill.

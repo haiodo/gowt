@@ -480,7 +480,7 @@ func SetSidebarHidden(view *NSView, hidden bool) {
 // sidebarEndWidth: the spacer after the Sidebar items. AppKit gives it an item viewer at least 44
 // points wide, so the gap between the Sidebar items and the next item straddles the sidebar edge.
 const (
-	spacerGap       = 4
+	spacerGap       = 12
 	sidebarEndWidth = 4
 )
 
@@ -531,6 +531,11 @@ func fitSidebarSpacer(w uintptr, s *toolbarState, edge float64) {
 	}
 	s.spacerWidth = width
 	msgF64(s.width, sel("setConstant:"), width)
+	// The items follow the new constraint only in the next layout pass: lay out here so a drag moves them now.
+	if tb := msg(w, "toolbar"); tb != 0 {
+		msg(tb, "validateVisibleItems")
+	}
+	msg(w, "layoutIfNeeded")
 }
 
 // minViewerWidth is the narrowest item viewer AppKit puts a toolbar item view in, even a 1-point

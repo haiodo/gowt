@@ -1048,6 +1048,7 @@ gowt func Boundary(opts ...Option) Option
 gowt func Button(text string, opts ...Option) Option
 gowt func CTabs(opts ...Option) Option
 gowt func Canvas(onPaint func(g *GC), opts ...Option) Option
+gowt func CardBorder(c Paint) Option
 gowt func Cell(c GridCell) Option
 gowt func CellSelect() Option
 gowt func Center() Option
@@ -1154,6 +1155,7 @@ gowt func Scroll(opts ...Option) Option
 gowt func Scrollbars() Option
 gowt func Search() Option
 gowt func Section(opts ...Option) Option
+gowt func SectionFill(c RGB) Option
 gowt func Segmented(segments []Segment, opts ...Option) Option
 gowt func Selected(i int) Option
 gowt func Separator(opts ...Option) Option
@@ -1298,8 +1300,10 @@ gowt/look ToolbarItem.Inspector field bool
 gowt/look ToolbarItem.Nav field bool
 gowt/look ToolbarItem.OnClick field func()
 gowt/look ToolbarItem.OnSearch field func(text string)
+gowt/look ToolbarItem.Plain field bool
 gowt/look ToolbarItem.Sidebar field bool
 gowt/look ToolbarItem.SidebarEnd field bool
+gowt/look ToolbarItem.SidebarLead field bool
 gowt/look ToolbarItem.Small field bool
 gowt/look ToolbarItem.Space field bool
 gowt/look ToolbarItem.Symbol field string
@@ -1321,11 +1325,13 @@ gowt/look func InspectorWidth(w *github.com/haiodo/gowt.Window) int
 gowt/look func OnBottomPanelChange(w *github.com/haiodo/gowt.Window, f func(visible bool, height int))
 gowt/look func OnInspectorChange(w *github.com/haiodo/gowt.Window, f func(visible bool, width int))
 gowt/look func OnSidebarChange(w *github.com/haiodo/gowt.Window, f func(visible bool, width int))
+gowt/look func OnSidebarResize(w *github.com/haiodo/gowt.Window, f func(visible bool, width int))
 gowt/look func SetBackdrop(w *github.com/haiodo/gowt.Window, b Backdrop)
 gowt/look func SetBottomPanel(w *github.com/haiodo/gowt.Window, content Container, panel Container, height int)
 gowt/look func SetBottomPanelFloating(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetBottomPanelHeight(w *github.com/haiodo/gowt.Window, height int)
 gowt/look func SetBottomPanelVisible(w *github.com/haiodo/gowt.Window, on bool)
+gowt/look func SetContentFullHeight(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetDarkContent(a *github.com/haiodo/gowt.App, on bool)
 gowt/look func SetFullSizeContent(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetGlass(c Container, on bool)
@@ -1344,7 +1350,9 @@ gowt/look func SetPanesOverlay(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetRoundedCorners(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetSidebar(w *github.com/haiodo/gowt.Window, sidebar Container, content Container, width int)
 gowt/look func SetSidebarFullHeight(w *github.com/haiodo/gowt.Window, on bool)
+gowt/look func SetSidebarMinWidth(w *github.com/haiodo/gowt.Window, width int)
 gowt/look func SetSidebarVisible(w *github.com/haiodo/gowt.Window, on bool)
+gowt/look func SetSidebarVisibleAnimated(w *github.com/haiodo/gowt.Window, on bool)
 gowt/look func SetSidebarWidth(w *github.com/haiodo/gowt.Window, width int)
 gowt/look func SetToolbar(w *github.com/haiodo/gowt.Window, items ...ToolbarItem) bool
 gowt/look func SidebarVisible(w *github.com/haiodo/gowt.Window) bool

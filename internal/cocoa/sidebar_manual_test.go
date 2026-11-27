@@ -258,6 +258,20 @@ func TestToolbarSidebarOrder(t *testing.T) {
 	if got := order(&toolbarState{items: items, sidebar: true, collapsed: true}); got != want {
 		t.Errorf("sidebar hidden: %s, want %s", got, want)
 	}
+	// A SidebarLead item starts the Sidebar cluster at the leading edge; the spacer then follows it
+	// and keeps the ordinary Sidebar items ending at the sidebar edge.
+	leadItems := []ToolbarItem{{Label: "back", Nav: true}, {Label: "open", Sidebar: true, SidebarLead: true},
+		{Label: "items", Sidebar: true}, {Space: true, Sidebar: true}, {Label: "add"}}
+	want = "gowt.item.1 gowt.sidebar gowt.item.2 gowt.sidebar.end gowt.item.0 NSToolbarFlexibleSpaceItem gowt.item.4"
+	if got := order(&toolbarState{items: leadItems, sidebar: true}); got != want {
+		t.Errorf("with sidebar lead: %s, want %s", got, want)
+	}
+	// A hidden sidebar drops the spacers; the lead item keeps its place before the ordinary Sidebar
+	// items, and the rest keeps the toolbar order.
+	want = "gowt.item.1 gowt.item.2 gowt.item.0 NSToolbarFlexibleSpaceItem gowt.item.4"
+	if got := order(&toolbarState{items: leadItems, sidebar: true, collapsed: true}); got != want {
+		t.Errorf("sidebar lead hidden: %s, want %s", got, want)
+	}
 }
 
 // Inspector items go last, after the tracking separator, once the window has an inspector split view;

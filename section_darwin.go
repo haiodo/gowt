@@ -15,3 +15,9 @@ func cardColor(*swt.Display) *swt.Color {
 // roundCard clips the card, rows included, to its rounded rectangle, so on a glass pane the corners show
 // the glass rather than a fill in the parent's colour.
 func roundCard(c *swt.Composite) bool { return cocoa.RoundCorners(c.View, sectionRadius) }
+
+// strokeCard puts the outline on the layer that clips the fill, so both have exactly the same edge.
+func strokeCard(c *swt.Composite, col RGB) bool {
+	cocoa.SetFieldStroke(c.View, float64(col.R)/255, float64(col.G)/255, float64(col.B)/255, 1, 1)
+	return true
+}

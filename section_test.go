@@ -22,3 +22,21 @@ func TestSectionRows(t *testing.T) {
 		}
 	})
 }
+
+func TestCardStrokeColor(t *testing.T) {
+	if _, ok := cardStrokeColor([]Option{GrowX()}); ok {
+		t.Fatal("cardStrokeColor found a colour without CardBorder")
+	}
+	if got, ok := cardStrokeColor([]Option{CardBorder(RGB{R: 1, G: 2, B: 3})}); !ok || got.in(false) != (RGB{R: 1, G: 2, B: 3}) {
+		t.Fatalf("cardStrokeColor = %v, %v", got, ok)
+	}
+}
+
+func TestSectionFillColor(t *testing.T) {
+	if _, ok := cardFillColor([]Option{GrowX()}); ok {
+		t.Fatal("cardFillColor found a colour without SectionFill")
+	}
+	if got, ok := cardFillColor([]Option{SectionFill(RGB{R: 4, G: 5, B: 6})}); !ok || got != (RGB{R: 4, G: 5, B: 6}) {
+		t.Fatalf("cardFillColor = %v, %v", got, ok)
+	}
+}

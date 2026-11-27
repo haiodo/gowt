@@ -162,6 +162,8 @@ func inspectorFullHeightAvailable() bool { return false }
 
 func bottomPanelFloatingAvailable() bool { return false }
 
+func contentFullHeightAvailable() bool { return false }
+
 func fullHeightSidebar(*swt.Shell, *swt.Composite, bool) {}
 
 func fullHeightInspector(*swt.Shell, *swt.Composite, bool) {}

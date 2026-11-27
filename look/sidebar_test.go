@@ -80,6 +80,17 @@ func TestMinSidebarWidth(t *testing.T) {
 	}
 }
 
+func TestCustomSidebarMinWidth(t *testing.T) {
+	p := &pane{kind: sidebarPane, min: 200}
+	if got := p.minWidth(); got != 200 {
+		t.Errorf("custom sidebar minimum %d, want 200", got)
+	}
+	p.min = 20
+	if got := p.minWidth(); got != minSidebarWidth() {
+		t.Errorf("minimum below the built-in one gave %d, want %d", got, minSidebarWidth())
+	}
+}
+
 func TestSidebarFullHeightFrames(t *testing.T) {
 	l := &paneLayout{sidebarFullHeight: true}
 	p := &pane{l: l, kind: sidebarPane, width: 220}
@@ -125,5 +136,19 @@ func TestSidebarFullHeightHiddenFrames(t *testing.T) {
 	_, sb, ct, _ = p.sidebarFrames(10, 20, 100, 10, 52)
 	if sb[3] != 10 || ct[2] != 0 || ct[3] != 0 {
 		t.Fatalf("small full-height window: sidebar %v content %v", sb, ct)
+	}
+}
+
+func TestContentFullHeightFrames(t *testing.T) {
+	if got, want := contentFullFrame([4]int32{10, 72, 680, 548}, 20, 52), [4]int32{10, 20, 680, 600}; got != want {
+		t.Fatalf("content full height %v, want %v", got, want)
+	}
+	if got, want := contentFullFrame([4]int32{10, 72, 680, 548}, 20, 0), [4]int32{10, 72, 680, 548}; got != want {
+		t.Fatalf("no strip changed the frame: %v", got)
+	}
+	p := &pane{l: &paneLayout{contentFullHeight: true}, kind: sidebarPane, width: 220}
+	_, _, _, sh := p.sidebarFrames(10, 20, 900, 600, 52)
+	if sh[1] != 20 || sh[3] != 600 {
+		t.Fatalf("content full height sash %v", sh)
 	}
 }

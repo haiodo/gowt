@@ -200,6 +200,12 @@ type ToolbarItem struct {
 	// macOS in the title bar, level with the traffic lights (Finder, Mail), on Windows and Linux in a row
 	// at the top of the sidebar. Without SetSidebar it is an ordinary item.
 	Sidebar bool
+	// SidebarLead packs a Sidebar item at the leading edge of the sidebar zone, right after the window
+	// buttons, instead of ending at the sidebar edge. When any Sidebar item of the toolbar has it, the
+	// Sidebar cluster starts at the leading edge.
+	SidebarLead bool
+	// Plain draws the item as a bare icon without the bordered capsule, also over the sidebar.
+	Plain bool
 	// SidebarEnd places the item just past the right edge of the sidebar, before the window title: a
 	// bare icon without the bordered capsule the Sidebar items keep, following the edge on a drag or
 	// resize. With the sidebar hidden it sits at the leading edge, as the way back. On Windows and
@@ -305,6 +311,20 @@ func SetSidebarFullHeight(w *gowt.Window, on bool) {
 		if l.side != nil {
 			fullHeightSidebar(s, l.side.c, on)
 		}
+		s.Layout()
+	}
+}
+
+// SetContentFullHeight opts into a macOS content column that runs to the window's top edge, under the
+// transparent title bar and toolbar, so a bordered card reaches the very top; the sidebar children
+// stay below the strip. Call before or after SetSidebar; false restores the default. Other systems
+// ignore it.
+func SetContentFullHeight(w *gowt.Window, on bool) {
+	on = on && contentFullHeightAvailable()
+	s := w.Unwrap()
+	s.SetDataKeyValue("look.contentFullHeight", on)
+	if l := layoutOf(w); l != nil {
+		l.contentFullHeight = on
 		s.Layout()
 	}
 }
@@ -444,10 +464,12 @@ func panesOf(w *gowt.Window, content Container) *paneLayout {
 	SetFullSizeContent(w, true)
 	overlay, _ := s.GetDataKey("look.panesOverlay").(bool)
 	fullHeight, _ := s.GetDataKey("look.sidebarFullHeight").(bool)
+	contentFullHeight, _ := s.GetDataKey("look.contentFullHeight").(bool)
 	inspFullHeight, _ := s.GetDataKey("look.inspectorFullHeight").(bool)
 	bottomFlush, _ := s.GetDataKey(bottomFlushKey).(bool)
 	fixed, _ := s.GetDataKey(inspectorFixedKey).(bool)
-	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct, overlay: overlay, sidebarFullHeight: fullHeight, inspectorFullHeight: inspFullHeight, bottomFlush: bottomFlush, inspFixed: fixed}
+	sidebarMin, _ := s.GetDataKey(sidebarMinKey).(int)
+	l := &paneLayout{Layout: swt.NewLayout(), w: w, content: ct, overlay: overlay, sidebarFullHeight: fullHeight, contentFullHeight: contentFullHeight, inspectorFullHeight: inspFullHeight, bottomFlush: bottomFlush, inspFixed: fixed, sidebarMin: int32(sidebarMin)}
 	l.SetImpl_(l)
 	// The shell minimum is read once: on macOS 26 it read back 20 points taller than it was set, so a
 	// value read after each set grew.
@@ -491,6 +513,9 @@ const inspectorFixedKey = "look.inspectorFixed"
 // a panes overlay window instead of floating inset with rounded glass.
 const bottomFlushKey = "look.bottomFlush"
 
+// sidebarMinKey holds SetSidebarMinWidth, so a sidebar rebuilt by SetSidebar keeps it.
+const sidebarMinKey = "look.sidebarMinWidth"
+
 // firstList returns the first visible List, Table or Tree under c, depth first, or nil.
 func firstList(c *swt.Composite) *swt.Control {
 	for _, ch := range c.GetChildren() {
@@ -525,6 +550,11 @@ func eachList(c *swt.Composite, f func(any)) {
 // whole width and the Sidebar toolbar items move to the start of the toolbar.
 func SetSidebarVisible(w *gowt.Window, on bool) { sidebarOf(w).setVisible(on) }
 
+// SetSidebarVisibleAnimated shows or hides the sidebar of a SetSidebar window over about 190 ms,
+// easing out; another call restarts from the width on screen. SetSidebarVisible stays instant and
+// cancels it, and SidebarWidth reports the stored width once the animation ends.
+func SetSidebarVisibleAnimated(w *gowt.Window, on bool) { sidebarOf(w).setVisibleAnimated(on) }
+
 // SidebarVisible reports whether the sidebar of a SetSidebar window is shown; false without one.
 func SidebarVisible(w *gowt.Window) bool { return sidebarOf(w).visible() }
 
@@ -532,12 +562,33 @@ func SidebarVisible(w *gowt.Window) bool { return sidebarOf(w).visible() }
 // knows it yet. A hidden sidebar comes back at it.
 func SetSidebarWidth(w *gowt.Window, width int) { sidebarOf(w).setWidth(width) }
 
+// SetSidebarMinWidth sets the narrowest sidebar of a SetSidebar window, never below 88 points; a
+// smaller width is raised to it, and 0 restores the built-in minimum. Drag, SetSidebarWidth and the
+// window minimum use it.
+func SetSidebarMinWidth(w *gowt.Window, width int) {
+	if p := sidebarOf(w); p != nil {
+		p.setMinWidth(width)
+		return
+	}
+	n := max(int32(width), minSidebarWidth())
+	w.Unwrap().SetDataKeyValue(sidebarMinKey, int(n))
+	// A layout of SetInspector or SetBottomPanel made before the sidebar reads the key only when it
+	// is created, so the pane built later would miss it.
+	if l := layoutOf(w); l != nil {
+		l.sidebarMin = n
+	}
+}
+
 // SidebarWidth is the sidebar width in points, also while it is hidden; 0 without SetSidebar.
 func SidebarWidth(w *gowt.Window) int { return sidebarOf(w).widthOrZero() }
 
 // OnSidebarChange runs f after the sidebar of a SetSidebar window was shown, hidden or resized: by
 // SetSidebarVisible, SetSidebarWidth and arrow keys on its edge, and once at the end of a drag.
 func OnSidebarChange(w *gowt.Window, f func(visible bool, width int)) { sidebarOf(w).addChange(f) }
+
+// OnSidebarResize runs f on every step of a sidebar drag, every arrow-key step and every frame of
+// SetSidebarVisibleAnimated; OnSidebarChange keeps reporting only the settled state.
+func OnSidebarResize(w *gowt.Window, f func(visible bool, width int)) { sidebarOf(w).addResize(f) }
 
 // SetInspectorVisible shows or hides the inspector of a SetInspector window; hidden, the content takes
 // its width.
@@ -643,9 +694,11 @@ type paneLayout struct {
 	content             *swt.Control
 	overlay             bool
 	sidebarFullHeight   bool
+	contentFullHeight   bool
 	inspectorFullHeight bool
 	bottomFlush         bool
 	inspFixed           bool
+	sidebarMin          int32
 	// column is the frame of the content and the bottom panel at the last layout, under the area behind
 	// a floating sidebar beside the content.
 	column, under [4]int32
@@ -675,10 +728,22 @@ type pane struct {
 	dragging bool
 	from     int32 // the width when the drag began
 	onChange []func(visible bool, width int)
+	onResize []func(visible bool, width int)
+	// animating shrinks or grows the sidebar while hidden stays false, so the content follows.
+	animating bool
+	animFrom  int32
+	animTo    int32
+	animSaved int32 // the width the sidebar comes back at
+	animStep  int
+	animGen   int
+	min       int32 // SetSidebarMinWidth, 0 for the built-in minimum
 }
 
 func (l *paneLayout) newPane(c *swt.Composite, width int, kind paneKind) *pane {
-	p := &pane{l: l, c: c, width: int32(width), kind: kind, fixed: kind == inspectorPane && l.inspFixed}
+	p := &pane{l: l, c: c, width: int32(width), animSaved: int32(width), kind: kind, fixed: kind == inspectorPane && l.inspFixed}
+	if kind == sidebarPane {
+		p.min = l.sidebarMin
+	}
 	dir := int32(swt.VERTICAL)
 	if kind == bottomPane {
 		dir = swt.HORIZONTAL
@@ -692,8 +757,23 @@ func (l *paneLayout) newPane(c *swt.Composite, width int, kind paneKind) *pane {
 }
 
 func (p *pane) setVisible(on bool) {
-	if p != nil && p.hidden == on {
-		p.hidden = !on
+	if p == nil {
+		return
+	}
+	animated := p.animating
+	p.cancelAnimation()
+	if !on {
+		if !p.hidden || animated {
+			p.hidden = true
+			p.width = p.animSaved
+			p.apply()
+			p.notify()
+		}
+		return
+	}
+	if p.hidden || animated && p.width != p.animSaved {
+		p.hidden = false
+		p.width = p.animSaved
 		p.apply()
 		p.notify()
 	}
@@ -705,6 +785,7 @@ func (p *pane) setWidth(width int) {
 	if p == nil {
 		return
 	}
+	p.cancelAnimation()
 	w := int32(width)
 	if p.l != nil {
 		// A pane wider than the window leaves no room for the content and makes the window grow
@@ -712,8 +793,9 @@ func (p *pane) setWidth(width int) {
 		most := p.l.paneLimit(p, p.l.w.Unwrap().GetClientArea().Width)
 		w = min(w, most)
 	}
-	if p.width != max(w, p.minWidth()) {
-		p.width = max(w, p.minWidth())
+	p.animSaved = max(w, p.minWidth())
+	if p.width != p.animSaved {
+		p.width = p.animSaved
 		p.apply()
 		p.notify()
 	}
@@ -730,6 +812,108 @@ func (p *pane) addChange(f func(visible bool, width int)) {
 	if p != nil {
 		p.onChange = append(p.onChange, f)
 	}
+}
+
+func (p *pane) addResize(f func(visible bool, width int)) {
+	if p != nil {
+		p.onResize = append(p.onResize, f)
+	}
+}
+
+func (p *pane) setMinWidth(width int) {
+	if p == nil {
+		return
+	}
+	p.cancelAnimation()
+	p.min = max(int32(width), minSidebarWidth())
+	p.l.w.Unwrap().SetDataKeyValue(sidebarMinKey, int(p.min))
+	if p.l != nil {
+		p.l.sidebarMin = p.min
+	}
+	if p.width < p.minWidth() {
+		p.width, p.animSaved = p.minWidth(), p.minWidth()
+		p.apply()
+		p.notify()
+	}
+	p.l.w.Unwrap().Layout()
+}
+
+const (
+	sidebarAnimFrame = 16
+	sidebarAnimSteps = 12
+)
+
+// setVisibleAnimated starts an ease-out animation from the width on screen to on or 0.
+func (p *pane) setVisibleAnimated(on bool) {
+	if p == nil {
+		return
+	}
+	if on == p.visible() && !p.animating {
+		return
+	}
+	if !p.animating {
+		p.animSaved = p.width
+	}
+	from := int32(0)
+	if !p.hidden {
+		from = p.width
+	}
+	to := p.animSaved
+	if !on {
+		to = 0
+	}
+	p.animating = true
+	p.animGen++
+	gen := p.animGen
+	p.animFrom, p.animTo, p.animStep = from, to, 0
+	if on {
+		p.hidden = false
+	}
+	p.width = from
+	p.apply()
+	p.notifyResize()
+	p.animNext(gen)
+}
+
+func (p *pane) cancelAnimation() {
+	if p == nil || !p.animating {
+		return
+	}
+	p.animating = false
+	p.animGen++
+}
+
+func (p *pane) animNext(gen int) {
+	s := p.l.w.Unwrap()
+	s.GetDisplay().TimerExec(sidebarAnimFrame, jrt.NewRunnable(func() {
+		if !s.IsDisposed() {
+			p.animFrame(gen)
+		}
+	}))
+}
+
+func (p *pane) animFrame(gen int) {
+	if !p.animating || p.animGen != gen {
+		return
+	}
+	p.animStep++
+	if p.animStep >= sidebarAnimSteps {
+		p.animating = false
+		if p.animTo == 0 {
+			p.hidden = true
+		}
+		p.width = p.animSaved
+		p.apply()
+		p.notifyResize()
+		p.notify()
+		return
+	}
+	t := float64(p.animStep) / sidebarAnimSteps
+	t = 1 - (1-t)*(1-t)*(1-t)
+	p.width = p.animFrom + int32(float64(p.animTo-p.animFrom)*t)
+	p.apply()
+	p.notifyResize()
+	p.animNext(gen)
 }
 
 // inset is the gap between the pane and the window edges.
@@ -805,6 +989,12 @@ func (p *pane) notify() {
 	}
 }
 
+func (p *pane) notifyResize() {
+	for _, f := range p.onResize {
+		f(!p.hidden, int(p.width))
+	}
+}
+
 // minWidth is the narrowest pane: minSidebarWidth, minInspectorWidth or minBottomHeight. The
 // sidebar keeps it even where its Sidebar toolbar items no longer fit: they overflow into the row's
 // More menu instead of holding the pane wide (the Inspector items already overflow into their strip).
@@ -815,7 +1005,7 @@ func (p *pane) minWidth() int32 {
 	if p.kind == inspectorPane {
 		return minInspectorWidth()
 	}
-	return minSidebarWidth()
+	return max(minSidebarWidth(), p.min)
 }
 
 // HandleEvent follows a drag of the sash: it resizes the pane while the mouse moves, stopping at
@@ -828,6 +1018,8 @@ func (p *pane) HandleEvent(e *swt.Event) {
 	}
 	switch e.Type {
 	case swt.MouseDown:
+		p.cancelAnimation()
+		p.animSaved = p.width
 		p.dragging, p.from = true, p.width
 	case swt.MouseUp:
 		p.dragging = false
@@ -847,16 +1039,24 @@ func (p *pane) HandleEvent(e *swt.Event) {
 			want = inspectorWidthAt(e.X, r.X+r.Width, p.inset(), div)
 			most = p.l.paneLimit(p, r.Width)
 		default:
-			want = sidebarWidthAt(e.X-r.X, p.inset(), div)
+			x := e.X - r.X
+			if p.l != nil && p.l.contentFullHeight && !p.l.overlay {
+				x -= sidebarSashContentOffset
+			}
+			want = sidebarWidthAt(x, p.inset(), div)
 			most = p.l.paneLimit(p, r.Width)
 		}
 		width := dragWidth(want, p.minWidth(), most)
 		if width != p.width && !p.hidden {
 			p.width = width
+			p.animSaved = width
 			p.apply()
 			if !p.dragging { // arrow keys on the focused sash
 				p.notify()
 			}
+		}
+		if !p.hidden {
+			p.notifyResize()
 		}
 		// The sash moves itself to e.X, e.Y; the layout has already put it where the pane ends.
 		b := p.sash.GetBounds()
@@ -913,6 +1113,9 @@ func (l *paneLayout) ComputeSize_(c *swt.Composite, wHint, hHint int32, _ bool) 
 		}
 	}
 	pt := swt.NewPoint(l.requiredWidth(w), top+h)
+	if l.contentFullHeight {
+		pt.Y = h
+	}
 	if wHint != swt.DEFAULT {
 		pt.X = wHint
 	}
@@ -933,7 +1136,7 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 		bg, sb, rest, sh := p.sidebarFrames(r.X, r.Y, r.Width, paneHeight, top)
 		p.c.SetBounds(sb[0], sb[1], sb[2], sb[3])
 		p.sash.SetBounds(sh[0], sh[1], sh[2], sh[3])
-		p.sash.SetVisible(!p.hidden)
+		p.sash.SetVisible(!p.hidden && !p.animating)
 		syncSidebar(s, p.c, bg, p.hidden)
 		ct = rest
 	}
@@ -954,6 +1157,9 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 		l.content.MoveBelow(nil)
 	}
 	ct, ib = barTop(s, ct, ib)
+	if l.contentFullHeight && !l.overlay {
+		ct = contentFullFrame(ct, r.Y, top)
+	}
 	if p := l.insp; p != nil {
 		p.c.SetBounds(ib[0], ib[1], ib[2], ib[3])
 	}
@@ -999,6 +1205,17 @@ func (l *paneLayout) LayoutFn_(c *swt.Composite, _ bool) {
 	l.fitMinSize()
 }
 
+// contentFullFrame moves the content frame to the window top and adds back the strip the title bar
+// and toolbar take; strip 0 leaves it unchanged.
+func contentFullFrame(ct [4]int32, y, strip int32) [4]int32 {
+	if strip <= 0 {
+		return ct
+	}
+	ct[1] = y
+	ct[3] += strip
+	return ct
+}
+
 // paintUnder fills the area behind a floating sidebar beside the content with the content's
 // background, as AppKit extends the content split item beneath the sidebar: without it the window
 // colour showed in the inset around the sidebar. A theme switch repaints the window; a later
@@ -1032,10 +1249,11 @@ func (l *paneLayout) fitMinSize() {
 func (l *paneLayout) fitMin() bool {
 	raised := false
 	for _, p := range []*pane{l.side, l.insp, l.bottom} {
-		if p == nil || p.width >= p.minWidth() {
+		if p == nil || p.animating || p.width >= p.minWidth() {
 			continue
 		}
 		p.width = p.minWidth()
+		p.animSaved = p.width
 		raised = true
 		s := l.w.Unwrap()
 		s.GetDisplay().AsyncExec(jrt.NewRunnable(func() {
@@ -1050,6 +1268,9 @@ func (l *paneLayout) fitMin() bool {
 // sashGrip is the width of the sash where the pane leaves no gap for it (div 0): it lies over the
 // sidebar edge, half on each side, and just inside the inspector edge, clear of the content's scroll bar.
 const sashGrip = 6
+
+// sidebarSashContentOffset puts the full-height sash on the border of a card inset from the content edge.
+const sidebarSashContentOffset = 8
 
 // sidebarFrames splits the client area (x, y, w, h): the sidebar background inset by in on three
 // sides, the sidebar composite on it below the top strip of top points, the content right of the
@@ -1077,6 +1298,9 @@ func (p *pane) sidebarFrames(x, y, w, h, top int32) (bg, sb, ct, sh [4]int32) {
 		// floating glass rounds all four corners: keep the children off its bottom corners
 		sb[3] = max(sb[3]-p.inset(), 0)
 	}
+	if p.l != nil && p.l.contentFullHeight {
+		sh[1], sh[3] = y, max(h, 0)
+	}
 	if p.l != nil && p.l.sidebarFullHeight {
 		if p.l.overlay {
 			// Flush glass, but the children stay below the toolbar: native scrolls do not
@@ -1085,6 +1309,9 @@ func (p *pane) sidebarFrames(x, y, w, h, top int32) (bg, sb, ct, sh [4]int32) {
 		}
 		sb[1], sb[3] = y, max(h, 0)
 		sh[1], sh[3] = y, max(h, 0)
+	}
+	if p.l != nil && p.l.contentFullHeight && !p.l.overlay {
+		sh[0] += sidebarSashContentOffset
 	}
 	return
 }

@@ -480,7 +480,7 @@ func SetSidebarHidden(view *NSView, hidden bool) {
 // sidebarEndWidth: the spacer after the Sidebar items. AppKit gives it an item viewer at least 44
 // points wide, so the gap between the Sidebar items and the next item straddles the sidebar edge.
 const (
-	spacerGap       = 12
+	spacerGap       = 4
 	sidebarEndWidth = 4
 )
 

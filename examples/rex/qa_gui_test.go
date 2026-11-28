@@ -39,6 +39,48 @@ func TestMain(m *testing.M) {
 	qatest.Main(m, bin)
 }
 
+func TestSidebarToolbarSlotWidths(t *testing.T) {
+	for _, tc := range []struct {
+		width, viewer, slots int
+		plus                 bool
+		min, gap, right      int
+	}{
+		{300, 36, 3, true, 200, 16, 284},
+		{300, 44, 2, false, 216, 16, 284},
+		{280, 36, 3, false, 200, 8, 272},
+		{280, 44, 2, false, 216, 16, 264},
+		{220, 36, 1, false, 200, 16, 204},
+		{220, 44, 1, false, 216, 4, 216},
+		{216, 36, 1, false, 200, 16, 200},
+		{216, 44, 1, false, 216, 0, 216},
+		{200, 36, 1, false, 200, 0, 200},
+		{200, 44, 1, false, 216, 0, 216},
+	} {
+		if got := sidebarMinWidth(tc.viewer); got != tc.min {
+			t.Errorf("viewer %d: minimum %d, want %d", tc.viewer, got, tc.min)
+		}
+		effective := max(tc.width, tc.min)
+		if got := sidebarToolbarSlots(effective, tc.viewer); got != tc.slots {
+			t.Errorf("width %d viewer %d: slots %d, want %d", tc.width, tc.viewer, got, tc.slots)
+		}
+		if got := sidebarPlusFits(effective, tc.viewer); got != tc.plus {
+			t.Errorf("width %d viewer %d: plus %v, want %v", tc.width, tc.viewer, got, tc.plus)
+		}
+		if got := sidebarTrailingGap(tc.width, tc.viewer); got != tc.gap {
+			t.Errorf("width %d viewer %d: gap %d, want %d", tc.width, tc.viewer, got, tc.gap)
+		}
+		if right := effective - sidebarTrailingGap(tc.width, tc.viewer); right != tc.right {
+			t.Errorf("width %d viewer %d: More right %d, want %d", tc.width, tc.viewer, right, tc.right)
+		}
+		if right := effective - sidebarTrailingGap(tc.width, tc.viewer); right > effective+2 {
+			t.Errorf("width %d viewer %d: More right %d exceeds edge %d", tc.width, tc.viewer, right, effective)
+		}
+	}
+	if got := sidebarToolbarSlots(33, 36); got != 0 {
+		t.Errorf("hide animation below the minimum keeps %d slots, want 0", got)
+	}
+}
+
 // TestSidebarStates checks the staged toolbar overflow, the hidden state and the narrow right pane.
 func TestSidebarStates(t *testing.T) {
 	if os.Getenv("GOWT_GUI_TEST") == "" {
@@ -51,26 +93,18 @@ func TestSidebarStates(t *testing.T) {
 		t.Fatalf("the expanded toolbar has no Activity item")
 	}
 
-	for _, c := range []struct {
-		width int
-		want  []string
-	}{
-		{300, []string{"toggle-sidebar", "toolbar-eye", "toolbar-command", "toolbar-plus"}},
-		{280, []string{"toggle-sidebar", "toolbar-eye", "toolbar-command", "more"}},
-		{260, []string{"toggle-sidebar", "toolbar-eye", "more"}},
-		{220, []string{"toggle-sidebar", "more"}},
-		{200, []string{"toggle-sidebar", "more"}},
-	} {
-		app.State("sidebar-width", "width", c.width)
+	divider := 0
+	for _, width := range []int{300, 280, 260, 220, 200} {
+		app.State("sidebar-width", "width", width)
 		app.Settle()
-		app.Shot(fmt.Sprintf("rex-width-%d", c.width))
-		checkToolbar(t, app, c.width, c.want)
+		app.Shot(fmt.Sprintf("rex-width-%d", width))
+		checkToolbar(t, app, width, &divider)
 	}
 
 	app.State("sidebar-width", "width", 100)
 	app.Settle()
 	app.Shot("rex-width-min")
-	checkToolbar(t, app, 200, []string{"toggle-sidebar", "more"})
+	checkToolbar(t, app, 200, &divider)
 
 	app.State("sidebar-width", "width", 260)
 	app.Settle()
@@ -104,32 +138,73 @@ func TestSidebarStates(t *testing.T) {
 	t.Logf("shots: %s, %s, %s", expanded, mid, collapsed)
 }
 
-func checkToolbar(t *testing.T, app *qatest.Client, width int, want []string) {
+func checkToolbar(t *testing.T, app *qatest.Client, width int, divider *int) {
 	t.Helper()
 	edge := app.Find(qa.ID("rex-content")).Node().Bounds[0]
-	if edge != width {
-		t.Errorf("width %d: content starts at %d", width, edge)
+	raw := app.State("sidebar-metrics")
+	actualWidth := 0
+	if err := json.Unmarshal(raw, &actualWidth); err != nil {
+		t.Fatal(err)
 	}
-	for _, id := range []string{"toolbar-eye", "toolbar-command", "toolbar-plus", "more"} {
-		has := app.Find(qa.ID(id)).Exists()
-		wanted := contains(want, id)
-		if has != wanted {
-			t.Errorf("width %d: %s present %v, want %v", width, id, has, wanted)
+	if runtime.GOOS == "darwin" {
+		if edge != actualWidth {
+			t.Errorf("width %d: content starts at %d, sidebar width %d", width, edge, actualWidth)
+		}
+	} else {
+		if *divider == 0 {
+			*divider = edge - actualWidth
+		}
+		if want := actualWidth + *divider; edge != want {
+			t.Errorf("width %d: content starts at %d, want sidebar %d plus divider %d", width, edge, actualWidth, *divider)
 		}
 	}
+	want := []string{"toggle-sidebar", "more"}
+	if runtime.GOOS == "darwin" {
+		viewer := app.Find(qa.ID("toggle-sidebar")).Node().Bounds[2]
+		slots := sidebarToolbarSlots(actualWidth, viewer)
+		want = []string{"toggle-sidebar"}
+		switch slots {
+		case 3:
+			want = append(want, "toolbar-eye", "toolbar-command")
+			if sidebarPlusFits(actualWidth, viewer) {
+				want = append(want, "toolbar-plus")
+			} else {
+				want = append(want, "more")
+			}
+		case 2:
+			want = append(want, "toolbar-eye", "more")
+		case 1:
+			want = append(want, "more")
+		}
+	}
+	for _, id := range []string{"toggle-sidebar", "toolbar-eye", "toolbar-command", "toolbar-plus", "more"} {
+		e := app.Find(qa.ID(id))
+		has := e.Exists()
+		if runtime.GOOS == "darwin" && has != contains(want, id) {
+			t.Errorf("width %d: %s present %v, want %v", width, id, has, contains(want, id))
+		}
+		if has {
+			b := e.Node().Bounds
+			if right := b[0] + b[2]; right > edge+2 {
+				t.Errorf("width %d: %s right %d, sidebar edge %d", width, id, right, edge)
+			}
+		}
+	}
+	if runtime.GOOS != "darwin" {
+		return
+	}
+	viewer := app.Find(qa.ID("toggle-sidebar")).Node().Bounds[2]
+	wantGap := sidebarTrailingGap(actualWidth, viewer)
 	last := 0
 	for _, id := range want {
+		if id == "toggle-sidebar" {
+			continue
+		}
 		b := app.Find(qa.ID(id)).Node().Bounds
-		right := b[0] + b[2]
-		if right > edge+2 {
-			t.Errorf("width %d: %s right %d, sidebar edge %d", width, id, right, edge)
-		}
-		if id != "toggle-sidebar" {
-			last = max(last, right)
-		}
+		last = max(last, b[0]+b[2])
 	}
-	if last != 0 && (edge-last < 0 || edge-last > 8) {
-		t.Errorf("width %d: the toolbar cluster ends %d points from the sidebar edge, want 0..8", width, edge-last)
+	if last != 0 && edge-last != wantGap {
+		t.Errorf("width %d: the toolbar cluster ends %d points from the sidebar edge, want %d", width, edge-last, wantGap)
 	}
 }
 

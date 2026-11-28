@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.16.4 (2026-11-28)
+
+- New: `examples/rex` demonstrates a two-window terminal UI with an adaptive sidebar toolbar, animated sidebar, settings pages, keyboard navigation and System, Light and Dark appearances. Custom canvases and SVG icons follow the selected theme, and the session title follows each sidebar drag step without jumping on release.
+- New: `look.SetContentFullHeight(w, on)` extends macOS content under the transparent title bar and toolbar. `look.SetSidebarMinWidth(w, n)` sets the sidebar's minimum width, `look.SetSidebarVisibleAnimated(w, on)` animates hiding and showing, and `look.OnSidebarResize(w, f)` reports every drag step and animation frame.
+- New: `look.ToolbarItem.SidebarLead` packs an item at the leading edge of the sidebar zone, and `look.ToolbarItem.Plain` draws a bare icon without the bordered capsule. Native toolbar items follow the sidebar edge in the same layout frame as a drag.
+- New: `gowt.CardBorder(Paint)` draws a Section outline on the same rounded edge as its fill and accepts an `Adaptive` colour. `gowt.SectionFill(RGB)` selects a fixed card fill. A custom Section background now survives system theme changes.
+- Performance: on macOS native widget fonts are loaded on first use and cached instead of all being initialized when the display is created.
+
 ## v0.16.3 (2026-11-24)
 
 - `Text.OnEdit` and the `OnEdit` option report edits outside facade text writes. A handler can update another field with `SetText` without triggering its `OnEdit` handler.

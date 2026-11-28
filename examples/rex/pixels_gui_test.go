@@ -32,30 +32,6 @@ var (
 	grouped = rgb{36, 36, 36} // the grouped colour Section paints without SectionFill
 )
 
-// cardRect is the box of the long runs of fill: a card row is a run hundreds of points wide, a blend
-// of two colours is a few pixels of it, so the strays stay out.
-func cardRect(img image.Image, fill rgb) image.Rectangle {
-	b := img.Bounds()
-	out := image.Rectangle{}
-	add := func(x0, x1, y int) {
-		if x1-x0 >= 40 {
-			out = out.Union(image.Rect(x0, y, x1, y+1))
-		}
-	}
-	for y := b.Min.Y; y < b.Max.Y; y++ {
-		run := b.Min.X
-		for x := b.Min.X; x < b.Max.X; x++ {
-			if of(img.At(x, y)).near(fill, 1) {
-				continue
-			}
-			add(run, x, y)
-			run = x + 1
-		}
-		add(run, b.Max.X, y)
-	}
-	return out
-}
-
 // shotPNG decodes the shot qatest wrote.
 func shotPNG(t *testing.T, path string) image.Image {
 	t.Helper()
@@ -99,6 +75,26 @@ func scale(img image.Image, win [4]int) float64 {
 	return float64(img.Bounds().Dx()) / float64(win[2])
 }
 
+func clientOrigins(t *testing.T, app *qatest.Client) map[string][2]int {
+	t.Helper()
+	raw, err := app.Call("state", map[string]any{"name": "client-origins"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var origins map[string][2]int
+	if err := json.Unmarshal(raw, &origins); err != nil {
+		t.Fatal(err)
+	}
+	return origins
+}
+
+// controlRect converts client coordinates to screenshot pixels, including the platform's non-client frame.
+func controlRect(b [4]int, origin [2]int, img image.Image, win [4]int) image.Rectangle {
+	s := scale(img, win)
+	return image.Rect(int(float64(b[0]+origin[0])*s), int(float64(b[1]+origin[1])*s),
+		int(float64(b[0]+origin[0]+b[2])*s), int(float64(b[1]+origin[1]+b[3])*s))
+}
+
 // TestCardBorderHugsEdge holds the card outline to the card's own edge: the one-point CardBorder
 // stroke must run one point inside every side and follow the same inset through the corners.
 func TestCardBorderHugsEdge(t *testing.T) {
@@ -107,11 +103,17 @@ func TestCardBorderHugsEdge(t *testing.T) {
 	}
 	app := qatest.App(t)
 	app.Settle()
+	app.State("rex-size", "width", 900, "height", 600)
+	defer app.State("rex-size", "width", 1280, "height", 800)
+	app.Settle()
 	img := shotPNG(t, app.Shot("rex-cards"))
-	for _, n := range app.Find(qa.ID("pane-card")).Nodes() {
+	panes := app.Find(qa.ID("pane-card")).Nodes()
+	for _, n := range panes {
 		t.Logf("pane card %s %v", n.Class, n.Bounds)
 	}
-	s := scale(img, windows(t, app)[0])
+	win := windows(t, app)[0]
+	origin := clientOrigins(t, app)["rex"]
+	s := scale(img, win)
 	for _, c := range []struct {
 		name string
 		fill rgb
@@ -119,7 +121,14 @@ func TestCardBorderHugsEdge(t *testing.T) {
 		{"codex", card1},
 		{"shell", card2},
 	} {
-		card := cardRect(img, c.fill)
+		if len(panes) != 2 {
+			t.Fatalf("got %d pane cards, want 2", len(panes))
+		}
+		index := 0
+		if c.name == "shell" {
+			index = 1
+		}
+		card := controlRect(panes[index].Bounds, origin, img, win)
 		if card.Empty() || card.Dx() < int(200*s) || card.Dy() < int(200*s) {
 			t.Fatalf("%s: no card of %v on the shot, got %v", c.name, c.fill, card)
 		}
@@ -184,12 +193,13 @@ func TestSettingsCardColour(t *testing.T) {
 	img := shotPNG(t, app.ShotOf("settings-general", qa.ID("settings-list")))
 	ws := windows(t, app)
 	s := scale(img, ws[len(ws)-1]) // the settings window is the shell opened last
+	origin := clientOrigins(t, app)["settings"]
 	b := app.Find(qa.ID("client-info-card")).Node().Bounds
-	t.Logf("client info card %v, %.2f px/pt", b, s)
+	t.Logf("client info card %v, %.2f px/pt, origin %v", b, s, origin)
 	verified := 0
 	for _, dy := range []float64{1.5, 3, 5} {
-		x := int((float64(b[0]) + float64(b[2])/2) * s)
-		y := int((float64(b[1]) + dy) * s)
+		x := int((float64(b[0]+origin[0]) + float64(b[2])/2) * s)
+		y := int((float64(b[1]+origin[1]) + dy) * s)
 		got := of(img.At(x, y))
 		t.Logf("card top %.1f points in at %d,%d: (%d %d %d)", dy, x, y, got.r, got.g, got.b)
 		if got.near(card1, 3) {
@@ -206,13 +216,9 @@ func TestSettingsCardColour(t *testing.T) {
 // luminance is the perceived brightness of a shot pixel, 0 dark and 255 light.
 func luminance(c rgb) int { return (299*c.r + 587*c.g + 114*c.b) / 1000 }
 
-// strip is the box of the shot of a control of window win, its dumped bounds less the title strip the
-// shot does not carry.
-func strip(b [4]int, img image.Image, win [4]int) image.Rectangle {
-	s := scale(img, win)
-	dy := float64(win[3]) - float64(img.Bounds().Dy())/s
-	return image.Rect(int(float64(b[0])*s), int((float64(b[1])-dy)*s),
-		int(float64(b[0]+b[2])*s), int((float64(b[1]+b[3])-dy)*s))
+// strip is the box of the shot of a control of window win.
+func strip(b [4]int, origin [2]int, img image.Image, win [4]int) image.Rectangle {
+	return controlRect(b, origin, img, win)
 }
 
 // ink counts the pixels of r that are darker than dark, or lighter than light.
@@ -246,6 +252,7 @@ func TestAppearanceSwitch(t *testing.T) {
 	app.Settle()
 	ws := windows(t, app)
 	rex, settings := ws[0], ws[len(ws)-1]
+	origins := clientOrigins(t, app)
 	tab := app.Find(qa.ID("codex-tab")).Node().Bounds
 	field := app.Find(qa.ID("settings-search")).Node().Bounds
 	for _, c := range []struct {
@@ -259,7 +266,7 @@ func TestAppearanceSwitch(t *testing.T) {
 		app.Settle()
 		rexImg := shotPNG(t, app.Shot("rex-"+c.mode))
 		setImg := shotPNG(t, app.ShotOf("settings-"+c.mode, qa.ID("settings-list")))
-		tabs := strip(tab, rexImg, rex)
+		tabs := strip(tab, origins["rex"], rexImg, rex)
 		// The tab strip is filled with the card colour and holds the title and a tinted icon.
 		bg := luminance(of(rexImg.At(tabs.Min.X+tabs.Dx()/2, tabs.Max.Y-3)))
 		dark, light := ink(rexImg, tabs, 100, 160)
@@ -280,7 +287,7 @@ func TestAppearanceSwitch(t *testing.T) {
 			}
 		}
 		// A native field: the search box of the settings sidebar follows the appearance by itself.
-		f := strip(field, setImg, settings)
+		f := strip(field, origins["settings"], setImg, settings)
 		fill := luminance(of(setImg.At(f.Max.X-8, f.Min.Y+f.Dy()/2)))
 		t.Logf("%s: search field fill %d", c.mode, fill)
 		if c.light && fill < 180 {

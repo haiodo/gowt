@@ -46,6 +46,13 @@ func rexWindow(app *gowt.App, openSettings func()) *gowt.Window {
 		look.SetSidebarWidth(w, a.Int("width"))
 		return nil
 	})
+	qa.Handle("rex-size", func(a qa.Args) error {
+		w.SetSize(a.Int("width"), a.Int("height"))
+		return nil
+	})
+	qa.HandleValue("sidebar-metrics", func(qa.Args) (any, error) {
+		return look.SidebarWidth(w), nil
+	})
 	qa.HandleValue("sidebar-sash", func(a qa.Args) (any, error) {
 		for _, control := range w.Unwrap().GetChildren() {
 			sash, ok := control.Impl().(*swt.Sash)
@@ -92,11 +99,12 @@ func rexWindow(app *gowt.App, openSettings func()) *gowt.Window {
 }
 
 type rexChrome struct {
-	w       *gowt.Window
-	more    *gowt.Menu
-	tab     *sessionTab
-	variant int
-	hidden  bool
+	w        *gowt.Window
+	more     *gowt.Menu
+	tab      *sessionTab
+	variant  int
+	minWidth int
+	hidden   bool
 }
 
 func (c *rexChrome) toggle() {
@@ -108,12 +116,18 @@ func (c *rexChrome) toggle() {
 func (c *rexChrome) update() {
 	slots := 0
 	width := 0
+	itemWidth := sidebarItemWidth(c.w)
+	minWidth := sidebarMinWidth(itemWidth)
+	if c.minWidth != minWidth {
+		c.minWidth = minWidth
+		look.SetSidebarMinWidth(c.w, minWidth)
+	}
 	if look.SidebarVisible(c.w) {
 		width = look.SidebarWidth(c.w)
-		slots = sidebarToolbarSlots(width)
+		slots = sidebarToolbarSlots(width, itemWidth)
 	}
 	variant := slots
-	plusFits := slots == 3 && width >= 288
+	plusFits := slots == 3 && sidebarPlusFits(width, itemWidth)
 	if slots == 3 && !plusFits {
 		variant = 4 // three items fit, but New Session folds into More
 	}
@@ -148,15 +162,33 @@ func (c *rexChrome) update() {
 	look.SetToolbar(c.w, items...)
 }
 
-// sidebarToolbarSlots is how many Small Sidebar items fit before the sidebar edge: the native viewer is
-// 36 points wide and the fitted spacer stops at 164 points from the window edge.
-func sidebarToolbarSlots(width int) int {
+func sidebarMinWidth(itemWidth int) int { return 200 + 2*(itemWidth-36) }
+
+// sidebarToolbarSlots is how many Small Sidebar items fit before the sidebar edge. The two fitted
+// spacers also grow when AppKit's item viewer grows from 36 points to itemWidth.
+func sidebarToolbarSlots(width, itemWidth int) int {
+	lead := 156 + 2*(itemWidth-36)
 	for n := 3; n > 0; n-- {
-		if 164+36*n <= width+2 {
+		if lead+itemWidth*n <= width+2 {
 			return n
 		}
 	}
 	return 0
+}
+
+func sidebarPlusFits(width, itemWidth int) bool {
+	return 156+2*(itemWidth-36)+4*itemWidth <= width+2
+}
+
+// sidebarTrailingGap is the unused part of the trailing inset after the fitted spacer reaches its
+// minimum. It grows from zero at minWidth and is capped by the native layout of the selected variant.
+func sidebarTrailingGap(width, itemWidth int) int {
+	width = max(width, sidebarMinWidth(itemWidth))
+	limit := 16 // spacerGap 4: 20 - 4
+	if sidebarToolbarSlots(width, itemWidth) == 3 && !sidebarPlusFits(width, itemWidth) {
+		limit = 8 // the three-item More variant has 2*spacerGap
+	}
+	return min(limit, width-sidebarMinWidth(itemWidth))
 }
 
 func rexSidebar(app *gowt.App, topInset int, ref **gowt.Panel, openSettings func()) gowt.Option {

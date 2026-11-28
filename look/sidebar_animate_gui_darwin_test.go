@@ -47,8 +47,29 @@ func TestSidebarVisibleAnimated(t *testing.T) {
 					return
 				}
 				recording, changes = nil, 0
+				wait := func(visible bool, x int, next func()) {
+					finished := false
+					var stop func()
+					done := func(timedOut bool) {
+						if finished {
+							return
+						}
+						finished = true
+						stop()
+						if timedOut {
+							t.Errorf("sidebar animation timed out: visible %v, content x %d, changes %d", look.SidebarVisible(w), content.Unwrap().GetBounds().X, changes)
+						}
+						next()
+					}
+					stop = app.Every(20*time.Millisecond, func() {
+						if changes == 1 && look.SidebarVisible(w) == visible && int(content.Unwrap().GetBounds().X) == x {
+							done(false)
+						}
+					})
+					app.After(5*time.Second, func() { done(true) })
+				}
 				look.SetSidebarVisibleAnimated(w, false)
-				app.After(400*time.Millisecond, func() {
+				wait(false, 0, func() {
 					hide, hideVisible = append([]int(nil), recording...), look.SidebarVisible(w)
 					hideWidth = look.SidebarWidth(w)
 					if changes != 1 {
@@ -56,7 +77,7 @@ func TestSidebarVisibleAnimated(t *testing.T) {
 					}
 					recording, changes = nil, 0
 					look.SetSidebarVisibleAnimated(w, true)
-					app.After(400*time.Millisecond, func() {
+					wait(true, 200, func() {
 						show, showVisible = append([]int(nil), recording...), look.SidebarVisible(w)
 						showWidth = look.SidebarWidth(w)
 						if changes != 1 {

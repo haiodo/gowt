@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/haiodo/gowt"
+	"github.com/haiodo/gowt/qa"
 	"github.com/haiodo/gowt/swt"
 )
 
@@ -30,6 +31,14 @@ func main() {
 			swt.QAFocus(&settingsList.canvas.Unwrap().Control)
 		})
 		settings, settingsList = settingsWindow(app)
+		qa.HandleValue("client-origins", func(qa.Args) (any, error) {
+			origin := func(w *gowt.Window) [2]int32 {
+				b := w.Unwrap().GetBounds()
+				p := w.Unwrap().ToDisplay(0, 0)
+				return [2]int32{p.X - b.X, p.Y - b.Y}
+			}
+			return map[string][2]int32{"rex": origin(rex), "settings": origin(settings)}, nil
+		})
 		rex.OnClose(func() bool {
 			quitting = true
 			settings.Close()
